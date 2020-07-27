@@ -1,0 +1,29 @@
+{
+  "name": "front",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@babel/core": "^7.0.0-beta.56",
+    "babel-preset": "^1.1.6",
+    "babelify": "^10.0.0",
+    "bootstrap": "^4.5.0",
+    "bootstrap-datepicker": "^1.9.0",
+    "bootstrap-italia": "^1.4.1",
+    "browserify": "^16.5.1",
+    "jquery": "^3.5.1",
+    "leaflet": "^1.6.0",
+    "uglifyify": "^5.0.2",
+    "vue": "^2.6.11",
+    "vue-router": "^3.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-dev": "browserify -g [ babelify --presets [ \"@babel/preset-env\" ] ] --entry script/app.js > bundle.js",
+    "build": "browserify -g [ babelify --presets [ \"@babel/preset-env\" ] ] -g uglifyify --entry script/app.js > bundle.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
