@@ -135,6 +135,9 @@ web_modules/
 # Optional npm cache directory
 .npm
 
+# 'Compiled' javascript
+bundle.js
+
 # Optional eslint cache
 .eslintcache
 
