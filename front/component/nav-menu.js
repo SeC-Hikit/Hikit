@@ -40,10 +40,14 @@ var NavMenuComponent = Vue.component("nav-menu", {
                                                                         href="#"><span>Mappa</span></a>
                                                                 </li>
                                                             </router-link>
+                                                            <router-link to="/notifications">
                                                             <li class="nav-item"><a class="nav-link" href="#">
                                                                     <span>Avvisi</span></a></li>
+                                                            </router-link>
+                                                            <router-link to="/maintainance">
                                                             <li class="nav-item"><a class="nav-link" href="#">
                                                                     <span>Manuntenzione</span></a></li>
+                                                            </router-link>
                                                         </ul>
                                                     </div>
                                                 </div>

@@ -18,8 +18,12 @@ var SlimHeaderComponent = Vue.component('slim-header', {
                                     </a>
                                     <div class="link-list-wrapper collapse" id="menu-principale">
                                         <ul class="link-list">
+                                        <router-link to="/info">
                                             <li><a class="list-item" href="#">La sentieristica</a></li>
+                                        </router-link>
+                                        <router-link to="/safety">
                                             <li><a class="list-item" href="#">Sicurezza</a></li>
+                                        </router-link>
                                         </ul>
                                     </div>
                                 </nav>
@@ -48,9 +52,11 @@ var SlimHeaderComponent = Vue.component('slim-header', {
                                         </div>
                                     </div>
                                 </div>
+                                <router-link to="/signInPage">
                                 <div class="it-access-top-wrapper">
                                     <a class="btn btn-primary btn-sm" href="#">Accedi</a>
                                 </div>
+                                </router-link>
                             </div>
                         </div>
                     </div>

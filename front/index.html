@@ -3,7 +3,11 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,600;0,700;1,400&family=Titillium+Web:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="node_modules/bootstrap-italia/dist/css/bootstrap-italia.min.css" />
+    <link type="text/css" rel="stylesheet" href="node_modules/chart.js/dist/Chart.min.css" />
     <link type="text/css" rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css" />
     <link type="text/css" rel="stylesheet" href="style/main.css" />
 </head>
@@ -16,15 +20,65 @@
             <nav-menu></nav-menu>
         </div>
         <!-- ENDs MENU -->
+
+
+        <!-- <div class="row">
+            <div class="column-map col-12 col-md-3">
+                <div class="btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-light active"><input autocomplete="off" checked type="checkbox">Mostra tutti i sentieri</label>
+                </div>
+            </div>
+            <div class="column-map col-12 col-md-6">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-light active"><input autocomplete="off" checked id="option1" name="options" type="radio">Topografico</label> <label class="btn btn-light"><input autocomplete="off" id="option2" name="options" type="radio">Geopolitica</label> <label class="btn btn-light"><input autocomplete="off" id="option3" name="options" type="radio">Geopolitica 2</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-3"></div>
+        </div>
+        <div class="row">
+            <div class="column-hikes column-map col-12 col-md-3">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Codice</th>
+                            <th scope="col">Localita</th>
+                            <th scope="col">Classificazione</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Calderino - Mt. S.Giovanni - Mt.Pastore</td>
+                            <td>E</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 col-md-6" id="map-full"></div>
+            <div class="description column-map col-12 col-md-3">
+                <h2>Sentiero 100, E</h2>
+                <p>Parte di "Sentiero degli Dei"</p>
+                <h4>Lunghezza</h4>
+                <p>10.4 Km</p>
+                <h4>Dislivello</h4>
+                <p>Positivo: 1230m</p>
+                <h4>Altitudine</h4>
+                <canvas id="chart-hike"></canvas>
+                <h4>Descrizione</h4>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Maxime, eaque. Rem doloremque illum ex iste, culpa tempore veritatis itaque earum veniam optio voluptate placeat esse nihil ullam. Impedit, consectetur nobis!</p>
+            </div>
+        </div> -->
         
+
+
         <!-- Content -->
         <router-view></router-view>
-        
+
         <!-- End content -->
         <ext-footer></ext-footer>
     </div>
 </body>
-
+<script src="node_modules/chart.js/dist/Chart.min.js"></script>
 <script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
 <script src="common/common.js"></script>
 <script src="node_modules/vue/dist/vue.min.js"></script>

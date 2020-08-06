@@ -3,7 +3,7 @@ var HikesPage = {
     <div class="row">
         <div class="col-12 col-md-8">
             <h1>Sentieri</h1>
-            <table class="table table-striped">
+            <table class="table table-striped interactive-table">
                 <thead>
                     <tr>
                         <th scope="col">Codice</th>
