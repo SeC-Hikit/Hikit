@@ -1,4 +1,4 @@
-var FooterComponent = Vue.component("ext-footer", {
+var footerComponent = Vue.component("ext-footer", {
   template: `<footer class="it-footer">
     <div class="it-footer-main">
         <div class="container">
@@ -10,7 +10,7 @@ var FooterComponent = Vue.component("ext-footer", {
                                 <img src="static/cai_logo.png" class="icon" />
                                 <div class="it-brand-text">
                                     <h2 class="no_toc">CAI Bologna</h2>
-                                    <h3 class="no_toc d-none d-md-block">Sentieri e Cartografia</h3>
+                                    <h3 class="no_toc d-none d-md-block">Sentieri e Cartografia v1.0</h3>
                                 </div>
                             </a>
                         </div>
@@ -42,25 +42,9 @@ var FooterComponent = Vue.component("ext-footer", {
                             <h4><a href="#" title="Vai alla pagina: Seguici su">Seguici su</a></h4>
                             <ul class="list-inline text-left social">
                                 <li class="list-inline-item"><a class="p-2 text-white" href="#"
-                                        target="_blank"><svg class="icon icon-sm icon-white align-top">
-                                            <a href="#" aria-label="Facebook" target="_blank">
-                                                <use
-                                                    xlink:href="node_modules/bootstrap-italia/dist/svg/sprite.svg#it-facebook">
-                                                </use>
-                                        </svg>
-                                    </a><span class="sr-only">Designers Italia</span></a></li>
-                                <li class="list-inline-item"><a class="p-2 text-white" href="#"
-                                        target="_blank"><svg class="icon icon-sm icon-white align-top">
-                                            <use
-                                                xlink:href="node_modules/bootstrap-italia/dist/svg/sprite.svg#it-twitter">
-                                            </use>
-                                        </svg><span class="sr-only">Twitter</span></a></li>
-                                <li class="list-inline-item"><a class="p-2 text-white" href="#" target="_blank">
-                                        <svg class="icon icon-sm icon-white align-top">
-                                            <use
-                                                xlink:href="node_modules/bootstrap-italia/dist/svg/sprite.svg#it-facebook">
-                                            </use>
-                                        </svg><span class="sr-only">Facebook</span></a></li>
+                                        target="_blank"><i style="font-size:24px" class="fa">&#xf09a;</i>
+                                    </a><span class="sr-only">CAI Bologna</span></a></li>
+                              <span class="sr-only">Facebook</span></a></li>
                             </ul>
                         </div>
                         <div class="pb-2">

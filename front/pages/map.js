@@ -1,15 +1,18 @@
-var MapPage = {
-  template: `
+import mapFull from "../component/full-map";
+
+const newLocal = `
   <div>
   <div class="row">
   <div class="column-map col-12 col-md-3">
       <div class="btn-group-toggle" data-toggle="buttons">
-          <label class="btn btn-light active"><input autocomplete="off" checked type="checkbox">Mostra tutti i sentieri</label>
+          <label v-on:click="changeTileLayer('loadAllTrails')" class="btn btn-light active"><input autocomplete="off" checked type="checkbox">Mostra tutti i sentieri</label>
       </div>
   </div>
   <div class="column-map col-12 col-md-6">
       <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <label class="btn btn-light active"><input autocomplete="off" checked id="option1" name="options" type="radio">Topografico</label> <label class="btn btn-light"><input autocomplete="off" id="option2" name="options" type="radio">Geopolitica</label> <label class="btn btn-light"><input autocomplete="off" id="option3" name="options" type="radio">Geopolitica 2</label>
+          <label v-on:click="changeTileLayer('topo')" class="btn btn-light active"><input autocomplete="off" checked id="option1" name="options" type="radio">Topografico</label> 
+          <label v-on:click="changeTileLayer('geopolitic')" class="btn btn-light"><input autocomplete="off" id="option2" name="options" type="radio">Geopolitica</label> 
+          <label v-on:click="changeTileLayer('geopolitic2')" class="btn btn-light"><input autocomplete="off" id="option3" name="options" type="radio">Geopolitica 2</label>
       </div>
   </div>
   <div class="col-12 col-md-3"></div>
@@ -33,10 +36,26 @@ var MapPage = {
           </tbody>
       </table>
   </div>
-  <div class="col-12 col-md-6" id="map-full"></div>
+
+  <map-full :points='points' :tileLayerType='tileLayerType'></map-full>
+  
   <div class="description hidden column-map col-12 col-md-3">
-      <h2>Sentiero 100, E</h2>
-      <p>Parte di "Sentiero degli Dei"</p>
+      <div class="row">
+        <div class="col-md-1 space-up">
+        <svg class="bi" width="32" height="32" class="pulse" fill="currentColor">
+            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
+          </svg>
+        </div>
+        <div class="col-md-9">
+        <h2>Sentiero 100, E</h2>
+        </div>
+        <div class="col-md-1 space-up">
+          <svg class="bi" width="24" height="24" fill="red">
+            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#arrows-fullscreen"/>
+          </svg>
+        </div>
+        <p>Parte di "Sentiero degli Dei"</p>
+      </div>
       <h4>Lunghezza</h4>
       <p>10.4 Km</p>
       <h4>Dislivello</h4>
@@ -48,161 +67,48 @@ var MapPage = {
   </div>
 </div>
 </div>
-  `,
-  mounted() {
-    var map = L.map("map-full").setView([44.498955, 11.327591], 12);
+  `;
+var MapPage = Vue.component("map-page", {
+  props: { id: Number },
 
-    //  Topographic:
-    //
-    L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
-
-    L.marker([44.498955, 11.327591]).addTo(map);
-    //   .bindPopup("A pretty CSS3 popup.<br> Easily customizable.")
-    //   .openPopup();
-
-    // create a red polyline from an array of LatLng points
-    var latlngs = [
-      [44.134626399183382, 11.122509399848253],
-      [44.13700939929344, 11.129171899797592],
-    ];
-    var polyline = L.polyline(latlngs, {
-      color: "red",
-      dashArray: "5, 10",
-    }).addTo(map);
-    
-
-    function getLayer(layerName){
-      switch(layerName){ 
-        case "topo":
-          return L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          });
-          break;
-        case "geopolitic":
-          return L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          });
-          break;
-        case "geopolitc2":
-          return L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          });
-          break;
+  data() {  
+    return {
+      points: [],
+      valuerouter: 0,
+      tileLayerType: "topo"
+    };
+  },
+  components: {
+    "preview-map": mapFull,
+  },
+  created: function () {
+    this.valuerouter = this.id ? this.id : 0;
+  },
+  mounted: function(){
+    if(this.valuerouter != 0){
+        this.updateTrail(this.id);
+    }
+  },
+  methods: {
+    updateTrail(id) {
+        if (id) {
+        console.log("Getting trail data for " + id);
+        // TODO: get trail points
+        this.points = [
+          [44.134626399183382, 11.122509399848253],
+          [44.13700939929344, 11.129171899797592],
+        ];
       }
+    },
+    loadTrailSideBarInfo(infoObj) {
+        console.log("Updating trail sidebar...");
+    },
+    changeTileLayer(layerType) {
+        console.log("Updating layer to " + layerType)
+        this.tileLayerType = layerType;
     }
-
-    function clearMap(){
-
-    }
-
-
-    function fitBoundToHikeBound() {
-      map.fitBounds(polyline.getBounds());
-    }
-
-    fitBoundToHikeBound();
-
-    let data = {
-      labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-      datasets: [
-        {
-          label: "Altitudine",
-          backgroundColor: "rgb(255, 99, 132)",
-          borderColor: "rgb(255, 99, 132)",
-          data: [1000, 1500, 1600, 1400, 2000, 1950, 1000],
-          label: "Sentiero 100",
-        },
-      ],
-    };
-
-    var options = {
-      maintainAspectRatio: true,
-      spanGaps: false,
-      elements: {
-        line: {
-          tension: 0.000001,
-        },
-      },
-      scales: {
-        xAxes: [
-          {
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: "Distanza",
-            },
-          },
-        ],
-        yAxes: [
-          {
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: "Altitudine (m)",
-            },
-          },
-        ],
-      },
-      plugins: {
-        filler: {
-          propagate: false,
-        },
-        "samples-filler-analyser": {
-          target: "chart-analyser",
-        },
-      },
-    };
-
-    var chart = new Chart("chart-hike", {
-      type: "line",
-      data: data,
-      options: options,
-    });
-
-    
-    function removeData(chart) {
-      // chart.data.labels.pop();
-      chart.data.datasets.forEach((dataset) => {
-        dataset.data.pop();
-      });
-      chart.update();
-    }
-
-    /**
-     * 
-     * @param Chart chart 
-     * @param array Array of number values 
-     */
-    function updateChartWithPoints(chart, datapointY) {
-      chart.data.datasets = [{ 
-        label: "Altitudine",
-        backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(255, 99, 132)",
-        data: datapointY,
-        label: "Sentiero 100",
-       }];
-      chart.update();
-    }
-    removeData(chart);
-    updateChartWithPoints(chart, [1,2,3,4,5,4,3,2,1])
-
-
-
-
-
-  }, methods: {
-    
-    updateTrail: function(code){
-      console.log(code);
-    }
-
-  }
-};
+  },
+  template: newLocal,
+});
 
 module.exports = MapPage;

@@ -1,4 +1,4 @@
-var NavMenuComponent = Vue.component("nav-menu", {
+var navMenuComponent = Vue.component("nav-menu", {
   template: `<div class="it-nav-wrapper">
     <div class="it-header-center-wrapper">
         <div class="container">
@@ -6,7 +6,7 @@ var NavMenuComponent = Vue.component("nav-menu", {
                 <div class="col-12">
                     <div class="it-header-center-content-wrapper">
                         <div class="it-brand-wrapper">
-                            <a href="#">
+                            <a href="/#/">
                                 <img src="static/cai_logo.png" class="icon" />
                                 <div class="it-brand-text">
                                     <h2 class="no_toc">Sentieri e Cartografia</h2>
@@ -42,11 +42,11 @@ var NavMenuComponent = Vue.component("nav-menu", {
                                                             </router-link>
                                                             <router-link to="/notifications">
                                                             <li class="nav-item"><a class="nav-link" href="#">
-                                                                    <span>Avvisi</span></a></li>
+                                                                    <span>Percorribilità</span></a></li>
                                                             </router-link>
                                                             <router-link to="/maintainance">
                                                             <li class="nav-item"><a class="nav-link" href="#">
-                                                                    <span>Manuntenzione</span></a></li>
+                                                                    <span>Calendario Manuntenzioni</span></a></li>
                                                             </router-link>
                                                         </ul>
                                                     </div>

@@ -1,12 +1,29 @@
-var PreviewMap = Vue.component("preview-map", {
-  template: `<div class="col-12 col-md-4">
+let previewMap = Vue.component("preview-map", {
+  template: `
         <div class="map-preview" id="map-table"></div>
-    </div>`,
+  `,
+  props: {
+    points: Array,
+  },
+  data: {
+    startPoint: [0, 0],
+    endPoint: [0, 0],
+  },
+  methods: {
+    onPreview: function () {
+      alert("Opening " + this.points);
+    },
+  },
+  watch: {
+    points: function () {
+      this.onPreview();
+    },
+  },
   mounted: function () {
     var map = L.map("map-table").setView([44.498955, 11.327591], 9);
 
-//  Topographic:
-// https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
+    //  Topographic:
+    // https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
@@ -19,3 +36,5 @@ var PreviewMap = Vue.component("preview-map", {
       .openPopup();
   },
 });
+
+module.exports = previewMap;

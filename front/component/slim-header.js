@@ -1,10 +1,12 @@
-var SlimHeaderComponent = Vue.component('slim-header', {
+import accessButtonComponent from "../component/access-button";
+
+let slimHeaderComponent = Vue.component('slim-header', {
     template: `<div class="it-header-slim-wrapper">
             <div class="container">
                 <div class="row">
                     <div class="col-12">
                         <div class="it-header-slim-wrapper-content">
-                            <a class="d-none d-lg-block navbar-brand" href="#">CAI Bologna</a>
+                            <a class="d-none d-lg-block navbar-brand" href="https://www.caibo.it/" target="_blank">CAI Bologna</a>
                             <div class="nav-mobile">
                                 <nav>
                                     <a class="it-opener d-lg-none" data-toggle="collapse" href="#menu-principale"
@@ -45,22 +47,19 @@ var SlimHeaderComponent = Vue.component('slim-header', {
                                                 <div class="link-list-wrapper">
                                                     <ul class="link-list">
                                                         <li><a class="list-item" href="#"><span>ITA</span></a></li>
-                                                        <li><a class="list-item" href="#"><span>ENG</span></a></li>
+                                                        <!-- <li><a class="list-item" href="#"><span>ENG</span></a></li> -->
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <router-link to="/signInPage">
-                                <div class="it-access-top-wrapper">
-                                    <a class="btn btn-primary btn-sm" href="#">Accedi</a>
-                                </div>
-                                </router-link>
+                                <access-button></access-button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>`
-})
+});
+
