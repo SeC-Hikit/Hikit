@@ -1,5 +1,6 @@
 package org.sc.data;
 
+import java.util.Date;
 import java.util.List;
 
 public class Trail {
@@ -17,6 +18,7 @@ public class Trail {
     public static final String POST_CODE = "postCodes";
     public static final String COUNTRY = "country";
     public static final String GEO_POINTS = "geoPoints";
+    public static final String LAST_UPDATE = "lastUpdate";
 
     private String name;
     private String description;
@@ -29,10 +31,11 @@ public class Trail {
     private TrailClassification trailClassification;
     private final List<String> postCode;
     private final String country;
+    private final Date lastUpdate;
 
     public Trail(String name, String description, String code, Position startPos, Position finalPos, double trackLength,
                  double eta, TrailClassification trailClassification, List<String> postCode, String country,
-                 List<CoordinatesWithAltitude> coordinates) {
+                 List<CoordinatesWithAltitude> coordinates, Date lastUpdate) {
         this.name = name;
         this.description = description;
         this.code = code;
@@ -44,6 +47,7 @@ public class Trail {
         this.postCode = postCode;
         this.country = country;
         this.coordinates = coordinates;
+        this.lastUpdate = lastUpdate;
     }
 
     public String getName() {
@@ -103,7 +107,7 @@ public class Trail {
         private TrailClassification trailClassification;
         private String country;
         private List<CoordinatesWithAltitude> coordinates;
-
+        private Date lastUpdate;
 
         private TrailBuilder() {
         }
@@ -168,11 +172,16 @@ public class Trail {
             return this;
         }
 
+        public TrailBuilder withLastUpdate(Date lastUpdate) {
+            this.lastUpdate = lastUpdate;
+            return this;
+        }
+
 
         public Trail build() {
             return new Trail(name, description, code, startPos, finalPos,
                     trackLength, eta, trailClassification,
-                    postCode, country, coordinates);
+                    postCode, country, coordinates, lastUpdate);
         }
 
     }

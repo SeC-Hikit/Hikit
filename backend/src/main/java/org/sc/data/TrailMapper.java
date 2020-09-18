@@ -3,6 +3,7 @@ package org.sc.data;
 import com.google.inject.Inject;
 import org.bson.Document;
 
+import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -33,6 +34,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .withClassification(getClassification(doc))
                 .withCountry(doc.getString(Trail.COUNTRY))
                 .withCoordinates(getCoordinatesWithAltitude(doc))
+                .withLastUpdate(getLastUpdateDate(doc))
                 .build();
     }
 
@@ -60,6 +62,11 @@ public class TrailMapper implements Mapper<Trail> {
     private Position getPos(Document doc, String fieldName) {
         final Document pos = doc.get(fieldName, Document.class);
         return positionMapper.mapToObject(pos);
+    }
+
+    private Date getLastUpdateDate(Document doc) {
+//        TODO
+        return null;
     }
 
     private TrailClassification getClassification(Document doc) {
