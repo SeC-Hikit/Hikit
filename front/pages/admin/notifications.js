@@ -37,6 +37,7 @@ var NotificationManagement = {
                           <th scope="col">Localita</th>
                           <th scope="col">Data</th>
                           <th scope="col">Descrizione</th>
+                          <th scope="col">Aggirabile?</th>
                           <th scope="col">Azioni</th>
                       </tr>
                   </thead>
@@ -46,6 +47,7 @@ var NotificationManagement = {
                               <td>Calderino - Mt. S.Giovanni - Mt.Pastore</td>
                               <td>18/05/2020</td>
                               <td><p>Abc</p></td>
+                              <td><p>Si</p></td>
                               <td>
                               <svg v-on:click="resolveNotification(1)" class="bi" width="32" height="32" fill="currentColor">
                                       <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#hammer"/>

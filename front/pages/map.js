@@ -46,15 +46,14 @@ const newLocal = `
             <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
           </svg>
         </div>
-        <div class="col-md-9">
-        <h2>Sentiero 100, E</h2>
+        <div class="col-md-9 ml-1">
+        <h2>100, E</h2>
         </div>
         <div class="col-md-1 space-up">
           <svg class="bi" width="24" height="24" fill="red">
-            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#arrows-fullscreen"/>
+            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#arrow-up-right-square"/>
           </svg>
         </div>
-        <p>Parte di "Sentiero degli Dei"</p>
       </div>
       <h4>Lunghezza</h4>
       <p>10.4 Km</p>

@@ -36,6 +36,8 @@ var footerComponent = Vue.component("ext-footer", {
                     </div>
                     <div class="col-lg-4 col-md-4 pb-2">
                         <h4><a href="#" title="Vai alla pagina: Lorem Ipsum">Supporto tecnico</a></h4>
+                        <h4>Amministrazione</h4>
+                        <access-button></access-button>
                     </div>
                     <div class="col-lg-4 col-md-4 pb-2">
                         <div class="pb-2">

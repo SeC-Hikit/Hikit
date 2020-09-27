@@ -60,6 +60,11 @@
   text-decoration: underline;
 }
 
+ul.link-list{
+  border-left:0px;
+  border-right: 0px;
+}
+
 .pulse {
   animation: pulse-animation 1s infinite alternate-reverse;
 }

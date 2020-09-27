@@ -17,7 +17,8 @@ var NotificationsPage = {
                         <th scope="col">Codice sentiero</th>
                         <th scope="col">Data</th>
                         <th scope="col">Localita</th>
-                        <th scope="col">Descrizione</th>
+                        <th scope="col">Descrizione Problema</th>
+                        <th scope="col">Aggirabile?</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,6 +27,7 @@ var NotificationsPage = {
                             <td>07/06/2020</td>
                             <td>Calderino - Mt. S.Giovanni - Mt.Pastore</td>
                             <td>Il sentiero n1 e' stato interrotto causa smottamento</td>
+                            <td>Si</td>
                         </tr>
                 </tbody>
             </table>
@@ -39,7 +41,7 @@ var NotificationsPage = {
                         <th scope="col">Codice sentiero</th>
                         <th scope="col">Data</th>
                         <th scope="col">Localita</th>
-                        <th scope="col">Descrizione</th>
+                        <th scope="col">Descrizione Problema</th>
                         <th scope="col">Risoluzione</th>
                     </tr>
                 </thead>

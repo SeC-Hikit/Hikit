@@ -41,20 +41,7 @@ let slimHeaderComponent = Vue.component('slim-header', {
                                             </use>
                                         </svg>
                                     </a>
-                                    <div class="dropdown-menu">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="link-list-wrapper">
-                                                    <ul class="link-list">
-                                                        <li><a class="list-item" href="#"><span>ITA</span></a></li>
-                                                        <!-- <li><a class="list-item" href="#"><span>ENG</span></a></li> -->
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
-                                <access-button></access-button>
                             </div>
                         </div>
                     </div>
