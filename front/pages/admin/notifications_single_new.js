@@ -50,6 +50,16 @@ var NotificationManagementNewSingle = {
                 </div>
             </div>
             <div class="form-group row">
+                <legend class="col-form-label col-sm-2 pt-0">Aggirabile?</legend>
+                <div class="col-sm-8 bootstrap-select-wrapper">
+                    <select class="form-control" id="trailId_select">
+                        <option>Si</option>
+                        <option>No</option>
+                    </select>
+                </div>
+            </div>
+            </div>
+            <div class="form-group row">
                 <div class="col-sm-2">
                     <button type="submit" class="btn btn-primary">Salva e pubblica</button>
                 </div>

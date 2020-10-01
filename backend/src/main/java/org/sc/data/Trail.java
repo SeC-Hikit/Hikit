@@ -1,6 +1,5 @@
 package org.sc.data;
 
-import java.util.Date;
 import java.util.List;
 
 public class Trail {
@@ -15,10 +14,8 @@ public class Trail {
     public static final String TRACK_LENGTH = "trackLength";
     public static final String ETA = "eta";
     public static final String CLASSIFICATION = "classification";
-    public static final String POST_CODE = "postCodes";
     public static final String COUNTRY = "country";
     public static final String GEO_POINTS = "geoPoints";
-    public static final String LAST_UPDATE = "lastUpdate";
 
     private String name;
     private String description;
@@ -29,13 +26,18 @@ public class Trail {
     private double trackLength;
     private double eta;
     private TrailClassification trailClassification;
-    private final List<String> postCode;
     private final String country;
-    private final Date lastUpdate;
 
-    public Trail(String name, String description, String code, Position startPos, Position finalPos, double trackLength,
-                 double eta, TrailClassification trailClassification, List<String> postCode, String country,
-                 List<CoordinatesWithAltitude> coordinates, Date lastUpdate) {
+    public Trail(final String name,
+                 final String description,
+                 final String code,
+                 final Position startPos,
+                 final Position finalPos,
+                 final double trackLength,
+                 final double eta,
+                 final TrailClassification trailClassification,
+                 final String country,
+                 final List<CoordinatesWithAltitude> coordinates) {
         this.name = name;
         this.description = description;
         this.code = code;
@@ -44,10 +46,8 @@ public class Trail {
         this.trackLength = trackLength;
         this.eta = eta;
         this.trailClassification = trailClassification;
-        this.postCode = postCode;
         this.country = country;
         this.coordinates = coordinates;
-        this.lastUpdate = lastUpdate;
     }
 
     public String getName() {
@@ -82,10 +82,6 @@ public class Trail {
         return finalPos;
     }
 
-    public List<String> getPostCodes() {
-        return postCode;
-    }
-
     public String getCountry() {
         return country;
     }
@@ -99,7 +95,6 @@ public class Trail {
         private String name;
         private String description;
         private String code;
-        private List<String> postCode;
         private Position startPos;
         private Position finalPos;
         private double trackLength;
@@ -107,7 +102,7 @@ public class Trail {
         private TrailClassification trailClassification;
         private String country;
         private List<CoordinatesWithAltitude> coordinates;
-        private Date lastUpdate;
+
 
         private TrailBuilder() {
         }
@@ -120,12 +115,6 @@ public class Trail {
             this.name = name;
             return this;
         }
-
-        public TrailBuilder withPostCodes(List<String> postCode) {
-            this.postCode = postCode;
-            return this;
-        }
-
 
         public TrailBuilder withDescription(String description) {
             this.description = description;
@@ -172,16 +161,11 @@ public class Trail {
             return this;
         }
 
-        public TrailBuilder withLastUpdate(Date lastUpdate) {
-            this.lastUpdate = lastUpdate;
-            return this;
-        }
-
 
         public Trail build() {
             return new Trail(name, description, code, startPos, finalPos,
                     trackLength, eta, trailClassification,
-                    postCode, country, coordinates, lastUpdate);
+                    country, coordinates);
         }
 
     }

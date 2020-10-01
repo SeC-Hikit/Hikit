@@ -2,7 +2,9 @@ package org.sc.configuration;
 
 import com.google.inject.Inject;
 import org.apache.logging.log4j.Logger;
+import org.sc.controller.AccessibilityNotificationController;
 import org.sc.controller.ImporterController;
+import org.sc.controller.MaintenanceController;
 import spark.Spark;
 
 import javax.inject.Named;
@@ -28,13 +30,18 @@ public class ConfigurationManager {
      * Controllers
      */
     private final ImporterController trailController;
-
+    private final MaintenanceController maintenanceController;
+    private final AccessibilityNotificationController accessibilityNotificationController;
 
     @Inject
     public ConfigurationManager(final @Named(PORT_PROPERTY) String port,
                                 final ImporterController trailController,
+                                final MaintenanceController maintenanceController,
+                                final AccessibilityNotificationController accessibilityNotificationController,
                                 final DataSource dataSource) {
         this.trailController = trailController;
+        this.maintenanceController = maintenanceController;
+        this.accessibilityNotificationController = accessibilityNotificationController;
         this.dataSource = dataSource;
         webServerSetup(port);
         UPLOAD_DIR.mkdir();
@@ -61,6 +68,8 @@ public class ConfigurationManager {
 
     private void startControllers() {
         trailController.init();
+        maintenanceController.init();
+        accessibilityNotificationController.init();
     }
 
 }
