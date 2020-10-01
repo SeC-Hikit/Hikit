@@ -1,5 +1,6 @@
 package org.sc.data;
 
+import java.util.Date;
 import java.util.List;
 
 public class Trail {
@@ -16,6 +17,7 @@ public class Trail {
     public static final String CLASSIFICATION = "classification";
     public static final String COUNTRY = "country";
     public static final String GEO_POINTS = "geoPoints";
+    public static final String LAST_UPDATE_DATE = "lastUpdate";
 
     private String name;
     private String description;
@@ -27,6 +29,7 @@ public class Trail {
     private double eta;
     private TrailClassification trailClassification;
     private final String country;
+    private final Date date;
 
     public Trail(final String name,
                  final String description,
@@ -37,7 +40,8 @@ public class Trail {
                  final double eta,
                  final TrailClassification trailClassification,
                  final String country,
-                 final List<CoordinatesWithAltitude> coordinates) {
+                 final List<CoordinatesWithAltitude> coordinates,
+                 final Date date) {
         this.name = name;
         this.description = description;
         this.code = code;
@@ -48,6 +52,7 @@ public class Trail {
         this.trailClassification = trailClassification;
         this.country = country;
         this.coordinates = coordinates;
+        this.date = date;
     }
 
     public String getName() {
@@ -91,18 +96,17 @@ public class Trail {
     }
 
     public static final class TrailBuilder {
-
         private String name;
         private String description;
         private String code;
         private Position startPos;
         private Position finalPos;
+        private List<CoordinatesWithAltitude> coordinates;
         private double trackLength;
         private double eta;
         private TrailClassification trailClassification;
         private String country;
-        private List<CoordinatesWithAltitude> coordinates;
-
+        private Date date;
 
         private TrailBuilder() {
         }
@@ -131,6 +135,16 @@ public class Trail {
             return this;
         }
 
+        public TrailBuilder withFinalPos(Position finalPos) {
+            this.finalPos = finalPos;
+            return this;
+        }
+
+        public TrailBuilder withCoordinates(List<CoordinatesWithAltitude> coordinates) {
+            this.coordinates = coordinates;
+            return this;
+        }
+
         public TrailBuilder withTrackLength(double trackLength) {
             this.trackLength = trackLength;
             return this;
@@ -141,13 +155,8 @@ public class Trail {
             return this;
         }
 
-        public TrailBuilder withClassification(TrailClassification trailClassification) {
+        public TrailBuilder withTrailClassification(TrailClassification trailClassification) {
             this.trailClassification = trailClassification;
-            return this;
-        }
-
-        public TrailBuilder withFinalPos(Position finalPos) {
-            this.finalPos = finalPos;
             return this;
         }
 
@@ -156,17 +165,13 @@ public class Trail {
             return this;
         }
 
-        public TrailBuilder withCoordinates(List<CoordinatesWithAltitude> coordinates) {
-            this.coordinates = coordinates;
+        public TrailBuilder withDate(Date date) {
+            this.date = date;
             return this;
         }
 
-
         public Trail build() {
-            return new Trail(name, description, code, startPos, finalPos,
-                    trackLength, eta, trailClassification,
-                    country, coordinates);
+            return new Trail(name, description, code, startPos, finalPos, trackLength, eta, trailClassification, country, coordinates, date);
         }
-
     }
 }

@@ -30,10 +30,10 @@ public class TrailMapper implements Mapper<Trail> {
                 .withFinalPos(getPos(doc, Trail.FINAL_POS))
                 .withTrackLength(doc.getDouble(Trail.TRACK_LENGTH))
                 .withEta(doc.getDouble(Trail.ETA))
-                .withClassification(getClassification(doc))
+                .withTrailClassification(getClassification(doc))
                 .withCountry(doc.getString(Trail.COUNTRY))
                 .withCoordinates(getCoordinatesWithAltitude(doc))
-                .withLastUpdate(getLastUpdateDate(doc))
+                .withDate(getLastUpdateDate(doc))
                 .build();
     }
 
@@ -63,8 +63,7 @@ public class TrailMapper implements Mapper<Trail> {
     }
 
     private Date getLastUpdateDate(Document doc) {
-//        TODO
-        return null;
+        return doc.getDate(Trail.LAST_UPDATE_DATE);
     }
 
     private TrailClassification getClassification(Document doc) {
