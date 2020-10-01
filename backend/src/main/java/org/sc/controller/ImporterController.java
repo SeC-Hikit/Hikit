@@ -85,14 +85,12 @@ public class ImporterController implements PublicController {
         final Trail trailRequest = convertRequestToTrail(request);
         final TrailRestResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailRestResponse.
                 TrailRestResponseBuilder.aTrailRestResponse().withMessages(errors);
-
         if (errors.isEmpty()) {
             trailDAO.upsertTrail(trailRequest);
             return trailRestResponseBuilder.withStatus(Status.OK).build();
         }
-
         response.status(BAD_REQUEST_STATUS_CODE);
-        return trailRestResponseBuilder.withStatus(Status.ERROR).build();
+        return trailRestResponseBuilder.withMessages(errors).withStatus(Status.ERROR).build();
     }
 
     private Trail convertRequestToTrail(final Request request) {

@@ -20,26 +20,26 @@ public class MaintenanceDAO {
 
     public MaintenanceDAO(final DataSource dataSource,
                           final MaintenanceMapper mapper) {
-        this.collection = dataSource.getDB().getCollection(AccessibilityNotification.COLLECTION_NAME);
+        this.collection = dataSource.getDB().getCollection(Maintenance.COLLECTION_NAME);
         this.mapper = mapper;
     }
 
     public List<Maintenance> getFuture() {
-        return toMaintenanceList(collection.find(new Document(AccessibilityNotification.DESCRIPTION, "")));
+        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$gt", "Date()"))));
     }
 
     public List<Maintenance> getPast() {
-        return toMaintenanceList(collection.find(new Document(AccessibilityNotification.DESCRIPTION, new Document("$ne", ""))));
+        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$lt", "Date()"))));
     }
 
     public void upsert(final Maintenance maintenance) {
-        final Document AccessibilityNotificationDocument = mapper.mapToDocument(maintenance);
-        collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, maintenance.getId()),
-                AccessibilityNotificationDocument, new UpdateOptions().upsert(true));
+        final Document MaintenanceDocument = mapper.mapToDocument(maintenance);
+        collection.updateOne(new Document(Maintenance.OBJECT_ID, maintenance.getId()),
+                MaintenanceDocument, new UpdateOptions().upsert(true));
     }
 
-    public void delete(final ObjectId objectId) {
-        collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, objectId));
+    public boolean delete(final ObjectId objectId) {
+        return collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId)).getDeletedCount() > 0;
     }
 
     private List<Maintenance> toMaintenanceList(FindIterable<Document> documents) {

@@ -14,6 +14,7 @@ public class AccessibilityNotification {
     public static final String REPORT_DATE = "reportDate";
     public static final String RESOLUTION_DATE = "resolutionDate";
     public static final String IS_MINOR = "isMinor";
+    public static final String RESOLUTION = "resolution";
 
     private ObjectId _id;
     private String description;
@@ -23,10 +24,17 @@ public class AccessibilityNotification {
     private boolean isMinor;
     private final String resolution;
 
-    public AccessibilityNotification(String code, String description, Date reportDate, boolean isMinor, String resolution) {
+    public AccessibilityNotification(ObjectId objectId,
+                                     String code,
+                                     String description,
+                                     Date reportDate,
+                                     Date resolutionDate,
+                                     boolean isMinor,
+                                     String resolution) {
         this.description = description;
         this.code = code;
         this.reportDate = reportDate;
+        this.resolutionDate = resolutionDate;
         this.isMinor = isMinor;
         this.resolution = resolution;
     }
@@ -53,5 +61,9 @@ public class AccessibilityNotification {
 
     public ObjectId getId() {
         return _id;
+    }
+
+    public String getResolution() {
+        return resolution;
     }
 }

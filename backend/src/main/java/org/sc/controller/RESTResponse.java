@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class RESTResponse {
@@ -10,6 +11,16 @@ public class RESTResponse {
     public RESTResponse(Status status, Set<String> messages) {
         this.status = status;
         this.messages = messages;
+    }
+
+    public RESTResponse(Set<String> messages) {
+        this.status = Status.ERROR;
+        this.messages = messages;
+    }
+
+    public RESTResponse() {
+        this.status = Status.OK;
+        this.messages = Collections.emptySet();
     }
 
     public Status getStatus() {

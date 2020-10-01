@@ -29,7 +29,7 @@ public class AccessibilityNotificationDAO {
     }
 
     public List<AccessibilityNotification> getSolved() {
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.DESCRIPTION, new Document("$ne", ""))));
+        return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION, new Document("$ne", ""))));
     }
 
     public void upsert(final AccessibilityNotification accessibilityNotification) {
@@ -38,8 +38,8 @@ public class AccessibilityNotificationDAO {
                 AccessibilityNotificationDocument, new UpdateOptions().upsert(true));
     }
 
-    public void delete(final ObjectId objectId) {
-        collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, objectId));
+    public boolean delete(final ObjectId objectId) {
+        return collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, objectId)).getDeletedCount() > 0;
     }
 
     private List<AccessibilityNotification> toNotificationList(FindIterable<Document> documents) {
