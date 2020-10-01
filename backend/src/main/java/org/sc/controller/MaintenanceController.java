@@ -68,10 +68,10 @@ public class MaintenanceController implements PublicController {
     }
 
     public void init() {
-        Spark.get(format("%s/get/future", PREFIX), this::getFutureMaintenance, JsonHelper.json());
-        Spark.get(format("%s/get/past", PREFIX), this::getPastMaintenance, JsonHelper.json());
-        Spark.get(format("%s/delete/:id", PREFIX), this::deleteMaintenance, JsonHelper.json());
-        Spark.post(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());
+        Spark.get(format("%s/future", PREFIX), this::getFutureMaintenance, JsonHelper.json());
+        Spark.get(format("%s/past", PREFIX), this::getPastMaintenance, JsonHelper.json());
+        Spark.delete(format("%s/delete/:id", PREFIX), this::deleteMaintenance, JsonHelper.json());
+        Spark.put(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());
     }
 
     private Maintenance convertRequestToMaintenance(final Request request) {

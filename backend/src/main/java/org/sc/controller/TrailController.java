@@ -31,11 +31,11 @@ import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
 import static spark.Spark.post;
 import static spark.Spark.put;
 
-public class ImporterController implements PublicController {
+public class TrailController implements PublicController {
 
     public static final String MULTI_PART_JETTY_CONFIG = "org.eclipse.jetty.multipartConfig";
 
-    private final static Logger LOGGER = Logger.getLogger(ImporterController.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(TrailController.class.getName());
     private final static String PREFIX = API_PREFIX + "/trails";
 
     public static final String FILE_INPUT_NAME = "gpxFile";
@@ -50,11 +50,11 @@ public class ImporterController implements PublicController {
     private final TrailDAO trailDAO;
 
     @Inject
-    public ImporterController(final GpxManager gpxManager,
-                              final GsonBeanHelper gsonBeanHelper,
-                              final TrailImporterManager trailImporterManager,
-                              final TrailCreationValidator trailValidator,
-                              final TrailDAO trailDAO) {
+    public TrailController(final GpxManager gpxManager,
+                           final GsonBeanHelper gsonBeanHelper,
+                           final TrailImporterManager trailImporterManager,
+                           final TrailCreationValidator trailValidator,
+                           final TrailDAO trailDAO) {
         this.gpxManager = gpxManager;
         this.gsonBeanHelper = gsonBeanHelper;
         this.trailImporterManager = trailImporterManager;

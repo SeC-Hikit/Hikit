@@ -73,8 +73,8 @@ public class AccessibilityNotificationController implements PublicController {
     public void init() {
         Spark.get(format("%s/get/solved", PREFIX), this::getSolved, JsonHelper.json());
         Spark.get(format("%s/get/unsolved", PREFIX), this::getNotSolved, JsonHelper.json());
-        Spark.get(format("%s/delete/:id", PREFIX), this::deleteAccessibilityNotification, JsonHelper.json());
-        Spark.post(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());
+        Spark.delete(format("%s/delete/:id", PREFIX), this::deleteAccessibilityNotification, JsonHelper.json());
+        Spark.put(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());
     }
 
     private AccessibilityNotification convertRequestToAccessibilityNotification(final Request request) {
