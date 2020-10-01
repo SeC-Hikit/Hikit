@@ -23,7 +23,6 @@ public class TrailMapper implements Mapper<Trail> {
     public Trail mapToObject(Document doc) {
         return Trail.TrailBuilder.aTrail()
                 .withName(doc.getString(Trail.NAME))
-                .withPostCodes(doc.get(Trail.POST_CODE, List.class))
                 .withDescription(doc.getString(Trail.DESCRIPTION))
                 .withCode(doc.getString(Trail.CODE))
                 .withStartPos(getPos(doc, Trail.START_POS))
@@ -41,7 +40,6 @@ public class TrailMapper implements Mapper<Trail> {
         return new Document(Trail.NAME, object.getName())
                 .append(Trail.DESCRIPTION, object.getDescription())
                 .append(Trail.CODE, object.getCode())
-                .append(Trail.POST_CODE, object.getPostCodes())
                 .append(Trail.START_POS, object.getStartPos())
                 .append(Trail.FINAL_POS, object.getFinalPos())
                 .append(Trail.TRACK_LENGTH, object.getTrackLength())
