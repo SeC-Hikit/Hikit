@@ -34,12 +34,14 @@ public class TrailMapper implements Mapper<Trail> {
                 .withCountry(doc.getString(Trail.COUNTRY))
                 .withCoordinates(getCoordinatesWithAltitude(doc))
                 .withDate(getLastUpdateDate(doc))
+                .withMaintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .build();
     }
 
     @Override
     public Document mapToDocument(Trail object) {
-        return new Document(Trail.NAME, object.getName())
+        return new Document(
+                Trail.NAME, object.getName())
                 .append(Trail.DESCRIPTION, object.getDescription())
                 .append(Trail.CODE, object.getCode())
                 .append(Trail.START_POS, object.getStartPos())
@@ -48,7 +50,10 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.ETA, object.getEta())
                 .append(Trail.CLASSIFICATION, object.getTrailClassification().toString())
                 .append(Trail.COUNTRY, object.getCountry())
-                .append(Trail.GEO_POINTS, object.getCoordinates().stream().map(coordinatesAltitudeMapper::mapToDocument).collect(toList()));
+                .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
+                .append(Trail.LAST_UPDATE_DATE, object.getDate())
+                .append(Trail.GEO_POINTS, object.getCoordinates()
+                        .stream().map(coordinatesAltitudeMapper::mapToDocument).collect(toList()));
     }
 
     private List<CoordinatesWithAltitude> getCoordinatesWithAltitude(Document doc) {

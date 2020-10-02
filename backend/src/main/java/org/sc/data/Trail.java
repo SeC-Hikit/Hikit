@@ -18,6 +18,7 @@ public class Trail {
     public static final String COUNTRY = "country";
     public static final String GEO_POINTS = "geoPoints";
     public static final String LAST_UPDATE_DATE = "lastUpdate";
+    public static final String SECTION_CARED_BY = "maintainingSection";
 
     private String name;
     private String description;
@@ -30,6 +31,7 @@ public class Trail {
     private TrailClassification trailClassification;
     private final String country;
     private final Date date;
+    private final String maintainingSection;
 
     public Trail(final String name,
                  final String description,
@@ -41,7 +43,7 @@ public class Trail {
                  final TrailClassification trailClassification,
                  final String country,
                  final List<CoordinatesWithAltitude> coordinates,
-                 final Date date) {
+                 final Date date, String maintainingSection) {
         this.name = name;
         this.description = description;
         this.code = code;
@@ -53,6 +55,7 @@ public class Trail {
         this.country = country;
         this.coordinates = coordinates;
         this.date = date;
+        this.maintainingSection = maintainingSection;
     }
 
     public String getName() {
@@ -95,6 +98,14 @@ public class Trail {
         return coordinates;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public String getMaintainingSection() {
+        return maintainingSection;
+    }
+
     public static final class TrailBuilder {
         private String name;
         private String description;
@@ -107,6 +118,7 @@ public class Trail {
         private TrailClassification trailClassification;
         private String country;
         private Date date;
+        private String maintainingSection;
 
         private TrailBuilder() {
         }
@@ -170,8 +182,13 @@ public class Trail {
             return this;
         }
 
+        public TrailBuilder withMaintainingSection(String maintainingSection) {
+            this.maintainingSection = maintainingSection;
+            return this;
+        }
+
         public Trail build() {
-            return new Trail(name, description, code, startPos, finalPos, trackLength, eta, trailClassification, country, coordinates, date);
+            return new Trail(name, description, code, startPos, finalPos, trackLength, eta, trailClassification, country, coordinates, date, maintainingSection);
         }
     }
 }

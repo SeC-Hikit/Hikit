@@ -11,6 +11,8 @@ import org.sc.importer.TrailCreationValidator;
 import org.sc.importer.TrailImporterManager;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -28,15 +30,14 @@ import static org.sc.configuration.ConfigurationManager.TMP_FOLDER;
 import static org.sc.configuration.ConfigurationManager.UPLOAD_DIR;
 import static org.sc.configuration.ConfigurationProperties.ACCEPT_TYPE;
 import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
-import static spark.Spark.post;
-import static spark.Spark.put;
+import static spark.Spark.*;
 
 public class TrailController implements PublicController {
 
     public static final String MULTI_PART_JETTY_CONFIG = "org.eclipse.jetty.multipartConfig";
 
     private final static Logger LOGGER = Logger.getLogger(TrailController.class.getName());
-    private final static String PREFIX = API_PREFIX + "/trails";
+    private final static String PREFIX = API_PREFIX + "/trail";
 
     public static final String FILE_INPUT_NAME = "gpxFile";
     public static final String CANNOT_READ_ERROR_MESSAGE = "Could not read GPX file.";
@@ -99,9 +100,24 @@ public class TrailController implements PublicController {
                 .fromJson(requestBody, Trail.class);
     }
 
+    private Trail get(Request request, Response response) {
+        throw new NotImplementedException();
+    }
+
+    private Trail getAll(Request request, Response response) {
+        throw new NotImplementedException();
+    }
+
+    private Trail getByCode(Request request, Response response) {
+        throw new NotImplementedException();
+    }
+
     public void init() {
-        post(format("%s/gpx", PREFIX), this::readGpxFile, JsonHelper.json());
-        put(format("%s/import", PREFIX), this::importTrail, JsonHelper.json());
+        Spark.get(format("%s/", PREFIX), this::getAll, JsonHelper.json());
+        Spark.get(format("%s/:id", PREFIX), this::get, JsonHelper.json());
+        Spark.get(format("%s/:code", PREFIX), this::getByCode, JsonHelper.json());
+        post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
+        put(format("%s/save", PREFIX), this::importTrail, JsonHelper.json());
     }
 
 }
