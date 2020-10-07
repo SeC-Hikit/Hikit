@@ -94,11 +94,6 @@ public class TrailDAO {
     }
 
     @NotNull
-    public List<Trail> getTrailById(@NotNull String id) {
-        return toTrailsList(collection.find(new Document("_id", new ObjectId(id))));
-    }
-
-    @NotNull
     public List<Trail> getTrailByCode(@NotNull String code) {
         return toTrailsList(collection.find(new Document("code", code)));
     }

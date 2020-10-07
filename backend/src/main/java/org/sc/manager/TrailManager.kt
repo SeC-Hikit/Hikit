@@ -13,7 +13,6 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
 
 
     fun getAll() = trailDAO.getTrails()
-    fun getById(id: String) = trailDAO.getTrailById(id)
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
 
     fun getByGeo(coordinates: Coordinates, distance: Int, unitOfMeasurement: UnitOfMeasurement, isAnyPoint: Boolean, limit: Int): List<TrailDistance> {

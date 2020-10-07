@@ -105,14 +105,6 @@ public class TrailController implements PublicController {
                 .fromJson(requestBody, Trail.class);
     }
 
-    private TrailRestResponse get(Request request, Response response) {
-        final String param = request.params(":id");
-        if(param.isEmpty()) {
-            return new TrailRestResponse(Collections.emptyList(), Status.ERROR, Collections.singleton("Empty id value"));
-        }
-        return new TrailRestResponse(trailManager.getById(param));
-    }
-
     private TrailRestResponse getAll(Request request, Response response) {
         return new TrailRestResponse(trailManager.getAll());
     }
@@ -127,7 +119,6 @@ public class TrailController implements PublicController {
 
     public void init() {
         Spark.get(format("%s/", PREFIX), this::getAll, JsonHelper.json());
-        Spark.get(format("%s/id/:id", PREFIX), this::get, JsonHelper.json());
         Spark.get(format("%s/code/:code", PREFIX), this::getByCode, JsonHelper.json());
         post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
         put(format("%s/save", PREFIX), this::importTrail, JsonHelper.json());
