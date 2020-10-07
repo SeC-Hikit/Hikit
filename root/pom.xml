@@ -77,6 +77,11 @@
             <artifactId>rest-assured</artifactId>
             <version>${rest-assured.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-guice</artifactId>
+            <version>${shiro-guice.version}</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -87,7 +92,7 @@
         <javaruntime.version>1.8</javaruntime.version>
 
         <spark.version>2.9.1</spark.version>
-        <guice.version>4.2.1</guice.version>
+        <guice.version>4.2.2</guice.version>
         <rmq.version>5.6.0</rmq.version>
         <junit.version>4.12</junit.version>
         <gson.version>2.8.2</gson.version>
@@ -100,5 +105,6 @@
         <rest-assured.version>4.3.0</rest-assured.version>
         <slf4j-log4j12.version>1.7.25</slf4j-log4j12.version>
         <jpx.version>1.7.0</jpx.version>
+        <shiro-guice.version>1.6.0</shiro-guice.version>
     </properties>
 </project>
