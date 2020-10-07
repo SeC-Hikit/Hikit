@@ -9,10 +9,10 @@ import org.sc.data.helper.GsonBeanHelper;
 import org.sc.data.helper.JsonHelper;
 import org.sc.importer.TrailCreationValidator;
 import org.sc.importer.TrailImporterManager;
+import org.sc.manager.TrailManager;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -30,7 +31,8 @@ import static org.sc.configuration.ConfigurationManager.TMP_FOLDER;
 import static org.sc.configuration.ConfigurationManager.UPLOAD_DIR;
 import static org.sc.configuration.ConfigurationProperties.ACCEPT_TYPE;
 import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
-import static spark.Spark.*;
+import static spark.Spark.post;
+import static spark.Spark.put;
 
 public class TrailController implements PublicController {
 
@@ -46,6 +48,7 @@ public class TrailController implements PublicController {
 
     private final GpxManager gpxManager;
     private final GsonBeanHelper gsonBeanHelper;
+    private final TrailManager trailManager;
     private final TrailImporterManager trailImporterManager;
     private final TrailCreationValidator trailValidator;
     private final TrailDAO trailDAO;
@@ -53,11 +56,13 @@ public class TrailController implements PublicController {
     @Inject
     public TrailController(final GpxManager gpxManager,
                            final GsonBeanHelper gsonBeanHelper,
+                           TrailManager trailManager,
                            final TrailImporterManager trailImporterManager,
                            final TrailCreationValidator trailValidator,
                            final TrailDAO trailDAO) {
         this.gpxManager = gpxManager;
         this.gsonBeanHelper = gsonBeanHelper;
+        this.trailManager = trailManager;
         this.trailImporterManager = trailImporterManager;
         this.trailValidator = trailValidator;
         this.trailDAO = trailDAO;
@@ -100,22 +105,30 @@ public class TrailController implements PublicController {
                 .fromJson(requestBody, Trail.class);
     }
 
-    private Trail get(Request request, Response response) {
-        throw new NotImplementedException();
+    private TrailRestResponse get(Request request, Response response) {
+        final String param = request.params(":id");
+        if(param.isEmpty()) {
+            return new TrailRestResponse(Collections.emptyList(), Status.ERROR, Collections.singleton("Empty id value"));
+        }
+        return new TrailRestResponse(trailManager.getById(param));
     }
 
-    private Trail getAll(Request request, Response response) {
-        throw new NotImplementedException();
+    private TrailRestResponse getAll(Request request, Response response) {
+        return new TrailRestResponse(trailManager.getAll());
     }
 
-    private Trail getByCode(Request request, Response response) {
-        throw new NotImplementedException();
+    private TrailRestResponse getByCode(Request request, Response response) {
+        final String param = request.params(":code");
+        if(param.isEmpty()) {
+            return new TrailRestResponse(Collections.emptyList(), Status.ERROR, Collections.singleton("Empty code value"));
+        }
+        return new TrailRestResponse(trailManager.getByCode(param));
     }
 
     public void init() {
         Spark.get(format("%s/", PREFIX), this::getAll, JsonHelper.json());
-        Spark.get(format("%s/:id", PREFIX), this::get, JsonHelper.json());
-        Spark.get(format("%s/:code", PREFIX), this::getByCode, JsonHelper.json());
+        Spark.get(format("%s/id/:id", PREFIX), this::get, JsonHelper.json());
+        Spark.get(format("%s/code/:code", PREFIX), this::getByCode, JsonHelper.json());
         post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
         put(format("%s/save", PREFIX), this::importTrail, JsonHelper.json());
     }

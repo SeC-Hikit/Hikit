@@ -11,6 +11,11 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
                                         private val altitudeService: AltitudeServiceHelper,
                                        private val metricConverter: MetricConverter){
 
+
+    fun getAll() = trailDAO.getTrails()
+    fun getById(id: String) = trailDAO.getTrailById(id)
+    fun getByCode(code: String) = trailDAO.getTrailByCode(code)
+
     fun getByGeo(coordinates: Coordinates, distance: Int, unitOfMeasurement: UnitOfMeasurement, isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
         val coords = CoordinatesWithAltitude(coordinates.longitude,
                 coordinates.latitude, altitudeService.getAltitudeByLongLat(coordinates.latitude, coordinates.longitude))

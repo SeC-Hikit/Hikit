@@ -7,6 +7,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 
@@ -34,7 +35,8 @@ public class TrailDAO {
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.LOCATION;
     private static final String RESOLVED_START_POS_POSTCODE = Trail.START_POS + "." + Position.POSTCODE;
 
-    public static final int RESULT_LIMIT = 50;
+    // Max number of documents output per request
+    public static final int RESULT_LIMIT = 150;
     public static final int RESULT_LIMIT_ONE = 1;
 
     private final MongoCollection<Document> collection;
@@ -84,6 +86,21 @@ public class TrailDAO {
                 new Document(LIMIT, limit)
         ));
         return toTrailsList(aggregate);
+    }
+
+    @NotNull
+    public List<Trail> getTrails() {
+        return executeQueryAndGetResult(new Document());
+    }
+
+    @NotNull
+    public List<Trail> getTrailById(@NotNull String id) {
+        return toTrailsList(collection.find(new Document("_id", new ObjectId(id))));
+    }
+
+    @NotNull
+    public List<Trail> getTrailByCode(@NotNull String code) {
+        return toTrailsList(collection.find(new Document("code", code)));
     }
 
     public List<Trail> executeQueryAndGetResult(final Document doc) {

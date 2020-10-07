@@ -2,6 +2,7 @@ package org.sc.controller;
 
 import org.sc.data.Trail;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +11,11 @@ public class TrailRestResponse extends RESTResponse {
 
     public TrailRestResponse(List<Trail> trails, Status status, Set<String> messages) {
         super(status, messages);
+        this.trails = trails;
+    }
+
+    public TrailRestResponse(List<Trail> trails) {
+        super(Status.OK, Collections.emptySet());
         this.trails = trails;
     }
 
