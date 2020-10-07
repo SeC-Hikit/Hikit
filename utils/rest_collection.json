@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "021f6db5-62a1-4497-9cf9-aea0dbf4ba00",
+		"_postman_id": "fecd6ed8-f707-43b8-b31c-37370729a1eb",
 		"name": "Sentieri&Cartografia v1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -53,12 +53,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/maintenance/delete/:id",
+							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/delete/:id",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"maintenance",
 								"delete",
 								":id"
@@ -83,12 +85,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/maintenance/save",
+							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/save",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"maintenance",
 								"save"
 							]
@@ -101,7 +105,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "30c7d807-b422-4d19-ab71-e814d5bc9639",
+						"id": "0c83d699-589b-47e8-a2ad-7a7c877ee4bb",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -111,7 +115,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "89081ea5-190d-4974-a821-a42009429511",
+						"id": "ff868395-47c1-445a-9795-8bc811428242",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -130,12 +134,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/accessibility/solved",
+							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/solved",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"accessibility",
 								"solved"
 							]
@@ -149,12 +155,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/accessibility/unsolved",
+							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/unsolved",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"accessibility",
 								"unsolved"
 							]
@@ -168,12 +176,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/maintenance/delete/:id",
+							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/delete/:id",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"maintenance",
 								"delete",
 								":id"
@@ -198,12 +208,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/maintenance/save",
+							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/save",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"maintenance",
 								"save"
 							]
@@ -223,12 +235,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/trail",
+							"raw": "{{host}}:{{port}}/api/{{version}}/trail",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"trail"
 							]
 						}
@@ -241,7 +255,22 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": ""
+							"raw": "{{host}}:{{port}}/api/{{version}}/:code",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"{{version}}",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": ""
+								}
+							]
 						}
 					},
 					"response": []
@@ -251,13 +280,24 @@
 					"request": {
 						"method": "PUT",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"001BO\",\n\t\"description\": \"test\",\n\t\"code\": \"001BO\",\n\t\"startPos\": {\n\t\t\n\t},\n\t\"finalPos\" : {\n\t\t\n\t},\n\t\"trackLength\": 5.0,\n\t\"eta\": 3.0,\n\t\"classification\": \"T\",\n\t\"country\": \"Italy\",\n\t\"lastUpdate\": \"2020-10-07T21:23:33.674Z\",\n\t\"maintainingSection\": \"Bologna\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{host}}:{{port}}/save",
+							"raw": "{{host}}:{{port}}/api/{{version}}/save",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"save"
 							]
 						}
@@ -269,13 +309,25 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "gpxFile",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
 						"url": {
-							"raw": "{{host}}:{{port}}/read",
+							"raw": "{{host}}:{{port}}/api/{{version}}/read",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"read"
 							]
 						}
@@ -290,12 +342,14 @@
 		{
 			"id": "ed84c503-c051-4ae5-a58b-361ad0e4a2ef",
 			"key": "host",
-			"value": "localhost"
+			"value": "localhost",
+			"type": "string"
 		},
 		{
 			"id": "54444ca1-1aee-4ca2-96ef-742daece6bb9",
 			"key": "port",
-			"value": "8990"
+			"value": "8990",
+			"type": "string"
 		}
 	],
 	"protocolProfileBehavior": {}
