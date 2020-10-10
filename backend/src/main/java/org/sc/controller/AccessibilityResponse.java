@@ -1,21 +1,19 @@
 package org.sc.controller;
 
 import org.sc.data.AccessibilityNotification;
-import org.sc.data.Maintenance;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class AccessibilityResponse extends RESTResponse {
-    final List<AccessibilityNotification> maintenanceList;
+    final List<AccessibilityNotification> accessibilityNotifications;
 
-    public AccessibilityResponse(List<AccessibilityNotification> maintenanceList) {
+    public AccessibilityResponse(List<AccessibilityNotification> accessibilityNotifications) {
         super(Status.OK, Collections.emptySet());
-        this.maintenanceList = maintenanceList;
+        this.accessibilityNotifications = accessibilityNotifications;
     }
 
-    public List<AccessibilityNotification> getMaintenanceList() {
-        return maintenanceList;
+    public List<AccessibilityNotification> getAccessibilityNotifications() {
+        return accessibilityNotifications;
     }
 }

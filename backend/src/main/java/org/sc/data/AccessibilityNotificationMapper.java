@@ -7,7 +7,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
     @Override
     public AccessibilityNotification mapToObject(Document document) {
         return new AccessibilityNotification(
-                document.getObjectId(AccessibilityNotification.OBJECT_ID),
+                document.getString(AccessibilityNotification.OBJECT_ID),
                 document.getString(AccessibilityNotification.TRAIL_CODE),
                 document.getString(AccessibilityNotification.DESCRIPTION),
                 document.getDate(AccessibilityNotification.REPORT_DATE),

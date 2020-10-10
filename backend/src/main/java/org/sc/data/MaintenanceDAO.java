@@ -3,11 +3,13 @@ package org.sc.data;
 import com.google.common.collect.Lists;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -17,7 +19,7 @@ public class MaintenanceDAO {
     private final MongoCollection<Document> collection;
     private final MaintenanceMapper mapper;
 
-
+    @Inject
     public MaintenanceDAO(final DataSource dataSource,
                           final MaintenanceMapper mapper) {
         this.collection = dataSource.getDB().getCollection(Maintenance.COLLECTION_NAME);
@@ -34,8 +36,10 @@ public class MaintenanceDAO {
 
     public void upsert(final Maintenance maintenance) {
         final Document MaintenanceDocument = mapper.mapToDocument(maintenance);
-        collection.updateOne(new Document(Maintenance.OBJECT_ID, maintenance.getId()),
-                MaintenanceDocument, new UpdateOptions().upsert(true));
+        final String existingOrNewObjectId = maintenance.getId() == null ?
+                new ObjectId().toHexString() : maintenance.getId();
+        collection.replaceOne(new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
+                MaintenanceDocument, new ReplaceOptions().upsert(true));
     }
 
     public boolean delete(final ObjectId objectId) {

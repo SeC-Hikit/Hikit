@@ -31,8 +31,7 @@ import static org.sc.configuration.ConfigurationManager.TMP_FOLDER;
 import static org.sc.configuration.ConfigurationManager.UPLOAD_DIR;
 import static org.sc.configuration.ConfigurationProperties.ACCEPT_TYPE;
 import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
-import static spark.Spark.post;
-import static spark.Spark.put;
+import static spark.Spark.*;
 
 public class TrailController implements PublicController {
 
@@ -118,8 +117,8 @@ public class TrailController implements PublicController {
     }
 
     public void init() {
-        Spark.get(format("%s/", PREFIX), this::getAll, JsonHelper.json());
-        Spark.get(format("%s/code/:code", PREFIX), this::getByCode, JsonHelper.json());
+        get(format("%s", PREFIX), this::getAll, JsonHelper.json());
+        get(format("%s/:code", PREFIX), this::getByCode, JsonHelper.json());
         post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
         put(format("%s/save", PREFIX), this::importTrail, JsonHelper.json());
     }

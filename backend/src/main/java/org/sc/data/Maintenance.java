@@ -15,14 +15,19 @@ public class Maintenance {
     public static final String CONTACT = "contact";
     public static final String MEETING_PLACE = "meetingPlace";
 
-    private ObjectId _id;
+    private String _id;
     private Date date;
     private String code;
     private String meetingPlace;
     private String description;
     private String contact;
 
-    public Maintenance(ObjectId id, Date date, String code, String meetingPlace, String description, String contact) {
+    public Maintenance(String id,
+                       Date date,
+                       String code,
+                       String meetingPlace,
+                       String description,
+                       String contact) {
         _id = id;
         this.date = date;
         this.code = code;
@@ -51,7 +56,7 @@ public class Maintenance {
         return contact;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return _id;
     }
 
