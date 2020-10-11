@@ -7,7 +7,7 @@ public class CoordinatesWithAltitude extends Coordinates {
     public final static String GEO_TYPE = "Point";
     public final static String COORDINATES = "coordinates";
 
-    private double altitude;
+    private final double altitude;
 
     public CoordinatesWithAltitude(final double longitude,
                                    final double latitude,

@@ -12,7 +12,6 @@ import org.sc.importer.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import spark.Request;
 import spark.Response;
-import spark.Spark;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -22,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -116,10 +116,23 @@ public class TrailController implements PublicController {
         return new TrailRestResponse(trailManager.getByCode(param));
     }
 
+    private RESTResponse deleteByCode(Request request, Response response) {
+        final String requestId = request.params(":code");
+        boolean isDeleted = trailManager.delete(requestId);
+        if (isDeleted) {
+            return new RESTResponse(Status.OK, Collections.emptySet());
+        } else {
+            return new RESTResponse(Status.ERROR,
+                    new HashSet<>(Collections.singletonList(
+                            format("No trail was found with code '%s'", requestId))));
+        }
+    }
+
     public void init() {
         get(format("%s", PREFIX), this::getAll, JsonHelper.json());
         get(format("%s/:code", PREFIX), this::getByCode, JsonHelper.json());
         post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
+        delete(format("%s/delete/:code", PREFIX), this::deleteByCode, JsonHelper.json());
         put(format("%s/save", PREFIX), this::importTrail, JsonHelper.json());
     }
 

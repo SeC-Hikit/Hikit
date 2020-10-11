@@ -20,10 +20,10 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
+import static org.sc.controller.TrailController.BAD_REQUEST_STATUS_CODE;
 
 public class AccessibilityNotificationController implements PublicController {
 
-    private final static Logger LOGGER = Logger.getLogger(AccessibilityNotificationController.class.getName());
     private final static String PREFIX = API_PREFIX + "/accessibility";
 
     private final GsonBeanHelper gsonBeanHelper;
@@ -48,9 +48,13 @@ public class AccessibilityNotificationController implements PublicController {
         return new AccessibilityResponse(accessibilityDAO.getNotSolved());
     }
 
+    private RESTResponse getByTrailCode(Request request, Response response) {
+        return new AccessibilityResponse(accessibilityDAO.getByCode(request.params(":code")));
+    }
+
     private RESTResponse deleteAccessibilityNotification(Request request, Response response) {
         final String requestId = request.params(":id");
-        boolean isDeleted = accessibilityDAO.delete(new ObjectId(requestId));
+        boolean isDeleted = accessibilityDAO.delete(requestId);
         if (isDeleted) {
             return new RESTResponse(Status.OK, Collections.emptySet());
         } else {
@@ -67,12 +71,14 @@ public class AccessibilityNotificationController implements PublicController {
             accessibilityDAO.upsert(maintenance);
             return new RESTResponse();
         }
+        response.status(BAD_REQUEST_STATUS_CODE);
         return new RESTResponse(errors);
     }
 
     public void init() {
         Spark.get(format("%s/solved", PREFIX), this::getSolved, JsonHelper.json());
         Spark.get(format("%s/unsolved", PREFIX), this::getNotSolved, JsonHelper.json());
+        Spark.get(format("%s/code/:code", PREFIX), this::getByTrailCode, JsonHelper.json());
         Spark.delete(format("%s/delete/:id", PREFIX), this::deleteAccessibilityNotification, JsonHelper.json());
         Spark.put(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());
     }

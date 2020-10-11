@@ -1,7 +1,5 @@
 package org.sc.data;
 
-import org.bson.types.ObjectId;
-
 import java.util.Date;
 
 public class Maintenance {

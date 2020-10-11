@@ -12,11 +12,10 @@ class PositionCreationValidator @Inject constructor(private val coordinatesWithA
     override fun validate(request: Position): Set<String> {
         val listOfErrorMessages = mutableSetOf<String>()
 
-        val coordinatesError = coordinatesWithAltitudeCreationValidator.validate(request.coords)
+        val coordinatesError = coordinatesWithAltitudeCreationValidator.validate(request.coordinates)
         listOfErrorMessages.addAll(coordinatesError)
         if (request.name.isBlank()) listOfErrorMessages.add(noNameError)
-        if (request.postCode.isBlank()) listOfErrorMessages.add(Validator.postcodeEmptyErrorMessage)
-
+        listOfErrorMessages.addAll(coordinatesWithAltitudeCreationValidator.validate(request.coordinates))
         return listOfErrorMessages
     }
 

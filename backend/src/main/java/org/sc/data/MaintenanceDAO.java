@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
 
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -27,11 +28,11 @@ public class MaintenanceDAO {
     }
 
     public List<Maintenance> getFuture() {
-        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$gt", "Date()"))));
+        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$gt", new Date()))));
     }
 
     public List<Maintenance> getPast() {
-        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$lt", "Date()"))));
+        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$lt", new Date()))));
     }
 
     public void upsert(final Maintenance maintenance) {
@@ -42,7 +43,7 @@ public class MaintenanceDAO {
                 MaintenanceDocument, new ReplaceOptions().upsert(true));
     }
 
-    public boolean delete(final ObjectId objectId) {
+    public boolean delete(final String objectId) {
         return collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId)).getDeletedCount() > 0;
     }
 

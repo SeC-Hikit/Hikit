@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -33,7 +34,6 @@ public class TrailDAO {
     public static final String UNIQUE_DOCS_FIELD = "uniqueDocs";
 
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.LOCATION;
-    private static final String RESOLVED_START_POS_POSTCODE = Trail.START_POS + "." + Position.POSTCODE;
 
     // Max number of documents output per request
     public static final int RESULT_LIMIT = 150;
@@ -49,13 +49,11 @@ public class TrailDAO {
         this.trailMapper = trailMapper;
     }
 
-    public Trail getTrailByCodeAndPostcodeCountry(final String postcode,
-                                                  final String trailCode,
+    public Trail getTrailByCodeAndPostcodeCountry(final String trailCode,
                                                   final String country) {
         final FindIterable<Document> documents = collection.find(
                 new Document(Trail.COUNTRY, country)
-                        .append(Trail.CODE, trailCode)
-                        .append(RESOLVED_START_POS_POSTCODE, postcode))
+                        .append(Trail.CODE, trailCode))
                 .limit(RESULT_LIMIT_ONE);
         return toTrailsList(documents).stream().findFirst().orElseThrow(IllegalArgumentException::new);
     }
@@ -107,11 +105,14 @@ public class TrailDAO {
         return Lists.newArrayList(documents).stream().map(trailMapper::mapToObject).collect(toList());
     }
 
+    public boolean delete(final String code) {
+        return collection.deleteOne(new Document(Trail.CODE, code)).getDeletedCount() > 0;
+    }
+
     public void upsertTrail(final Trail trailRequest) {
         final Document trail = trailMapper.mapToDocument(trailRequest);
-        collection.updateOne(new Document(Trail.CODE, trailRequest.getCode())
-                        .append(Trail.COUNTRY, trailRequest.getCountry())
-                        .append(RESOLVED_START_POS_POSTCODE, trailRequest.getStartPos().getPostCode()),
-                trail, new UpdateOptions().upsert(true));
+        collection.replaceOne(new Document(Trail.CODE, trailRequest.getCode())
+                        .append(Trail.COUNTRY, trailRequest.getCountry()),
+                trail, new ReplaceOptions().upsert(true));
     }
 }

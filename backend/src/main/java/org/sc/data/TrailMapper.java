@@ -44,20 +44,20 @@ public class TrailMapper implements Mapper<Trail> {
                 Trail.NAME, object.getName())
                 .append(Trail.DESCRIPTION, object.getDescription())
                 .append(Trail.CODE, object.getCode())
-                .append(Trail.START_POS, object.getStartPos())
-                .append(Trail.FINAL_POS, object.getFinalPos())
+                .append(Trail.START_POS, positionMapper.mapToDocument(object.getStartPos()))
+                .append(Trail.FINAL_POS, positionMapper.mapToDocument(object.getFinalPos()))
                 .append(Trail.TRACK_LENGTH, object.getTrackLength())
                 .append(Trail.ETA, object.getEta())
-                .append(Trail.CLASSIFICATION, object.getTrailClassification().toString())
+                .append(Trail.CLASSIFICATION, object.getClassification().toString())
                 .append(Trail.COUNTRY, object.getCountry())
                 .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
-                .append(Trail.LAST_UPDATE_DATE, object.getDate())
-                .append(Trail.GEO_POINTS, object.getCoordinates()
+                .append(Trail.LAST_UPDATE_DATE, new Date())
+                .append(Trail.COORDINATES, object.getCoordinates()
                         .stream().map(coordinatesAltitudeMapper::mapToDocument).collect(toList()));
     }
 
     private List<CoordinatesWithAltitude> getCoordinatesWithAltitude(Document doc) {
-        final List<Document> list = doc.get(Trail.GEO_POINTS, List.class);
+        final List<Document> list = doc.get(Trail.COORDINATES, List.class);
         return list.stream().map(coordinatesAltitudeMapper::mapToObject).collect(toList());
     }
 

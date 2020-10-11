@@ -18,17 +18,13 @@ public class PositionMapper implements Mapper<Position> {
         return Position.PositionBuilder.aPosition()
                 .withName(document.getString(Position.NAME))
                 .withCoords(coordinatesMapper.mapToObject(document.get(Position.LOCATION, Document.class)))
-                .withPostCode(document.getString(Position.POSTCODE))
-                .withDescription(document.getString(Position.DESCRIPTION))
                 .withTags(document.get(Position.TAGS, List.class))
                 .build();
     }
 
     @Override
     public Document mapToDocument(Position object) {
-        return new Document(Position.LOCATION, coordinatesMapper.mapToDocument(object.getCoords()))
-                .append(Position.TAGS, object.getTags())
-                .append(Position.DESCRIPTION, object.getDescription())
-                .append(Position.POSTCODE, object.getPostCode()).append(Position.NAME, object.getName());
+        return new Document(Position.LOCATION, coordinatesMapper.mapToDocument(object.getCoordinates()))
+                .append(Position.TAGS, object.getTags()).append(Position.NAME, object.getName());
     }
 }

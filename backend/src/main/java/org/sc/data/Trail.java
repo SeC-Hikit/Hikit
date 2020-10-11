@@ -16,7 +16,7 @@ public class Trail {
     public static final String ETA = "eta";
     public static final String CLASSIFICATION = "classification";
     public static final String COUNTRY = "country";
-    public static final String GEO_POINTS = "geoPoints";
+    public static final String COORDINATES = "coordinates";
     public static final String LAST_UPDATE_DATE = "lastUpdate";
     public static final String SECTION_CARED_BY = "maintainingSection";
 
@@ -28,7 +28,7 @@ public class Trail {
     private List<CoordinatesWithAltitude> coordinates;
     private double trackLength;
     private double eta;
-    private TrailClassification trailClassification;
+    private TrailClassification classification;
     private final String country;
     private final Date date;
     private final String maintainingSection;
@@ -40,7 +40,7 @@ public class Trail {
                  final Position finalPos,
                  final double trackLength,
                  final double eta,
-                 final TrailClassification trailClassification,
+                 final TrailClassification classification,
                  final String country,
                  final List<CoordinatesWithAltitude> coordinates,
                  final Date date, String maintainingSection) {
@@ -51,7 +51,7 @@ public class Trail {
         this.finalPos = finalPos;
         this.trackLength = trackLength;
         this.eta = eta;
-        this.trailClassification = trailClassification;
+        this.classification = classification;
         this.country = country;
         this.coordinates = coordinates;
         this.date = date;
@@ -82,8 +82,8 @@ public class Trail {
         return eta;
     }
 
-    public TrailClassification getTrailClassification() {
-        return trailClassification;
+    public TrailClassification getClassification() {
+        return classification;
     }
 
     public Position getFinalPos() {

@@ -14,6 +14,7 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
 
     fun getAll() = trailDAO.getTrails()
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
+    fun delete(code: String) = trailDAO.delete(code)
 
     fun getByGeo(coordinates: Coordinates, distance: Int, unitOfMeasurement: UnitOfMeasurement, isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
         val coords = CoordinatesWithAltitude(coordinates.longitude,
@@ -25,8 +26,8 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
                     coords.latitude,
                     meters, limit)
             return trailsByStartPosMetricDistance.map {
-                TrailDistance(PositionProcessor.distanceBetweenPoints(coords, it.startPos.coords).roundToInt(),
-                        it.startPos.coords, it)
+                TrailDistance(PositionProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
+                        it.startPos.coordinates, it)
             }
         } else {
             return getTrailDistancesWithinRangeAtPoint(coords, distance, unitOfMeasurement, limit)

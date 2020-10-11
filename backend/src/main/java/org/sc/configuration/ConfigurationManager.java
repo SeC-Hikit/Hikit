@@ -13,7 +13,7 @@ import java.io.File;
 import static java.lang.String.format;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.configuration.ConfigurationProperties.LOCAL_IP_ADDRESS;
-import static spark.Spark.port;
+import static spark.Spark.*;
 
 public class ConfigurationManager {
 
@@ -67,9 +67,12 @@ public class ConfigurationManager {
     }
 
     private void startControllers() {
+        after((request, response) -> response.type("application/json"));
         trailController.init();
         maintenanceController.init();
         accessibilityNotificationController.init();
     }
+
+
 
 }

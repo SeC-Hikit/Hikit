@@ -5,48 +5,32 @@ import java.util.List;
 
 public class Position {
 
-    public static final String POSTCODE = "postCode";
     public static final String LOCATION = "location";
     public static final String NAME = "name";
-    public static final String DESCRIPTION = "description";
     public static final String TAGS = "tags";
 
     private String name;
-    private String description;
     private List<String> tags;
-    private CoordinatesWithAltitude coords;
-    private String postCode;
+    private CoordinatesWithAltitude coordinates;
 
     public Position(double alt, double lat, double longitude) {
-        this.coords = new CoordinatesWithAltitude(longitude, lat, alt);
+        this.coordinates = new CoordinatesWithAltitude(longitude, lat, alt);
     }
 
     public Position(final String name,
-                    final String description,
                     final List<String> tags,
-                    final CoordinatesWithAltitude coords,
-                    final String postCode) {
+                    final CoordinatesWithAltitude coords) {
         this.name = name;
-        this.description = description;
         this.tags = tags;
-        this.coords = coords;
-        this.postCode = postCode;
+        this.coordinates = coords;
     }
 
-    public CoordinatesWithAltitude getCoords() {
-        return coords;
-    }
-
-    public String getPostCode() {
-        return postCode;
+    public CoordinatesWithAltitude getCoordinates() {
+        return coordinates;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public List<String> getTags() {
@@ -55,7 +39,6 @@ public class Position {
 
     public static final class PositionBuilder {
         private String name;
-        private String description;
         private List<String> tags;
         private CoordinatesWithAltitude coords;
         private String postCode;
@@ -69,11 +52,6 @@ public class Position {
 
         public PositionBuilder withName(String name) {
             this.name = name;
-            return this;
-        }
-
-        public PositionBuilder withDescription(String description) {
-            this.description = description;
             return this;
         }
 
@@ -93,7 +71,7 @@ public class Position {
         }
 
         public Position build() {
-            return new Position(name, description, tags, coords, postCode);
+            return new Position(name, tags, coords);
         }
     }
 }

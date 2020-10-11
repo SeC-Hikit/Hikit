@@ -9,9 +9,9 @@ object PositionProcessor {
     private const val earthRadius = 6378.137 // Radius of earth in KM
 
     fun distanceBetweenPoints(position: Position, toPoint: Position): Double =
-            distance(position.coords.latitude, toPoint.coords.latitude,
-                    position.coords.longitude, toPoint.coords.longitude,
-                    position.coords.altitude, toPoint.coords.altitude)
+            distance(position.coordinates.latitude, toPoint.coordinates.latitude,
+                    position.coordinates.longitude, toPoint.coordinates.longitude,
+                    position.coordinates.altitude, toPoint.coordinates.altitude)
 
     fun distanceBetweenPoints(position: CoordinatesWithAltitude, toPoint: CoordinatesWithAltitude): Double =
             distance(position.latitude, toPoint.latitude,

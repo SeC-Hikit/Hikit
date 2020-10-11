@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
+import static org.sc.controller.TrailController.BAD_REQUEST_STATUS_CODE;
 
 public class MaintenanceController implements PublicController {
 
@@ -46,11 +47,12 @@ public class MaintenanceController implements PublicController {
 
     private RESTResponse deleteMaintenance(Request request, Response response) {
         final String requestId = request.params(":id");
-        boolean isDeleted = maintenanceDao.delete(new ObjectId(requestId));
+        boolean isDeleted = maintenanceDao.delete(requestId);
         if (isDeleted) {
             return new RESTResponse(Status.OK, Collections.emptySet());
         } else {
             LOGGER.warning(format("Could not delete maintenance with id %s", requestId));
+            response.status(BAD_REQUEST_STATUS_CODE);
             return new RESTResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
                             format("No maintenance was found with id '%s'", requestId))));
@@ -64,6 +66,7 @@ public class MaintenanceController implements PublicController {
             maintenanceDao.upsert(maintenance);
             return new RESTResponse();
         }
+        response.status(BAD_REQUEST_STATUS_CODE);
         return new RESTResponse(errors);
     }
 

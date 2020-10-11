@@ -5,7 +5,7 @@ import org.bson.Document;
 public class MaintenanceMapper implements Mapper<Maintenance>{
     @Override
     public Maintenance mapToObject(Document document) {
-        return new Maintenance(document.getObjectId(Maintenance.OBJECT_ID),
+        return new Maintenance(document.getString(Maintenance.OBJECT_ID),
                 document.getDate(Maintenance.DATE),
                 document.getString(Maintenance.TRAIL_CODE),
                 document.getString(Maintenance.MEETING_PLACE),
