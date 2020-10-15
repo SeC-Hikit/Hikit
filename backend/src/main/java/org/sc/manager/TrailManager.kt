@@ -15,7 +15,8 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
     fun getAll() = trailDAO.getTrails()
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
-    fun save(trail: Trail, eta: Double): () -> Any = {
+    fun save(trail: Trail, eta: Int, calculateTotFall: Int, calculateTotRise: Int) {
+        // TODO: add calculation to persistency
         trailDAO.upsertTrail(trail)
         exportStoredGpxFile(trail)
     }
