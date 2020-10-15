@@ -16,17 +16,14 @@ public class MongoDataSource implements DataSource {
 
     private final Logger LOGGER = getLogger(MongoDataSource.class);
 
-    private static final String DATABASE_NAME_PROPERTY = "db";
-    private static final String MONGO_URI_PROPERTY = "mongo-uri";
     private final String databaseName;
     private final MongoClient mongoClient;
 
     @Inject
-    public MongoDataSource(@Named(MONGO_URI_PROPERTY) final String mongoURI,
-                           @Named(DATABASE_NAME_PROPERTY) final String databaseName) {
-        final MongoClientURI connectionString = new MongoClientURI(mongoURI);
+    public MongoDataSource(final AppProperties appProperties) {
+        final MongoClientURI connectionString = new MongoClientURI(appProperties.getDbUri());
         this.mongoClient = new MongoClient(connectionString);
-        this.databaseName = databaseName;
+        this.databaseName = appProperties.getDbName();
         LOGGER.info(format("Going to connect to DB '%s'. Connection String '%s'", databaseName, connectionString));
     }
 

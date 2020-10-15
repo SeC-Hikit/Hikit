@@ -3,7 +3,6 @@ package org.sc.controller;
 import com.google.inject.Inject;
 import org.sc.GpxManager;
 import org.sc.data.Trail;
-import org.sc.data.TrailDAO;
 import org.sc.data.TrailPreparationModel;
 import org.sc.data.helper.GsonBeanHelper;
 import org.sc.data.helper.JsonHelper;
@@ -50,21 +49,18 @@ public class TrailController implements PublicController {
     private final TrailManager trailManager;
     private final TrailImporterManager trailImporterManager;
     private final TrailCreationValidator trailValidator;
-    private final TrailDAO trailDAO;
 
     @Inject
     public TrailController(final GpxManager gpxManager,
                            final GsonBeanHelper gsonBeanHelper,
-                           TrailManager trailManager,
+                           final TrailManager trailManager,
                            final TrailImporterManager trailImporterManager,
-                           final TrailCreationValidator trailValidator,
-                           final TrailDAO trailDAO) {
+                           final TrailCreationValidator trailValidator) {
         this.gpxManager = gpxManager;
         this.gsonBeanHelper = gsonBeanHelper;
         this.trailManager = trailManager;
         this.trailImporterManager = trailImporterManager;
         this.trailValidator = trailValidator;
-        this.trailDAO = trailDAO;
     }
 
     // trails/gpx
@@ -91,7 +87,7 @@ public class TrailController implements PublicController {
         final TrailRestResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailRestResponse.
                 TrailRestResponseBuilder.aTrailRestResponse().withMessages(errors);
         if (errors.isEmpty()) {
-            trailDAO.upsertTrail(trailRequest);
+            trailImporterManager.save(trailRequest);
             return trailRestResponseBuilder.withStatus(Status.OK).build();
         }
         response.status(BAD_REQUEST_STATUS_CODE);

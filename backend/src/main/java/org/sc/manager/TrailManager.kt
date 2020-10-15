@@ -8,13 +8,17 @@ import org.sc.service.AltitudeServiceHelper
 import kotlin.math.roundToInt
 
 class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
-                                        private val altitudeService: AltitudeServiceHelper,
+                                       private val altitudeService: AltitudeServiceHelper,
                                        private val metricConverter: MetricConverter){
 
 
     fun getAll() = trailDAO.getTrails()
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
+    fun save(trail: Trail, eta: Double): () -> Any = {
+        trailDAO.upsertTrail(trail)
+        exportStoredGpxFile(trail)
+    }
 
     fun getByGeo(coordinates: Coordinates, distance: Int, unitOfMeasurement: UnitOfMeasurement, isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
         val coords = CoordinatesWithAltitude(coordinates.longitude,
@@ -71,4 +75,8 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
 
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
             if (unitOfMeasurement == UnitOfMeasurement.km) metricConverter.getMetersFromKm(distance) else distance
+
+    private fun exportStoredGpxFile(trail: Trail): Any {
+        throw NotImplementedError()
+    }
 }

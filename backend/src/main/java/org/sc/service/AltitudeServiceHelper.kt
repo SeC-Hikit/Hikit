@@ -1,17 +1,17 @@
 package org.sc.service
 
-import org.sc.configuration.ConfigurationProperties
+import org.sc.configuration.AppProperties
 import org.sc.configuration.ConfigurationProperties.LOCAL_IP_ADDRESS
 import org.sc.data.helper.GsonBeanHelper
 import org.sc.service.response.AltitudeApiResponse
 import java.net.URL
 import javax.inject.Inject
-import javax.inject.Named
 
-class AltitudeServiceHelper @Inject constructor(@Named(ConfigurationProperties.ALTITUDE_SERVICE_PROPERTY) altitudeServicePort: String,
+class AltitudeServiceHelper @Inject constructor(appProperties: AppProperties,
                                                 private val gsonBeanHelper: GsonBeanHelper) {
 
-    private val pathToServiceApi: String = "$LOCAL_IP_ADDRESS:$altitudeServicePort/api/v1/lookup"
+    private val portToAltitudeService : Int = appProperties.altitudeServicePort
+    private val pathToServiceApi: String = "$LOCAL_IP_ADDRESS:$portToAltitudeService/api/v1/lookup"
 
     fun getAltitudeByLongLat(latitude: Double,
                              longitude: Double): Double {
