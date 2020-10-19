@@ -1,21 +1,20 @@
 package org.sc.manager
 
 import com.google.inject.Inject
-import org.sc.PositionProcessor
+import org.sc.DistanceProcessor
 import org.sc.converter.MetricConverter
 import org.sc.data.*
 import org.sc.service.AltitudeServiceHelper
 import kotlin.math.roundToInt
 
 class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
-                                       private val altitudeService: AltitudeServiceHelper,
-                                       private val metricConverter: MetricConverter){
+                                       private val altitudeService: AltitudeServiceHelper){
 
 
     fun getAll() = trailDAO.getTrails()
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
-    fun save(trail: Trail, eta: Int, calculateTotFall: Int, calculateTotRise: Int) {
+    fun save(trail: Trail, eta: Double, calculateTotFall: Int, calculateTotRise: Int) {
         // TODO: add calculation to persistency
         trailDAO.upsertTrail(trail)
         exportStoredGpxFile(trail)
@@ -31,7 +30,7 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
                     coords.latitude,
                     meters, limit)
             return trailsByStartPosMetricDistance.map {
-                TrailDistance(PositionProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
+                TrailDistance(DistanceProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
                         it.startPos.coordinates, it)
             }
         } else {
@@ -58,7 +57,7 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
         return trailsByPointDistance.map {
             val closestCoordinate = getClosestCoordinate(coordinates, it)
             TrailDistance(
-                    PositionProcessor.distanceBetweenPoints(coordinates, closestCoordinate).toInt(),
+                    DistanceProcessor.distanceBetweenPoints(coordinates, closestCoordinate).toInt(),
                     closestCoordinate, it)
         }
     }
@@ -71,11 +70,11 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
      */
     fun getClosestCoordinate(givenCoordinatesWAltitude: CoordinatesWithAltitude, trail: Trail): CoordinatesWithAltitude {
         return trail.coordinates
-                .minBy { PositionProcessor.distanceBetweenPoints(it, givenCoordinatesWAltitude) }!!
+                .minBy { DistanceProcessor.distanceBetweenPoints(it, givenCoordinatesWAltitude) }!!
     }
 
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
-            if (unitOfMeasurement == UnitOfMeasurement.km) metricConverter.getMetersFromKm(distance) else distance
+            if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.getMetersFromKm(distance.toDouble()) else distance.toDouble()
 
     private fun exportStoredGpxFile(trail: Trail): Any {
         throw NotImplementedError()

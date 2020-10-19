@@ -60,7 +60,7 @@ public class TrailDAO {
 
     public List<Trail> getTrailsByStartPosMetricDistance(final double longitude,
                                                          final double latitude,
-                                                         final int meters,
+                                                         final double meters,
                                                          final int limit) {
         final FindIterable<Document> documents = collection.find(
                 new Document(RESOLVED_START_POS_COORDINATE,
@@ -72,7 +72,7 @@ public class TrailDAO {
     }
 
     @NotNull
-    public List<Trail> trailsByPointDistance(double longitude, double latitude, int meters, int limit) {
+    public List<Trail> trailsByPointDistance(double longitude, double latitude, double meters, int limit) {
         final AggregateIterable<Document> aggregate = collection.aggregate(Arrays.asList(new Document($_GEO_NEAR_OPERATOR,
                         new Document(NEAR_OPERATOR, new Document("type", "Point").append("coordinates", Arrays.asList(longitude, latitude)))
                                 .append(DISTANCE_FIELD, "distanceToIt")

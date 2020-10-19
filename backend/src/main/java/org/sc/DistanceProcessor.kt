@@ -4,15 +4,13 @@ import org.sc.data.CoordinatesWithAltitude
 import org.sc.data.Position
 import kotlin.math.*
 
-object PositionProcessor {
+object DistanceProcessor {
 
     private const val earthRadius = 6378.137 // Radius of earth in KM
 
-    fun distanceBetweenPoints(position: Position, toPoint: Position): Double =
-            distance(position.coordinates.latitude, toPoint.coordinates.latitude,
-                    position.coordinates.longitude, toPoint.coordinates.longitude,
-                    position.coordinates.altitude, toPoint.coordinates.altitude)
-
+    /**
+     * Returns the distance between two points in meters
+     */
     fun distanceBetweenPoints(position: CoordinatesWithAltitude, toPoint: CoordinatesWithAltitude): Double =
             distance(position.latitude, toPoint.latitude,
                     position.longitude, toPoint.longitude,
