@@ -16,6 +16,7 @@ public class Trail {
     public static final String ETA = "eta";
     public static final String CLASSIFICATION = "classification";
     public static final String COUNTRY = "country";
+    public static final String STAT_METADATA = "statsMetadata";
     public static final String COORDINATES = "coordinates";
     public static final String LAST_UPDATE_DATE = "lastUpdate";
     public static final String SECTION_CARED_BY = "maintainingSection";
@@ -25,6 +26,7 @@ public class Trail {
     private String code;
     private Position startPos;
     private Position finalPos;
+    private final StatsTrailMetadata statsMetadata;
     private List<CoordinatesWithAltitude> coordinates;
     private double trackLength;
     private double eta;
@@ -42,6 +44,7 @@ public class Trail {
                  final double eta,
                  final TrailClassification classification,
                  final String country,
+                 final StatsTrailMetadata statsMetadata,
                  final List<CoordinatesWithAltitude> coordinates,
                  final Date date, String maintainingSection) {
         this.name = name;
@@ -53,6 +56,7 @@ public class Trail {
         this.eta = eta;
         this.classification = classification;
         this.country = country;
+        this.statsMetadata = statsMetadata;
         this.coordinates = coordinates;
         this.date = date;
         this.maintainingSection = maintainingSection;
@@ -106,16 +110,21 @@ public class Trail {
         return maintainingSection;
     }
 
+    public StatsTrailMetadata getStatsMetadata() {
+        return statsMetadata;
+    }
+
     public static final class TrailBuilder {
         private String name;
         private String description;
         private String code;
         private Position startPos;
         private Position finalPos;
+        private StatsTrailMetadata statsTrailMetadata;
         private List<CoordinatesWithAltitude> coordinates;
         private double trackLength;
         private double eta;
-        private TrailClassification trailClassification;
+        private TrailClassification classification;
         private String country;
         private Date date;
         private String maintainingSection;
@@ -152,6 +161,11 @@ public class Trail {
             return this;
         }
 
+        public TrailBuilder withTrailMetadata(StatsTrailMetadata statsTrailMetadata) {
+            this.statsTrailMetadata = statsTrailMetadata;
+            return this;
+        }
+
         public TrailBuilder withCoordinates(List<CoordinatesWithAltitude> coordinates) {
             this.coordinates = coordinates;
             return this;
@@ -167,8 +181,8 @@ public class Trail {
             return this;
         }
 
-        public TrailBuilder withTrailClassification(TrailClassification trailClassification) {
-            this.trailClassification = trailClassification;
+        public TrailBuilder withClassification(TrailClassification classification) {
+            this.classification = classification;
             return this;
         }
 
@@ -188,7 +202,8 @@ public class Trail {
         }
 
         public Trail build() {
-            return new Trail(name, description, code, startPos, finalPos, trackLength, eta, trailClassification, country, coordinates, date, maintainingSection);
+            return new Trail(name, description, code, startPos, finalPos, trackLength, eta,
+                    classification, country, statsTrailMetadata, coordinates, date, maintainingSection);
         }
     }
 }

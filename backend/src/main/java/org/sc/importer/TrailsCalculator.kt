@@ -8,8 +8,8 @@ import kotlin.math.exp
 class TrailsCalculator {
 
     companion object {
-        private const val AVERAGE_SPEED_ON_FLAT_TERRAIN = 6.5;
-        private const val MINUTES_IN_HOUR = 60;
+        private const val AVERAGE_SPEED_ON_FLAT_TERRAIN = 6.5
+        private const val MINUTES_IN_HOUR = 60
     }
 
     fun calculateTotRise(coordinates: List<CoordinatesWithAltitude>): Int {
@@ -39,9 +39,21 @@ class TrailsCalculator {
         return fall.toInt()
     }
 
+    fun calculateTrailLength(coordinates: List<CoordinatesWithAltitude>): Double {
+        var totalTrailDistance = 0.0
+        for (i in coordinates.indices) {
+            if (i < coordinates.size - 1) {
+                val currentPoint = coordinates[i]
+                val nextPoint = coordinates[i + 1]
+                totalTrailDistance += DistanceProcessor.distanceBetweenPoints(currentPoint, nextPoint)
+            }
+        }
+        return totalTrailDistance
+    }
+
     fun calculateEta(coordinates: List<CoordinatesWithAltitude>): Double {
-        val averageTravelSpeed = calculateAverageTravelSpeed(coordinates);
-        val trailDistance = getTrailDistance(coordinates) / 1000
+        val averageTravelSpeed = calculateAverageTravelSpeed(coordinates)
+        val trailDistance = calculateTrailLength(coordinates) / 1000
         return (trailDistance / averageTravelSpeed) * MINUTES_IN_HOUR
     }
 
@@ -76,18 +88,4 @@ class TrailsCalculator {
 
     private fun isFall(currentPoint: CoordinatesWithAltitude,
                        nextPoint: CoordinatesWithAltitude): Boolean = currentPoint.altitude > nextPoint.altitude
-
-    private fun getTrailDistance(coordinates: List<CoordinatesWithAltitude>): Double {
-        var totalTrailDistance = 0.0
-        for (i in coordinates.indices) {
-            if (i < coordinates.size - 1) {
-                val currentPoint = coordinates[i]
-                val nextPoint = coordinates[i + 1]
-                totalTrailDistance += DistanceProcessor.distanceBetweenPoints(currentPoint, nextPoint)
-            }
-        }
-        return totalTrailDistance
-    }
-
-
 }

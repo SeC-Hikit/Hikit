@@ -7,11 +7,12 @@ import javax.inject.Inject
 class TrailImporterManager @Inject constructor(private val trailsManager : TrailManager,
                                                private val trailsCalculator : TrailsCalculator){
 
-    fun save(trailRequest: Trail) {
-        trailsManager.save(trailRequest,
-                trailsCalculator.calculateEta(trailRequest.coordinates),
-                trailsCalculator.calculateTotFall(trailRequest.coordinates),
-                trailsCalculator.calculateTotRise(trailRequest.coordinates))
+    fun save(importingTrail: Trail) {
+        trailsManager.save(importingTrail,
+                trailsCalculator.calculateEta(importingTrail.coordinates),
+                trailsCalculator.calculateTotFall(importingTrail.coordinates),
+                trailsCalculator.calculateTotRise(importingTrail.coordinates),
+                trailsCalculator.calculateTrailLength(importingTrail.coordinates))
     }
 
 }
