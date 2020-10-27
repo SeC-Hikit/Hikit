@@ -12,7 +12,7 @@ class TrailsCalculator {
         private const val MINUTES_IN_HOUR = 60
     }
 
-    fun calculateTotRise(coordinates: List<CoordinatesWithAltitude>): Int {
+    fun calculateTotRise(coordinates: List<CoordinatesWithAltitude>): Double {
         var rise = 0.0
         for (i in coordinates.indices) {
             if (i < coordinates.size - 1) {
@@ -22,10 +22,10 @@ class TrailsCalculator {
                     rise += getRise(currentPoint, nextPoint)
             }
         }
-        return rise.toInt()
+        return rise
     }
 
-    fun calculateTotFall(coordinates: List<CoordinatesWithAltitude>): Int {
+    fun calculateTotFall(coordinates: List<CoordinatesWithAltitude>): Double {
         var fall = 0.0
         for (i in coordinates.indices) {
             if (i < coordinates.size - 1) {
@@ -36,7 +36,7 @@ class TrailsCalculator {
                 }
             }
         }
-        return fall.toInt()
+        return fall
     }
 
     fun calculateTrailLength(coordinates: List<CoordinatesWithAltitude>): Double {

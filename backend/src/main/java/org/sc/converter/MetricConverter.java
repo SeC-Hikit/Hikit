@@ -4,11 +4,21 @@ public class MetricConverter {
 
     private static final int A_THOUSAND = 1000;
 
-    public static double getMetersFromKm(double km) {
+    /**
+     * Convert km to meters
+     * @param km
+     * @return
+     */
+    public static double toM(double km) {
         return km * A_THOUSAND;
     }
 
-    public static double getKmFromMeters(double m) {
+    /**
+     * Convert meters to km
+     * @param m
+     * @return
+     */
+    public static double toKm(double m) {
         return m / A_THOUSAND;
     }
 }

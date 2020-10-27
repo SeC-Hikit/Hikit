@@ -12,8 +12,6 @@ public class Trail {
     public static final String CODE = "code";
     public static final String START_POS = "startPos";
     public static final String FINAL_POS = "finalPos";
-    public static final String TRACK_LENGTH = "trackLength";
-    public static final String ETA = "eta";
     public static final String CLASSIFICATION = "classification";
     public static final String COUNTRY = "country";
     public static final String STAT_METADATA = "statsMetadata";
@@ -21,27 +19,23 @@ public class Trail {
     public static final String LAST_UPDATE_DATE = "lastUpdate";
     public static final String SECTION_CARED_BY = "maintainingSection";
 
-    private String name;
-    private String description;
-    private String code;
-    private Position startPos;
-    private Position finalPos;
-    private final StatsTrailMetadata statsMetadata;
-    private List<CoordinatesWithAltitude> coordinates;
-    private double trackLength;
-    private double eta;
-    private TrailClassification classification;
+    private final String name;
+    private final String description;
+    private final String code;
+    private final Position startPos;
+    private final Position finalPos;
+    private final List<CoordinatesWithAltitude> coordinates;
+    private final TrailClassification classification;
     private final String country;
     private final Date date;
     private final String maintainingSection;
+    private StatsTrailMetadata statsMetadata;
 
     public Trail(final String name,
                  final String description,
                  final String code,
                  final Position startPos,
                  final Position finalPos,
-                 final double trackLength,
-                 final double eta,
                  final TrailClassification classification,
                  final String country,
                  final StatsTrailMetadata statsMetadata,
@@ -52,8 +46,6 @@ public class Trail {
         this.code = code;
         this.startPos = startPos;
         this.finalPos = finalPos;
-        this.trackLength = trackLength;
-        this.eta = eta;
         this.classification = classification;
         this.country = country;
         this.statsMetadata = statsMetadata;
@@ -76,14 +68,6 @@ public class Trail {
 
     public Position getStartPos() {
         return startPos;
-    }
-
-    public double getTrackLength() {
-        return trackLength;
-    }
-
-    public double getEta() {
-        return eta;
     }
 
     public TrailClassification getClassification() {
@@ -114,6 +98,10 @@ public class Trail {
         return statsMetadata;
     }
 
+    public void setStatsMetadata(StatsTrailMetadata statsMetadata) {
+        this.statsMetadata = statsMetadata;
+    }
+
     public static final class TrailBuilder {
         private String name;
         private String description;
@@ -122,8 +110,6 @@ public class Trail {
         private Position finalPos;
         private StatsTrailMetadata statsTrailMetadata;
         private List<CoordinatesWithAltitude> coordinates;
-        private double trackLength;
-        private double eta;
         private TrailClassification classification;
         private String country;
         private Date date;
@@ -171,16 +157,6 @@ public class Trail {
             return this;
         }
 
-        public TrailBuilder withTrackLength(double trackLength) {
-            this.trackLength = trackLength;
-            return this;
-        }
-
-        public TrailBuilder withEta(double eta) {
-            this.eta = eta;
-            return this;
-        }
-
         public TrailBuilder withClassification(TrailClassification classification) {
             this.classification = classification;
             return this;
@@ -202,8 +178,8 @@ public class Trail {
         }
 
         public Trail build() {
-            return new Trail(name, description, code, startPos, finalPos, trackLength, eta,
-                    classification, country, statsTrailMetadata, coordinates, date, maintainingSection);
+            return new Trail(name, description, code, startPos, finalPos, classification,
+                    country, statsTrailMetadata, coordinates, date, maintainingSection);
         }
     }
 }

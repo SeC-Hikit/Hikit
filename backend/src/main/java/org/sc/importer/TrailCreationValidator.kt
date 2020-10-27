@@ -2,7 +2,7 @@ package org.sc.importer
 
 import com.google.gson.JsonSyntaxException
 import com.google.inject.Inject
-import org.sc.data.Trail
+import org.sc.data.TrailImport
 import org.sc.data.helper.GsonBeanHelper
 import org.sc.data.validator.Validator
 import org.sc.data.validator.Validator.Companion.requestMalformedErrorMessage
@@ -22,7 +22,7 @@ class TrailCreationValidator @Inject constructor (
     override fun validate(request: Request): Set<String> {
         val errors = mutableSetOf<String>()
 
-        val trailRequest = gsonBeanHelper.gsonBuilder!!.fromJson(request.body(), Trail::class.java)
+        val trailRequest = gsonBeanHelper.gsonBuilder!!.fromJson(request.body(), TrailImport::class.java)
         checkNotNull(trailRequest)
         try {
             if (trailRequest.name.isEmpty()) {

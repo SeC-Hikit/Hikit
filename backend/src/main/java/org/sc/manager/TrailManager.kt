@@ -14,8 +14,7 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
     fun getAll() = trailDAO.getTrails()
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
-    fun save(trail: Trail, eta: Double, calculateTotFall: Int, calculateTotRise: Int, length: Double) {
-        // TODO: add calculation to persistency
+    fun save(trail: Trail) {
         trailDAO.upsertTrail(trail)
         exportStoredGpxFile(trail)
     }
@@ -74,7 +73,7 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
     }
 
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
-            if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.getMetersFromKm(distance.toDouble()) else distance.toDouble()
+            if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
 
     private fun exportStoredGpxFile(trail: Trail): Any {
         throw NotImplementedError()

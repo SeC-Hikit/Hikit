@@ -2,7 +2,7 @@ package org.sc.controller;
 
 import com.google.inject.Inject;
 import org.sc.GpxManager;
-import org.sc.data.Trail;
+import org.sc.data.TrailImport;
 import org.sc.data.TrailPreparationModel;
 import org.sc.data.helper.GsonBeanHelper;
 import org.sc.data.helper.JsonHelper;
@@ -83,7 +83,7 @@ public class TrailController implements PublicController {
                                      final Response response) {
         response.type(ACCEPT_TYPE);
         final Set<String> errors = trailValidator.validate(request);
-        final Trail trailRequest = convertRequestToTrail(request);
+        final TrailImport trailRequest = convertRequestToTrail(request);
         final TrailRestResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailRestResponse.
                 TrailRestResponseBuilder.aTrailRestResponse().withMessages(errors);
         if (errors.isEmpty()) {
@@ -94,10 +94,10 @@ public class TrailController implements PublicController {
         return trailRestResponseBuilder.withMessages(errors).withStatus(Status.ERROR).build();
     }
 
-    private Trail convertRequestToTrail(final Request request) {
+    private TrailImport convertRequestToTrail(final Request request) {
         final String requestBody = request.body();
         return Objects.requireNonNull(gsonBeanHelper.getGsonBuilder())
-                .fromJson(requestBody, Trail.class);
+                .fromJson(requestBody, TrailImport.class);
     }
 
     private TrailRestResponse getAll(Request request, Response response) {
