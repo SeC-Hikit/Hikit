@@ -2,13 +2,15 @@ package org.sc.importer
 
 import org.sc.data.StatsTrailMetadata
 import org.sc.data.Trail
+import org.sc.data.TrailDatasetVersionDao
 import org.sc.data.TrailImport
 import org.sc.manager.TrailManager
 import java.util.*
 import javax.inject.Inject
 
 class TrailImporterManager @Inject constructor(private val trailsManager : TrailManager,
-                                               private val trailsCalculator : TrailsCalculator){
+                                               private val trailsCalculator : TrailsCalculator,
+                                               private val trailDatasetVersionDao: TrailDatasetVersionDao){
 
     fun save(importingTrail: TrailImport) {
 
@@ -16,7 +18,7 @@ class TrailImporterManager @Inject constructor(private val trailsManager : Trail
                 trailsCalculator.calculateEta(importingTrail.coordinates),
                 trailsCalculator.calculateTotFall(importingTrail.coordinates),
                 trailsCalculator.calculateTotRise(importingTrail.coordinates),
-                trailsCalculator.calculateTrailLength(importingTrail.coordinates));
+                trailsCalculator.calculateTrailLength(importingTrail.coordinates))
 
         val trail = Trail(importingTrail.name,
                 importingTrail.description,
@@ -30,7 +32,8 @@ class TrailImporterManager @Inject constructor(private val trailsManager : Trail
                 Date(),
                 importingTrail.maintainingSection)
 
-        trailsManager.save(trail);
+        trailsManager.save(trail)
+        trailDatasetVersionDao.addVersion()
     }
 
 }

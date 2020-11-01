@@ -1,10 +1,8 @@
 package org.sc.controller;
 
 import com.google.inject.Inject;
-import org.bson.types.ObjectId;
 import org.sc.data.AccessibilityNotification;
 import org.sc.data.AccessibilityNotificationDAO;
-import org.sc.data.Maintenance;
 import org.sc.data.helper.GsonBeanHelper;
 import org.sc.data.helper.JsonHelper;
 import org.sc.importer.AccessibilityCreationValidator;
@@ -16,7 +14,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
@@ -52,6 +49,10 @@ public class AccessibilityNotificationController implements PublicController {
         return new AccessibilityResponse(accessibilityDAO.getByCode(request.params(":code")));
     }
 
+    private RESTResponse getUnresolvedByTrailCode(Request request, Response response) {
+        return new AccessibilityResponse(accessibilityDAO.getByCodeNotResolved(request.params(":code")));
+    }
+
     private RESTResponse deleteAccessibilityNotification(Request request, Response response) {
         final String requestId = request.params(":id");
         boolean isDeleted = accessibilityDAO.delete(requestId);
@@ -78,6 +79,7 @@ public class AccessibilityNotificationController implements PublicController {
     public void init() {
         Spark.get(format("%s/solved", PREFIX), this::getSolved, JsonHelper.json());
         Spark.get(format("%s/unsolved", PREFIX), this::getNotSolved, JsonHelper.json());
+        Spark.get(format("%s/unsolved/:code", PREFIX), this::getUnresolvedByTrailCode, JsonHelper.json());
         Spark.get(format("%s/code/:code", PREFIX), this::getByTrailCode, JsonHelper.json());
         Spark.delete(format("%s/delete/:id", PREFIX), this::deleteAccessibilityNotification, JsonHelper.json());
         Spark.put(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.sc.controller.AccessibilityNotificationController;
 import org.sc.controller.MaintenanceController;
 import org.sc.controller.TrailController;
+import org.sc.controller.TrailDatasetController;
 import spark.Spark;
 
 import java.io.File;
@@ -31,16 +32,19 @@ public class ConfigurationManager {
     private final TrailController trailController;
     private final MaintenanceController maintenanceController;
     private final AccessibilityNotificationController accessibilityNotificationController;
+    private final TrailDatasetController trailDatasetController;
 
     @Inject
     public ConfigurationManager(final TrailController trailController,
                                 final MaintenanceController maintenanceController,
                                 final AccessibilityNotificationController accessibilityNotificationController,
+                                final TrailDatasetController trailDatasetController,
                                 final DataSource dataSource,
                                 final AppProperties appProperties) {
         this.trailController = trailController;
         this.maintenanceController = maintenanceController;
         this.accessibilityNotificationController = accessibilityNotificationController;
+        this.trailDatasetController = trailDatasetController;
         this.dataSource = dataSource;
         this.appProperties = appProperties;
         webServerSetup();
@@ -75,6 +79,7 @@ public class ConfigurationManager {
         trailController.init();
         maintenanceController.init();
         accessibilityNotificationController.init();
+        trailDatasetController.init();
     }
 
 

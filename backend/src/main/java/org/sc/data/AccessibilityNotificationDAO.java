@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
@@ -36,6 +35,10 @@ public class AccessibilityNotificationDAO {
 
     public List<AccessibilityNotification> getByCode(String code) {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.TRAIL_CODE, code)));
+    }
+
+    public List<AccessibilityNotification> getByCodeNotResolved(String code) {
+        return toNotificationList(collection.find(new Document(AccessibilityNotification.TRAIL_CODE, code).append(AccessibilityNotification.RESOLUTION, "")));
     }
 
     public void upsert(final AccessibilityNotification accessibilityNotification) {
