@@ -43,7 +43,7 @@ class TrailsCalculatorTest {
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 0.0
 
-        assertEquals(0,
+        assertEquals(0.0,
                 TrailsCalculator()
                         .calculateTotRise(listOf(mockPoint1, mockPoint2))
         )
@@ -57,7 +57,7 @@ class TrailsCalculatorTest {
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns -1.0
 
-        assertEquals(0,
+        assertEquals(0.0,
                 TrailsCalculator()
                         .calculateTotRise(listOf(mockPoint1, mockPoint2))
         )
@@ -71,7 +71,7 @@ class TrailsCalculatorTest {
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 10.0
 
-        assertEquals(10,
+        assertEquals(10.0,
                 TrailsCalculator()
                         .calculateTotRise(listOf(mockPoint1, mockPoint2))
         )
@@ -87,7 +87,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns 10.0
         every { mockPoint3.altitude } returns 22.0
 
-        assertEquals(22,
+        assertEquals(22.0,
                 TrailsCalculator()
                         .calculateTotRise(
                                 listOf(mockPoint1, mockPoint2, mockPoint3))
@@ -107,7 +107,7 @@ class TrailsCalculatorTest {
         every { mockPoint3.altitude } returns 5.0
         every { mockPoint4.altitude } returns 10.0
 
-        assertEquals(15,
+        assertEquals(15.0,
                 TrailsCalculator()
                         .calculateTotRise(
                                 listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4))
@@ -122,7 +122,7 @@ class TrailsCalculatorTest {
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 0.0
 
-        assertEquals(0,
+        assertEquals(0.0,
                 TrailsCalculator()
                         .calculateTotFall(listOf(mockPoint1, mockPoint2))
         )
@@ -136,7 +136,7 @@ class TrailsCalculatorTest {
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 1.0
 
-        assertEquals(0,
+        assertEquals(0.0,
                 TrailsCalculator()
                         .calculateTotFall(listOf(mockPoint1, mockPoint2))
         )
@@ -150,7 +150,7 @@ class TrailsCalculatorTest {
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns -10.0
 
-        assertEquals(10,
+        assertEquals(10.0,
                 TrailsCalculator()
                         .calculateTotFall(listOf(mockPoint1, mockPoint2))
         )
@@ -166,7 +166,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns -10.0
         every { mockPoint3.altitude } returns -22.0
 
-        assertEquals(22,
+        assertEquals(22.0,
                 TrailsCalculator()
                         .calculateTotFall(
                                 listOf(mockPoint1, mockPoint2, mockPoint3))
@@ -186,7 +186,7 @@ class TrailsCalculatorTest {
         every { mockPoint3.altitude } returns -5.0
         every { mockPoint4.altitude } returns -10.0
 
-        assertEquals(15,
+        assertEquals(15.0,
                 TrailsCalculator()
                         .calculateTotFall(
                                 listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4))

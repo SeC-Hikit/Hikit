@@ -2,21 +2,23 @@ package org.sc.manager
 
 import com.google.inject.Inject
 import org.sc.DistanceProcessor
+import org.sc.GpxManager
 import org.sc.converter.MetricConverter
 import org.sc.data.*
 import org.sc.service.AltitudeServiceHelper
 import kotlin.math.roundToInt
 
 class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
-                                       private val altitudeService: AltitudeServiceHelper){
+                                       private val altitudeService: AltitudeServiceHelper,
+                                       private val gpxHelper: GpxManager){
 
 
     fun getAll() = trailDAO.getTrails()
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
     fun save(trail: Trail) {
-        trailDAO.upsertTrail(trail)
-        exportStoredGpxFile(trail)
+        trailDAO.upsert(trail)
+        gpxHelper.writeTrailToGpx(trail)
     }
 
     fun getByGeo(coordinates: Coordinates, distance: Int, unitOfMeasurement: UnitOfMeasurement, isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
@@ -75,7 +77,4 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
             if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
 
-    private fun exportStoredGpxFile(trail: Trail): Any {
-        throw NotImplementedError()
-    }
 }

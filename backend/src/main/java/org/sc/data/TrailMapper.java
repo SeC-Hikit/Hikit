@@ -12,12 +12,15 @@ public class TrailMapper implements Mapper<Trail> {
 
     private final PositionMapper positionMapper;
     private final CoordinatesAltitudeMapper coordinatesAltitudeMapper;
+    private final StatsTrailMapper statsTrailMapper;
 
     @Inject
     public TrailMapper(PositionMapper positionMapper,
-                       CoordinatesAltitudeMapper coordinatesAltitudeMapper) {
+                       CoordinatesAltitudeMapper coordinatesAltitudeMapper,
+                       StatsTrailMapper statsTrailMapper) {
         this.positionMapper = positionMapper;
         this.coordinatesAltitudeMapper = coordinatesAltitudeMapper;
+        this.statsTrailMapper = statsTrailMapper;
     }
 
     @Override
@@ -29,7 +32,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .withStartPos(getPos(doc, Trail.START_POS))
                 .withFinalPos(getPos(doc, Trail.FINAL_POS))
                 .withClassification(getClassification(doc))
-                .withTrailMetadata(getMetadata(doc))
+                .withTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
                 .withCountry(doc.getString(Trail.COUNTRY))
                 .withCoordinates(getCoordinatesWithAltitude(doc))
                 .withDate(getLastUpdateDate(doc))
@@ -56,7 +59,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.COUNTRY, object.getCountry())
                 .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
                 .append(Trail.LAST_UPDATE_DATE, new Date())
-                .append(Trail.STAT_METADATA, object.getStatsMetadata())
+                .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsMetadata()))
                 .append(Trail.COORDINATES, object.getCoordinates()
                         .stream().map(coordinatesAltitudeMapper::mapToDocument).collect(toList()));
     }

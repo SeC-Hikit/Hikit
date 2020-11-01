@@ -63,7 +63,7 @@ public class TrailController implements PublicController {
         this.trailValidator = trailValidator;
     }
 
-    // trails/gpx
+    // trails/read
     private TrailPreparationModel readGpxFile(final Request request,
                                               final Response response) throws IOException {
         response.type(ACCEPT_TYPE);

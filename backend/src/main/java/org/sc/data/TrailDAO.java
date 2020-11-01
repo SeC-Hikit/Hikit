@@ -6,9 +6,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 
@@ -33,7 +31,7 @@ public class TrailDAO {
     public static final String SPHERICAL_FIELD = "spherical";
     public static final String UNIQUE_DOCS_FIELD = "uniqueDocs";
 
-    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.LOCATION;
+    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.COORDINATES;
 
     // Max number of documents output per request
     public static final int RESULT_LIMIT = 150;
@@ -109,10 +107,9 @@ public class TrailDAO {
         return collection.deleteOne(new Document(Trail.CODE, code)).getDeletedCount() > 0;
     }
 
-    public void upsertTrail(final Trail trailRequest) {
+    public void upsert(final Trail trailRequest) {
         final Document trail = trailMapper.mapToDocument(trailRequest);
-        collection.replaceOne(new Document(Trail.CODE, trailRequest.getCode())
-                        .append(Trail.COUNTRY, trailRequest.getCountry()),
+        collection.replaceOne(new Document(Trail.CODE, trailRequest.getCode()),
                 trail, new ReplaceOptions().upsert(true));
     }
 }

@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Position {
 
-    public static final String LOCATION = "location";
     public static final String NAME = "name";
     public static final String TAGS = "tags";
+    public static final String COORDINATES = "coordinates";
 
     private String name;
     private List<String> tags;
@@ -41,7 +41,6 @@ public class Position {
         private String name;
         private List<String> tags;
         private CoordinatesWithAltitude coords;
-        private String postCode;
 
         private PositionBuilder() {
         }
@@ -62,11 +61,6 @@ public class Position {
 
         public PositionBuilder withCoords(CoordinatesWithAltitude coords) {
             this.coords = coords;
-            return this;
-        }
-
-        public PositionBuilder withPostCode(String postCode) {
-            this.postCode = postCode;
             return this;
         }
 

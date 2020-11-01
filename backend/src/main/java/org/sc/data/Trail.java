@@ -14,7 +14,7 @@ public class Trail {
     public static final String FINAL_POS = "finalPos";
     public static final String CLASSIFICATION = "classification";
     public static final String COUNTRY = "country";
-    public static final String STAT_METADATA = "statsMetadata";
+    public static final String STATS_METADATA = "statsMetadata";
     public static final String COORDINATES = "coordinates";
     public static final String LAST_UPDATE_DATE = "lastUpdate";
     public static final String SECTION_CARED_BY = "maintainingSection";

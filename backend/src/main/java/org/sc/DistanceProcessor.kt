@@ -1,7 +1,6 @@
 package org.sc
 
 import org.sc.data.CoordinatesWithAltitude
-import org.sc.data.Position
 import kotlin.math.*
 
 object DistanceProcessor {

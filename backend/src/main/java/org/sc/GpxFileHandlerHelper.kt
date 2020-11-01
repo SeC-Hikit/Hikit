@@ -4,7 +4,7 @@ import io.jenetics.jpx.GPX
 import java.io.IOException
 import java.nio.file.Path
 
-class GpxHelper {
+class GpxFileHandlerHelper {
 
     @Throws(IOException::class)
     fun readFromFile(path: Path?): GPX {
@@ -12,7 +12,7 @@ class GpxHelper {
     }
 
     @Throws(IOException::class)
-    fun writeToFile(gpx: GPX, path: Path?) {
+    fun writeToFile(gpx: GPX, path: Path) {
         return GPX.write(gpx, path)
     }
 }

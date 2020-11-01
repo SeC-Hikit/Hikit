@@ -4,6 +4,7 @@ import org.sc.data.StatsTrailMetadata
 import org.sc.data.Trail
 import org.sc.data.TrailImport
 import org.sc.manager.TrailManager
+import java.util.*
 import javax.inject.Inject
 
 class TrailImporterManager @Inject constructor(private val trailsManager : TrailManager,
@@ -26,7 +27,7 @@ class TrailImporterManager @Inject constructor(private val trailsManager : Trail
                 importingTrail.country,
                 statsTrailMetadata,
                 importingTrail.coordinates,
-                importingTrail.date,
+                Date(),
                 importingTrail.maintainingSection)
 
         trailsManager.save(trail);
