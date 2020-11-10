@@ -1,6 +1,6 @@
 package org.sc
 
-import org.sc.data.CoordinatesWithAltitude
+import org.sc.common.rest.controller.CoordinatesWithAltitude
 import kotlin.math.*
 
 object DistanceProcessor {

@@ -1,6 +1,7 @@
 package org.sc.data;
 
 import org.bson.Document;
+import org.sc.common.rest.controller.StatsTrailMetadata;
 
 public class StatsTrailMapper implements Mapper<StatsTrailMetadata> {
     @Override

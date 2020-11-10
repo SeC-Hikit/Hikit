@@ -1,6 +1,8 @@
 package org.sc.data;
 
 import org.bson.Document;
+import org.sc.common.rest.controller.Coordinates;
+import org.sc.common.rest.controller.CoordinatesWithAltitude;
 
 import java.util.Arrays;
 import java.util.List;

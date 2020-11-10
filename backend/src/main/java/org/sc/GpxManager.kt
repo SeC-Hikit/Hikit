@@ -3,10 +3,9 @@ package org.sc
 import com.google.inject.Inject
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
+import org.sc.common.rest.controller.CoordinatesWithAltitude
+import org.sc.common.rest.controller.Trail
 import org.sc.configuration.AppProperties
-import org.sc.configuration.ConfigurationProperties
-import org.sc.data.CoordinatesWithAltitude
-import org.sc.data.Trail
 import org.sc.data.TrailPreparationModel
 import org.sc.service.AltitudeServiceHelper
 import java.io.File
@@ -39,7 +38,7 @@ class GpxManager @Inject constructor(private val gpxFileHandlerHelper: GpxFileHa
     }
 
     fun writeTrailToGpx(trail: Trail) {
-        val creator = "S&C_BO_" + ConfigurationProperties.VERSION
+        val creator = "S&C_BO_" + org.sc.common.config.ConfigurationProperties.VERSION
         val gpx = GPX.builder(creator)
                 .addTrack { track ->
                     track.addSegment { segment ->

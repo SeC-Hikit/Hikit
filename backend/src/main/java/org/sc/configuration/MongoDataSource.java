@@ -2,11 +2,11 @@ package org.sc.configuration;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.Logger;
+import org.sc.common.config.DataSource;
 
 import static java.lang.String.format;
 import static org.apache.logging.log4j.LogManager.getLogger;

@@ -1,14 +1,15 @@
 package org.sc.controller;
 
 import com.google.inject.Inject;
+import org.sc.common.rest.controller.JsonHelper;
+import org.sc.common.rest.controller.PublicController;
 import org.sc.data.TrailDatasetVersion;
 import org.sc.data.TrailDatasetVersionDao;
-import org.sc.data.helper.JsonHelper;
 import spark.Request;
 import spark.Response;
 
 import static java.lang.String.format;
-import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
+import static org.sc.common.config.ConfigurationProperties.API_PREFIX;
 import static spark.Spark.get;
 
 public class TrailDatasetController implements PublicController {

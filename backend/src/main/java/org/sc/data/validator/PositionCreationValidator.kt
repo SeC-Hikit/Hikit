@@ -1,7 +1,7 @@
 package org.sc.data.validator
 
 import com.google.inject.Inject
-import org.sc.data.Position
+import org.sc.common.rest.controller.Position
 
 class PositionCreationValidator @Inject constructor(private val coordinatesWithAltitudeCreationValidator: CoordinatesWithAltitudeCreationValidator) : Validator<Position>, CoordinatesValidator {
 

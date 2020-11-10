@@ -2,8 +2,8 @@ package org.sc.importer
 
 import com.google.gson.JsonSyntaxException
 import com.google.inject.Inject
-import org.sc.data.AccessibilityNotification
-import org.sc.data.helper.GsonBeanHelper
+import org.sc.common.rest.controller.AccessibilityNotification
+import org.sc.common.rest.controller.helper.GsonBeanHelper
 import org.sc.data.validator.Validator
 import org.sc.data.validator.Validator.Companion.requestMalformedErrorMessage
 import spark.Request

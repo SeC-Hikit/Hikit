@@ -8,7 +8,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
-import org.sc.configuration.DataSource;
+import org.sc.common.config.DataSource;
+import org.sc.common.rest.controller.Position;
+import org.sc.common.rest.controller.Trail;
+import org.sc.common.rest.controller.TrailPreview;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,12 +42,15 @@ public class TrailDAO {
 
     private final MongoCollection<Document> collection;
     private final Mapper<Trail> trailMapper;
+    private final TrailPreviewMapper trailPreviewMapper;
 
     @Inject
     public TrailDAO(final DataSource dataSource,
-                    final TrailMapper trailMapper) {
+                    final TrailMapper trailMapper,
+                    final TrailPreviewMapper trailPreviewMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.trailPreviewMapper = trailPreviewMapper;
     }
 
     public Trail getTrailByCodeAndPostcodeCountry(final String trailCode,
@@ -98,11 +104,6 @@ public class TrailDAO {
         return toTrailsList(collection.find(doc).limit(RESULT_LIMIT));
     }
 
-    @NotNull
-    private List<Trail> toTrailsList(Iterable<Document> documents) {
-        return Lists.newArrayList(documents).stream().map(trailMapper::mapToObject).collect(toList());
-    }
-
     public boolean delete(final String code) {
         return collection.deleteOne(new Document(Trail.CODE, code)).getDeletedCount() > 0;
     }
@@ -112,4 +113,28 @@ public class TrailDAO {
         collection.replaceOne(new Document(Trail.CODE, trailRequest.getCode()),
                 trail, new ReplaceOptions().upsert(true));
     }
+
+    @NotNull
+    public List<TrailPreview> getAllTrailPreviews() {
+        return toTrailsPreviewList(collection.find().projection(projectPreview()));
+    }
+
+    @NotNull
+    public List<TrailPreview> trailPreviewByCode(@NotNull String code) {
+        return toTrailsPreviewList(collection.find(new Document(Trail.CODE, code)).projection(projectPreview()));
+    }
+
+    private List<TrailPreview> toTrailsPreviewList(FindIterable<Document> documents) {
+        return Lists.newArrayList(documents).stream().map(trailPreviewMapper::mapToObject).collect(toList());
+    }
+
+    private Document projectPreview() {
+        return new Document(Trail.CODE, 1).append(Trail.START_POS, 1).append(Trail.FINAL_POS, 1).append(Trail.CLASSIFICATION, 1);
+    }
+
+    @NotNull
+    private List<Trail> toTrailsList(Iterable<Document> documents) {
+        return Lists.newArrayList(documents).stream().map(trailMapper::mapToObject).collect(toList());
+    }
+
 }

@@ -1,10 +1,9 @@
 package org.sc.controller;
 
 import com.google.inject.Inject;
-import org.sc.data.AccessibilityNotification;
+import org.sc.common.rest.controller.*;
+import org.sc.common.rest.controller.helper.GsonBeanHelper;
 import org.sc.data.AccessibilityNotificationDAO;
-import org.sc.data.helper.GsonBeanHelper;
-import org.sc.data.helper.JsonHelper;
 import org.sc.importer.AccessibilityCreationValidator;
 import spark.Request;
 import spark.Response;
@@ -16,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
+import static org.sc.common.config.ConfigurationProperties.API_PREFIX;
 import static org.sc.controller.TrailController.BAD_REQUEST_STATUS_CODE;
 
 public class AccessibilityNotificationController implements PublicController {

@@ -1,10 +1,27 @@
 {
 	"info": {
-		"_postman_id": "d68275fa-7773-4b72-9521-209af72051b2",
+		"_postman_id": "fecd6ed8-f707-43b8-b31c-37370729a1eb",
 		"name": "Sentieri&Cartografia v1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "DatasetV",
+			"item": [
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
 		{
 			"name": "Maintenance",
 			"item": [
@@ -14,14 +31,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/future",
+							"raw": "{{host}}:{{port}}/maintenance/future",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"api",
-								"{{version}}",
 								"maintenance",
 								"future"
 							]
@@ -30,21 +45,20 @@
 					"response": []
 				},
 				{
-					"name": "Get past",
+					"name": "Get post",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/past",
+							"raw": "{{host}}:{{port}}/maintenance/get/unsolved",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"api",
-								"{{version}}",
 								"maintenance",
-								"past"
+								"get",
+								"unsolved"
 							]
 						}
 					},
@@ -85,12 +99,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // \"_id\": \"\"\n    \"date\":\"2021-10-08T17:30:34.640Z\",\n    \"code\":\"001BO\",\n    \"meetingPlace\":\"Rivabella\",\n    \"description\":\"Incontro al ristorante 'da Pippo' a Rivabella.\",\n    \"contact\": \"Mario Rossi\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/save",
@@ -113,7 +122,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "fb1299b2-5f87-4a79-8083-08c93bb1c8df",
+						"id": "0c83d699-589b-47e8-a2ad-7a7c877ee4bb",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -123,7 +132,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "ae5ca607-2fef-4d30-9c40-1214b00adf4b",
+						"id": "ff868395-47c1-445a-9795-8bc811428242",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -158,12 +167,12 @@
 					"response": []
 				},
 				{
-					"name": "Get by code",
+					"name": "Get unsolved",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/code/:code",
+							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/unsolved",
 							"host": [
 								"{{host}}"
 							],
@@ -172,21 +181,35 @@
 								"api",
 								"{{version}}",
 								"accessibility",
-								"code",
-								":code"
-							],
-							"variable": [
-								{
-									"key": "code",
-									"value": "001BO"
-								}
+								"unsolved"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get unsolved",
+					"name": "Get by trail code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/unsolved",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"{{version}}",
+								"accessibility",
+								"unsolved"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get unresolved by trail code",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -241,15 +264,10 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // \"_id\": \"\"\n    \"date\":\"2021-10-08T17:30:34.640Z\",\n    \"code\":\"001BO\",\n    \"reportDate\":\"2021-10-08T17:30:34.640Z\",\n    \"description\":\"Incontro al ristorante 'da Pippo' a Rivabella.\",\n    \"resolutionDate\": \"2021-10-08T17:30:34.640Z\",\n    \"resolution\": \"\",\n    \"isMinor\": true\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": ""
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/save",
+							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/save",
 							"host": [
 								"{{host}}"
 							],
@@ -257,7 +275,7 @@
 							"path": [
 								"api",
 								"{{version}}",
-								"accessibility",
+								"maintenance",
 								"save"
 							]
 						}
@@ -270,6 +288,59 @@
 		{
 			"name": "Trail",
 			"item": [
+				{
+					"name": "preview",
+					"item": [
+						{
+							"name": "Get all previews",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}:{{port}}/api/{{version}}/trail",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"{{version}}",
+										"trail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get preview by code",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}:{{port}}/api/{{version}}/:code",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"{{version}}",
+										":code"
+									],
+									"variable": [
+										{
+											"key": "code",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
 				{
 					"name": "Get all",
 					"request": {
@@ -296,7 +367,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/trail/:code",
+							"raw": "{{host}}:{{port}}/api/{{version}}/:code",
 							"host": [
 								"{{host}}"
 							],
@@ -304,7 +375,6 @@
 							"path": [
 								"api",
 								"{{version}}",
-								"trail",
 								":code"
 							],
 							"variable": [
@@ -324,7 +394,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"001BO\",\n\t\"description\": \"test\",\n\t\"code\": \"001BO\",\n\t\"startPos\": {\n\t\t\"name\": \"Ca' di La'\",\n        \"tags\": [\"Ca' di Qua\"],\n        \"coordinates\": {\n            \"values\": [10, 10],\n            \"altitude\": 11\n        }\n\t},\n\t\"finalPos\": {\n\t\t\"name\": \"Ca' di Sopra\",\n        \"tags\": [\"Ca' di Sotto\"],\n        \"coordinates\": {\n            \"values\": [11, 11],\n            \"altitude\": 11\n        }\n\t},\n    \"coordinates\": [\n        {\"values\": [10, 10], \"altitude\": 10}, \n        {\"values\": [11, 11], \"altitude\": 11}\n    ],\n\t\"trackLength\": 5.0,\n\t\"eta\": 3.0,\n\t\"classification\": \"T\",\n\t\"country\": \"Italy\",\n\t\"lastUpdate\": \"2020-10-07T21:23:33.674Z\",\n\t\"maintainingSection\": \"Bologna\"\n}",
+							"raw": "{\n\t\"name\": \"001BO\",\n\t\"description\": \"test\",\n\t\"code\": \"001BO\",\n\t\"startPos\": {\n\t\t\n\t},\n\t\"finalPos\" : {\n\t\t\n\t},\n\t\"trackLength\": 5.0,\n\t\"eta\": 3.0,\n\t\"classification\": \"T\",\n\t\"country\": \"Italy\",\n\t\"lastUpdate\": \"2020-10-07T21:23:33.674Z\",\n\t\"maintainingSection\": \"Bologna\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -332,7 +402,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/trail/save",
+							"raw": "{{host}}:{{port}}/api/{{version}}/save",
 							"host": [
 								"{{host}}"
 							],
@@ -340,36 +410,7 @@
 							"path": [
 								"api",
 								"{{version}}",
-								"trail",
 								"save"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete by Code",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/trail/delete/:code",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"api",
-								"{{version}}",
-								"trail",
-								"delete",
-								":code"
-							],
-							"variable": [
-								{
-									"key": "code",
-									"value": ""
-								}
 							]
 						}
 					},
@@ -386,12 +427,12 @@
 								{
 									"key": "gpxFile",
 									"type": "file",
-									"src": []
+									"src": "/Users/lorenzoverri/Desktop/CAI/sentieri/BO/T5V-BO.gpx"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/trail/read",
+							"raw": "{{host}}:{{port}}/api/{{version}}/trails/read",
 							"host": [
 								"{{host}}"
 							],
@@ -399,7 +440,7 @@
 							"path": [
 								"api",
 								"{{version}}",
-								"trail",
+								"trails",
 								"read"
 							]
 						}

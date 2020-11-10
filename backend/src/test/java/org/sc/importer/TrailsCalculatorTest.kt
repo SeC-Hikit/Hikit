@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockkClass
 import junit.framework.Assert.assertEquals
 import org.junit.Test
-import org.sc.data.CoordinatesWithAltitude
+import org.sc.common.rest.controller.CoordinatesWithAltitude
 
 class TrailsCalculatorTest {
 

@@ -10,7 +10,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>common</module>
         <module>../backend</module>
+        <module>../frontend</module>
     </modules>
 
     <dependencies>

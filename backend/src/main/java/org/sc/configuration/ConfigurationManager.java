@@ -2,6 +2,7 @@ package org.sc.configuration;
 
 import com.google.inject.Inject;
 import org.apache.logging.log4j.Logger;
+import org.sc.common.config.DataSource;
 import org.sc.controller.AccessibilityNotificationController;
 import org.sc.controller.MaintenanceController;
 import org.sc.controller.TrailController;
@@ -12,7 +13,7 @@ import java.io.File;
 
 import static java.lang.String.format;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.configuration.ConfigurationProperties.LOCAL_IP_ADDRESS;
+import static org.sc.common.config.ConfigurationProperties.LOCAL_IP_ADDRESS;
 import static spark.Spark.after;
 import static spark.Spark.port;
 
@@ -56,13 +57,13 @@ public class ConfigurationManager {
         Spark.staticFiles.location(appProperties.getPathToGpxDirectory());
         Spark.staticFiles.externalLocation(TMP_FOLDER);
         port(appProperties.getWebPort());
+        CORSConfig.setCors();
     }
 
     private void dbSetup() {
         testConnectionWithDB();
         // TODO: setup the indexes;
     }
-
 
     public void init() {
         dbSetup();

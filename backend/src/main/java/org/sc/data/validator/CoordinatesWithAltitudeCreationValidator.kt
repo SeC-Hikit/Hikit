@@ -1,6 +1,6 @@
 package org.sc.data.validator
 
-import org.sc.data.CoordinatesWithAltitude
+import org.sc.common.rest.controller.CoordinatesWithAltitude
 
 class CoordinatesWithAltitudeCreationValidator : Validator<CoordinatesWithAltitude>, CoordinatesValidator {
 

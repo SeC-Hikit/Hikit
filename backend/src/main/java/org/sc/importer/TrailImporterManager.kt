@@ -1,7 +1,7 @@
 package org.sc.importer
 
-import org.sc.data.StatsTrailMetadata
-import org.sc.data.Trail
+import org.sc.common.rest.controller.StatsTrailMetadata
+import org.sc.common.rest.controller.Trail
 import org.sc.data.TrailDatasetVersionDao
 import org.sc.data.TrailImport
 import org.sc.manager.TrailManager
@@ -33,7 +33,7 @@ class TrailImporterManager @Inject constructor(private val trailsManager : Trail
                 importingTrail.maintainingSection)
 
         trailsManager.save(trail)
-        trailDatasetVersionDao.addVersion()
+        trailDatasetVersionDao.increaseVersion()
     }
 
 }

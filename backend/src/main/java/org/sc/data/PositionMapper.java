@@ -2,6 +2,7 @@ package org.sc.data;
 
 import com.google.inject.Inject;
 import org.bson.Document;
+import org.sc.common.rest.controller.Position;
 
 import java.util.List;
 

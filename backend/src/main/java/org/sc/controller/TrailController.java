@@ -2,10 +2,10 @@ package org.sc.controller;
 
 import com.google.inject.Inject;
 import org.sc.GpxManager;
+import org.sc.common.rest.controller.*;
+import org.sc.common.rest.controller.helper.GsonBeanHelper;
 import org.sc.data.TrailImport;
 import org.sc.data.TrailPreparationModel;
-import org.sc.data.helper.GsonBeanHelper;
-import org.sc.data.helper.JsonHelper;
 import org.sc.importer.TrailCreationValidator;
 import org.sc.importer.TrailImporterManager;
 import org.sc.manager.TrailManager;
@@ -19,17 +19,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static org.sc.common.config.ConfigurationProperties.ACCEPT_TYPE;
+import static org.sc.common.config.ConfigurationProperties.API_PREFIX;
 import static org.sc.configuration.ConfigurationManager.TMP_FOLDER;
 import static org.sc.configuration.ConfigurationManager.UPLOAD_DIR;
-import static org.sc.configuration.ConfigurationProperties.ACCEPT_TYPE;
-import static org.sc.configuration.ConfigurationProperties.API_PREFIX;
 import static spark.Spark.*;
 
 public class TrailController implements PublicController {
@@ -43,6 +40,7 @@ public class TrailController implements PublicController {
     public static final String CANNOT_READ_ERROR_MESSAGE = "Could not read GPX file.";
 
     public static final int BAD_REQUEST_STATUS_CODE = 400;
+    public static final String EMPTY_CODE_VALUE_ERROR_MESSAGE = "Empty code value";
 
     private final GpxManager gpxManager;
     private final GsonBeanHelper gsonBeanHelper;
@@ -94,11 +92,6 @@ public class TrailController implements PublicController {
         return trailRestResponseBuilder.withMessages(errors).withStatus(Status.ERROR).build();
     }
 
-    private TrailImport convertRequestToTrail(final Request request) {
-        final String requestBody = request.body();
-        return Objects.requireNonNull(gsonBeanHelper.getGsonBuilder())
-                .fromJson(requestBody, TrailImport.class);
-    }
 
     private TrailRestResponse getAll(Request request, Response response) {
         return new TrailRestResponse(trailManager.getAll());
@@ -124,12 +117,47 @@ public class TrailController implements PublicController {
         }
     }
 
+    private RESTResponse getPreview(Request request, Response response) {
+        return new TrailPreviewRestResponse(trailManager.allPreview());
+    }
+
+    private RESTResponse getPreviewByCode(Request request, Response response) {
+        final String param = request.params(":code");
+        if(param.isEmpty()) {
+            return new TrailPreviewRestResponse(Collections.emptyList(), Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
+        }
+        return new TrailPreviewRestResponse(trailManager.previewByCode(param));
+    }
+
+    private TrailImport convertRequestToTrail(final Request request) {
+        final String requestBody = request.body();
+        return Objects.requireNonNull(gsonBeanHelper.getGsonBuilder())
+                .fromJson(requestBody, TrailImport.class);
+    }
+
+    private FileDownloadRestResponse getDownloadableLink(Request request, Response response) {
+        final String param = request.params(":code");
+        if(param.isEmpty()) {
+            return new FileDownloadRestResponse("", Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
+        }
+        final List<Trail> byCode = trailManager.getByCode(param);
+        if(!byCode.isEmpty()){
+            return new FileDownloadRestResponse(trailManager.getDownloadableLink(param));
+        }
+        return new FileDownloadRestResponse("", Status.ERROR, Collections.singleton("Trail does not exist"));
+    }
+
     public void init() {
         get(format("%s", PREFIX), this::getAll, JsonHelper.json());
+        get(format("%s/preview", PREFIX), this::getPreview, JsonHelper.json());
+        get(format("%s/preview/:code", PREFIX), this::getPreviewByCode, JsonHelper.json());
         get(format("%s/:code", PREFIX), this::getByCode, JsonHelper.json());
-        post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
         delete(format("%s/delete/:code", PREFIX), this::deleteByCode, JsonHelper.json());
+        get(format("%s/download/:code", PREFIX), this::getDownloadableLink, JsonHelper.json());
+        // Import
+        post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
         put(format("%s/save", PREFIX), this::importTrail, JsonHelper.json());
     }
+
 
 }

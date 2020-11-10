@@ -2,8 +2,8 @@ package org.sc.data.validator
 
 import com.google.gson.JsonSyntaxException
 import com.google.inject.Inject
-import org.sc.data.Trail
-import org.sc.data.helper.GsonBeanHelper
+import org.sc.common.rest.controller.Trail
+import org.sc.common.rest.controller.helper.GsonBeanHelper
 import org.sc.data.validator.Validator.Companion.requestMalformedErrorMessage
 import spark.Request
 

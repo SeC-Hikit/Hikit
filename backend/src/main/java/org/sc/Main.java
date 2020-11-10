@@ -3,8 +3,8 @@ package org.sc;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.log4j.BasicConfigurator;
+import org.sc.common.config.ConfigurationProperties;
 import org.sc.configuration.ConfigurationManager;
-import org.sc.configuration.ConfigurationProperties;
 import org.sc.configuration.ConfiguratorModule;
 
 import static org.apache.logging.log4j.LogManager.getLogger;

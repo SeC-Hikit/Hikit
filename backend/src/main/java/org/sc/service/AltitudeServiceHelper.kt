@@ -1,8 +1,8 @@
 package org.sc.service
 
+import org.sc.common.config.ConfigurationProperties.LOCAL_IP_ADDRESS
+import org.sc.common.rest.controller.helper.GsonBeanHelper
 import org.sc.configuration.AppProperties
-import org.sc.configuration.ConfigurationProperties.LOCAL_IP_ADDRESS
-import org.sc.data.helper.GsonBeanHelper
 import org.sc.service.response.AltitudeApiResponse
 import java.net.URL
 import javax.inject.Inject

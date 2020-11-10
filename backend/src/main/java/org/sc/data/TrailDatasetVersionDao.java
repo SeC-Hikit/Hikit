@@ -2,7 +2,7 @@ package org.sc.data;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import org.sc.configuration.DataSource;
+import org.sc.common.config.DataSource;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -32,7 +32,7 @@ public class TrailDatasetVersionDao {
                         .sort(new Document(TrailDatasetMapper.VERSION_FIELD, DESCENDING_ORDER)).first()));
     }
 
-    public void addVersion() {
+    public void increaseVersion() {
         long collectionSize = collection.countDocuments();
         long nextVersion = collectionSize + 1;
         collection.insertOne(mapper.mapToDocument(new TrailDatasetVersion(nextVersion, new Date())));
