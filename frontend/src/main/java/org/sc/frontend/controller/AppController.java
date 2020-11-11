@@ -1,10 +1,14 @@
 package org.sc.frontend.controller;
 
 import com.google.inject.Inject;
-import org.sc.common.rest.controller.*;
+import org.sc.common.rest.controller.CoordinatesWithAltitude;
+import org.sc.common.rest.controller.JsonHelper;
+import org.sc.common.rest.controller.PublicController;
+import org.sc.common.rest.controller.TrailRestResponse;
 import spark.Request;
 import spark.Response;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -39,9 +43,14 @@ public class AppController implements PublicController {
         return appManager.getTrail(code);
     }
 
-    private FileDownloadRestResponse getDownloadableFilePath(Request request, Response response) throws IOException {
+    private HttpServletResponse getDownloadableFile(Request request, Response response) throws IOException {
         String code = request.params(":code");
-        return appManager.getTrailDownloadableLink(code);
+        byte[] trailGpxFile = appManager.getTrailDownloadableLink(code);
+        HttpServletResponse raw = response.raw();
+        raw.getOutputStream().write(trailGpxFile);
+        raw.getOutputStream().flush();
+        raw.getOutputStream().close();
+        return response.raw();
     }
 
     public void init() {
@@ -49,7 +58,7 @@ public class AppController implements PublicController {
         get(format("%s/preview/trail/:code", PREFIX), this::getTrailCoordinatesByCode, JsonHelper.json());
         get(format("%s/trail", PREFIX), this::getTrailsCoordinateLow, JsonHelper.json());
         get(format("%s/trail/:code", PREFIX), this::getTrailByCode, JsonHelper.json());
-        get(format("%s/download/:code", PREFIX), this::getDownloadableFilePath, JsonHelper.json());
+        get(format("%s/download/:code", PREFIX), this::getDownloadableFile, JsonHelper.json());
     }
 
 }
