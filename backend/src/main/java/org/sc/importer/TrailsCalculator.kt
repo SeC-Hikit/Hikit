@@ -8,7 +8,7 @@ import kotlin.math.exp
 class TrailsCalculator {
 
     companion object {
-        private const val AVERAGE_SPEED_ON_FLAT_TERRAIN = 6.5
+        private const val AVERAGE_SPEED_ON_FLAT_TERRAIN = 6.0
         private const val MINUTES_IN_HOUR = 60
     }
 

@@ -33,7 +33,7 @@ var mapFull = Vue.component("map-full", {
     this.currentTileLayer = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", { attribution: this.openStreetmapCopy});
     let topoLayer = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", { attribution: this.openStreetmapCopy});
 
-    this.map = L.map("map-full", { layers: [topoLayer], maxZoom: 18 }).setView(
+    this.map = L.map("map-full", { layers: [topoLayer], maxZoom: 17 }).setView(
       [44.498955, 11.327591],
       12
     );

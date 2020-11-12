@@ -15,9 +15,9 @@ class TrailImporterManager @Inject constructor(private val trailsManager : Trail
     fun save(importingTrail: TrailImport) {
 
         val statsTrailMetadata = StatsTrailMetadata(
-                trailsCalculator.calculateEta(importingTrail.coordinates),
-                trailsCalculator.calculateTotFall(importingTrail.coordinates),
                 trailsCalculator.calculateTotRise(importingTrail.coordinates),
+                trailsCalculator.calculateTotFall(importingTrail.coordinates),
+                trailsCalculator.calculateEta(importingTrail.coordinates),
                 trailsCalculator.calculateTrailLength(importingTrail.coordinates))
 
         val trail = Trail(importingTrail.name,

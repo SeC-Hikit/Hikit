@@ -157,8 +157,9 @@ var MapPage = Vue.component("map-page", {
       updateChartWithPoints(code, this.chart, altitudeValues);
     },
     onTrailListClick(event) {
-      var id = $(event.currentTarget).children().first().text()
-      console.log("Previewing trail code:" + id);
+      var code = $(event.currentTarget).text()
+      console.log("Previewing trail code:" + code);
+      this.updateTrail(code);
     },
     loadTrailSideBarInfo(infoObj) {
       console.log("Updating trail sidebar...");
@@ -195,12 +196,27 @@ var MapPage = Vue.component("map-page", {
           })
           .finally(() => this.loading = false)
       }
+    },
+    toggleList() {
+      if (this.showListTrails) {
+        $(".column-hikes").addClass("hide");
+        $(".column-hike-title").addClass("hide");
+        this.showListTrails = false;
+      } else {
+        $(".column-hikes").removeClass("hide");
+        $(".column-hike-title").removeClass("hide");
+        this.showListTrails = true;
+      }
+    },
+    toggleAllTrails() {
+
     }
   },
   template: `
   <div>
-  <div class="row">
-  <div class="column-map col-12 col-md-3">
+  <div class="row relative-map">
+  <map-full :points='points' :selectedTrail='trailSelectedObj' :typeTrail='typeTrail' :tileLayerType='tileLayerType'></map-full>
+  <div class="column-map col-12 col-md-3 white">
     <div class="row">
     <div class="col-md-10">
       <h1>{{ trailSelectedObj.code }}</h1>
@@ -219,24 +235,31 @@ var MapPage = Vue.component("map-page", {
           <label v-on:click="changeTileLayer('geopolitic2')" class="btn btn-light"><input autocomplete="off" id="option3" name="options" type="radio">Geopolitica 2</label>
       </div>
   </div>
-  <div class="column-map col-12 col-md-3">
+  <div class="column-map col-12 col-md-2">
     <div class="btn-group-toggle" data-toggle="buttons">
-      <label v-on:click="toggleList()" class="btn btn-default">
-      <svg class="bi" width="32" height="32" fill="currentColor">
+      <label v-on:click="toggleAllTrails()" class="btn btn-light">
+      <svg class="bi" width="24" height="24" fill="currentColor">
         <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#eye"/>
       </svg>
       </label>
-      <label v-on:click="toggleAllTrails()" class="btn btn-default">
-      <svg class="bi" width="32" height="32" fill="currentColor">
+      <label v-on:click="toggleList()" class="btn btn-light">
+      <svg class="bi" width="24" height="24" fill="currentColor">
       <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#list-ol"/>
       </svg>
       </label>
     </div>
   </div>
+  <div class="column-map col-12 col-md-3 column-hike-title white hide">
+    <div class="row">
+      <div class="col-md-10">
+        <h1>Lista sentieri</h1>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row">
   
-<div class="description hidden column-map col-12 col-md-3">
+<div class="description hidden column-map col-12 col-md-3 white">
       <h4>Classificazione</h4>
       <p> {{ trailSelectedObj.classification }}</p>
       <h4>Località</h4>
@@ -244,7 +267,7 @@ var MapPage = Vue.component("map-page", {
       <h4>Lunghezza</h4>
       <p>{{ parseInt(trailSelectedObj.statsMetadata.length) }}m</p>
       <h4>Tempo di percorrenza</h4>
-      <p>{{ Math.ceil(parseInt(trailSelectedObj.statsMetadata.eta)/60) }}</p>
+      <p>{{ Math.ceil(parseInt(trailSelectedObj.statsMetadata.eta)) }}</p>
       <h4>Dislivello</h4>
       <p>Positivo: {{ parseInt(trailSelectedObj.statsMetadata.totalRise) }}m</p>
       <p>Negativo: {{ parseInt(trailSelectedObj.statsMetadata.totalFall) }}m</p>
@@ -273,24 +296,22 @@ var MapPage = Vue.component("map-page", {
       </div>
   </div>
 
-  <map-full :points='points' :selectedTrail='trailSelectedObj' :typeTrail='typeTrail' :tileLayerType='tileLayerType'></map-full>
   
-  <div class="column-hikes column-map col-12 col-md-3 hide">
+  
+  <div class="column-hikes column-map col-3 white offset-6 hide">
       <table class="table table-striped interactive-table">
           <thead>
               <tr>
                   <th scope="col">Codice</th>
                   <th scope="col">Localita</th>
-                  <th scope="col">Classificazione</th>
+                  <th scope="col">Class.</th>
               </tr>
           </thead>
           <tbody>
             <tr v-for="trailPreview in trailPreviewResponse" class="trailPreview">
-              <div v-on:click="onTrailListClick(event)">
-                <th scope="row">{{ trailPreview.code }}</th>
+                <td scope="row" v-on:click="onTrailListClick(event)">{{ trailPreview.code }}</td>
                 <td>{{ trailPreview.startPos.name }} - {{ trailPreview.endPos.name }}</td>
                 <td>{{ trailPreview.classification }}</td>
-              </div>
             </tr>
           </tbody>
       </table>

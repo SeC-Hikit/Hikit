@@ -22,12 +22,36 @@
   height: 500px;
 }
 
+.relative-map{
+  position: relative;
+}
+
+.white {
+  background: white;
+}
+
+.leaflet-left { 
+  right:10px;
+}
+
+.btn.btn-light{
+  background: white;
+}
+
+.active {
+  background: #999 !important;
+}
+
 #map-full {
-  width: 60%;
+  position:absolute;
+  min-width:100%;
   min-height: 720px;
   max-height: 720px;
   z-index: 0;
-  border-radius: 25px;
+}
+
+.leaflet-top .leaflet-left{
+  right: 10px;
 }
 
 .router-link-active .nav-item {
@@ -86,7 +110,7 @@ ul.link-list{
 }
 
 .hide { 
-  display: none;
+  z-index: -1;
 }
 
 .pulse {

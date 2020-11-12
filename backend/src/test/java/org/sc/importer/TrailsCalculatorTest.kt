@@ -115,6 +115,31 @@ class TrailsCalculatorTest {
     }
 
     @Test
+    fun `calculate rise, given six points with rise and fall should calculate rise only`() {
+
+        val mockPoint1 = mockkClass(CoordinatesWithAltitude::class)
+        val mockPoint2 = mockkClass(CoordinatesWithAltitude::class)
+        val mockPoint3 = mockkClass(CoordinatesWithAltitude::class)
+        val mockPoint4 = mockkClass(CoordinatesWithAltitude::class)
+        val mockPoint5 = mockkClass(CoordinatesWithAltitude::class)
+        val mockPoint6 = mockkClass(CoordinatesWithAltitude::class)
+
+        every { mockPoint1.altitude } returns 0.0
+        every { mockPoint2.altitude } returns 10.0
+        every { mockPoint3.altitude } returns 5.0
+        every { mockPoint4.altitude } returns 10.0
+        every { mockPoint5.altitude } returns 115.0
+        every { mockPoint6.altitude } returns -120.0
+
+        assertEquals(120.0,
+                TrailsCalculator()
+                        .calculateTotRise(
+                                listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4, mockPoint5, mockPoint6))
+        )
+    }
+
+
+    @Test
     fun `calculate fall, given two points with no fall should return 0`() {
         val mockPoint1 = mockkClass(CoordinatesWithAltitude::class)
         val mockPoint2 = mockkClass(CoordinatesWithAltitude::class)
