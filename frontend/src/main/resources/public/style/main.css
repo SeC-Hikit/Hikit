@@ -30,9 +30,6 @@
   background: white;
 }
 
-.leaflet-left { 
-  right:10px;
-}
 
 .btn.btn-light{
   background: white;
@@ -50,8 +47,8 @@
   z-index: 0;
 }
 
-.leaflet-top .leaflet-left{
-  right: 10px;
+.leaflet-left{
+  left: 95%;
 }
 
 .router-link-active .nav-item {
