@@ -113,12 +113,11 @@ var MapPage = Vue.component("map-page", {
               var pointsCoordinatesLatLngs = coordinates.map(coord => [coord[1], coord[0]]);
               this.trailSelectedObj = response.data.trails[0];
               this.typeTrail = response.data.classification;
-              this.points = pointsCoordinatesLatLngs;
+              this.points = pointsCoordinatesLatLngs; // Triggers Rendering
               this.updateChart(
                 this.trailSelectedObj.code,
                 pointsCoordinates.map(coord => coord.altitude)
               );
-              this.updateDownloadLink(code);
             }
           }).catch(error => {
             console.log(error)
@@ -157,22 +156,6 @@ var MapPage = Vue.component("map-page", {
       removeData(this.chart);
       updateChartWithPoints(code, this.chart, altitudeValues);
     },
-    /**
-     * 
-     * @param {*} code 
-     */
-    updateDownloadLink(code) {
-      axios.get("http://localhost:8991/app/download/" + code).then(
-        response => {
-          if (response.data) {
-            this.downloadLink = response.data.path;
-          }
-        }).catch(error => {
-          console.log(error)
-          this.errored = true
-        })
-        .finally(() => this.loading = false)
-    },
     onTrailListClick(event) {
       var id = $(event.currentTarget).children().first().text()
       console.log("Previewing trail code:" + id);
@@ -183,6 +166,35 @@ var MapPage = Vue.component("map-page", {
     changeTileLayer(layerType) {
       console.log("Updating layer to " + layerType)
       this.tileLayerType = layerType;
+    },
+    downloadGpx() {
+      if (this.trailSelectedObj) {
+        var trailCode = this.trailSelectedObj.code;
+        axios.get("http://localhost:8991/app/download/" + this.trailSelectedObj.code).then(
+          response => {
+            if (response.data) {
+              var saveData = (function () {
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                return function (fileName) {
+                  var blob = new Blob([response.data], { type: "octet/stream" }),
+                    url = window.URL.createObjectURL(blob);
+                  a.href = url;
+                  a.download = fileName;
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                };
+              }());
+              var fileName = trailCode + ".gpx";
+              saveData(fileName);
+            }
+          }).catch(error => {
+            console.log(error)
+            this.errored = true
+          })
+          .finally(() => this.loading = false)
+      }
     }
   },
   template: `
@@ -248,7 +260,7 @@ var MapPage = Vue.component("map-page", {
         </svg>
         </div>
         <div class="col-md-10 space-up">
-            <a v-bind:href="downloadLink" target="_blank">Download</a>
+            <a v-on:click="downloadGpx" target="_blank">Download</a>
         </div>
         <div class="col-md-2 space-up">
           <svg class="bi" width="32" height="32" fill="red">
@@ -261,7 +273,7 @@ var MapPage = Vue.component("map-page", {
       </div>
   </div>
 
-  <map-full :points='points' :typeTrail='typeTrail' :tileLayerType='tileLayerType'></map-full>
+  <map-full :points='points' :selectedTrail='trailSelectedObj' :typeTrail='typeTrail' :tileLayerType='tileLayerType'></map-full>
   
   <div class="column-hikes column-map col-12 col-md-3 hide">
       <table class="table table-striped interactive-table">

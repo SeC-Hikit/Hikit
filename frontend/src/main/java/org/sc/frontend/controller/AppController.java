@@ -58,7 +58,7 @@ public class AppController implements PublicController {
         get(format("%s/preview/trail/:code", PREFIX), this::getTrailCoordinatesByCode, JsonHelper.json());
         get(format("%s/trail", PREFIX), this::getTrailsCoordinateLow, JsonHelper.json());
         get(format("%s/trail/:code", PREFIX), this::getTrailByCode, JsonHelper.json());
-        get(format("%s/download/:code", PREFIX), this::getDownloadableFile, JsonHelper.json());
+        get(format("%s/download/:code", PREFIX), this::getDownloadableFile);
     }
 
 }

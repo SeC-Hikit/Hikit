@@ -6,7 +6,6 @@ var mapFull = Vue.component("map-full", {
     currentTileLayerName : "topo",
     isShowingAllTrails: true,
     map: new Object(),
-    trailSelected: "",
     trails: [], // All trails data in low coords resolution
     trailFocus: new Object(),    
   },
@@ -15,6 +14,7 @@ var mapFull = Vue.component("map-full", {
     tileLayerType: String,
     allTrailsObjects: Array,
     typeTrail: String,
+    selectedTrail: Object,
   },
   watch: {
     allTrailsObjects: function() {
@@ -26,14 +26,14 @@ var mapFull = Vue.component("map-full", {
     },
     tileLayerType: function(){
       this.updateTileLayer(this.tileLayerType);
-    }
+    },
   },
   mounted() {
     this.currentTileLayerName = "topo";
     this.currentTileLayer = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", { attribution: this.openStreetmapCopy});
     let topoLayer = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", { attribution: this.openStreetmapCopy});
 
-    this.map = L.map("map-full", { layers: [topoLayer] }).setView(
+    this.map = L.map("map-full", { layers: [topoLayer], maxZoom: 18 }).setView(
       [44.498955, 11.327591],
       12
     );
@@ -60,13 +60,16 @@ var mapFull = Vue.component("map-full", {
       console.log("Updating trail...");
       if (latlngs) {
         var lineStyle = this.getLineStyle();
-        var polyline = L.polyline(latlngs, lineStyle);
+        var polyline = L.polyline(latlngs);
+        polyline.setText(generateEmptySpace() + this.selectedTrail.code + generateEmptySpace(), { repeat: true, offset: -10, attributes: { fill: lineStyle.color} });
+        polyline.setStyle(lineStyle);
         polyline.addTo(this.map);
         L.marker(latlngs[0]).addTo(this.map);
         L.control.scale().addTo(this.map);
         this.trailFocus = polyline;
         this.map.fitBounds(polyline.getBounds());
       }
+      function generateEmptySpace(){ var empty = ""; for(var i=0; i<35; i++) { empty += " " }; return empty; }
     },
     updateAllOtherTrails: function (allTrailsObjects) {
       console.log("Loading all other trails");
