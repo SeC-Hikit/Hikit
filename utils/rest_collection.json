@@ -14,7 +14,16 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": ""
+							"raw": "{{host}}:{{port}}/api/{{version}}/dataset",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"{{version}}",
+								"dataset"
+							]
 						}
 					},
 					"response": []
@@ -31,12 +40,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/maintenance/future",
+							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/future",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"maintenance",
 								"future"
 							]
@@ -50,12 +61,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/maintenance/get/unsolved",
+							"raw": "{{host}}:{{port}}/api/{{version}}/maintenance/get/unsolved",
 							"host": [
 								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
+								"api",
+								"{{version}}",
 								"maintenance",
 								"get",
 								"unsolved"
@@ -193,7 +206,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/unsolved",
+							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/code/:code",
 							"host": [
 								"{{host}}"
 							],
@@ -202,7 +215,14 @@
 								"api",
 								"{{version}}",
 								"accessibility",
-								"unsolved"
+								"code",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": "001BO"
+								}
 							]
 						}
 					},
@@ -214,7 +234,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/unsolved",
+							"raw": "{{host}}:{{port}}/api/{{version}}/accessibility/unsolved/:code",
 							"host": [
 								"{{host}}"
 							],
@@ -223,7 +243,14 @@
 								"api",
 								"{{version}}",
 								"accessibility",
-								"unsolved"
+								"unsolved",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": "001BO"
+								}
 							]
 						}
 					},
@@ -297,7 +324,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{host}}:{{port}}/api/{{version}}/trail",
+									"raw": "{{host}}:{{port}}/api/{{version}}/trail/preview",
 									"host": [
 										"{{host}}"
 									],
@@ -305,7 +332,8 @@
 									"path": [
 										"api",
 										"{{version}}",
-										"trail"
+										"trail",
+										"preview"
 									]
 								}
 							},
@@ -317,7 +345,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{host}}:{{port}}/api/{{version}}/:code",
+									"raw": "{{host}}:{{port}}/api/{{version}}/trail/preview/:code",
 									"host": [
 										"{{host}}"
 									],
@@ -325,12 +353,14 @@
 									"path": [
 										"api",
 										"{{version}}",
+										"trail",
+										"preview",
 										":code"
 									],
 									"variable": [
 										{
 											"key": "code",
-											"value": ""
+											"value": "001BO"
 										}
 									]
 								}
@@ -367,7 +397,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/:code",
+							"raw": "{{host}}:{{port}}/api/{{version}}/trail/:code",
 							"host": [
 								"{{host}}"
 							],
@@ -375,12 +405,13 @@
 							"path": [
 								"api",
 								"{{version}}",
+								"trail",
 								":code"
 							],
 							"variable": [
 								{
 									"key": "code",
-									"value": ""
+									"value": "001BO"
 								}
 							]
 						}
@@ -394,7 +425,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"001BO\",\n\t\"description\": \"test\",\n\t\"code\": \"001BO\",\n\t\"startPos\": {\n\t\t\n\t},\n\t\"finalPos\" : {\n\t\t\n\t},\n\t\"trackLength\": 5.0,\n\t\"eta\": 3.0,\n\t\"classification\": \"T\",\n\t\"country\": \"Italy\",\n\t\"lastUpdate\": \"2020-10-07T21:23:33.674Z\",\n\t\"maintainingSection\": \"Bologna\"\n}",
+							"raw": "{\n\t\"name\": \"001BO\",\n\t\"description\": \"I prati di Montebello\",\n\t\"code\": \"001BO\",\n\t\"trackLength\": 5.0,\n\t\"eta\": 3.0,\n    \"startPos\": {\n\t\t\"name\": \"Prati di Monte basso\",\n\t\t\"tags\": [\"Pratone\", \"La ca'\"],\n\t\t\"coordinates\":{\n\t        \"altitude\": 306.0,\n\t        \"values\": [\n\t            11.082067900010406,\n\t            44.47252849905953\n\t        ]\n\t\t}\n    },\n\t\"finalPos\" : {\n\t\t\"name\": \"Prati di MonteBello\",\n\t\t\"tags\": [\"Pratoni\", \"La ca' di sopra\"],\n\t\t\"coordinates\":{\n\t        \"altitude\": 275.0,\n\t        \"values\": [\n\t            11.08178329941631,\n\t            44.47234009874659\n\t        ]\n\t\t}\n    },\n\t\"coordinates\": [\n        {\n            \"altitude\": 306.0,\n            \"values\": [\n                11.082067900010406,\n                44.47252849905953\n            ]\n        },\n        {\n            \"altitude\": 306.0,\n            \"values\": [\n                11.081810299893888,\n                44.47250929905236\n            ]\n        },\n        {\n            \"altitude\": 291.0,\n            \"values\": [\n                11.081356500397211,\n                44.47246309887667\n            ]\n        },\n        {\n            \"altitude\": 291.0,\n            \"values\": [\n                11.080910299380136,\n                44.47244009865613\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.08066039982386,\n                44.47243239881564\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080464199662346,\n                44.47242849939391\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080321899783135,\n                44.47240539885188\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080233500547484,\n                44.47239009901638\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080021999773068,\n                44.47229389892458\n            ]\n        },\n        {\n            \"altitude\": 328.0,\n            \"values\": [\n                11.07978740042055,\n                44.4721823988049\n            ]\n        },\n        {\n            \"altitude\": 328.0,\n            \"values\": [\n                11.07953740010483,\n                44.47205549881683\n            ]\n        },\n        {\n            \"altitude\": 328.0,\n            \"values\": [\n                11.079345100582765,\n                44.471963198767384\n            ]\n        },\n        {\n            \"altitude\": 331.0,\n            \"values\": [\n                11.079114299891618,\n                44.47186699918779\n            ]\n        },\n        {\n            \"altitude\": 331.0,\n            \"values\": [\n                11.07887590054758,\n                44.47178239877002\n            ]\n        },\n        {\n            \"altitude\": 331.0,\n            \"values\": [\n                11.078675899395039,\n                44.47171699908898\n            ]\n        },\n        {\n            \"altitude\": 319.0,\n            \"values\": [\n                11.078479800173154,\n                44.47165549908746\n            ]\n        },\n        {\n            \"altitude\": 319.0,\n            \"values\": [\n                11.078433600587323,\n                44.471640099384224\n            ]\n        },\n        {\n            \"altitude\": 319.0,\n            \"values\": [\n                11.078360600388617,\n                44.47150169915778\n            ]\n        },\n        {\n            \"altitude\": 330.0,\n            \"values\": [\n                11.078329800157887,\n                44.4714208993365\n            ]\n        },\n        {\n            \"altitude\": 330.0,\n            \"values\": [\n                11.078225999372574,\n                44.471305498805194\n            ]\n        },\n        {\n            \"altitude\": 330.0,\n            \"values\": [\n                11.078122100388072,\n                44.471201698974205\n            ]\n        },\n        {\n            \"altitude\": 330.0,\n            \"values\": [\n                11.078060599388495,\n                44.4711362987564\n            ]\n        },\n        {\n            \"altitude\": 330.0,\n            \"values\": [\n                11.077987500554059,\n                44.47100169919168\n            ]\n        },\n        {\n            \"altitude\": 330.0,\n            \"values\": [\n                11.077918300425381,\n                44.470863298822515\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.07787980039638,\n                44.47076329862368\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.077822199923233,\n                44.470540199030985\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.077856799358477,\n                44.4704247990799\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.07794519980111,\n                44.470274899457785\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.078060599525825,\n                44.47007489924416\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.078106699937853,\n                44.4699671986987\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.078099099524014,\n                44.46992489945835\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.078029800327412,\n                44.46988259880596\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.07791830022794,\n                44.46984799913171\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.077852899615758,\n                44.46983639936773\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.077768299742297,\n                44.46984799859861\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.077722200485395,\n                44.46980179871578\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.077722199802052,\n                44.46971339902204\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.077818299515567,\n                44.46964799866749\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.077929800293049,\n                44.46960569870438\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.078068299383398,\n                44.46960949862748\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.078202899940345,\n                44.46967109883106\n            ]\n        },\n        {\n            \"altitude\": 280.0,\n            \"values\": [\n                11.078306700312279,\n                44.46977109859128\n            ]\n        },\n        {\n            \"altitude\": 291.0,\n            \"values\": [\n                11.078514399478856,\n                44.46995949881986\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.07868749971631,\n                44.470151799278796\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.078814399568394,\n                44.47029409915461\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.078948999418657,\n                44.47042099918594\n            ]\n        },\n        {\n            \"altitude\": 302.0,\n            \"values\": [\n                11.079064399729626,\n                44.47059789918909\n            ]\n        },\n        {\n            \"altitude\": 297.0,\n            \"values\": [\n                11.079268200336173,\n                44.4709093991831\n            ]\n        },\n        {\n            \"altitude\": 297.0,\n            \"values\": [\n                11.07941819950295,\n                44.47113629866885\n            ]\n        },\n        {\n            \"altitude\": 297.0,\n            \"values\": [\n                11.079533500001878,\n                44.471251699316866\n            ]\n        },\n        {\n            \"altitude\": 297.0,\n            \"values\": [\n                11.079675799440322,\n                44.47136709868551\n            ]\n        },\n        {\n            \"altitude\": 297.0,\n            \"values\": [\n                11.079783499522765,\n                44.47143249908779\n            ]\n        },\n        {\n            \"altitude\": 273.0,\n            \"values\": [\n                11.080098899495603,\n                44.47160549881577\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080368099770084,\n                44.47177469865742\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080429600274925,\n                44.471816998644\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080560399594045,\n                44.47189389868315\n            ]\n        },\n        {\n            \"altitude\": 312.0,\n            \"values\": [\n                11.080794999776597,\n                44.47199009900783\n            ]\n        },\n        {\n            \"altitude\": 291.0,\n            \"values\": [\n                11.080991100410232,\n                44.47205549944475\n            ]\n        },\n        {\n            \"altitude\": 291.0,\n            \"values\": [\n                11.081279500028106,\n                44.47213239865331\n            ]\n        },\n        {\n            \"altitude\": 291.0,\n            \"values\": [\n                11.081506399452373,\n                44.472201599421105\n            ]\n        },\n        {\n            \"altitude\": 291.0,\n            \"values\": [\n                11.081618000241633,\n                44.4722438990984\n            ]\n        },\n        {\n            \"altitude\": 275.0,\n            \"values\": [\n                11.08178329941631,\n                44.47234009874659\n            ]\n        }\n    ],\n\t\"classification\": \"T\",\n\t\"country\": \"Italy\",\n\t\"lastUpdate\": \"2020-10-07T21:23:33.674Z\",\n\t\"maintainingSection\": \"Bologna\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -402,7 +433,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/api/{{version}}/save",
+							"raw": "{{host}}:{{port}}/api/{{version}}/trail/save",
 							"host": [
 								"{{host}}"
 							],
@@ -410,6 +441,7 @@
 							"path": [
 								"api",
 								"{{version}}",
+								"trail",
 								"save"
 							]
 						}
