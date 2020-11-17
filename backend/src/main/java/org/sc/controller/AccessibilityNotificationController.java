@@ -48,10 +48,6 @@ public class AccessibilityNotificationController implements PublicController {
         return new AccessibilityResponse(accessibilityDAO.getByCode(request.params(":code")));
     }
 
-    private RESTResponse getUnresolvedByTrailCode(Request request, Response response) {
-        return new AccessibilityResponse(accessibilityDAO.getByCodeNotResolved(request.params(":code")));
-    }
-
     private RESTResponse deleteAccessibilityNotification(Request request, Response response) {
         final String requestId = request.params(":id");
         boolean isDeleted = accessibilityDAO.delete(requestId);
@@ -64,7 +60,16 @@ public class AccessibilityNotificationController implements PublicController {
         }
     }
 
-    private RESTResponse createMaintenance(Request request, Response response) {
+    private RESTResponse getSolvedPaged(final Request request, final Response response) {
+        final int from = Integer.parseInt(request.params(":from"));
+        final int to = Integer.parseInt(request.params(":to"));
+        if(from <= to){
+          return new AccessibilityResponse(accessibilityDAO.getSolved(from, to));
+        }
+        return null;
+    }
+
+    private RESTResponse createAccessibilityNotification(Request request, Response response) {
         AccessibilityNotification maintenance = convertRequestToAccessibilityNotification(request);
         final Set<String> errors = accessibilityValidator.validate(request);
         if(errors.isEmpty()) {
@@ -77,11 +82,11 @@ public class AccessibilityNotificationController implements PublicController {
 
     public void init() {
         Spark.get(format("%s/solved", PREFIX), this::getSolved, JsonHelper.json());
+        Spark.get(format("%s/solved/:from/:to", PREFIX), this::getSolvedPaged, JsonHelper.json());
         Spark.get(format("%s/unsolved", PREFIX), this::getNotSolved, JsonHelper.json());
-        Spark.get(format("%s/unsolved/:code", PREFIX), this::getUnresolvedByTrailCode, JsonHelper.json());
         Spark.get(format("%s/code/:code", PREFIX), this::getByTrailCode, JsonHelper.json());
         Spark.delete(format("%s/delete/:id", PREFIX), this::deleteAccessibilityNotification, JsonHelper.json());
-        Spark.put(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());
+        Spark.put(format("%s/save", PREFIX), this::createAccessibilityNotification, JsonHelper.json());
     }
 
     private AccessibilityNotification convertRequestToAccessibilityNotification(final Request request) {

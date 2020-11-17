@@ -30,16 +30,19 @@ public class AccessibilityNotificationDAO {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION, "")));
     }
 
+    public List<AccessibilityNotification> getSolved(int from, int to) {
+        return toNotificationList(collection.find(
+                new Document(AccessibilityNotification.RESOLUTION, new Document("$ne", "")))
+                .sort(new Document(AccessibilityNotification.REPORT_DATE, -1))
+                .skip(from).limit(to));
+    }
+
     public List<AccessibilityNotification> getSolved() {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION, new Document("$ne", ""))));
     }
 
     public List<AccessibilityNotification> getByCode(String code) {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.TRAIL_CODE, code)));
-    }
-
-    public List<AccessibilityNotification> getByCodeNotResolved(String code) {
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.TRAIL_CODE, code).append(AccessibilityNotification.RESOLUTION, "")));
     }
 
     public void upsert(final AccessibilityNotification accessibilityNotification) {
@@ -58,4 +61,6 @@ public class AccessibilityNotificationDAO {
     private List<AccessibilityNotification> toNotificationList(FindIterable<Document> documents) {
         return Lists.newArrayList(documents).stream().map(mapper::mapToObject).collect(toList());
     }
+
+
 }

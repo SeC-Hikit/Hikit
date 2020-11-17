@@ -3,7 +3,9 @@ package org.sc.frontend.configuration;
 import com.google.inject.Inject;
 import org.apache.logging.log4j.Logger;
 import org.sc.common.config.ConfigurationProperties;
-import org.sc.frontend.controller.AppController;
+import org.sc.frontend.controller.MaintenanceController;
+import org.sc.frontend.controller.NotificationController;
+import org.sc.frontend.controller.TrailController;
 import spark.Spark;
 
 import static java.lang.String.format;
@@ -14,13 +16,19 @@ public class ConfigurationManager {
 
     private final Logger LOG = getLogger(ConfigurationManager.class.getName());
 
+    private final MaintenanceController maintenanceController;
+    private final NotificationController notificationController;
     private final AppProperties appProperties;
-    private final AppController appController;
+    private final TrailController trailController;
 
     @Inject
-    public ConfigurationManager(final AppController appController,
+    public ConfigurationManager(final TrailController trailController,
+                                final MaintenanceController maintenanceController,
+                                final NotificationController notificationController,
                                 final AppProperties appProperties) {
-        this.appController = appController;
+        this.trailController = trailController;
+        this.maintenanceController = maintenanceController;
+        this.notificationController = notificationController;
         this.appProperties = appProperties;
         webServerSetup();
     }
@@ -37,7 +45,9 @@ public class ConfigurationManager {
     }
 
     private void startControllers() {
-        appController.init();
+        trailController.init();
+        notificationController.init();
+        maintenanceController.init();
     }
 
 

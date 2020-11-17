@@ -35,6 +35,11 @@ public class MaintenanceDAO {
         return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$lt", new Date()))));
     }
 
+    public List<Maintenance> getPast(int from, int to) {
+        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, ""))
+                .sort(new Document(Maintenance.DATE, -1)).skip(from).limit(to));
+    }
+
     public void upsert(final Maintenance maintenance) {
         final Document MaintenanceDocument = mapper.mapToDocument(maintenance);
         final String existingOrNewObjectId = maintenance.getId() == null ?

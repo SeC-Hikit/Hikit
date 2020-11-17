@@ -15,37 +15,37 @@ import java.util.List;
 import static java.lang.String.format;
 import static spark.Spark.get;
 
-public class AppController implements PublicController {
+public class TrailController implements PublicController {
 
     public static final String PREFIX = "app";
-    private final AppManager appManager;
+    private final TrailManager trailManager;
 
     @Inject
-    public AppController(final AppManager appManager) {
-        this.appManager = appManager;
+    public TrailController(final TrailManager trailManager) {
+        this.trailManager = trailManager;
     }
 
     private String getTrailsPreview(Request request, Response response) throws IOException {
-        return appManager.getTrailsPreview();
+        return trailManager.getTrailsPreview();
     }
 
     private List<CoordinatesWithAltitude> getTrailCoordinatesByCode(Request request, Response response) throws IOException {
         String code = request.params(":code");
-        return appManager.getTrailPreviewPoints(code);
+        return trailManager.getTrailPreviewPoints(code);
     }
 
     private TrailRestResponse getTrailsCoordinateLow(Request request, Response response) throws IOException {
-        return appManager.getTrailsLowCoordinates();
+        return trailManager.getTrailsLowCoordinates();
     }
 
     private TrailRestResponse getTrailByCode(Request request, Response response) throws IOException {
         String code = request.params(":code");
-        return appManager.getTrail(code);
+        return trailManager.getTrail(code);
     }
 
     private HttpServletResponse getDownloadableFile(Request request, Response response) throws IOException {
         String code = request.params(":code");
-        byte[] trailGpxFile = appManager.getTrailDownloadableLink(code);
+        byte[] trailGpxFile = trailManager.getTrailDownloadableLink(code);
         HttpServletResponse raw = response.raw();
         raw.getOutputStream().write(trailGpxFile);
         raw.getOutputStream().flush();

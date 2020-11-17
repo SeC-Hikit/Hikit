@@ -1,9 +1,38 @@
 var MaintainancePage = {
-  mounted: {},
+  data: function () {
+    return {
+        maintenanceList: [],
+        pastMaintenanceList: [],
+        errored: false,
+        loading: false,
+    };
+  },
+  mounted: function () {
+    this.loading = true;
+    axios
+      .get("http://localhost:8991/app/maintenance/future")
+      .then((response) => {
+        this.maintenanceList = response.data.maintenanceList;
+        this.renderPastNotifications();
+      })
+      .catch((error) => {
+        console.log(error);
+        this.errored = true;
+      });
+  },
   methods: {
-    loadUpcomingMaintainance: function () {},
-    loadPastMaintainance: function () {},
-    loadOlderMaintainance: function(lastLoadedId) {}
+    renderPastNotifications() {
+      axios
+        .get("http://localhost:8991/app/maintenance/past/0/10")
+        .then((response) => {
+          this.pastMaintenanceList = response.data.maintenanceList;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.errored = true;
+        })
+        .finally(() => (this.loading = false));
+    },
   },
   template: `
 <div class="container my-4">
@@ -11,7 +40,7 @@ var MaintainancePage = {
         <div class="col-12 col-md-12 col-s-6">
             <h1>Calendario Manuntenzioni</h1>
             <h2>Prossimi incontri</h2>
-            <table class="table table-striped">
+            <table v-if="!loading && maintenanceList.length > 0" class="table table-striped">
                 <thead>
                     <tr>
                         <th scope="col">Data</th>
@@ -22,12 +51,12 @@ var MaintainancePage = {
                     </tr>
                 </thead>
                 <tbody>
-                        <tr v-on:click="alert('hello')">
-                            <td scope="row">23/09/2020</td>
-                            <td scope="row">1</td>
-                            <td>Osteria da Pino</td>
-                            <td>Messa in sicurezza del sentiero 105B</td>
-                            <td>Giuliano Raimondi</td>
+                        <tr v-for="maintenance in maintenanceList">
+                            <td scope="row">{{ maintenance.date }}</td>
+                            <td scope="row">{{ maintenance.code }}</td>
+                            <td>{{ maintenance.meetingPlace }}</td>
+                            <td>{{ maintenance.description }}</td>
+                            <td>{{ maintenance.contact }}</td>
                         </tr>
                 </tbody>
             </table>
@@ -36,7 +65,7 @@ var MaintainancePage = {
     <div class="row">
         <div class="col-12 col-md-12 col-s-6">
             <h2>Incontri Passati</h2>
-            <table class="table table-striped">
+            <table v-if="!loading && pastMaintenanceList.length > 0" class="table table-striped">
                 <thead>
                     <tr>
                         <th scope="col">Data</th>
@@ -47,15 +76,16 @@ var MaintainancePage = {
                     </tr>
                 </thead>
                 <tbody>
-                        <tr>
-                            <th scope="row">23/09/2018</th>
-                            <td>2</td>
-                            <td>Osteria da Pino</td>
-                            <td>Messa in sicurezza del sentiero 105B</td>
-                            <td>Giuliano Raimondi</td>
-                        </tr>
+                    <tr :key="index" v-for="(maintenance, index) in pastMaintenanceList">
+                        <td scope="row">{{ maintenance.date }}</td>
+                        <td scope="row">{{ maintenance.code }}</td>
+                        <td>{{ maintenance.meetingPlace }}</td>
+                        <td>{{ maintenance.description }}</td>
+                        <td>{{ maintenance.contact }}</td>
+                    </tr>
                 </tbody>
             </table>
+            <p v-else>Non ci sono altre manuntenzioni passate</p>
         </div>
     </div>
 </div>`,

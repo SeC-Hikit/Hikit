@@ -21,13 +21,13 @@ import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-public class AppManager {
+public class TrailManager {
 
     private final AppProperties appProperties;
     private final GsonBeanHelper gsonBeanHelper;
 
     @Inject
-    public AppManager(AppProperties appProperties, GsonBeanHelper gsonBeanHelper) {
+    public TrailManager(AppProperties appProperties, GsonBeanHelper gsonBeanHelper) {
         this.appProperties = appProperties;
         this.gsonBeanHelper = gsonBeanHelper;
     }
@@ -68,7 +68,7 @@ public class AppManager {
         if (isNotBlank(responseBody)) {
             final TrailRestResponse trailRestResponse = gsonBeanHelper.getGsonBuilder()
                     .fromJson(responseBody, TrailRestResponse.class);
-            trailRestResponse.getTrails().stream().map(trail ->
+            final List<Trail> lowTrails = trailRestResponse.getTrails().stream().map(trail ->
                     Trail.TrailBuilder.aTrail()
                             .withCode(trail.getCode())
                             .withDate(trail.getDate())
@@ -81,7 +81,8 @@ public class AppManager {
                             .withMaintainingSection(trail.getMaintainingSection())
                             .withName(trail.getName())
                             .withCoordinates(getLowestCoordinates(trail.getCoordinates()))
-                            .build());
+                            .build()).collect(Collectors.toList());
+            return new TrailRestResponse(lowTrails);
         }
         return null;
     }

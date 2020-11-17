@@ -1,4 +1,5 @@
 import mapFull from "../component/full-map";
+import dialogInfoNotification from "../component/dialog-info-notification";
 
 var MapPage = Vue.component("map-page", {
   props: { id: Number },
@@ -13,6 +14,10 @@ var MapPage = Vue.component("map-page", {
       // Selected trail
       points: [],
       downloadLink: "",
+      notificationsForTrail: [],
+
+      // All other trails
+      trails: [],
 
       // List of all trails
       error: false,
@@ -23,12 +28,13 @@ var MapPage = Vue.component("map-page", {
       chartOptions: {},
 
       // Show-hide
-      renderAllTrails: false,
+      renderAllTrails: true,
       showListTrails: false,
     };
   },
   components: {
     "preview-map": mapFull,
+    "dialog-info-confirmation": dialogInfoNotification
   },
   created: function () {
     this.valuerouter = this.id ? this.id : 0;
@@ -41,7 +47,9 @@ var MapPage = Vue.component("map-page", {
     if (this.valuerouter != 0) {
       this.updateTrail(this.valuerouter);
     }
-
+    if(this.renderAllTrails) {
+      this.renderTrails();
+    }
     // Load all trails in list
     axios.get("http://localhost:8991/app/preview/all").then(
       response => {
@@ -98,8 +106,15 @@ var MapPage = Vue.component("map-page", {
     });
   },
   methods: {
-    renderAllTrails() {
-      axios.get("http://localhost:8991/app/trail/" + id)
+    renderTrails() {
+      console.log("Getting trails...");
+      axios.get("http://localhost:8991/app/trail").then(
+        response => {
+          if(response.data) {
+            this.trails = response.data.trails;
+          }
+        }
+      )
     },
     updateTrail(code) {
       if (code) {
@@ -114,6 +129,7 @@ var MapPage = Vue.component("map-page", {
               this.trailSelectedObj = response.data.trails[0];
               this.typeTrail = response.data.classification;
               this.points = pointsCoordinatesLatLngs; // Triggers Rendering
+              this.showNotificationsIconIfPresent(code);
               this.updateChart(
                 this.trailSelectedObj.code,
                 pointsCoordinates.map(coord => coord.altitude)
@@ -125,6 +141,22 @@ var MapPage = Vue.component("map-page", {
           })
           .finally(() => this.loading = false)
       }
+    },
+    showNotificationsIconIfPresent(code) {
+      console.log("Checking notifications for trail '" + code + "'");
+      axios.get("http://localhost:8991/app/notifications/" + code).then(
+        response => {
+          if (response.data) {
+            this.notificationsForTrail = response.data.accessibilityNotifications
+          }
+        }).catch(error => {
+          console.log(error)
+          this.errored = true
+        })
+        .finally(() => this.loading = false)
+    },
+    toggleModal(){
+      $("#modal_info").modal("toggle");
     },
     /**
      * Update Chart on page
@@ -208,14 +240,13 @@ var MapPage = Vue.component("map-page", {
         this.showListTrails = true;
       }
     },
-    toggleAllTrails() {
-
-    }
   },
   template: `
   <div>
   <div class="row relative-map">
-  <map-full :points='points' :selectedTrail='trailSelectedObj' :typeTrail='typeTrail' :tileLayerType='tileLayerType'></map-full>
+
+  <map-full :selectedTrail='trailSelectedObj' :tileLayerType='tileLayerType' :trails='trails'></map-full>
+  
   <div class="column-map col-12 col-md-3 white">
     <div class="row">
     <div class="col-md-10">
@@ -237,7 +268,7 @@ var MapPage = Vue.component("map-page", {
   </div>
   <div class="column-map col-12 col-md-2">
     <div class="btn-group-toggle" data-toggle="buttons">
-      <label v-on:click="toggleAllTrails()" class="btn btn-light">
+      <label v-on:click="toggleAllTrails()" class="btn btn-light active">
       <svg class="bi" width="24" height="24" fill="currentColor">
         <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#eye"/>
       </svg>
@@ -259,15 +290,25 @@ var MapPage = Vue.component("map-page", {
 </div>
 <div class="row">
   
-<div class="description hidden column-map col-12 col-md-3 white">
+<div class="description hidden column-map col-12 col-md-3 white scrollable">
       <h4>Classificazione</h4>
       <p> {{ trailSelectedObj.classification }}</p>
       <h4>Località</h4>
       <p> <span>{{ trailSelectedObj.startPos.name }}</span> - <span>{{ trailSelectedObj.finalPos.name }} </span> </p>
+      <h4>Percorribilita'</h4>
+      <div v-if="notificationsForTrail.length > 0" class="clickable">
+        <div v-on:click="toggleModal">
+          <svg class="bi pulse" width="24" height="24" fill="red">
+            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
+          </svg>
+          <p>Clicca visualizzare avvisi di percorribilita'</p>
+        </div>
+      </div>
+      <p v-else>Non ci sono avvisi di percorribilita'.</p>
       <h4>Lunghezza</h4>
       <p>{{ parseInt(trailSelectedObj.statsMetadata.length) }}m</p>
       <h4>Tempo di percorrenza</h4>
-      <p>{{ Math.ceil(parseInt(trailSelectedObj.statsMetadata.eta)) }}</p>
+      <p>{{ Math.ceil(parseInt(trailSelectedObj.statsMetadata.eta)) }} minuti</p>
       <h4>Dislivello</h4>
       <p>Positivo: {{ parseInt(trailSelectedObj.statsMetadata.totalRise) }}m</p>
       <p>Negativo: {{ parseInt(trailSelectedObj.statsMetadata.totalFall) }}m</p>
@@ -282,10 +323,10 @@ var MapPage = Vue.component("map-page", {
           <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#download"/>
         </svg>
         </div>
-        <div class="col-md-10 space-up">
+        <div class="col-md-10 space-up clickable">
             <a v-on:click="downloadGpx" target="_blank">Download</a>
         </div>
-        <div class="col-md-2 space-up">
+        <div class="col-md-2 space-up clickable">
           <svg class="bi" width="32" height="32" fill="red">
            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#geo-alt"/>
           </svg>
@@ -295,9 +336,6 @@ var MapPage = Vue.component("map-page", {
         </div>
       </div>
   </div>
-
-  
-  
   <div class="column-hikes column-map col-3 white offset-6 hide">
       <table class="table table-striped interactive-table">
           <thead>
@@ -316,7 +354,7 @@ var MapPage = Vue.component("map-page", {
           </tbody>
       </table>
   </div>
-
+  <dialog-info-notification :id='valuerouter' :unresolvedNotifications='notificationsForTrail'></dialog-info-notification>
 </div>
 </div>
   `,

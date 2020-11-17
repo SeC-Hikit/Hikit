@@ -1,5 +1,5 @@
 /* Header  */
-.it-header-slim-wrapper-content, .it-header-slim-wrapper{
+.it-header-slim-wrapper-tent, .it-header-slim-wrapper{
   height: 35px;
 }
 
@@ -55,12 +55,8 @@
   border-bottom: 2px white solid;
 }
 
-.it-footer-main {
-  /* TODO change color */
-}
-
-.hidden {
-  /* display: none; */
+.clickable {
+  cursor: pointer;
 }
 
 .column-map {
@@ -69,6 +65,9 @@
   /* margin-bottom: 20px; */
   z-index: 1;
   max-height: 720px;
+}
+
+.scrollable { 
   overflow: scroll;
 }
 

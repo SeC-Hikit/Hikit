@@ -59,7 +59,7 @@ public class ConfiguratorModule extends AbstractModule {
         final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             final File givenPropertiesPath = new File(pathToProperties);
-            LOGGER.info(format("Using properties at passed via argument '%s'", pathToProperties));
+            LOGGER.info(format("Using properties passed in file:'%s'", pathToProperties));
             return new FileInputStream(givenPropertiesPath);
         } catch (final Exception e) {
             LOGGER.info("Defaulting properties");

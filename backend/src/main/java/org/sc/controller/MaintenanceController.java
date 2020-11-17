@@ -46,6 +46,15 @@ public class MaintenanceController implements PublicController {
         return new MaintenanceResponse(maintenanceDao.getPast());
     }
 
+    private RESTResponse getPastPaged(final Request request, final Response response) {
+        final int from = Integer.parseInt(request.params(":from"));
+        final int to = Integer.parseInt(request.params(":to"));
+        if(from <= to){
+            return new MaintenanceResponse(maintenanceDao.getPast(from, to));
+        }
+        return null;
+    }
+
     private RESTResponse deleteMaintenance(Request request, Response response) {
         final String requestId = request.params(":id");
         boolean isDeleted = maintenanceDao.delete(requestId);
@@ -62,7 +71,7 @@ public class MaintenanceController implements PublicController {
 
     private RESTResponse createMaintenance(Request request, Response response) {
         Maintenance maintenance = convertRequestToMaintenance(request);
-        Set<String> errors = maintenanceValidator.validate(request);
+        final Set<String> errors = maintenanceValidator.validate(request);
         if(errors.isEmpty()) {
             maintenanceDao.upsert(maintenance);
             return new RESTResponse();
@@ -74,6 +83,7 @@ public class MaintenanceController implements PublicController {
     public void init() {
         get(format("%s/future", PREFIX), this::getFutureMaintenance, JsonHelper.json());
         get(format("%s/past", PREFIX), this::getPastMaintenance, JsonHelper.json());
+        get(format("%s/past/:from/:to", PREFIX), this::getPastPaged, JsonHelper.json());
         delete(format("%s/delete/:id", PREFIX), this::deleteMaintenance, JsonHelper.json());
         put(format("%s/save", PREFIX), this::createMaintenance, JsonHelper.json());
     }

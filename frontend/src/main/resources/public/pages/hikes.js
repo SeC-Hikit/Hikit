@@ -11,7 +11,7 @@ var HikesPage = {
         };
     },
     methods: {
-        onPreview: function () {
+        onPreview: function (event) {
             var id = $(event.currentTarget).parent().children().first().text()
             axios.get("http://localhost:8991/app/preview/trail/" + id).then(
             response => {
