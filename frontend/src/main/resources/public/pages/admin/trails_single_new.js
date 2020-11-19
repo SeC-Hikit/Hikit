@@ -7,16 +7,24 @@ let TrailManagementPageSingleNew = {
       points: 0,
     };
   },
+  components: {
+    "preview-map": previewMap,
+    "text-only-area-component": textOnlyAreaComponent,
+  },
   methods: {
     onPreview: function (id) {
       console.log("Requested trail id " + id);
       axios.get("abc");
     },
-    close: function(){
-        if(confirm("Sei sicuro di voler tornare al menù? \nCliccando 'OK' tutte le modifiche a questo sentiero andranno perse.")){
-            this.$router.push("/admin/trails");
-        }
-    }
+    close: function () {
+      if (
+        confirm(
+          "Sei sicuro di voler tornare al menù? \nCliccando 'OK' tutte le modifiche a questo sentiero andranno perse."
+        )
+      ) {
+        this.$router.push("/admin/trails");
+      }
+    },
   },
   template: `
   <div class="container my-4">

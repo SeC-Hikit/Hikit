@@ -1,4 +1,4 @@
-import dialogConfig from "../../component/dialog-confirm";
+import dialogConfirm from "../../component/dialog-confirm";
 
 var TrailManagementPage = {
   methods: {
@@ -18,6 +18,9 @@ var TrailManagementPage = {
         // remove it
       }
     },
+  },
+  components: {
+    "dialog-confirm": dialogConfirm,
   },
   template: `
     <div class="container my-4">

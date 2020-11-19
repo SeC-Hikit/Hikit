@@ -9,8 +9,12 @@ var NotificationsPage = {
       solvedTo: 10,
     };
   },
-  mounted: function () {
+  created: function () {
     this.loading = true;
+    this.errored = false;
+    this.unresolvedNotifications = [];
+  },
+  mounted: function () {
     axios
       .get("http://localhost:8991/app/notifications/unsolved")
       .then((response) => {

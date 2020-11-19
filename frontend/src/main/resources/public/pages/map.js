@@ -1,7 +1,8 @@
 import mapFull from "../component/full-map";
 import dialogInfoNotification from "../component/dialog-info-notification";
+import fullTrailPage from "../component/full-trail-page";
 
-var MapPage = Vue.component("map-page", {
+let MapPage = Vue.component("map-page", {
   props: { id: Number },
 
   data() {
@@ -30,35 +31,43 @@ var MapPage = Vue.component("map-page", {
       // Show-hide
       renderAllTrails: true,
       showListTrails: false,
+      showTrailPage: false,
+      showDetails: false,
     };
   },
   components: {
     "preview-map": mapFull,
-    "dialog-info-confirmation": dialogInfoNotification
+    "dialog-info-confirmation": dialogInfoNotification,
+    "full-trail-page": fullTrailPage,
   },
   created: function () {
     this.valuerouter = this.id ? this.id : 0;
     this.trailSelectedObj = {
-      startPos: { name: "" }, finalPos: { name: "" },
-      statsMetadata: { length: 0, eta: 0, totalRise: 0, totalFall: 0 }
+      startPos: { name: "" },
+      finalPos: { name: "" },
+      statsMetadata: { length: 0, eta: 0, totalRise: 0, totalFall: 0 },
     };
+    this.showDetails = false;
   },
   mounted: function () {
     if (this.valuerouter != 0) {
+      this.toggleDetails();
       this.updateTrail(this.valuerouter);
     }
-    if(this.renderAllTrails) {
+    if (this.renderAllTrails) {
       this.renderTrails();
     }
     // Load all trails in list
-    axios.get("http://localhost:8991/app/preview/all").then(
-      response => {
-        this.trailPreviewResponse = JSON.parse(response.data).trailPreviews
-      }).catch(error => {
-        console.log(error)
-        this.errored = true
+    axios
+      .get("http://localhost:8991/app/preview/all")
+      .then((response) => {
+        this.trailPreviewResponse = JSON.parse(response.data).trailPreviews;
       })
-      .finally(() => this.loading = false)
+      .catch((error) => {
+        console.log(error);
+        this.errored = true;
+      })
+      .finally(() => (this.loading = false));
 
     this.chartOptions = {
       tooltips: {
@@ -108,61 +117,69 @@ var MapPage = Vue.component("map-page", {
   methods: {
     renderTrails() {
       console.log("Getting trails...");
-      axios.get("http://localhost:8991/app/trail").then(
-        response => {
-          if(response.data) {
-            this.trails = response.data.trails;
-          }
+      axios.get("http://localhost:8991/app/trail").then((response) => {
+        if (response.data) {
+          this.trails = response.data.trails;
         }
-      )
+      });
     },
     updateTrail(code) {
       if (code) {
         console.log("Getting trail data for " + code);
         // TODO: get trail points
-        axios.get("http://localhost:8991/app/trail/" + code).then(
-          response => {
+        axios
+          .get("http://localhost:8991/app/trail/" + code)
+          .then((response) => {
             if (response.data) {
-              var pointsCoordinates = response.data.trails.map(trail => trail.coordinates)[0];
-              var coordinates = pointsCoordinates.map(x => x.values)
-              var pointsCoordinatesLatLngs = coordinates.map(coord => [coord[1], coord[0]]);
+              var pointsCoordinates = response.data.trails.map(
+                (trail) => trail.coordinates
+              )[0];
+              var coordinates = pointsCoordinates.map((x) => x.values);
+              var pointsCoordinatesLatLngs = coordinates.map((coord) => [
+                coord[1],
+                coord[0],
+              ]);
               this.trailSelectedObj = response.data.trails[0];
               this.typeTrail = response.data.classification;
               this.points = pointsCoordinatesLatLngs; // Triggers Rendering
               this.showNotificationsIconIfPresent(code);
               this.updateChart(
                 this.trailSelectedObj.code,
-                pointsCoordinates.map(coord => coord.altitude)
+                pointsCoordinates.map((coord) => coord.altitude)
               );
             }
-          }).catch(error => {
-            console.log(error)
-            this.errored = true
           })
-          .finally(() => this.loading = false)
+          .catch((error) => {
+            console.log(error);
+            this.errored = true;
+          })
+          .finally(() => (this.loading = false));
       }
     },
     showNotificationsIconIfPresent(code) {
       console.log("Checking notifications for trail '" + code + "'");
-      axios.get("http://localhost:8991/app/notifications/" + code).then(
-        response => {
+      axios
+        .get("http://localhost:8991/app/notifications/" + code)
+        .then((response) => {
           if (response.data) {
-            this.notificationsForTrail = response.data.accessibilityNotifications
+            this.notificationsForTrail =
+              response.data.accessibilityNotifications;
           }
-        }).catch(error => {
-          console.log(error)
-          this.errored = true
         })
-        .finally(() => this.loading = false)
+        .catch((error) => {
+          console.log(error);
+          this.errored = true;
+        })
+        .finally(() => (this.loading = false));
     },
-    toggleModal(){
+    toggleModal() {
       $("#modal_info").modal("toggle");
     },
     /**
      * Update Chart on page
-     * @param {*} code 
-     * @param {*} altitudeValues 
-     * @param {*} trailLength 
+     * @param {*} code
+     * @param {*} altitudeValues
+     * @param {*} trailLength
      */
     updateChart(code, altitudeValues) {
       function removeData(chart) {
@@ -172,7 +189,7 @@ var MapPage = Vue.component("map-page", {
         chart.update();
       }
       function updateChartWithPoints(codeLabel, chart, datapointY) {
-        chart.data.labels = datapointY.map(dp => "");
+        chart.data.labels = datapointY.map((dp) => "");
         chart.data.datasets = [
           {
             label: "Altitudine",
@@ -189,44 +206,49 @@ var MapPage = Vue.component("map-page", {
       updateChartWithPoints(code, this.chart, altitudeValues);
     },
     onTrailListClick(event) {
-      var code = $(event.currentTarget).text()
+      var code = $(event.currentTarget).text();
       console.log("Previewing trail code:" + code);
       this.updateTrail(code);
-    },
-    loadTrailSideBarInfo(infoObj) {
-      console.log("Updating trail sidebar...");
+      this.ensureDetailsVisible();
+      this.$router.push("/map/" + code);
     },
     changeTileLayer(layerType) {
-      console.log("Updating layer to " + layerType)
+      console.log("Updating layer to " + layerType);
       this.tileLayerType = layerType;
     },
     downloadGpx() {
       if (this.trailSelectedObj) {
         var trailCode = this.trailSelectedObj.code;
-        axios.get("http://localhost:8991/app/download/" + this.trailSelectedObj.code).then(
-          response => {
+        axios
+          .get(
+            "http://localhost:8991/app/download/" + this.trailSelectedObj.code
+          )
+          .then((response) => {
             if (response.data) {
               var saveData = (function () {
                 var a = document.createElement("a");
                 document.body.appendChild(a);
                 a.style = "display: none";
                 return function (fileName) {
-                  var blob = new Blob([response.data], { type: "octet/stream" }),
+                  var blob = new Blob([response.data], {
+                      type: "octet/stream",
+                    }),
                     url = window.URL.createObjectURL(blob);
                   a.href = url;
                   a.download = fileName;
                   a.click();
                   window.URL.revokeObjectURL(url);
                 };
-              }());
+              })();
               var fileName = trailCode + ".gpx";
               saveData(fileName);
             }
-          }).catch(error => {
-            console.log(error)
-            this.errored = true
           })
-          .finally(() => this.loading = false)
+          .catch((error) => {
+            console.log(error);
+            this.errored = true;
+          })
+          .finally(() => (this.loading = false));
       }
     },
     toggleList() {
@@ -240,19 +262,36 @@ var MapPage = Vue.component("map-page", {
         this.showListTrails = true;
       }
     },
+    toggleFullTrailPage() {
+      $("#fullTrailPage").fadeIn();
+    },
+    toggleDetails() {
+      if (this.showDetails) {
+        $(".details").addClass("hide");
+        this.showDetails = false;
+      } else {
+        $(".details").removeClass("hide");
+        this.showDetails = true;
+      }
+    },
+    ensureDetailsVisible() {
+      $(".details").removeClass("hide");
+      this.showDetails = true;
+    },
   },
   template: `
   <div>
   <div class="row relative-map">
 
+  <full-trail-page :trailObject='trailSelectedObj' :notificationsForTrail='notificationsForTrail'></full-trail-page>
   <map-full :selectedTrail='trailSelectedObj' :tileLayerType='tileLayerType' :trails='trails'></map-full>
   
-  <div class="column-map col-12 col-md-3 white">
+  <div class="column-map col-12 col-md-3 white details hide">
     <div class="row">
     <div class="col-md-10">
       <h1>{{ trailSelectedObj.code }}</h1>
     </div>
-    <div class="col-md-2 space-up">
+    <div class="col-md-2 space-up clickable" v-on:click="toggleFullTrailPage">
       <svg class="bi" width="24" height="24" fill="red">
         <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#arrow-up-right-square"/>
       </svg>
@@ -290,7 +329,7 @@ var MapPage = Vue.component("map-page", {
 </div>
 <div class="row">
   
-<div class="description hidden column-map col-12 col-md-3 white scrollable">
+<div class="description hidden column-map col-12 col-md-3 white scrollable details hide">
       <h4>Classificazione</h4>
       <p> {{ trailSelectedObj.classification }}</p>
       <h4>Località</h4>

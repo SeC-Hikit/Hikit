@@ -1,4 +1,4 @@
-let dialogConfig = Vue.component("dialog-config", {
+let dialogConfirm = Vue.component("dialog-config", {
   props: {
     titleText: String,
     icon: String, 
@@ -32,4 +32,4 @@ let dialogConfig = Vue.component("dialog-config", {
     `,
 });
 
-module.exports = dialogConfig;
+module.exports = dialogConfirm;

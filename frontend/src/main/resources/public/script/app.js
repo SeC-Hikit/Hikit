@@ -31,9 +31,8 @@ const Home = { template: '<div>home</div>' }
 
 const routes = [
   { path: "/", component: Home },
-  { path: "/hikes", component: HikesPage },
-    
   { path: "/map", component: MapPage},
+  { path: "/hikes", component: HikesPage },
   { path: "/map/:id", component: MapPage, props: true},
   
   { path: "/notifications", component: NotificationsPage },

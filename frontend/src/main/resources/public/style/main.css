@@ -1,15 +1,24 @@
 /* Header  */
-.it-header-slim-wrapper-tent, .it-header-slim-wrapper{
+.it-header-slim-wrapper-tent,
+.it-header-slim-wrapper {
   height: 35px;
 }
 
-.it-header-slim-wrapper .it-header-slim-wrapper-content a.navbar-brand, 
-.it-header-slim-wrapper .it-header-slim-wrapper-content .nav-mobile ul.link-list a{
+.it-header-slim-wrapper .it-header-slim-wrapper-content a.navbar-brand,
+.it-header-slim-wrapper
+  .it-header-slim-wrapper-content
+  .nav-mobile
+  ul.link-list
+  a {
   padding-top: 0px;
 }
 
-.it-header-center-wrapper .it-header-center-content-wrapper .it-brand-wrapper a .icon{
-  width:72px;
+.it-header-center-wrapper
+  .it-header-center-content-wrapper
+  .it-brand-wrapper
+  a
+  .icon {
+  width: 72px;
   height: 62px;
 }
 
@@ -22,7 +31,7 @@
   height: 500px;
 }
 
-.relative-map{
+.relative-map {
   position: relative;
 }
 
@@ -30,8 +39,7 @@
   background: white;
 }
 
-
-.btn.btn-light{
+.btn.btn-light {
   background: white;
 }
 
@@ -40,14 +48,24 @@
 }
 
 #map-full {
-  position:absolute;
-  min-width:100%;
+  position: absolute;
+  min-width: 100%;
   min-height: 720px;
   max-height: 720px;
   z-index: 0;
 }
 
-.leaflet-left{
+#fullTrailPage {
+  width: 100%;
+  min-height: 1000px;
+  background: rgba(255, 255, 255, 0.95);
+  position: absolute;
+  top: 0px;
+  z-index: 2;
+  display:none;
+}
+
+.leaflet-left {
   left: 95%;
 }
 
@@ -67,13 +85,13 @@
   max-height: 720px;
 }
 
-.scrollable { 
+.scrollable {
   overflow: scroll;
 }
 
 .column-hikes tbody tr {
   cursor: pointer;
-} 
+}
 
 .interactive-table tbody tr:hover {
   background-color: #c3c3c3;
@@ -100,12 +118,12 @@
   text-decoration: underline;
 }
 
-ul.link-list{
-  border-left:0px;
+ul.link-list {
+  border-left: 0px;
   border-right: 0px;
 }
 
-.hide { 
+.hide {
   z-index: -1;
 }
 
