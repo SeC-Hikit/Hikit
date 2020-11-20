@@ -1,33 +1,28 @@
 package org.sc.controller;
 
-import com.google.inject.Inject;
-import org.sc.common.rest.controller.JsonHelper;
-import org.sc.common.rest.controller.PublicController;
 import org.sc.data.TrailDatasetVersion;
 import org.sc.data.TrailDatasetVersionDao;
-import spark.Request;
-import spark.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import static java.lang.String.format;
-import static org.sc.common.config.ConfigurationProperties.API_PREFIX;
-import static spark.Spark.get;
+@RestController()
+@RequestMapping(TrailDatasetController.PREFIX)
+public class TrailDatasetController {
 
-public class TrailDatasetController implements PublicController {
-
-    private final static String PREFIX = API_PREFIX + "/dataset";
+    public final static String PREFIX = "/dataset";
     private TrailDatasetVersionDao trailDatasetVersionDao;
 
-    @Inject
+    @Autowired
     public TrailDatasetController(TrailDatasetVersionDao trailDatasetVersionDao) {
         this.trailDatasetVersionDao = trailDatasetVersionDao;
     }
 
-    private TrailDatasetVersion getTrailDatasetV(Request request, Response response) {
+    @GetMapping
+    private TrailDatasetVersion getTrailDatasetV() {
         return trailDatasetVersionDao.getLast();
-    }
-
-    public void init() {
-        get(format("%s", PREFIX), this::getTrailDatasetV, JsonHelper.json());
     }
 
 }

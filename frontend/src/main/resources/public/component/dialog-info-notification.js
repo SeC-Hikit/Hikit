@@ -10,7 +10,7 @@ let dialogConfig = Vue.component("dialog-info-notification", {
         <div class="modal-content">
           <div class="modal-header">
             <svg class="bi" width="32" height="32" fill="currentColor">
-            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#info"/>
+            <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#info"/>
             </svg>
             <h5 class="modal-title">Notifiche e incidenti conosciuti su percorso {{id}}</h5>
           </div>

@@ -13,6 +13,8 @@ public class Position {
     private List<String> tags;
     private CoordinatesWithAltitude coordinates;
 
+    public Position(){}
+
     public Position(double alt, double lat, double longitude) {
         this.coordinates = new CoordinatesWithAltitude(longitude, lat, alt);
     }

@@ -3,10 +3,12 @@ package org.sc.data;
 import org.bson.Document;
 import org.sc.common.rest.controller.Coordinates;
 import org.sc.common.rest.controller.CoordinatesWithAltitude;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Component
 public class CoordinatesAltitudeMapper implements Mapper<CoordinatesWithAltitude> {
 
     public static final String POINT_GEO_JSON = "Point";

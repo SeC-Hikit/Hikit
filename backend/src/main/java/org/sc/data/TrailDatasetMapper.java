@@ -1,7 +1,9 @@
 package org.sc.data;
 
 import org.bson.Document;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TrailDatasetMapper implements Mapper<TrailDatasetVersion> {
 
     public static final String VERSION_FIELD = "version";

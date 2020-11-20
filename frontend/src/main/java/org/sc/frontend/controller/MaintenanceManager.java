@@ -1,28 +1,29 @@
 package org.sc.frontend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import org.sc.common.config.ConfigurationProperties;
-import org.sc.common.rest.controller.AccessibilityResponse;
 import org.sc.common.rest.controller.MaintenanceResponse;
-import org.sc.common.rest.controller.helper.GsonBeanHelper;
+import org.sc.common.rest.controller.helper.ObjectMapperWrapper;
 import org.sc.frontend.configuration.AppProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
+@Component
 public class MaintenanceManager {
 
     private final AppProperties appProperties;
-    private final GsonBeanHelper gsonBeanHelper;
+    private final ObjectMapper objectMapperWrapper;
 
-    @Inject
-    public MaintenanceManager(final AppProperties appProperties, final GsonBeanHelper gsonBeanHelper) {
+    @Autowired
+    public MaintenanceManager(final AppProperties appProperties, final ObjectMapper objectMapperWrapper) {
         this.appProperties = appProperties;
-        this.gsonBeanHelper = gsonBeanHelper;
+        this.objectMapperWrapper = objectMapperWrapper;
     }
 
     public MaintenanceResponse getFutureMaintenance() throws IOException {
@@ -32,9 +33,8 @@ public class MaintenanceManager {
                 .build();
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
-        if (isNotBlank(responseBody)) {
-            return gsonBeanHelper.getGsonBuilder()
-                    .fromJson(responseBody, MaintenanceResponse.class);
+        if (StringUtils.hasLength(responseBody)) {
+            return objectMapperWrapper.readValue(responseBody, MaintenanceResponse.class);
         }
         return null;
     }
@@ -46,9 +46,8 @@ public class MaintenanceManager {
                 .build();
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
-        if (isNotBlank(responseBody)) {
-            return gsonBeanHelper.getGsonBuilder()
-                    .fromJson(responseBody, MaintenanceResponse.class);
+        if (StringUtils.hasLength(responseBody)) {
+            return objectMapperWrapper.readValue(responseBody, MaintenanceResponse.class);
         }
         return null;
     }

@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class MaintenanceResponse extends RESTResponse {
-    final List<Maintenance> maintenanceList;
+    List<Maintenance> maintenanceList;
+
+    public MaintenanceResponse(){}
 
     public MaintenanceResponse(List<Maintenance> maintenanceList) {
         super(Status.OK, Collections.emptySet());

@@ -50,10 +50,10 @@ var NotificationManagement = {
                               <td><p>Si</p></td>
                               <td>
                               <svg v-on:click="resolveNotification(1)" class="bi" width="32" height="32" fill="currentColor">
-                                      <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#hammer"/>
+                                      <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#hammer"/>
                               </svg>
                               <svg v-on:click="onDelete(1, '18/06/2020')" class="bi" width="32" height="32" fill="currentColor">
-                                      <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
+                                      <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
                               </svg>
                               </td>
                           </tr>
@@ -81,7 +81,7 @@ var NotificationManagement = {
                             <td><p>def</p></td>
                             <td>
                             <svg v-on:click="onClose(1, '18/05/2020')" class="bi" width="32" height="32" fill="currentColor">
-                                    <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
+                                    <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
                             </svg>
                             </td>
                         </tr>

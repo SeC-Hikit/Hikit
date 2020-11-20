@@ -14,7 +14,7 @@ let slimHeaderComponent = Vue.component('slim-header', {
                                         <span>CAI Bologna</span>
                                         <svg class="icon">
                                             <use
-                                                xlink:href="/node_modules/bootstrap-italia/dist/svg/sprite.svg#it-expand">
+                                                xlink:href="node_modules/bootstrap-italia/dist/svg/sprite.svg#it-expand">
                                             </use>
                                         </svg>
                                     </a>

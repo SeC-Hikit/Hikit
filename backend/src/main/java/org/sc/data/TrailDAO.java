@@ -1,7 +1,5 @@
 package org.sc.data;
 
-import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -12,12 +10,16 @@ import org.sc.common.config.DataSource;
 import org.sc.common.rest.controller.Position;
 import org.sc.common.rest.controller.Trail;
 import org.sc.common.rest.controller.TrailPreview;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
+@Repository
 public class TrailDAO {
 
     public static final String $_NEAR_OPERATOR = "$near";
@@ -44,7 +46,7 @@ public class TrailDAO {
     private final Mapper<Trail> trailMapper;
     private final TrailPreviewMapper trailPreviewMapper;
 
-    @Inject
+    @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
                     final TrailPreviewMapper trailPreviewMapper) {
@@ -125,7 +127,7 @@ public class TrailDAO {
     }
 
     private List<TrailPreview> toTrailsPreviewList(FindIterable<Document> documents) {
-        return Lists.newArrayList(documents).stream().map(trailPreviewMapper::mapToObject).collect(toList());
+        return StreamSupport.stream(documents.spliterator(), false).map(trailPreviewMapper::mapToObject).collect(toList());
     }
 
     private Document projectPreview() {
@@ -134,7 +136,7 @@ public class TrailDAO {
 
     @NotNull
     private List<Trail> toTrailsList(Iterable<Document> documents) {
-        return Lists.newArrayList(documents).stream().map(trailMapper::mapToObject).collect(toList());
+        return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
 
 }

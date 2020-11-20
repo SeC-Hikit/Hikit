@@ -2,7 +2,10 @@ package org.sc.data;
 
 import org.bson.Document;
 import org.sc.common.rest.controller.AccessibilityNotification;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+@Component
 public class AccessibilityNotificationMapper implements Mapper<AccessibilityNotification> {
 
     @Override

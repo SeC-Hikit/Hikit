@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class AccessibilityResponse extends RESTResponse {
-    final List<AccessibilityNotification> accessibilityNotifications;
+    List<AccessibilityNotification> accessibilityNotifications;
+
+    public AccessibilityResponse(){}
 
     public AccessibilityResponse(List<AccessibilityNotification> accessibilityNotifications) {
         super(Status.OK, Collections.emptySet());

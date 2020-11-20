@@ -17,4 +17,7 @@ public class TrailPreviewRestResponse extends RESTResponse {
         this.trailPreviews = trailPreviews;
     }
 
+    public List<TrailPreview> getTrailPreviews() {
+        return trailPreviews;
+    }
 }

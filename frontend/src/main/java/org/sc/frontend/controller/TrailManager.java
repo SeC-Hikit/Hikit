@@ -1,16 +1,15 @@
 package org.sc.frontend.controller;
 
-import com.google.inject.Inject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import org.sc.common.config.ConfigurationProperties;
-import org.sc.common.rest.controller.CoordinatesWithAltitude;
-import org.sc.common.rest.controller.FileDownloadRestResponse;
-import org.sc.common.rest.controller.Trail;
-import org.sc.common.rest.controller.TrailRestResponse;
-import org.sc.common.rest.controller.helper.GsonBeanHelper;
+import org.sc.common.rest.controller.*;
 import org.sc.frontend.configuration.AppProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,28 +18,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
+@Component
 public class TrailManager {
 
     private final AppProperties appProperties;
-    private final GsonBeanHelper gsonBeanHelper;
+    private final ObjectMapper objectMapperWrapper;
 
-    @Inject
-    public TrailManager(AppProperties appProperties, GsonBeanHelper gsonBeanHelper) {
+    @Autowired
+    public TrailManager(AppProperties appProperties, ObjectMapper objectMapperWrapper) {
         this.appProperties = appProperties;
-        this.gsonBeanHelper = gsonBeanHelper;
+        this.objectMapperWrapper = objectMapperWrapper;
     }
 
-    public String getTrailsPreview() throws IOException {
+    public TrailPreviewRestResponse getTrailsPreview() throws IOException {
         final OkHttpClient client = new OkHttpClient();
 
         final Request request = new Request.Builder()
-                .url(getBasicUrl() + "/trail/preview")
+                .url(getBasicUrl() + "/preview")
                 .build();
 
         Response response = client.newCall(request).execute();
-        return response.body().string();
+        String responseBody = response.body().string();
+        if (StringUtils.hasText(responseBody)) {
+            return objectMapperWrapper
+                    .readValue(responseBody, TrailPreviewRestResponse.class);
+
+        }
+        return null;
     }
 
     public List<CoordinatesWithAltitude> getTrailPreviewPoints(String id) throws IOException {
@@ -50,9 +54,9 @@ public class TrailManager {
                 .build();
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
-        if (isNotBlank(responseBody)) {
-            TrailRestResponse trailRestResponse = gsonBeanHelper.getGsonBuilder()
-                    .fromJson(responseBody, TrailRestResponse.class);
+        if (StringUtils.hasText(responseBody)) {
+            TrailRestResponse trailRestResponse = objectMapperWrapper
+                    .readValue(responseBody, TrailRestResponse.class);
             return trailRestResponse.getTrails().stream().findFirst().get().getCoordinates();
         }
         return null;
@@ -65,9 +69,9 @@ public class TrailManager {
                 .build();
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
-        if (isNotBlank(responseBody)) {
-            final TrailRestResponse trailRestResponse = gsonBeanHelper.getGsonBuilder()
-                    .fromJson(responseBody, TrailRestResponse.class);
+        if (StringUtils.hasText(responseBody)) {
+            final TrailRestResponse trailRestResponse = objectMapperWrapper
+                    .readValue(responseBody, TrailRestResponse.class);
             final List<Trail> lowTrails = trailRestResponse.getTrails().stream().map(trail ->
                     Trail.TrailBuilder.aTrail()
                             .withCode(trail.getCode())
@@ -94,9 +98,9 @@ public class TrailManager {
                 .build();
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
-        if (isNotBlank(responseBody)) {
-            return gsonBeanHelper.getGsonBuilder()
-                    .fromJson(responseBody, TrailRestResponse.class);
+        if (StringUtils.hasText(responseBody)) {
+            return objectMapperWrapper
+                    .readValue(responseBody, TrailRestResponse.class);
         }
         return null;
     }
@@ -108,11 +112,10 @@ public class TrailManager {
                 .build();
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
-        if (isNotBlank(responseBody)) {
-            FileDownloadRestResponse fileDownloadRestResponse = gsonBeanHelper.getGsonBuilder()
-                    .fromJson(responseBody, FileDownloadRestResponse.class);
-            byte[] bytes = Files.readAllBytes(Paths.get(fileDownloadRestResponse.getPath()));
-            return bytes;
+        if (StringUtils.hasText(responseBody)) {
+            FileDownloadRestResponse fileDownloadRestResponse = objectMapperWrapper
+                    .readValue(responseBody, FileDownloadRestResponse.class);
+            return Files.readAllBytes(Paths.get(fileDownloadRestResponse.getPath()));
         }
         return null;
     }

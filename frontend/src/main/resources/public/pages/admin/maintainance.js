@@ -57,7 +57,7 @@ var MantainanceManagement = {
                               <td><p>Giuliano Raimondi</p></td>
                               <td>
                               <svg v-on:click="onDelete(1, '18/05/2020')" class="bi" width="32" height="32" fill="currentColor">
-                                      <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
+                                      <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
                               </svg>
                               </td>
                           </tr>

@@ -1,41 +1,36 @@
 package org.sc.frontend.controller;
 
-import com.google.inject.Inject;
-import org.sc.common.rest.controller.JsonHelper;
 import org.sc.common.rest.controller.MaintenanceResponse;
-import org.sc.common.rest.controller.PublicController;
-import spark.Request;
-import spark.Response;
+import org.sc.frontend.configuration.AppProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
-import static java.lang.String.format;
-import static org.sc.frontend.controller.TrailController.PREFIX;
-import static spark.Spark.get;
-
-public class MaintenanceController implements PublicController {
-
+@RestController
+@RequestMapping("/maintenance")
+public class MaintenanceController {
 
     private final MaintenanceManager maintenanceManager;
 
-    @Inject
+    @Autowired
     public MaintenanceController(final MaintenanceManager maintenanceManager) {
         this.maintenanceManager = maintenanceManager;
     }
 
-    private MaintenanceResponse getFutureMaintenance(Request request, Response response) throws IOException {
+    @GetMapping("/future")
+    public MaintenanceResponse getFutureMaintenance() throws IOException {
         return maintenanceManager.getFutureMaintenance();
     }
 
-    private MaintenanceResponse getPastMaintenance(Request request, Response response) throws IOException {
-        final String from = request.params(":from");
-        final String to = request.params(":to");
-        return maintenanceManager.getPastMaintenance(Integer.parseInt(from), Integer.parseInt(to));
+    @GetMapping("/past/{from}/{to}")
+    public MaintenanceResponse getPastMaintenance(@PathVariable int from, int to) throws IOException {
+        return maintenanceManager.getPastMaintenance(from, to);
     }
 
-    public void init() {
-        get(format("%s/maintenance/future", PREFIX), this::getFutureMaintenance, JsonHelper.json());
-        get(format("%s/maintenance/past/:from/:to", PREFIX), this::getPastMaintenance, JsonHelper.json());
-    }
 
 }

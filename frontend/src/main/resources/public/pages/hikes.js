@@ -13,7 +13,7 @@ var HikesPage = {
     methods: {
         onPreview: function (event) {
             var id = $(event.currentTarget).parent().children().first().text()
-            axios.get("http://localhost:8991/app/preview/trail/" + id).then(
+            axios.get("http://localhost:8991/app/preview/" + id).then(
             response => {
                 if(response.data != null) {
                     this.points = response.data
@@ -33,9 +33,9 @@ var HikesPage = {
         }
     },
     mounted () {
-        axios.get("http://localhost:8991/app/preview/all").then(
+        axios.get("http://localhost:8991/app/preview").then(
             response => {
-                this.trailsResponse = JSON.parse(response.data).trailPreviews
+                this.trailsResponse = response.data.trailPreviews
             }).catch(error => {
                 console.log(error)
                 this.errored = true
@@ -66,12 +66,12 @@ var HikesPage = {
                         <td>{{ trailPreview.classification }}</td>
                         <td v-on:click='onPreview(event)'>
                             <svg class="bi" width="32" height="32" fill="currentColor">
-                                    <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#eye"/>
+                                    <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#eye"/>
                             </svg>
                         </td>
                         <td v-on:click='onOpenToMap(event)'>
                             <svg class="bi" width="32" height="32" fill="currentColor">
-                                    <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#map-fill"/>
+                                    <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#map-fill"/>
                             </svg>
                         </td>
                     </tr>

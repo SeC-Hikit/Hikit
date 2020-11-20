@@ -12,7 +12,7 @@ let dialogConfirm = Vue.component("dialog-config", {
         <div class="modal-content">
           <div class="modal-header">
             <svg class="bi" width="32" height="32" fill="currentColor">
-            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#hammer"/>
+            <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#hammer"/>
             </svg>
             <h5 class="modal-title">Risolvi Avviso
             </h5>

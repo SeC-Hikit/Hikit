@@ -131,7 +131,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
           </div>
           <div class="col-1 col-md-1 offset-5 clickable">
             <svg class="bi" width="24" height="24" fill="red" v-on:click="toggleThis">
-              <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#x"/>
+              <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#x"/>
             </svg>
           </div>
         </div>
@@ -150,7 +150,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
             <div v-if="notificationsForTrail.length > 0" class="clickable">
               <div v-on:click="toggleModal">
                 <svg class="bi pulse" width="24" height="24" fill="red">
-                  <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
+                  <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
                 </svg>
                 <span>Clicca per visualizzare avvisi di percorribilita'</span>
               </div>
@@ -192,7 +192,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
         <div class="row clickable space-up" v-on:click="downloadGpx">
           <div class="col-md-1">
             <svg class="bi" width="32" height="32" fill="red">
-              <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#download"/>
+              <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#download"/>
             </svg>
           </div>
           <div class="col-md-4">
@@ -202,7 +202,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
         <div class="row clickable">
           <div class="col-md-1">
             <svg class="bi" width="32" height="32" fill="red">
-              <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#geo-alt"/>
+              <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#geo-alt"/>
             </svg>
           </div>
           <div class="col-md-4">
@@ -212,7 +212,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
           <div class="row clickable">
           <div class="col-md-1">
             <svg class="bi" width="32" height="32" fill="red">
-              <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#printer"/>
+              <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#printer"/>
             </svg>
           </div>
           <div class="col-md-4">

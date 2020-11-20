@@ -1,35 +1,37 @@
 package org.sc.manager
 
-import com.google.inject.Inject
-import org.sc.DistanceProcessor
-import org.sc.GpxManager
+import org.sc.service.DistanceProcessor
+import org.sc.service.GpxManager
 import org.sc.common.rest.controller.*
 import org.sc.configuration.AppProperties
 import org.sc.converter.MetricConverter
 import org.sc.data.TrailDAO
 import org.sc.data.TrailDistance
 import org.sc.service.AltitudeServiceHelper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.io.File
 import kotlin.math.roundToInt
 
-class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
-                                       private val altitudeService: AltitudeServiceHelper,
-                                       private val gpxHelper: GpxManager,
-                                       private val appProperties: AppProperties){
+@Component
+class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
+                                          private val altitudeService: AltitudeServiceHelper,
+                                          private val gpxHelper: GpxManager,
+                                          private val appProperties: AppProperties){
 
 
 
-    fun getAll() = trailDAO.getTrails()
+    fun getAll() = trailDAO.trails
     fun getByCode(code: String) = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
-    fun allPreview() : List<TrailPreview> = trailDAO.allTrailPreviews;
+    fun allPreview() : List<TrailPreview> = trailDAO.allTrailPreviews
     fun previewByCode(code: String): List<TrailPreview> = trailDAO.trailPreviewByCode(code)
     fun save(trail: Trail) {
         trailDAO.upsert(trail)
         gpxHelper.writeTrailToGpx(trail)
     }
 
-    fun getDownloadableLink(code: String): String = appProperties.pathToGpxDirectory + File.separator + code + ".gpx"
+    fun getDownloadableLink(code: String): String = appProperties.trailStorage + File.separator + code + ".gpx"
 
     fun getByGeo(coordinates: Coordinates, distance: Int, unitOfMeasurement: UnitOfMeasurement, isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
         val coords = CoordinatesWithAltitude(coordinates.longitude,
@@ -73,9 +75,6 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
         }
     }
 
-
-
-
     /**
      * Get the trail closest point to a given coordinate
      *
@@ -84,7 +83,7 @@ class TrailManager @Inject constructor(private val trailDAO: TrailDAO,
      */
     fun getClosestCoordinate(givenCoordinatesWAltitude: CoordinatesWithAltitude, trail: Trail): CoordinatesWithAltitude {
         return trail.coordinates
-                .minBy { DistanceProcessor.distanceBetweenPoints(it, givenCoordinatesWAltitude) }!!
+                .minByOrNull { DistanceProcessor.distanceBetweenPoints(it, givenCoordinatesWAltitude) }!!
     }
 
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =

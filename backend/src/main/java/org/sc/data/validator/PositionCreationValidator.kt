@@ -1,9 +1,9 @@
 package org.sc.data.validator
 
-import com.google.inject.Inject
 import org.sc.common.rest.controller.Position
+import org.springframework.beans.factory.annotation.Autowired
 
-class PositionCreationValidator @Inject constructor(private val coordinatesWithAltitudeCreationValidator: CoordinatesWithAltitudeCreationValidator) : Validator<Position>, CoordinatesValidator {
+class PositionCreationValidator @Autowired constructor(private val coordinatesWithAltitudeCreationValidator: CoordinatesWithAltitudeCreationValidator) : Validator<Position>, CoordinatesValidator {
 
     companion object {
         const val noNameError = "No name specified in position"

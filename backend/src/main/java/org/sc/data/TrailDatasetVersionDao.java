@@ -3,11 +3,13 @@ package org.sc.data;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.sc.common.config.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.Objects;
 
+@Repository
 public class TrailDatasetVersionDao {
 
     public static final String CORE_TRAIL_DATASET_VERSION = "core.TrailDatasetVersion";
@@ -16,7 +18,7 @@ public class TrailDatasetVersionDao {
     private final MongoCollection<Document> collection;
     private final TrailDatasetMapper mapper;
 
-    @Inject
+    @Autowired
     public TrailDatasetVersionDao(final DataSource dataSource,
                                   final TrailDatasetMapper mapper) {
         this.collection = dataSource.getDB().getCollection(CORE_TRAIL_DATASET_VERSION);

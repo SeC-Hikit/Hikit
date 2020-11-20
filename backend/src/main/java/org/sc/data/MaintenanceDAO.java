@@ -1,6 +1,5 @@
 package org.sc.data;
 
-import com.google.common.collect.Lists;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
@@ -8,19 +7,24 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.common.config.DataSource;
 import org.sc.common.rest.controller.Maintenance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
+@Repository
 public class MaintenanceDAO {
 
     private final MongoCollection<Document> collection;
     private final MaintenanceMapper mapper;
 
-    @Inject
+    @Autowired
     public MaintenanceDAO(final DataSource dataSource,
                           final MaintenanceMapper mapper) {
         this.collection = dataSource.getDB().getCollection(Maintenance.COLLECTION_NAME);
@@ -53,7 +57,9 @@ public class MaintenanceDAO {
     }
 
     private List<Maintenance> toMaintenanceList(FindIterable<Document> documents) {
-        return Lists.newArrayList(documents).stream().map(mapper::mapToObject).collect(toList());
+        return StreamSupport.stream(documents.spliterator(), false)
+                .collect(Collectors.toList())
+                .stream().map(mapper::mapToObject).collect(toList());
     }
 
 }

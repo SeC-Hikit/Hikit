@@ -5,10 +5,12 @@ import org.sc.common.rest.controller.Trail
 import org.sc.data.TrailDatasetVersionDao
 import org.sc.data.TrailImport
 import org.sc.manager.TrailManager
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.util.*
-import javax.inject.Inject
 
-class TrailImporterManager @Inject constructor(private val trailsManager : TrailManager,
+@Component
+class TrailImporterManager @Autowired constructor(private val trailsManager : TrailManager,
                                                private val trailsCalculator : TrailsCalculator,
                                                private val trailDatasetVersionDao: TrailDatasetVersionDao){
 

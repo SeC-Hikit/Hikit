@@ -1,16 +1,18 @@
 package org.sc.data;
 
-import com.google.inject.Inject;
 import org.bson.Document;
 import org.sc.common.rest.controller.Position;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class PositionMapper implements Mapper<Position> {
 
     final CoordinatesAltitudeMapper coordinatesMapper;
 
-    @Inject
+    @Autowired
     public PositionMapper(CoordinatesAltitudeMapper coordinatesMapper) {
         this.coordinatesMapper = coordinatesMapper;
     }

@@ -1,97 +1,84 @@
 package org.sc.controller;
 
-import com.google.inject.Inject;
-import org.sc.common.rest.controller.*;
-import org.sc.common.rest.controller.helper.GsonBeanHelper;
+import org.sc.common.rest.controller.AccessibilityNotification;
+import org.sc.common.rest.controller.AccessibilityResponse;
+import org.sc.common.rest.controller.RESTResponse;
+import org.sc.common.rest.controller.Status;
 import org.sc.data.AccessibilityNotificationDAO;
 import org.sc.importer.AccessibilityCreationValidator;
-import spark.Request;
-import spark.Response;
-import spark.Spark;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static org.sc.common.config.ConfigurationProperties.API_PREFIX;
-import static org.sc.controller.TrailController.BAD_REQUEST_STATUS_CODE;
 
-public class AccessibilityNotificationController implements PublicController {
+@RestController
+@RequestMapping(AccessibilityNotificationController.PREFIX)
+public class AccessibilityNotificationController {
 
-    private final static String PREFIX = API_PREFIX + "/accessibility";
+    public final static String PREFIX =  "/accessibility";
 
-    private final GsonBeanHelper gsonBeanHelper;
     private final AccessibilityCreationValidator accessibilityValidator;
     private final AccessibilityNotificationDAO accessibilityDAO;
 
 
-    @Inject
-    public AccessibilityNotificationController(final GsonBeanHelper gsonBeanHelper,
-                                               final AccessibilityNotificationDAO accessibilityDao,
+    @Autowired
+    public AccessibilityNotificationController(final AccessibilityNotificationDAO accessibilityDao,
                                                final AccessibilityCreationValidator accessibilityValidator) {
         this.accessibilityDAO = accessibilityDao;
-        this.gsonBeanHelper = gsonBeanHelper;
         this.accessibilityValidator = accessibilityValidator;
     }
 
-    private RESTResponse getSolved(Request request, Response response) {
+    @GetMapping("/solved")
+    public RESTResponse getSolved() {
         return new AccessibilityResponse(accessibilityDAO.getSolved());
     }
 
-    private RESTResponse getNotSolved(Request request, Response response) {
+    @GetMapping("/unsolved")
+    public RESTResponse getNotSolved() {
         return new AccessibilityResponse(accessibilityDAO.getNotSolved());
     }
 
-    private RESTResponse getByTrailCode(Request request, Response response) {
-        return new AccessibilityResponse(accessibilityDAO.getByCode(request.params(":code")));
+    @GetMapping("/code/{code}")
+    public RESTResponse getByTrailCode(@PathVariable String code) {
+        return new AccessibilityResponse(accessibilityDAO.getByCode(code));
     }
 
-    private RESTResponse deleteAccessibilityNotification(Request request, Response response) {
-        final String requestId = request.params(":id");
-        boolean isDeleted = accessibilityDAO.delete(requestId);
+    @DeleteMapping("/delete/{code}")
+    public RESTResponse deleteAccessibilityNotification(@PathVariable String code) {
+        boolean isDeleted = accessibilityDAO.delete(code);
         if (isDeleted) {
             return new RESTResponse(Status.OK, Collections.emptySet());
         } else {
             return new RESTResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No accessibility notification was found with id '%s'", requestId))));
+                            format("No accessibility notification was found with id '%s'", code))));
         }
     }
 
-    private RESTResponse getSolvedPaged(final Request request, final Response response) {
-        final int from = Integer.parseInt(request.params(":from"));
-        final int to = Integer.parseInt(request.params(":to"));
+    @GetMapping("/solved/{from}/{to}")
+    public RESTResponse getSolvedPaged(@PathVariable int from, @PathVariable int to) {
         if(from <= to){
           return new AccessibilityResponse(accessibilityDAO.getSolved(from, to));
         }
         return null;
     }
 
-    private RESTResponse createAccessibilityNotification(Request request, Response response) {
-        AccessibilityNotification maintenance = convertRequestToAccessibilityNotification(request);
-        final Set<String> errors = accessibilityValidator.validate(request);
+    @PutMapping(path = "/save",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public RESTResponse createAccessibilityNotification(@RequestBody AccessibilityNotification accessibilityNotification) {
+        final Set<String> errors = accessibilityValidator.validate(accessibilityNotification);
         if(errors.isEmpty()) {
-            accessibilityDAO.upsert(maintenance);
+            accessibilityDAO.upsert(accessibilityNotification);
             return new RESTResponse();
         }
-        response.status(BAD_REQUEST_STATUS_CODE);
         return new RESTResponse(errors);
     }
 
-    public void init() {
-        Spark.get(format("%s/solved", PREFIX), this::getSolved, JsonHelper.json());
-        Spark.get(format("%s/solved/:from/:to", PREFIX), this::getSolvedPaged, JsonHelper.json());
-        Spark.get(format("%s/unsolved", PREFIX), this::getNotSolved, JsonHelper.json());
-        Spark.get(format("%s/code/:code", PREFIX), this::getByTrailCode, JsonHelper.json());
-        Spark.delete(format("%s/delete/:id", PREFIX), this::deleteAccessibilityNotification, JsonHelper.json());
-        Spark.put(format("%s/save", PREFIX), this::createAccessibilityNotification, JsonHelper.json());
-    }
-
-    private AccessibilityNotification convertRequestToAccessibilityNotification(final Request request) {
-        final String requestBody = request.body();
-        return Objects.requireNonNull(gsonBeanHelper.getGsonBuilder())
-                .fromJson(requestBody, AccessibilityNotification.class);
-    }
 }

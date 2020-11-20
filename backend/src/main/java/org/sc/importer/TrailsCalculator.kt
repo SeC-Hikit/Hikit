@@ -1,10 +1,12 @@
 package org.sc.importer
 
-import org.sc.DistanceProcessor
+import org.sc.service.DistanceProcessor
 import org.sc.common.rest.controller.CoordinatesWithAltitude
+import org.springframework.stereotype.Service
 import kotlin.math.abs
 import kotlin.math.exp
 
+@Service
 class TrailsCalculator {
 
     companion object {

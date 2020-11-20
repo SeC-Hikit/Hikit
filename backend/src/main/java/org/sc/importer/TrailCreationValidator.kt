@@ -1,36 +1,24 @@
 package org.sc.importer
 
-import com.google.gson.JsonSyntaxException
-import com.google.inject.Inject
-import org.sc.common.rest.controller.helper.GsonBeanHelper
 import org.sc.data.TrailImport
 import org.sc.data.validator.Validator
-import org.sc.data.validator.Validator.Companion.requestMalformedErrorMessage
-import spark.Request
+import org.springframework.stereotype.Component
 
-class TrailCreationValidator @Inject constructor (
-        private val gsonBeanHelper: GsonBeanHelper) : Validator<Request> {
+@Component
+class TrailCreationValidator : Validator<TrailImport> {
 
     companion object {
-        const val minGeoPoints = 3
+        private const val minGeoPoints = 3
 
         const val emptyListPointError = "No geo points specified"
         const val tooFewPointsError = "At least $minGeoPoints geoPoints should be specified"
         const val noParamSpecified = "Empty field '%s'"
     }
 
-    override fun validate(request: Request): Set<String> {
+    override fun validate(request: TrailImport): Set<String> {
         val errors = mutableSetOf<String>()
-
-        val trailRequest = gsonBeanHelper.gsonBuilder!!.fromJson(request.body(), TrailImport::class.java)
-        checkNotNull(trailRequest)
-        try {
-            if (trailRequest.name.isEmpty()) {
-                errors.add(String.format(noParamSpecified, "Name"))
-            }
-
-        } catch (e: JsonSyntaxException) {
-            errors.add(requestMalformedErrorMessage)
+        if (request.name.isEmpty()) {
+            errors.add(String.format(noParamSpecified, "Name"))
         }
         return errors
     }

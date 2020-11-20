@@ -1,17 +1,18 @@
 package org.sc.configuration;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.Logger;
 import org.sc.common.config.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import static java.lang.String.format;
 import static org.apache.logging.log4j.LogManager.getLogger;
 
-@Singleton
+@Component
 public class MongoDataSource implements DataSource {
 
     private final Logger LOGGER = getLogger(MongoDataSource.class);
@@ -19,12 +20,12 @@ public class MongoDataSource implements DataSource {
     private final String databaseName;
     private final MongoClient mongoClient;
 
-    @Inject
+    @Autowired
     public MongoDataSource(final AppProperties appProperties) {
-        final MongoClientURI connectionString = new MongoClientURI(appProperties.getDbUri());
-        this.mongoClient = new MongoClient(connectionString);
+        this.mongoClient = MongoClients.create(appProperties.getMongoDbUri());
         this.databaseName = appProperties.getDbName();
-        LOGGER.info(format("Going to connect to DB '%s'. Connection String '%s'", databaseName, connectionString));
+        LOGGER.info(format("Going to connect to DB '%s'. Connection String '%s'",
+                databaseName, appProperties.getMongoDbUri()));
     }
 
     public MongoClient getClient() {

@@ -1,17 +1,19 @@
 package org.sc.data;
 
-import com.google.inject.Inject;
 import org.bson.Document;
 import org.sc.common.rest.controller.Position;
 import org.sc.common.rest.controller.Trail;
 import org.sc.common.rest.controller.TrailClassification;
 import org.sc.common.rest.controller.TrailPreview;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TrailPreviewMapper implements Mapper<TrailPreview>{
 
     private final PositionMapper positionMapper;
 
-    @Inject
+    @Autowired
     public TrailPreviewMapper(final PositionMapper positionMapper) {
         this.positionMapper = positionMapper;
     }

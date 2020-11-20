@@ -57,11 +57,15 @@ let MapPage = Vue.component("map-page", {
     if (this.renderAllTrails) {
       this.renderTrails();
     }
+    // Maximise map view
+    $(".relative-map").css("min-height", window.innerHeight-($(".it-header-wrapper").height()));
+    $("#map-full").css("min-height", window.innerHeight-($(".it-header-wrapper").height()));
+
     // Load all trails in list
     axios
-      .get("http://localhost:8991/app/preview/all")
+      .get("http://localhost:8991/app/preview")
       .then((response) => {
-        this.trailPreviewResponse = JSON.parse(response.data).trailPreviews;
+        this.trailPreviewResponse = response.data.trailPreviews;
       })
       .catch((error) => {
         console.log(error);
@@ -221,7 +225,7 @@ let MapPage = Vue.component("map-page", {
         var trailCode = this.trailSelectedObj.code;
         axios
           .get(
-            "http://localhost:8991/app/download/" + this.trailSelectedObj.code
+            "http://localhost:8991/app/trail/download/" + this.trailSelectedObj.code
           )
           .then((response) => {
             if (response.data) {
@@ -293,7 +297,7 @@ let MapPage = Vue.component("map-page", {
     </div>
     <div class="col-md-2 space-up clickable" v-on:click="toggleFullTrailPage">
       <svg class="bi" width="24" height="24" fill="red">
-        <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#arrow-up-right-square"/>
+        <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#arrow-up-right-square"/>
       </svg>
       </div>
     </div>
@@ -309,12 +313,12 @@ let MapPage = Vue.component("map-page", {
     <div class="btn-group-toggle" data-toggle="buttons">
       <label v-on:click="toggleAllTrails()" class="btn btn-light active">
       <svg class="bi" width="24" height="24" fill="currentColor">
-        <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#eye"/>
+        <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#eye"/>
       </svg>
       </label>
       <label v-on:click="toggleList()" class="btn btn-light">
       <svg class="bi" width="24" height="24" fill="currentColor">
-      <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#list-ol"/>
+      <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#list-ol"/>
       </svg>
       </label>
     </div>
@@ -338,7 +342,7 @@ let MapPage = Vue.component("map-page", {
       <div v-if="notificationsForTrail.length > 0" class="clickable">
         <div v-on:click="toggleModal">
           <svg class="bi pulse" width="24" height="24" fill="red">
-            <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
+            <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
           </svg>
           <p>Clicca visualizzare avvisi di percorribilita'</p>
         </div>
@@ -359,7 +363,7 @@ let MapPage = Vue.component("map-page", {
       <div class="row">
       <div class="col-md-2 space-up">
         <svg class="bi" width="32" height="32" fill="red">
-          <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#download"/>
+          <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#download"/>
         </svg>
         </div>
         <div class="col-md-10 space-up clickable">
@@ -367,7 +371,7 @@ let MapPage = Vue.component("map-page", {
         </div>
         <div class="col-md-2 space-up clickable">
           <svg class="bi" width="32" height="32" fill="red">
-           <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#geo-alt"/>
+           <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#geo-alt"/>
           </svg>
         </div>
         <div class="col-md-10 space-up">

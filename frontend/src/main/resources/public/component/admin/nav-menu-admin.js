@@ -7,7 +7,7 @@ var navMenuAdminComponent = Vue.component("nav-menu-admin", {
     </div>
     <div class="col-3">
     <svg class="bi" width="32" height="32" fill="currentColor">
-    <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#map-fill"/>
+    <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#map-fill"/>
     </svg>
     <router-link to="/admin/trails">
       <label>Sentieri</label>
@@ -15,7 +15,7 @@ var navMenuAdminComponent = Vue.component("nav-menu-admin", {
     </div>
     <div class="col-3">
     <svg class="bi" width="32" height="32" fill="currentColor">
-    <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#info-circle-fill"/>
+    <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#info-circle-fill"/>
     </svg>
     <router-link to="/admin/notifications">
     <label>Percorribilità</label>

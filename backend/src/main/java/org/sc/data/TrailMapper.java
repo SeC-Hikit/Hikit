@@ -1,21 +1,23 @@
 package org.sc.data;
 
-import com.google.inject.Inject;
 import org.bson.Document;
 import org.sc.common.rest.controller.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+@Component
 public class TrailMapper implements Mapper<Trail> {
 
     private final PositionMapper positionMapper;
     private final CoordinatesAltitudeMapper coordinatesAltitudeMapper;
     private final StatsTrailMapper statsTrailMapper;
 
-    @Inject
+    @Autowired
     public TrailMapper(PositionMapper positionMapper,
                        CoordinatesAltitudeMapper coordinatesAltitudeMapper,
                        StatsTrailMapper statsTrailMapper) {

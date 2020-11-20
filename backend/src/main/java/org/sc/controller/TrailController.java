@@ -1,19 +1,19 @@
 package org.sc.controller;
 
-import com.google.inject.Inject;
-import org.sc.GpxManager;
 import org.sc.common.rest.controller.*;
-import org.sc.common.rest.controller.helper.GsonBeanHelper;
 import org.sc.data.TrailImport;
 import org.sc.data.TrailPreparationModel;
 import org.sc.importer.TrailCreationValidator;
 import org.sc.importer.TrailImporterManager;
 import org.sc.manager.TrailManager;
-import spark.Request;
-import spark.Response;
+import org.sc.service.GpxManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -23,18 +23,15 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static org.sc.common.config.ConfigurationProperties.ACCEPT_TYPE;
-import static org.sc.common.config.ConfigurationProperties.API_PREFIX;
-import static org.sc.configuration.ConfigurationManager.TMP_FOLDER;
-import static org.sc.configuration.ConfigurationManager.UPLOAD_DIR;
-import static spark.Spark.*;
+import static org.apache.logging.log4j.util.Strings.isBlank;
 
-public class TrailController implements PublicController {
+@RestController
+@RequestMapping(TrailController.PREFIX)
+public class TrailController {
 
-    public static final String MULTI_PART_JETTY_CONFIG = "org.eclipse.jetty.multipartConfig";
+    public final static String PREFIX = "/trail";
 
     private final static Logger LOGGER = Logger.getLogger(TrailController.class.getName());
-    private final static String PREFIX = API_PREFIX + "/trail";
 
     public static final String FILE_INPUT_NAME = "gpxFile";
     public static final String CANNOT_READ_ERROR_MESSAGE = "Could not read GPX file.";
@@ -42,122 +39,86 @@ public class TrailController implements PublicController {
     public static final int BAD_REQUEST_STATUS_CODE = 400;
     public static final String EMPTY_CODE_VALUE_ERROR_MESSAGE = "Empty code value";
 
+    public static final String TMP_FOLDER = "tmp";
+    public static final File UPLOAD_DIR = new File(TMP_FOLDER);
+
     private final GpxManager gpxManager;
-    private final GsonBeanHelper gsonBeanHelper;
     private final TrailManager trailManager;
     private final TrailImporterManager trailImporterManager;
     private final TrailCreationValidator trailValidator;
 
-    @Inject
+    @Autowired
     public TrailController(final GpxManager gpxManager,
-                           final GsonBeanHelper gsonBeanHelper,
                            final TrailManager trailManager,
                            final TrailImporterManager trailImporterManager,
                            final TrailCreationValidator trailValidator) {
         this.gpxManager = gpxManager;
-        this.gsonBeanHelper = gsonBeanHelper;
         this.trailManager = trailManager;
         this.trailImporterManager = trailImporterManager;
         this.trailValidator = trailValidator;
     }
 
-    // trails/read
-    private TrailPreparationModel readGpxFile(final Request request,
-                                              final Response response) throws IOException {
-        response.type(ACCEPT_TYPE);
+    @PostMapping(path = "/read",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public TrailPreparationModel readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
         final Path tempFile = Files.createTempFile(UPLOAD_DIR.toPath(), "", "");
-        request.attribute(MULTI_PART_JETTY_CONFIG, new MultipartConfigElement(String.format("/%s", TMP_FOLDER)));
-
-        try (final InputStream input = request.raw().getPart(FILE_INPUT_NAME).getInputStream()) {
+        try (final InputStream input = gpxFile.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
-        } catch (final ServletException e) {
-            LOGGER.warning(CANNOT_READ_ERROR_MESSAGE + e.getMessage());
         }
         return gpxManager.getTrailPreparationFromGpx(tempFile);
     }
 
-    // trails/import
-    private RESTResponse importTrail(final Request request,
-                                     final Response response) {
-        response.type(ACCEPT_TYPE);
+
+    @PutMapping(path = "/save",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public RESTResponse importTrail(@RequestBody TrailImport request) {
         final Set<String> errors = trailValidator.validate(request);
-        final TrailImport trailRequest = convertRequestToTrail(request);
         final TrailRestResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailRestResponse.
-                TrailRestResponseBuilder.aTrailRestResponse().withMessages(errors);
+                TrailRestResponseBuilder.aTrailRestResponse().withTrails(Collections.emptyList()).withMessages(errors);
         if (errors.isEmpty()) {
-            trailImporterManager.save(trailRequest);
+            trailImporterManager.save(request);
             return trailRestResponseBuilder.withStatus(Status.OK).build();
         }
-        response.status(BAD_REQUEST_STATUS_CODE);
         return trailRestResponseBuilder.withMessages(errors).withStatus(Status.ERROR).build();
     }
 
-
-    private TrailRestResponse getAll(Request request, Response response) {
+    @GetMapping
+    public TrailRestResponse getAll() {
         return new TrailRestResponse(trailManager.getAll());
     }
 
-    private TrailRestResponse getByCode(Request request, Response response) {
-        final String param = request.params(":code");
-        if(param.isEmpty()) {
+    @GetMapping("/{code}")
+    public TrailRestResponse getByCode(@PathVariable String code) {
+        if(isBlank(code)) {
             return new TrailRestResponse(Collections.emptyList(), Status.ERROR, Collections.singleton("Empty code value"));
         }
-        return new TrailRestResponse(trailManager.getByCode(param));
+        return new TrailRestResponse(trailManager.getByCode(code));
     }
 
-    private RESTResponse deleteByCode(Request request, Response response) {
-        final String requestId = request.params(":code");
-        boolean isDeleted = trailManager.delete(requestId);
+    @DeleteMapping("/{code}")
+    public RESTResponse deleteByCode(@PathVariable String code) {
+        boolean isDeleted = trailManager.delete(code);
         if (isDeleted) {
             return new RESTResponse(Status.OK, Collections.emptySet());
         } else {
             return new RESTResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No trail was found with code '%s'", requestId))));
+                            format("No trail deleted with code '%s'", code))));
         }
     }
 
-    private RESTResponse getPreview(Request request, Response response) {
-        return new TrailPreviewRestResponse(trailManager.allPreview());
-    }
-
-    private RESTResponse getPreviewByCode(Request request, Response response) {
-        final String param = request.params(":code");
-        if(param.isEmpty()) {
-            return new TrailPreviewRestResponse(Collections.emptyList(), Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
-        }
-        return new TrailPreviewRestResponse(trailManager.previewByCode(param));
-    }
-
-    private TrailImport convertRequestToTrail(final Request request) {
-        final String requestBody = request.body();
-        return Objects.requireNonNull(gsonBeanHelper.getGsonBuilder())
-                .fromJson(requestBody, TrailImport.class);
-    }
-
-    private FileDownloadRestResponse getDownloadableLink(Request request, Response response) {
-        final String param = request.params(":code");
-        if(param.isEmpty()) {
+    @GetMapping("/download/{code}")
+    public FileDownloadRestResponse getDownloadableLink(@PathVariable String code) {
+        if(!StringUtils.hasText(code)) {
             return new FileDownloadRestResponse("", Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
         }
-        final List<Trail> byCode = trailManager.getByCode(param);
+        final List<Trail> byCode = trailManager.getByCode(code);
         if(!byCode.isEmpty()){
-            return new FileDownloadRestResponse(trailManager.getDownloadableLink(param));
+            return new FileDownloadRestResponse(trailManager.getDownloadableLink(code));
         }
         return new FileDownloadRestResponse("", Status.ERROR, Collections.singleton("Trail does not exist"));
     }
-
-    public void init() {
-        get(format("%s", PREFIX), this::getAll, JsonHelper.json());
-        get(format("%s/preview", PREFIX), this::getPreview, JsonHelper.json());
-        get(format("%s/preview/:code", PREFIX), this::getPreviewByCode, JsonHelper.json());
-        get(format("%s/:code", PREFIX), this::getByCode, JsonHelper.json());
-        delete(format("%s/delete/:code", PREFIX), this::deleteByCode, JsonHelper.json());
-        get(format("%s/download/:code", PREFIX), this::getDownloadableLink, JsonHelper.json());
-        // Import
-        post(format("%s/read", PREFIX), this::readGpxFile, JsonHelper.json());
-        put(format("%s/save", PREFIX), this::importTrail, JsonHelper.json());
-    }
-
 
 }
