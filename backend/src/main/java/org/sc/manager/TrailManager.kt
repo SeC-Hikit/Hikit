@@ -21,8 +21,8 @@ class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
 
 
 
-    fun getAll() = trailDAO.trails
-    fun getByCode(code: String) = trailDAO.getTrailByCode(code)
+    fun getAll(): MutableList<Trail> = trailDAO.trails
+    fun getByCode(code: String): MutableList<Trail> = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
     fun allPreview() : List<TrailPreview> = trailDAO.allTrailPreviews
     fun previewByCode(code: String): List<TrailPreview> = trailDAO.trailPreviewByCode(code)
@@ -33,7 +33,8 @@ class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
 
     fun getDownloadableLink(code: String): String = appProperties.trailStorage + File.separator + code + ".gpx"
 
-    fun getByGeo(coordinates: Coordinates, distance: Int, unitOfMeasurement: UnitOfMeasurement, isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
+    fun getByGeo(coordinates: CoordinatesWithAltitude, distance: Int, unitOfMeasurement: UnitOfMeasurement,
+                 isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
         val coords = CoordinatesWithAltitude(coordinates.longitude,
                 coordinates.latitude, altitudeService.getAltitudeByLongLat(coordinates.latitude, coordinates.longitude))
         val meters = getMeters(unitOfMeasurement, distance)

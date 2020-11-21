@@ -1,8 +1,8 @@
 package org.sc.data;
 
-import org.sc.common.rest.controller.CoordinatesWithAltitude;
 import org.sc.common.rest.controller.Position;
 import org.sc.common.rest.controller.TrailClassification;
+import org.sc.common.rest.controller.TrailCoordinates;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +14,8 @@ public class TrailImport {
     private final String code;
     private final Position startPos;
     private final Position finalPos;
-    private final List<CoordinatesWithAltitude> coordinates;
+    private final List<Position> locations;
+    private final List<TrailCoordinates> coordinates;
     private final TrailClassification classification;
     private final String country;
     private final Date date;
@@ -25,15 +26,17 @@ public class TrailImport {
                        final String code,
                        final Position startPos,
                        final Position finalPos,
+                       final List<Position> locations,
                        final TrailClassification classification,
                        final String country,
-                       final List<CoordinatesWithAltitude> coordinates,
+                       final List<TrailCoordinates> coordinates,
                        final Date date, String maintainingSection) {
         this.name = name;
         this.description = description;
         this.code = code;
         this.startPos = startPos;
         this.finalPos = finalPos;
+        this.locations = locations;
         this.classification = classification;
         this.country = country;
         this.coordinates = coordinates;
@@ -69,7 +72,7 @@ public class TrailImport {
         return country;
     }
 
-    public List<CoordinatesWithAltitude> getCoordinates() {
+    public List<TrailCoordinates> getCoordinates() {
         return coordinates;
     }
 
@@ -81,4 +84,7 @@ public class TrailImport {
         return maintainingSection;
     }
 
+    public List<Position> getLocations() {
+        return locations;
+    }
 }

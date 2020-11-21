@@ -48,7 +48,7 @@ public class TrailManager {
         return null;
     }
 
-    public List<CoordinatesWithAltitude> getTrailPreviewPoints(String id) throws IOException {
+    public List<TrailCoordinates> getTrailPreviewPoints(String id) throws IOException {
         final OkHttpClient client = new OkHttpClient();
         final Request request = new Request.Builder()
                 .url(getBasicUrl() + "/trail/" + id)
@@ -127,7 +127,7 @@ public class TrailManager {
                 .build();
     }
 
-    private List<CoordinatesWithAltitude> getHalfCoordinates(List<CoordinatesWithAltitude> coordinatesWithAltitudes) {
+    private List<TrailCoordinates> getHalfCoordinates(final List<TrailCoordinates> coordinatesWithAltitudes) {
         return IntStream.range(0, coordinatesWithAltitudes.size())
                 .filter(i -> i % 2 == 0)
                 .mapToObj(coordinatesWithAltitudes::get)

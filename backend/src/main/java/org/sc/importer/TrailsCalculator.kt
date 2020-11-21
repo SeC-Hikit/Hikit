@@ -1,7 +1,7 @@
 package org.sc.importer
 
-import org.sc.service.DistanceProcessor
 import org.sc.common.rest.controller.CoordinatesWithAltitude
+import org.sc.service.DistanceProcessor
 import org.springframework.stereotype.Service
 import kotlin.math.abs
 import kotlin.math.exp
@@ -53,6 +53,13 @@ class TrailsCalculator {
         return totalTrailDistance
     }
 
+    fun calculateLengthFromTo(coordinates : List<CoordinatesWithAltitude>, coordinate : CoordinatesWithAltitude) : Double {
+        return coordinates.filterIndexed { index, _ -> index < coordinates.indexOf(coordinate) }
+                .mapIndexed { index: Int, coord: CoordinatesWithAltitude -> toEntry(index, coord, coordinates) }
+                .map { DistanceProcessor.distanceBetweenPoints(it.first, it.second) }
+                .sum()
+    }
+
     fun calculateEta(coordinates: List<CoordinatesWithAltitude>): Double {
         val averageTravelSpeed = calculateAverageTravelSpeed(coordinates)
         val trailDistance = calculateTrailLength(coordinates) / 1000
@@ -61,7 +68,7 @@ class TrailsCalculator {
 
     private fun calculateAverageTravelSpeed(coordinates: List<CoordinatesWithAltitude>) =
             coordinates
-                    .filterIndexed { index, ignored -> index != coordinates.lastIndex }
+                    .filterIndexed { index, _ -> index != coordinates.lastIndex }
                     .mapIndexed { index: Int, coordinatesWithAltitude: CoordinatesWithAltitude -> toEntry(index, coordinatesWithAltitude, coordinates) }
                     .map { calculateSpeedForSegment(it) }
                     .sum() / (coordinates.size - 1)
@@ -73,8 +80,8 @@ class TrailsCalculator {
     private fun getDifferenceInAltitude(currentPoint: CoordinatesWithAltitude, nextPoint: CoordinatesWithAltitude) =
             nextPoint.altitude - currentPoint.altitude
 
-    private fun toEntry(index: Int, coordinatesWithAltitude: CoordinatesWithAltitude, coordinates: List<CoordinatesWithAltitude>)
-            : Pair<CoordinatesWithAltitude, CoordinatesWithAltitude> = Pair(coordinatesWithAltitude, coordinates[index + 1])
+    private fun toEntry(index: Int, trailCoordinates: CoordinatesWithAltitude, coordinates: List<CoordinatesWithAltitude>)
+            : Pair<CoordinatesWithAltitude, CoordinatesWithAltitude> = Pair(trailCoordinates, coordinates[index + 1])
 
     private fun getFall(currentPoint: CoordinatesWithAltitude, nextPoint: CoordinatesWithAltitude) =
             getAbsDifferenceInAltitude(nextPoint, currentPoint)

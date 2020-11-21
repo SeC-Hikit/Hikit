@@ -27,6 +27,7 @@ class TrailImporterManager @Autowired constructor(private val trailsManager : Tr
                 importingTrail.code,
                 importingTrail.startPos,
                 importingTrail.finalPos,
+                importingTrail.locations,
                 importingTrail.classification,
                 importingTrail.country,
                 statsTrailMetadata,

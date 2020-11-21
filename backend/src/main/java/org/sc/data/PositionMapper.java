@@ -10,10 +10,10 @@ import java.util.List;
 @Component
 public class PositionMapper implements Mapper<Position> {
 
-    final CoordinatesAltitudeMapper coordinatesMapper;
+    final TrailCoordinatesMapper coordinatesMapper;
 
     @Autowired
-    public PositionMapper(CoordinatesAltitudeMapper coordinatesMapper) {
+    public PositionMapper(TrailCoordinatesMapper coordinatesMapper) {
         this.coordinatesMapper = coordinatesMapper;
     }
 

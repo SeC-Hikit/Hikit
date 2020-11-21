@@ -11,23 +11,23 @@ public class Position {
 
     private String name;
     private List<String> tags;
-    private CoordinatesWithAltitude coordinates;
+    private TrailCoordinates coordinates;
 
     public Position(){}
 
-    public Position(double alt, double lat, double longitude) {
-        this.coordinates = new CoordinatesWithAltitude(longitude, lat, alt);
+    public Position(double alt, double lat, double longitude, double distanceFromStart) {
+        this.coordinates = new TrailCoordinates(longitude, lat, alt, distanceFromStart);
     }
 
     public Position(final String name,
                     final List<String> tags,
-                    final CoordinatesWithAltitude coords) {
+                    final TrailCoordinates coords) {
         this.name = name;
         this.tags = tags;
         this.coordinates = coords;
     }
 
-    public CoordinatesWithAltitude getCoordinates() {
+    public TrailCoordinates getCoordinates() {
         return coordinates;
     }
 
@@ -42,7 +42,7 @@ public class Position {
     public static final class PositionBuilder {
         private String name;
         private List<String> tags;
-        private CoordinatesWithAltitude coords;
+        private TrailCoordinates coords;
 
         private PositionBuilder() {
         }
@@ -61,7 +61,7 @@ public class Position {
             return this;
         }
 
-        public PositionBuilder withCoords(CoordinatesWithAltitude coords) {
+        public PositionBuilder withCoords(TrailCoordinates coords) {
             this.coords = coords;
             return this;
         }

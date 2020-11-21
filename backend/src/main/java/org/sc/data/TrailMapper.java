@@ -14,15 +14,15 @@ import static java.util.stream.Collectors.toList;
 public class TrailMapper implements Mapper<Trail> {
 
     private final PositionMapper positionMapper;
-    private final CoordinatesAltitudeMapper coordinatesAltitudeMapper;
+    private final TrailCoordinatesMapper trailCoordinatesMapper;
     private final StatsTrailMapper statsTrailMapper;
 
     @Autowired
     public TrailMapper(PositionMapper positionMapper,
-                       CoordinatesAltitudeMapper coordinatesAltitudeMapper,
+                       TrailCoordinatesMapper trailCoordinatesMapper,
                        StatsTrailMapper statsTrailMapper) {
         this.positionMapper = positionMapper;
-        this.coordinatesAltitudeMapper = coordinatesAltitudeMapper;
+        this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.statsTrailMapper = statsTrailMapper;
     }
 
@@ -34,6 +34,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .withCode(doc.getString(Trail.CODE))
                 .withStartPos(getPos(doc, Trail.START_POS))
                 .withFinalPos(getPos(doc, Trail.FINAL_POS))
+                .withLocations(getLocations(doc))
                 .withClassification(getClassification(doc))
                 .withTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
                 .withCountry(doc.getString(Trail.COUNTRY))
@@ -58,20 +59,26 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.CODE, object.getCode())
                 .append(Trail.START_POS, positionMapper.mapToDocument(object.getStartPos()))
                 .append(Trail.FINAL_POS, positionMapper.mapToDocument(object.getFinalPos()))
+                .append(Trail.LOCATIONS, object.getLocations().stream()
+                        .map(positionMapper::mapToDocument).collect(toList()))
                 .append(Trail.CLASSIFICATION, object.getClassification().toString())
                 .append(Trail.COUNTRY, object.getCountry())
                 .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
                 .append(Trail.LAST_UPDATE_DATE, new Date())
                 .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsMetadata()))
-                .append(Trail.COORDINATES, object.getCoordinates()
-                        .stream().map(coordinatesAltitudeMapper::mapToDocument).collect(toList()));
+                .append(Trail.COORDINATES, object.getCoordinates().stream()
+                        .map(trailCoordinatesMapper::mapToDocument).collect(toList()));
     }
 
-    private List<CoordinatesWithAltitude> getCoordinatesWithAltitude(final Document doc) {
+    private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
         final List<Document> list = doc.get(Trail.COORDINATES, List.class);
-        return list.stream().map(coordinatesAltitudeMapper::mapToObject).collect(toList());
+        return list.stream().map(trailCoordinatesMapper::mapToObject).collect(toList());
     }
 
+    private List<Position> getLocations(final Document doc) {
+        final List<Document> list = doc.get(Trail.LOCATIONS, List.class);
+        return list.stream().map(positionMapper::mapToObject).collect(toList());
+    }
 
     private Position getPos(final Document doc,
                             final String fieldName) {
