@@ -1,20 +1,29 @@
 var NotificationsPage = {
   data: function () {
     return {
-      itemsSolved: [],
-      unresolvedNotifications: [],
       errored: false,
       loading: false,
+
+      itemsSolved: [],
+      unresolvedNotifications: [],
       solvedFrom: 0,
       solvedTo: 10,
+      momentInstance: new Object()
     };
+  },
+  watch: {
+    loading: function () {
+      toggleLoading(this.loading);
+    }
   },
   created: function () {
     this.loading = true;
     this.errored = false;
     this.unresolvedNotifications = [];
+    this.momentInstance = moment()
   },
   mounted: function () {
+    toggleLoading(true);
     axios
       .get("http://localhost:8991/app/notifications/unsolved")
       .then((response) => {
@@ -24,9 +33,12 @@ var NotificationsPage = {
       .catch((error) => {
         console.log(error);
         this.errored = true;
-      });
+      }).finally(() => this.loading = false);
   },
   methods: {
+    moment() {
+      return this.momentInstance;
+    },
     renderSolvedNotifications() {
       axios
         .get("http://localhost:8991/app/notifications/solved/0/10")
@@ -52,7 +64,7 @@ var NotificationsPage = {
                 <thead>
                     <tr>
                         <th scope="col">Codice sentiero</th>
-                        <th scope="col">Data</th>
+                        <th scope="col">Data Segnalazione</th>
                         <th scope="col">Descrizione Problema</th>
                         <th scope="col">Aggirabile?</th>
                     </tr>
@@ -60,7 +72,7 @@ var NotificationsPage = {
                 <tbody>
                     <tr v-for="notification in unresolvedNotifications">
                             <th scope="row">{{ notification.code }}</th>
-                            <td>{{ notification.reportDate }}</td>
+                            <td>{{ moment(notification.reportDate).format('DD/MM/YYYY') }}</td>
                             <td>{{ notification.description }}</td>
                             <td>{{ notification.isMinor ? 'si' : 'no' }}</td>
                     </tr>
@@ -74,18 +86,18 @@ var NotificationsPage = {
                 <thead>
                     <tr>
                         <th scope="col">Codice sentiero</th>
-                        <th scope="col">Data Riportato</th>
-                        <th scope="col">Data Risolto</th>
+                        <th scope="col">Data segnalazione</th>
                         <th scope="col">Descrizione Problema</th>
+                        <th scope="col">Data risoluzione</th>
                         <th scope="col">Risoluzione</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr :key="index" v-for="(item,index) in itemsSolved">
                         <th scope="row">{{ item.code }}</th>
-                        <td>{{ item.reportDate }}</td>
-                        <td>{{ item.resolutionDate }}</td>
+                        <td>{{ moment(item.reportDate).format('DD/MM/YYYY') }}</td>
                         <td>{{ item.description }}</td>
+                        <td>{{ moment(item.resolutionDate).format('DD/MM/YYYY') }}</td>
                         <td>{{ item.resolution }}</td>
                 </tbody>
             </table>

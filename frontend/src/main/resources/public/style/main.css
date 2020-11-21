@@ -33,6 +33,7 @@
 
 .relative-map {
   position: relative;
+  overflow: hidden;
 }
 
 .white {
@@ -48,11 +49,23 @@
 }
 
 #map-full {
-  position: absolute;
   min-width: 100%;
   min-height: 720px;
   max-height: 720px;
-  z-index: 0;
+  z-index: 1;
+}
+
+#loadingPanel {
+  width: 100%;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.9);
+  position: absolute;
+  z-index: 100;
+  display: none;
+}
+
+#loadingPanel > .distance-top {
+   margin-top: 10%;
 }
 
 #fullTrailPage {
@@ -62,11 +75,24 @@
   position: absolute;
   top: 0px;
   z-index: 2;
-  display:none;
+  display: none;
+}
+
+#fullTrailPage .container {
+  overflow-y: scroll;
+}
+
+#absolute-wrapper {
+  position: absolute;
+  width: 100%;
 }
 
 .leaflet-left {
   left: 95%;
+}
+
+.leaflet-bottom .leaflet-control-scale {
+  margin-bottom: 25px;
 }
 
 .router-link-active .nav-item {
@@ -82,11 +108,11 @@
   padding-bottom: 0;
   /* margin-bottom: 20px; */
   z-index: 1;
-  max-height: 720px;
 }
 
 .scrollable {
   overflow: scroll;
+  max-height: 720px;
 }
 
 .column-hikes tbody tr {

@@ -1,6 +1,6 @@
 import previewMap from "../component/preview-map";
 
-var HikesPage = {
+let HikesPage = {
     data() {
         return {
             trailsResponse: null,
@@ -9,6 +9,11 @@ var HikesPage = {
             // List of CoordinatesWithAltitude
             points: 0,
         };
+    },
+    watch: {    
+        loading: function() { 
+            toggleLoading(this.loading);
+        }
     },
     methods: {
         onPreview: function (event) {
@@ -33,6 +38,7 @@ var HikesPage = {
         }
     },
     mounted () {
+        toggleLoading(true);
         axios.get("http://localhost:8991/app/preview").then(
             response => {
                 this.trailsResponse = response.data.trailPreviews

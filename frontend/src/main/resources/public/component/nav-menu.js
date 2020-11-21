@@ -6,7 +6,7 @@ var navMenuComponent = Vue.component("nav-menu", {
                 <div class="col-12">
                     <div class="it-header-center-content-wrapper">
                         <div class="it-brand-wrapper">
-                            <a href="/#/">
+                            <a href="#">
                                 <img src="static/cai_logo_slim.png" class="icon" />
                                 <div class="it-brand-text">
                                     <h2 class="no_toc">Sentieri e Cartografia</h2>

@@ -19,7 +19,7 @@ let dialogConfig = Vue.component("dialog-info-notification", {
                 <thead>
                   <tr>
                     <td>Descrizione</td>
-                    <td>Raggirabile?</td>
+                    <td>Aggirabile?</td>
                   </tr>
                 </thead>
                 <tr v-for="notification in unresolvedNotifications">

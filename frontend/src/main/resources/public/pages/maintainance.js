@@ -1,14 +1,21 @@
 var MaintainancePage = {
   data: function () {
     return {
-        maintenanceList: [],
-        pastMaintenanceList: [],
-        errored: false,
-        loading: false,
+      errored: false,
+      loading: true,
+
+      maintenanceList: [],
+      pastMaintenanceList: [],
+      momentInstance: new Object(),
     };
   },
+  watch: {
+    loading: function () {
+      toggleLoading(this.loading);
+    },
+  },
   mounted: function () {
-    this.loading = true;
+    toggleLoading(true);
     axios
       .get("http://localhost:8991/app/maintenance/future")
       .then((response) => {
@@ -18,9 +25,13 @@ var MaintainancePage = {
       .catch((error) => {
         console.log(error);
         this.errored = true;
-      });
+      }).finally(() => this.loading = false);
+    this.momentInstance = moment();
   },
   methods: {
+    moment() {
+      return this.momentInstance;
+    },
     renderPastNotifications() {
       axios
         .get("http://localhost:8991/app/maintenance/past/0/10")
@@ -52,7 +63,7 @@ var MaintainancePage = {
                 </thead>
                 <tbody>
                         <tr v-for="maintenance in maintenanceList">
-                            <td scope="row">{{ maintenance.date }}</td>
+                            <td scope="row">{{ moment(maintenance.date).format('DD/MM/YYYY') }}</td>
                             <td scope="row">{{ maintenance.code }}</td>
                             <td>{{ maintenance.meetingPlace }}</td>
                             <td>{{ maintenance.description }}</td>
@@ -77,7 +88,7 @@ var MaintainancePage = {
                 </thead>
                 <tbody>
                     <tr :key="index" v-for="(maintenance, index) in pastMaintenanceList">
-                        <td scope="row">{{ maintenance.date }}</td>
+                        <td scope="row">{{ moment(maintenance.date).format('DD/MM/YYYY') }}</td>
                         <td scope="row">{{ maintenance.code }}</td>
                         <td>{{ maintenance.meetingPlace }}</td>
                         <td>{{ maintenance.description }}</td>

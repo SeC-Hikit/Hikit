@@ -32,8 +32,8 @@ public class NotificationController {
     }
 
     @GetMapping("/{code}")
-    public AccessibilityResponse getNotificationForTrail(@PathVariable String code) throws IOException {
-        return notificationManager.getNotificationsForTrail(code);
+    public AccessibilityResponse getNotificationUnsolvedForTrail(@PathVariable String code) throws IOException {
+        return notificationManager.getNotificationsUnsolvedForTrail(code);
     }
 
 }

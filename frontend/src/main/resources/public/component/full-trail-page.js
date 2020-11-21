@@ -90,7 +90,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
     downloadGpx() {
       if (this.trailObject) {
         var trailCode = this.trailObject.code;
-        axios.get("http://localhost:8991/app/download/" + this.trailObject.code).then(
+        axios.get("http://localhost:8991/app/trail/download/" + this.trailObject.code).then(
           response => {
             if (response.data) {
               var saveData = (function () {
@@ -195,7 +195,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
               <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#download"/>
             </svg>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 clickable">
             <label>Download .GPX</label>
           </div>
         </div>
@@ -205,7 +205,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
               <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#geo-alt"/>
             </svg>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 clickable">
               <label>Apri su Maps</label>
           </div>
           </div>
@@ -215,7 +215,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
               <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#printer"/>
             </svg>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 clickable">
               <label>Stampa</label>
           </div>
           </div>

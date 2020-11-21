@@ -1,9 +1,7 @@
 package org.sc.frontend.controller;
 
 import org.sc.common.rest.controller.MaintenanceResponse;
-import org.sc.frontend.configuration.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +26,7 @@ public class MaintenanceController {
     }
 
     @GetMapping("/past/{from}/{to}")
-    public MaintenanceResponse getPastMaintenance(@PathVariable int from, int to) throws IOException {
+    public MaintenanceResponse getPastMaintenance(@PathVariable Integer from, @PathVariable Integer to) throws IOException {
         return maintenanceManager.getPastMaintenance(from, to);
     }
 

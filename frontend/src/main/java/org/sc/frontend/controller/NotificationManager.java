@@ -5,6 +5,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import org.sc.common.config.ConfigurationProperties;
+import org.sc.common.rest.controller.AccessibilityNotification;
 import org.sc.common.rest.controller.AccessibilityResponse;
 import org.sc.common.rest.controller.helper.ObjectMapperWrapper;
 import org.sc.frontend.configuration.AppProperties;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class NotificationManager {
@@ -26,7 +29,7 @@ public class NotificationManager {
         this.objectMapperWrapper = objectMapperWrapper;
     }
 
-    public AccessibilityResponse getNotificationsForTrail(String code) throws IOException {
+    public AccessibilityResponse getNotificationsUnsolvedForTrail(String code) throws IOException {
         final OkHttpClient client = new OkHttpClient();
         final Request request = new Request.Builder()
                 .url(getBasicUrl() + "/accessibility/code/" + code)
@@ -34,8 +37,13 @@ public class NotificationManager {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
         if (StringUtils.hasText(responseBody)) {
-            return objectMapperWrapper
+            final AccessibilityResponse accessibilityResponse = objectMapperWrapper
                     .readValue(responseBody, AccessibilityResponse.class);
+            final List<AccessibilityNotification> accessibilityNotificationList = accessibilityResponse.
+                    getAccessibilityNotifications()
+                    .stream().filter(x-> x.getResolution().isEmpty()).collect(Collectors.toList());
+            // extract the needed accessibility
+            return new AccessibilityResponse(accessibilityNotificationList);
         }
         return null;
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import org.jetbrains.annotations.NotNull;
 import org.sc.common.config.ConfigurationProperties;
 import org.sc.common.rest.controller.*;
 import org.sc.frontend.configuration.AppProperties;
@@ -72,20 +73,7 @@ public class TrailManager {
         if (StringUtils.hasText(responseBody)) {
             final TrailRestResponse trailRestResponse = objectMapperWrapper
                     .readValue(responseBody, TrailRestResponse.class);
-            final List<Trail> lowTrails = trailRestResponse.getTrails().stream().map(trail ->
-                    Trail.TrailBuilder.aTrail()
-                            .withCode(trail.getCode())
-                            .withDate(trail.getDate())
-                            .withClassification(trail.getClassification())
-                            .withCountry(trail.getCountry())
-                            .withDescription(trail.getDescription())
-                            .withTrailMetadata(trail.getStatsMetadata())
-                            .withStartPos(trail.getStartPos())
-                            .withFinalPos(trail.getFinalPos())
-                            .withMaintainingSection(trail.getMaintainingSection())
-                            .withName(trail.getName())
-                            .withCoordinates(getLowestCoordinates(trail.getCoordinates()))
-                            .build()).collect(Collectors.toList());
+            final List<Trail> lowTrails = trailRestResponse.getTrails().stream().map(this::getLowerResolutionTrail).collect(Collectors.toList());
             return new TrailRestResponse(lowTrails);
         }
         return null;
@@ -99,8 +87,10 @@ public class TrailManager {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
         if (StringUtils.hasText(responseBody)) {
-            return objectMapperWrapper
+            TrailRestResponse trailRestResponse = objectMapperWrapper
                     .readValue(responseBody, TrailRestResponse.class);
+            final List<Trail> lowTrails = trailRestResponse.getTrails().stream().map(this::getLowerResolutionTrail).collect(Collectors.toList());
+            return new TrailRestResponse(lowTrails);
         }
         return null;
     }
@@ -120,7 +110,24 @@ public class TrailManager {
         return null;
     }
 
-    private List<CoordinatesWithAltitude> getLowestCoordinates(List<CoordinatesWithAltitude> coordinatesWithAltitudes) {
+    @NotNull
+    private Trail getLowerResolutionTrail(Trail trail) {
+        return Trail.TrailBuilder.aTrail()
+                .withCode(trail.getCode())
+                .withDate(trail.getDate())
+                .withClassification(trail.getClassification())
+                .withCountry(trail.getCountry())
+                .withDescription(trail.getDescription())
+                .withTrailMetadata(trail.getStatsMetadata())
+                .withStartPos(trail.getStartPos())
+                .withFinalPos(trail.getFinalPos())
+                .withMaintainingSection(trail.getMaintainingSection())
+                .withName(trail.getName())
+                .withCoordinates(getHalfCoordinates(trail.getCoordinates()))
+                .build();
+    }
+
+    private List<CoordinatesWithAltitude> getHalfCoordinates(List<CoordinatesWithAltitude> coordinatesWithAltitudes) {
         return IntStream.range(0, coordinatesWithAltitudes.size())
                 .filter(i -> i % 2 == 0)
                 .mapToObj(coordinatesWithAltitudes::get)

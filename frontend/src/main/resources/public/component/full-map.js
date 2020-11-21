@@ -9,7 +9,7 @@ var mapFull = Vue.component("map-full", {
     isShowingAllTrails: true,
     map: new Object(),
     trailFocus: new Object(),
-    
+
     // Polyline + Marker of selected trail
     selectedPolyline: new Object(),
     selectedMarker: new Object(),
@@ -53,8 +53,9 @@ var mapFull = Vue.component("map-full", {
       [44.498955, 11.327591],
       12
     );
+    this.map._onResize();
 
-    L.control.scale().addTo(this.map); 
+    L.control.scale().addTo(this.map);
   },
   methods: {
     toggleLoad: function (isLoading) {
@@ -64,12 +65,26 @@ var mapFull = Vue.component("map-full", {
       console.log("Hiding load screen");
     },
     getLineStyle: function (isSelected, typeTrail) {
-      var trailColor = isSelected ? "red" : "#ff9999";
+      var trailColor = isSelected ? "red" : "#ff1414";
       switch (typeTrail) {
+        case "E":
+          return {
+            weight: this.lineWeight,
+            color: trailColor,
+            dashArray: "5, 10",
+          };
         case "EEA":
-          return { weight: this.lineWeight, color: trailColor, dashArray: "2, 10" };
+          return {
+            weight: this.lineWeight,
+            color: trailColor,
+            dashArray: "2, 10",
+          };
         case "EE":
-          return { weight: this.lineWeight, color: trailColor, dashArray: "5, 10" };
+          return {
+            weight: this.lineWeight,
+            color: trailColor,
+            dashArray: "3, 10",
+          };
         default:
           return { weight: this.lineWeight, color: trailColor };
       }
@@ -88,18 +103,26 @@ var mapFull = Vue.component("map-full", {
     },
     updateTrails: function (allTrailsObjects) {
       console.log("Loading all other trails...");
-      let alreadyRenderedCodes = this.trailsPolylines.map(x=> x.code);
+      let alreadyRenderedCodes = this.trailsPolylines.map((x) => x.code);
       let allToBeRendered = allTrailsObjects.filter(
-        (x) => (x.code != this.selectedTrail.code && alreadyRenderedCodes.indexOf(x) == -1) 
+        (x) =>
+          x.code != this.selectedTrail.code &&
+          alreadyRenderedCodes.indexOf(x) == -1
       );
       allToBeRendered.forEach((trail) => {
         let polyline = this.drawTrail(trail);
+        polyline.on("click", this.selectTrail);
         this.trailsPolylines.push({ code: trail.code, graphic: polyline });
       });
     },
-    clearPreviouslySelectedTrails: function(){
-      if(this.selectedPolyline) this.map.removeLayer(this.selectedPolyline);
-      if(this.selectedMarker) this.map.removeLayer(this.selectedMarker);
+    selectTrail: function (event) {
+      let codeFromText = event.sourceTarget._text;
+      let code = codeFromText.trim();
+      this.$router.push("/map/" + code);
+    },
+    clearPreviouslySelectedTrails: function () {
+      if (this.selectedPolyline) this.map.removeLayer(this.selectedPolyline);
+      if (this.selectedMarker) this.map.removeLayer(this.selectedMarker);
     },
     clearTrail: function (code) {
       var item = this.trailsPolylines.filter((x) => x.code == code);
@@ -126,7 +149,7 @@ var mapFull = Vue.component("map-full", {
         polyline.addTo(this.map);
         let marker = L.marker(startingPoint);
         marker.addTo(this.map);
-        
+
         this.selectedPolyline = polyline;
         this.selectedMarker = marker;
       }
@@ -139,6 +162,7 @@ var mapFull = Vue.component("map-full", {
         this.generateEmptySpace() + trail.code + this.generateEmptySpace(),
         { repeat: true, offset: -10, attributes: { fill: lineStyle.color } }
       );
+      polyline.bindPopup(trail.code);
       polyline.setStyle(lineStyle);
       polyline.addTo(this.map);
       return polyline;
