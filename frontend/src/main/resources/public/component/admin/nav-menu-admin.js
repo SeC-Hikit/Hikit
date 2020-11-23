@@ -23,7 +23,7 @@ var navMenuAdminComponent = Vue.component("nav-menu-admin", {
      </div>
      <div class="col-3">
      <svg class="bi" width="32" height="32" fill="currentColor">
-     <use xlink:href="/node_modules/bootstrap-icons/bootstrap-icons.svg#calendar-week"/>
+     <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#calendar-week"/>
      </svg>
       <router-link to="/admin/maintainance">
       <label>Calendario manuntenzioni</label>

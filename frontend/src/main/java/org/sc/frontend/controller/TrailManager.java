@@ -1,9 +1,7 @@
 package org.sc.frontend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
 import org.sc.common.config.ConfigurationProperties;
 import org.sc.common.rest.controller.*;
@@ -11,16 +9,24 @@ import org.sc.frontend.configuration.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
 public class TrailManager {
+
+    private static final String TMP_FOLDER = "tmp";
+    private static final File UPLOAD_DIR = new File(TMP_FOLDER);
 
     private final AppProperties appProperties;
     private final ObjectMapper objectMapperWrapper;
@@ -110,6 +116,32 @@ public class TrailManager {
         return null;
     }
 
+    public TrailPreparationModel getTrailPreparationFromGpx(MultipartFile gpxFile) throws IOException {
+        final Path tempFile = Files.createTempFile(UPLOAD_DIR.toPath(), "", "");
+        try (final InputStream input = gpxFile.getInputStream()) {
+            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+        final OkHttpClient client = new OkHttpClient();
+        final RequestBody multipart = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("gpxFile",
+                        gpxFile.getOriginalFilename(),
+                        RequestBody.create(MediaType.parse("gpx=application/gpx+xml"),
+                                Files.readAllBytes(tempFile)))
+                .build();
+        final Request request = new Request.Builder()
+                .url(getBasicUrl() + "/trail/read")
+                .post(multipart)
+                .build();
+        final Response response = client.newCall(request).execute();
+        final String responseBody = response.body().string();
+        if (StringUtils.hasText(responseBody)) {
+            return objectMapperWrapper
+                    .readValue(responseBody, TrailPreparationModel.class);
+        }
+        return null;
+    }
+
     @NotNull
     private Trail getLowerResolutionTrail(Trail trail) {
         return Trail.TrailBuilder.aTrail()
@@ -137,6 +169,5 @@ public class TrailManager {
     private String getBasicUrl() {
         return appProperties.getBackendAddress() + "/" + ConfigurationProperties.API_PREFIX;
     }
-
 
 }

@@ -17,7 +17,7 @@ var MaintainancePage = {
   mounted: function () {
     toggleLoading(true);
     axios
-      .get("http://localhost:8991/app/maintenance/future")
+      .get(BASE_IMPORTER_ADDRESS + "/maintenance/future")
       .then((response) => {
         this.maintenanceList = response.data.maintenanceList;
         this.renderPastNotifications();
@@ -29,12 +29,9 @@ var MaintainancePage = {
     this.momentInstance = moment();
   },
   methods: {
-    moment() {
-      return this.momentInstance;
-    },
     renderPastNotifications() {
       axios
-        .get("http://localhost:8991/app/maintenance/past/0/10")
+        .get(BASE_IMPORTER_ADDRESS + "/maintenance/past/0/10")
         .then((response) => {
           this.pastMaintenanceList = response.data.maintenanceList;
         })
@@ -63,7 +60,7 @@ var MaintainancePage = {
                 </thead>
                 <tbody>
                         <tr v-for="maintenance in maintenanceList">
-                            <td scope="row">{{ moment(maintenance.date).format('DD/MM/YYYY') }}</td>
+                            <td scope="row">{{ moment(maintenance.date).format("DD/MM/YYYY") }}</td>
                             <td scope="row">{{ maintenance.code }}</td>
                             <td>{{ maintenance.meetingPlace }}</td>
                             <td>{{ maintenance.description }}</td>
@@ -71,6 +68,7 @@ var MaintainancePage = {
                         </tr>
                 </tbody>
             </table>
+            <p v-else>Non ci sono manuntenzioni programmate al momento</p>
         </div>
     </div>
     <div class="row">
@@ -88,7 +86,7 @@ var MaintainancePage = {
                 </thead>
                 <tbody>
                     <tr :key="index" v-for="(maintenance, index) in pastMaintenanceList">
-                        <td scope="row">{{ moment(maintenance.date).format('DD/MM/YYYY') }}</td>
+                        <td scope="row">{{ moment(maintenance.date).format("DD/MM/YYYY") }}</td>
                         <td scope="row">{{ maintenance.code }}</td>
                         <td>{{ maintenance.meetingPlace }}</td>
                         <td>{{ maintenance.description }}</td>

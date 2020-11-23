@@ -90,7 +90,7 @@ let fullTrailPage = Vue.component("full-trail-page", {
     downloadGpx() {
       if (this.trailObject) {
         var trailCode = this.trailObject.code;
-        axios.get("http://localhost:8991/app/trail/download/" + this.trailObject.code).then(
+        axios.get(BASE_IMPORTER_ADDRESS + "/trail/download/" + this.trailObject.code).then(
           response => {
             if (response.data) {
               var saveData = (function () {

@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import org.sc.common.config.DataSource;
 import org.sc.common.rest.controller.Maintenance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -46,8 +45,8 @@ public class MaintenanceDAO {
 
     public void upsert(final Maintenance maintenance) {
         final Document MaintenanceDocument = mapper.mapToDocument(maintenance);
-        final String existingOrNewObjectId = maintenance.getId() == null ?
-                new ObjectId().toHexString() : maintenance.getId();
+        final String existingOrNewObjectId = maintenance.get_id() == null ?
+                new ObjectId().toHexString() : maintenance.get_id();
         collection.replaceOne(new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
                 MaintenanceDocument, new ReplaceOptions().upsert(true));
     }

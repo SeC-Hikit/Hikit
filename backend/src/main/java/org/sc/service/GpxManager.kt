@@ -6,7 +6,7 @@ import org.sc.common.rest.controller.CoordinatesWithAltitude
 import org.sc.common.rest.controller.Trail
 import org.sc.common.rest.controller.TrailCoordinates
 import org.sc.configuration.AppProperties
-import org.sc.data.TrailPreparationModel
+import org.sc.common.rest.controller.TrailPreparationModel
 import org.sc.importer.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

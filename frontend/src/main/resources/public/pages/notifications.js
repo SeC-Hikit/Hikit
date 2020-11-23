@@ -25,7 +25,7 @@ var NotificationsPage = {
   mounted: function () {
     toggleLoading(true);
     axios
-      .get("http://localhost:8991/app/notifications/unsolved")
+      .get(BASE_IMPORTER_ADDRESS + "/notifications/unsolved")
       .then((response) => {
         this.unresolvedNotifications = response.data.accessibilityNotifications;
         this.renderSolvedNotifications();
@@ -36,12 +36,9 @@ var NotificationsPage = {
       }).finally(() => this.loading = false);
   },
   methods: {
-    moment() {
-      return this.momentInstance;
-    },
     renderSolvedNotifications() {
       axios
-        .get("http://localhost:8991/app/notifications/solved/0/10")
+        .get(BASE_IMPORTER_ADDRESS + "/notifications/solved/0/10")
         .then((response) => {
           this.itemsSolved = response.data.accessibilityNotifications;
         })

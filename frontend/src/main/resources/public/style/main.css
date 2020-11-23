@@ -165,3 +165,14 @@ ul.link-list {
     opacity: 1;
   }
 }
+
+.active {
+  background: white !important;
+  color: black !important;
+}
+
+.cut-text { 
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

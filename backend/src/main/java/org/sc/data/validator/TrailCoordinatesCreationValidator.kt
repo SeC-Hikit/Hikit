@@ -1,21 +1,25 @@
 package org.sc.data.validator
 
-import org.sc.common.rest.controller.CoordinatesWithAltitude
+import org.sc.common.rest.controller.TrailCoordinates
+import org.springframework.stereotype.Component
 
-class CoordinatesWithAltitudeCreationValidator : Validator<CoordinatesWithAltitude>, CoordinatesValidator {
+@Component
+class TrailCoordinatesCreationValidator : Validator<TrailCoordinates>, CoordinatesValidator {
 
     companion object {
         const val topPeakInTheWorld = 8848.0
         const val altitudeOutOfBoundsErrorMessage = "Altitude should be a value contained between 0 and $topPeakInTheWorld"
+        const val negativeDistanceErrorMessage = "Distance from the start cannot be a negative number"
     }
 
-    override fun validate(request: CoordinatesWithAltitude): Set<String> {
+    override fun validate(request: TrailCoordinates): Set<String> {
         val listOfErrorMessages = mutableSetOf<String>()
         if (request.altitude < 0.0 || request.altitude > topPeakInTheWorld ) listOfErrorMessages.add(altitudeOutOfBoundsErrorMessage)
         val validateLongitude = validateCoordinates(request.longitude, CoordinatesValidator.Companion.CoordDimension.LONGITUDE)
         if (validateLongitude.isNotEmpty()) listOfErrorMessages.add(validateLongitude)
         val validateLatitude = validateCoordinates(request.latitude, CoordinatesValidator.Companion.CoordDimension.LATITUDE)
         if (validateLatitude.isNotEmpty()) listOfErrorMessages.add(validateLatitude)
+        if(request.distanceFromTrailStart < 0) listOfErrorMessages.add(negativeDistanceErrorMessage)
         return listOfErrorMessages
     }
 

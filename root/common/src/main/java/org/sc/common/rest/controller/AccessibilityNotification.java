@@ -58,7 +58,7 @@ public class AccessibilityNotification {
         return isMinor;
     }
 
-    public String getId() {
+    public String get_id() {
         return _id;
     }
 

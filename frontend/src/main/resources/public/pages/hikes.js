@@ -18,7 +18,7 @@ let HikesPage = {
     methods: {
         onPreview: function (event) {
             var id = $(event.currentTarget).parent().children().first().text()
-            axios.get("http://localhost:8991/app/preview/" + id).then(
+            axios.get(BASE_IMPORTER_ADDRESS + "/preview/" + id).then(
             response => {
                 if(response.data != null) {
                     this.points = response.data
@@ -39,7 +39,7 @@ let HikesPage = {
     },
     mounted () {
         toggleLoading(true);
-        axios.get("http://localhost:8991/app/preview").then(
+        axios.get(BASE_IMPORTER_ADDRESS + "/preview").then(
             response => {
                 this.trailsResponse = response.data.trailPreviews
             }).catch(error => {
@@ -72,7 +72,7 @@ let HikesPage = {
                         <td>{{ trailPreview.classification }}</td>
                         <td v-on:click='onPreview(event)'>
                             <svg class="bi" width="32" height="32" fill="currentColor">
-                                    <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#eye"/>
+                                    <use xlink:href="node_modules/boot  strap-icons/bootstrap-icons.svg#eye"/>
                             </svg>
                         </td>
                         <td v-on:click='onOpenToMap(event)'>

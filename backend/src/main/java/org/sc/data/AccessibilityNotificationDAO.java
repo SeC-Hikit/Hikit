@@ -49,8 +49,8 @@ public class AccessibilityNotificationDAO {
 
     public void upsert(final AccessibilityNotification accessibilityNotification) {
         final Document AccessibilityNotificationDocument = mapper.mapToDocument(accessibilityNotification);
-        final String existingOrNewObjectId = accessibilityNotification.getId() == null ?
-                new ObjectId().toHexString() : accessibilityNotification.getId();
+        final String existingOrNewObjectId = accessibilityNotification.get_id() == null ?
+                new ObjectId().toHexString() : accessibilityNotification.get_id();
         collection.replaceOne(new Document(AccessibilityNotification.OBJECT_ID,
                         existingOrNewObjectId),
                 AccessibilityNotificationDocument, new ReplaceOptions().upsert(true));

@@ -4,6 +4,7 @@ import org.sc.common.rest.controller.RESTResponse;
 import org.sc.common.rest.controller.Status;
 import org.sc.common.rest.controller.TrailPreviewRestResponse;
 import org.sc.manager.TrailManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ public class TrailPreviewController {
 
     private final TrailManager trailManager;
 
+    @Autowired
     public TrailPreviewController(final TrailManager trailManager) {
         this.trailManager = trailManager;
     }

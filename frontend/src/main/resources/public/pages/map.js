@@ -81,7 +81,7 @@ let MapPage = Vue.component("map-page", {
     $(".scrollable").css("max-height", heightWOHeader - heightDetails);
     // Load all trails in list
     axios
-      .get("http://localhost:8991/app/preview")
+      .get(BASE_IMPORTER_ADDRESS + "/preview")
       .then((response) => {
         this.trailPreviewResponse = response.data.trailPreviews;
       })
@@ -141,7 +141,7 @@ let MapPage = Vue.component("map-page", {
     renderTrails() {
       console.log("Getting trails...");
       this.loading = true;
-      axios.get("http://localhost:8991/app/trail").then((response) => {
+      axios.get(BASE_IMPORTER_ADDRESS + "/trail").then((response) => {
         if (response.data) {
           this.trails = response.data.trails;
         }
@@ -160,7 +160,7 @@ let MapPage = Vue.component("map-page", {
         // TODO: get trail points
         this.loading = true;
         axios
-          .get("http://localhost:8991/app/trail/" + code)
+          .get(BASE_IMPORTER_ADDRESS + "/trail/" + code)
           .then((response) => {
             if (response.data) {
               var pointsCoordinates = response.data.trails.map(
@@ -188,7 +188,7 @@ let MapPage = Vue.component("map-page", {
     showNotificationsIconIfPresent(code) {
       console.log("Checking notifications for trail '" + code + "'");
       axios
-        .get("http://localhost:8991/app/notifications/" + code)
+        .get(BASE_IMPORTER_ADDRESS + "/notifications/" + code)
         .then((response) => {
           if (response.data) {
             this.notificationsForTrail =
@@ -253,7 +253,7 @@ let MapPage = Vue.component("map-page", {
         var trailCode = this.trailSelectedObj.code;
         axios
           .get(
-            "http://localhost:8991/app/trail/download/" +
+            BASE_IMPORTER_ADDRESS + "/trail/download/" +
               this.trailSelectedObj.code
           )
           .then((response) => {

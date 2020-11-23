@@ -2,8 +2,8 @@ package org.sc.controller;
 
 import org.sc.common.rest.controller.*;
 import org.sc.data.TrailImport;
-import org.sc.data.TrailPreparationModel;
-import org.sc.importer.TrailCreationValidator;
+import org.sc.common.rest.controller.TrailPreparationModel;
+import org.sc.importer.TrailImportValidator;
 import org.sc.importer.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.sc.service.GpxManager;
@@ -45,13 +45,13 @@ public class TrailController {
     private final GpxManager gpxManager;
     private final TrailManager trailManager;
     private final TrailImporterManager trailImporterManager;
-    private final TrailCreationValidator trailValidator;
+    private final TrailImportValidator trailValidator;
 
     @Autowired
     public TrailController(final GpxManager gpxManager,
                            final TrailManager trailManager,
                            final TrailImporterManager trailImporterManager,
-                           final TrailCreationValidator trailValidator) {
+                           final TrailImportValidator trailValidator) {
         this.gpxManager = gpxManager;
         this.trailManager = trailManager;
         this.trailImporterManager = trailImporterManager;

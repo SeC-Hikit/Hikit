@@ -7,7 +7,9 @@ import java.util.Set;
 public class TrailPreviewRestResponse extends RESTResponse {
     final List<TrailPreview> trailPreviews;
 
-    public TrailPreviewRestResponse(List<TrailPreview> trailPreviews, Status status, Set<String> messages) {
+    public TrailPreviewRestResponse(final List<TrailPreview> trailPreviews,
+                                    final Status status,
+                                    final Set<String> messages) {
         super(status, messages);
         this.trailPreviews = trailPreviews;
     }

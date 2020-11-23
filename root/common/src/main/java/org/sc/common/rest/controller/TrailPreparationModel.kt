@@ -1,6 +1,4 @@
-package org.sc.data
-
-import org.sc.common.rest.controller.TrailCoordinates
+package org.sc.common.rest.controller
 
 data class TrailPreparationModel constructor(val name: String,
                                              val description: String,

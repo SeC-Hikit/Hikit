@@ -1,6 +1,11 @@
 import dialogConfirm from "../../component/dialog-confirm";
 
 var TrailManagementPage = {
+  data(){
+    return {
+      trailsResponse: new Object()
+    }
+  },
   methods: {
     resolveNotification: function (id) {
       $("#modal_confirm").modal("toggle");
@@ -18,6 +23,19 @@ var TrailManagementPage = {
         // remove it
       }
     },
+  },
+  mounted() {
+    toggleLoading(true);
+    axios
+      .get(BASE_IMPORTER_ADDRESS + "/preview")
+      .then((response) => {
+        this.trailsResponse = response.data.trailPreviews;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.errored = true;
+      })
+      .finally(() => (this.loading = false));
   },
   components: {
     "dialog-confirm": dialogConfirm,
@@ -49,23 +67,23 @@ var TrailManagementPage = {
                     </tr>
                 </thead>
                 <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Calderino - Mt. S.Giovanni - Mt.Pastore</td>
-                            <td>E</td>
-                            <td>18/05/2020</td>
-                            <td>
-                            <svg v-on:click="onDelete(1, 'Calderino - Mt. S.Giovanni - Mt.Pastore')" class="bi" width="32" height="32" fill="currentColor">
-                                    <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
-                            </svg>
-                            </td>
-                        </tr>
+                  <tr v-for="trailPreview in trailsResponse" class="trailPreview">
+                    <th scope="row">{{ trailPreview.code }}</th>
+                    <td>{{ trailPreview.startPos.name }} - {{ trailPreview.endPos.name }}</td>
+                    <td>{{ trailPreview.classification }}</td>
+                    <td>{{ moment(trailPreview.date).format("DD/MM/YYYY") }}</td>
+                    <td>
+                      <svg v-on:click="onDelete" v-bind:id="trailPreview.code" class="bi" width="32" height="32" fill="currentColor">
+                              <use xlink:href="node_modules/bootstrap-icons/bootstrap-icons.svg#trash"/>
+                      </svg>
+                    </td>
+                  </tr>
                 </tbody>
             </table>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+  </div>
         `,
 };
 
