@@ -6,8 +6,6 @@ import org.sc.data.validator.TrailCoordinatesCreationValidator
 import org.sc.data.validator.Validator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 @Component
@@ -21,6 +19,8 @@ class TrailImportValidator @Autowired constructor (
         const val tooFewPointsError = "At least $minGeoPoints geoPoints should be specified"
         const val noParamSpecified = "Empty field '%s'"
         const val dateInFutureError = "The provided date is in the future"
+        const val posToTrailCoordError = "First position element does not match the first coordinate"
+        const val lastPosToTrailCoordError = "Last position element does not match the first coordinate"
     }
 
     override fun validate(request: TrailImport): Set<String> {
@@ -29,14 +29,16 @@ class TrailImportValidator @Autowired constructor (
             errors.add(String.format(noParamSpecified, "Name"))
         }
         if (request.code.isEmpty()) {
-            errors.add(String.format(noParamSpecified, "code"))
+            errors.add(String.format(noParamSpecified, "Code"))
         }
 
-        val givenTime = LocalDate.from(request.date.toInstant())
-        val tomorrow = LocalDate.from(Date().toInstant()).plusDays(1).atStartOfDay().toLocalDate()
-        if (givenTime.isAfter(tomorrow)){
+        if (request.date.after(Date())){
             errors.add(dateInFutureError)
         }
+
+        if (request.startPos.coordinates != request.coordinates.first()) errors.add(posToTrailCoordError)
+        if (request.finalPos.coordinates != request.coordinates.last()) errors.add(lastPosToTrailCoordError)
+
         errors.addAll(positionValidator.validate(request.startPos))
         errors.addAll(positionValidator.validate(request.finalPos))
         if(request.coordinates.isEmpty()) errors.add(emptyListPointError)

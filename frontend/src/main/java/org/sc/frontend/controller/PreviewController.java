@@ -1,8 +1,7 @@
 package org.sc.frontend.controller;
 
-import org.sc.common.rest.controller.CoordinatesWithAltitude;
 import org.sc.common.rest.controller.TrailCoordinates;
-import org.sc.common.rest.controller.TrailPreviewRestResponse;
+import org.sc.common.rest.controller.TrailPreviewResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +23,7 @@ public class PreviewController {
     }
 
     @GetMapping
-    public TrailPreviewRestResponse getTrailsPreview() throws IOException {
+    public TrailPreviewResponse getTrailsPreview() throws IOException {
         return trailManager.getTrailsPreview();
     }
 

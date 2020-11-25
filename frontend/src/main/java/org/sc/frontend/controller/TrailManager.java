@@ -37,7 +37,7 @@ public class TrailManager {
         this.objectMapperWrapper = objectMapperWrapper;
     }
 
-    public TrailPreviewRestResponse getTrailsPreview() throws IOException {
+    public TrailPreviewResponse getTrailsPreview() throws IOException {
         final OkHttpClient client = new OkHttpClient();
 
         final Request request = new Request.Builder()
@@ -48,7 +48,7 @@ public class TrailManager {
         String responseBody = response.body().string();
         if (StringUtils.hasText(responseBody)) {
             return objectMapperWrapper
-                    .readValue(responseBody, TrailPreviewRestResponse.class);
+                    .readValue(responseBody, TrailPreviewResponse.class);
 
         }
         return null;
@@ -109,8 +109,8 @@ public class TrailManager {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
         if (StringUtils.hasText(responseBody)) {
-            FileDownloadRestResponse fileDownloadRestResponse = objectMapperWrapper
-                    .readValue(responseBody, FileDownloadRestResponse.class);
+            FileDownloadResponse fileDownloadRestResponse = objectMapperWrapper
+                    .readValue(responseBody, FileDownloadResponse.class);
             return Files.readAllBytes(Paths.get(fileDownloadRestResponse.getPath()));
         }
         return null;

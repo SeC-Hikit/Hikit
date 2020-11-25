@@ -17,6 +17,14 @@ public class TrailCoordinates extends CoordinatesWithAltitude {
         this.distanceFromTrailStart = distanceFromTrailStart;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        TrailCoordinates that = (TrailCoordinates) o;
+        return Double.compare(that.getDistanceFromTrailStart(), getDistanceFromTrailStart()) == 0 &&
+        Double.compare(that.getLatitude(), getLatitude()) == 0 &&
+        Double.compare(that.getLongitude(), getLongitude()) == 0;
+    }
+
     public double getDistanceFromTrailStart() {
         return distanceFromTrailStart;
     }
