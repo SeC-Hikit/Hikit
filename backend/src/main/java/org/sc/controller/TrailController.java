@@ -110,15 +110,15 @@ public class TrailController {
     }
 
     @GetMapping("/download/{code}")
-    public FileDownloadRestResponse getDownloadableLink(@PathVariable String code) {
+    public FileDownloadResponse getDownloadableLink(@PathVariable String code) {
         if(!StringUtils.hasText(code)) {
-            return new FileDownloadRestResponse("", Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
+            return new FileDownloadResponse("", Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
         }
         final List<Trail> byCode = trailManager.getByCode(code);
         if(!byCode.isEmpty()){
-            return new FileDownloadRestResponse(trailManager.getDownloadableLink(code));
+            return new FileDownloadResponse(trailManager.getDownloadableLink(code));
         }
-        return new FileDownloadRestResponse("", Status.ERROR, Collections.singleton("Trail does not exist"));
+        return new FileDownloadResponse("", Status.ERROR, Collections.singleton("Trail does not exist"));
     }
 
 }

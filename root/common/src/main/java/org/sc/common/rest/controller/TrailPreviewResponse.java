@@ -4,17 +4,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class TrailPreviewRestResponse extends RESTResponse {
+public class TrailPreviewResponse extends RESTResponse {
     final List<TrailPreview> trailPreviews;
 
-    public TrailPreviewRestResponse(final List<TrailPreview> trailPreviews,
-                                    final Status status,
-                                    final Set<String> messages) {
+    public TrailPreviewResponse(final List<TrailPreview> trailPreviews,
+                                final Status status,
+                                final Set<String> messages) {
         super(status, messages);
         this.trailPreviews = trailPreviews;
     }
 
-    public TrailPreviewRestResponse(List<TrailPreview> trailPreviews) {
+    public TrailPreviewResponse(List<TrailPreview> trailPreviews) {
         super(Status.OK, Collections.emptySet());
         this.trailPreviews = trailPreviews;
     }
