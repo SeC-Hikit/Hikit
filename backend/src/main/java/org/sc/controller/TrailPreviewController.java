@@ -34,7 +34,7 @@ public class TrailPreviewController {
 
     @GetMapping("/{code}")
     public RESTResponse getPreviewByCode(@PathVariable String code) {
-        if(StringUtils.hasLength(code)) {
+        if(!StringUtils.hasLength(code)) {
             return new TrailPreviewResponse(Collections.emptyList(), Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
         }
         return new TrailPreviewResponse(trailManager.previewByCode(code));

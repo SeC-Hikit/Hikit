@@ -32,10 +32,17 @@ class TrailImportValidator @Autowired constructor (
             errors.add(String.format(noParamSpecified, "Code"))
         }
 
-        if (request.date.after(Date())){
-            errors.add(dateInFutureError)
+        if(request.lastUpdate == null) {
+            errors.add("last update date not provided")
+        } else {
+            if (request.lastUpdate.after(Date())) {
+                errors.add(dateInFutureError)
+            }
         }
-
+        if (request.startPos == null || request.finalPos == null ) {
+            errors.add("The initial or final position is not set");
+            return errors
+        }
         if (request.startPos.coordinates != request.coordinates.first()) errors.add(posToTrailCoordError)
         if (request.finalPos.coordinates != request.coordinates.last()) errors.add(lastPosToTrailCoordError)
 

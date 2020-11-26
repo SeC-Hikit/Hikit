@@ -53,7 +53,7 @@ class TrailsImporterValidatorTest {
         every { requestMock.startPos } returns startPosMock
         every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
-        every { requestMock.date } returns Date()
+        every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
         every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 
@@ -94,7 +94,7 @@ class TrailsImporterValidatorTest {
         every { requestMock.startPos } returns startPosMock
         every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
-        every { requestMock.date } returns Date()
+        every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
         every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 
@@ -134,7 +134,7 @@ class TrailsImporterValidatorTest {
         every { requestMock.startPos } returns startPosMock
         every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
-        every { requestMock.date } returns Date()
+        every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
         every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 
@@ -176,7 +176,7 @@ class TrailsImporterValidatorTest {
         every { requestMock.startPos } returns startPosMock
         every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
-        every { requestMock.date } returns Date()
+        every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
         every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 
@@ -218,7 +218,7 @@ class TrailsImporterValidatorTest {
         every { requestMock.startPos } returns startPosMock
         every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
-        every { requestMock.date } returns Date()
+        every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
         every { requestMock.coordinates } returns listOf(anyTrailRequestPosMock, startTrailCoordsPosMock, finalTrailCoordsPosMock)
 
@@ -258,7 +258,7 @@ class TrailsImporterValidatorTest {
         every { requestMock.startPos } returns startPosMock
         every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
-        every { requestMock.date } returns Date(System.currentTimeMillis() + 10000)
+        every { requestMock.lastUpdate } returns Date(System.currentTimeMillis() + 10000)
         every { requestMock.locations } returns emptyList()
         every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 

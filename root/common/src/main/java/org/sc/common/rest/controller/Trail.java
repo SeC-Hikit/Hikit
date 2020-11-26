@@ -29,7 +29,7 @@ public class Trail {
     private final List<TrailCoordinates> coordinates;
     private final TrailClassification classification;
     private final String country;
-    private final Date date;
+    private final Date lastUpdate;
     private final String maintainingSection;
     private StatsTrailMetadata statsMetadata;
 
@@ -43,7 +43,7 @@ public class Trail {
                  final String country,
                  final StatsTrailMetadata statsMetadata,
                  final List<TrailCoordinates> coordinates,
-                 final Date date,
+                 final Date lastUpdate,
                  final String maintainingSection) {
         this.name = name;
         this.description = description;
@@ -55,7 +55,7 @@ public class Trail {
         this.country = country;
         this.statsMetadata = statsMetadata;
         this.coordinates = coordinates;
-        this.date = date;
+        this.lastUpdate = lastUpdate;
         this.maintainingSection = maintainingSection;
     }
 
@@ -91,8 +91,8 @@ public class Trail {
         return coordinates;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getLastUpdate() {
+        return lastUpdate;
     }
 
     public String getMaintainingSection() {

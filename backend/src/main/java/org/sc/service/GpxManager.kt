@@ -2,11 +2,8 @@ package org.sc.service
 
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
-import org.sc.common.rest.controller.CoordinatesWithAltitude
-import org.sc.common.rest.controller.Trail
-import org.sc.common.rest.controller.TrailCoordinates
+import org.sc.common.rest.controller.*
 import org.sc.configuration.AppProperties
-import org.sc.common.rest.controller.TrailPreparationModel
 import org.sc.importer.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -39,8 +36,8 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
         return TrailPreparationModel(
                 track.name.orElse(emptyDefaultString),
                 track.description.orElse(emptyDefaultString),
-                trailCoordinates.first(),
-                trailCoordinates.last(),
+                Position("", emptyList(), trailCoordinates.first()),
+                Position("", emptyList(), trailCoordinates.last()),
                 trailCoordinates
         )
     }
@@ -59,7 +56,7 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
                 }.metadata(
                         Metadata.builder()
                                 .author("CAI Bologna - $creator")
-                                .name(trail.code).time(trail.date.toInstant()).build()
+                                .name(trail.code).time(trail.lastUpdate.toInstant()).build()
                 ).build()
         gpxFileHandlerHelper.writeToFile(gpx, pathToStoredFiles.resolve(trail.code + ".gpx"))
     }

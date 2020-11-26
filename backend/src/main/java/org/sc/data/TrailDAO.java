@@ -131,7 +131,8 @@ public class TrailDAO {
     }
 
     private Document projectPreview() {
-        return new Document(Trail.CODE, 1).append(Trail.START_POS, 1).append(Trail.FINAL_POS, 1).append(Trail.CLASSIFICATION, 1);
+        return new Document(Trail.CODE, 1).append(Trail.START_POS, 1).append(Trail.FINAL_POS, 1).append(Trail.CLASSIFICATION, 1)
+                .append(Trail.LAST_UPDATE_DATE, 1);
     }
 
     @NotNull

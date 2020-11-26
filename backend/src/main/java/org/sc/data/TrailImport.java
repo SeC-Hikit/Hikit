@@ -18,7 +18,7 @@ public class TrailImport {
     private final List<TrailCoordinates> coordinates;
     private final TrailClassification classification;
     private final String country;
-    private final Date date;
+    private final Date lastUpdate;
     private final String maintainingSection;
 
     public TrailImport(final String name,
@@ -30,7 +30,7 @@ public class TrailImport {
                        final TrailClassification classification,
                        final String country,
                        final List<TrailCoordinates> coordinates,
-                       final Date date, String maintainingSection) {
+                       final Date lastUpdate, String maintainingSection) {
         this.name = name;
         this.description = description;
         this.code = code;
@@ -40,7 +40,7 @@ public class TrailImport {
         this.classification = classification;
         this.country = country;
         this.coordinates = coordinates;
-        this.date = date;
+        this.lastUpdate = lastUpdate;
         this.maintainingSection = maintainingSection;
     }
 
@@ -76,8 +76,8 @@ public class TrailImport {
         return coordinates;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getLastUpdate() {
+        return lastUpdate;
     }
 
     public String getMaintainingSection() {

@@ -146,7 +146,7 @@ public class TrailManager {
     private Trail getLowerResolutionTrail(Trail trail) {
         return Trail.TrailBuilder.aTrail()
                 .withCode(trail.getCode())
-                .withDate(trail.getDate())
+                .withDate(trail.getLastUpdate())
                 .withClassification(trail.getClassification())
                 .withCountry(trail.getCountry())
                 .withDescription(trail.getDescription())
