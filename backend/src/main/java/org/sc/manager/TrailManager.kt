@@ -38,17 +38,17 @@ class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
         val coords = CoordinatesWithAltitude(coordinates.longitude,
                 coordinates.latitude, altitudeService.getAltitudeByLongLat(coordinates.latitude, coordinates.longitude))
         val meters = getMeters(unitOfMeasurement, distance)
-        if (!isAnyPoint) {
+        return if (!isAnyPoint) {
             val trailsByStartPosMetricDistance = trailDAO.getTrailsByStartPosMetricDistance(
                     coords.longitude,
                     coords.latitude,
                     meters, limit)
-            return trailsByStartPosMetricDistance.map {
+            trailsByStartPosMetricDistance.map {
                 TrailDistance(DistanceProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
                         it.startPos.coordinates, it)
             }
         } else {
-            return getTrailDistancesWithinRangeAtPoint(coords, distance, unitOfMeasurement, limit)
+            getTrailDistancesWithinRangeAtPoint(coords, distance, unitOfMeasurement, limit)
         }
     }
 

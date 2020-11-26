@@ -14,6 +14,7 @@ public class CoordinatesWithAltitude extends Coordinates {
 
     private final double altitude;
 
+
     public CoordinatesWithAltitude(final double longitude,
                                    final double latitude,
                                    final double altitude) {

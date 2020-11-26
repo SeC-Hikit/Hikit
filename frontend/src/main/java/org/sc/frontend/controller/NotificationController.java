@@ -1,5 +1,6 @@
 package org.sc.frontend.controller;
 
+import org.sc.common.rest.controller.AccessibilityNotificationUnresolved;
 import org.sc.common.rest.controller.AccessibilityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/notifications")
@@ -32,7 +34,7 @@ public class NotificationController {
     }
 
     @GetMapping("/{code}")
-    public AccessibilityResponse getNotificationUnsolvedForTrail(@PathVariable String code) throws IOException {
+    public List<AccessibilityNotificationUnresolved> getNotificationUnsolvedForTrail(@PathVariable String code) throws IOException {
         return notificationManager.getNotificationsUnsolvedForTrail(code);
     }
 

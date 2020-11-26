@@ -8,7 +8,7 @@ public class AccessibilityResponse extends RESTResponse {
 
     public AccessibilityResponse(){}
 
-    public AccessibilityResponse(List<AccessibilityNotification> accessibilityNotifications) {
+    public AccessibilityResponse(final List<AccessibilityNotification> accessibilityNotifications) {
         super(Status.OK, Collections.emptySet());
         this.accessibilityNotifications = accessibilityNotifications;
     }

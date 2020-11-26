@@ -15,16 +15,13 @@ class MaintenanceCreationValidator : Validator<Maintenance> {
 
     override fun validate(maintenance: Maintenance): Set<String> {
         val errors = mutableSetOf<String>()
-        if (maintenance.contact.isEmpty()) {
+        if (maintenance.contact.isNullOrBlank()) {
             errors.add(String.format(noParamSpecified, "Contact"))
         }
-        if (maintenance.code.isEmpty()) {
+        if (maintenance.code.isNullOrBlank()) {
             errors.add(String.format(noParamSpecified, "Code"))
         }
-        if (maintenance.description.isEmpty()) {
-            errors.add(String.format(noParamSpecified, "Description"))
-        }
-        if (maintenance.meetingPlace.isEmpty()) {
+        if (maintenance.meetingPlace.isNullOrBlank()) {
             errors.add(String.format(noParamSpecified, "Meeting Place"))
         }
         if (maintenance.date.before(Date())) {
