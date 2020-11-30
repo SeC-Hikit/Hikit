@@ -43,8 +43,9 @@ public class TrailDAO {
     public static final int RESULT_LIMIT_ONE = 1;
 
     private final MongoCollection<Document> collection;
+
     private final Mapper<Trail> trailMapper;
-    private final TrailPreviewMapper trailPreviewMapper;
+    private final Mapper<TrailPreview> trailPreviewMapper;
 
     @Autowired
     public TrailDAO(final DataSource dataSource,
@@ -93,7 +94,11 @@ public class TrailDAO {
     }
 
     @NotNull
-    public List<Trail> getTrails() {
+    public List<Trail> getTrails(boolean isLight) {
+        if(isLight){
+            // TODO: filter the points at db level
+            return executeQueryAndGetResult(new Document());
+        }
         return executeQueryAndGetResult(new Document());
     }
 

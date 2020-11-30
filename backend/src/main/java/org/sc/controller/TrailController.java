@@ -31,12 +31,6 @@ public class TrailController {
 
     public final static String PREFIX = "/trail";
 
-    private final static Logger LOGGER = Logger.getLogger(TrailController.class.getName());
-
-    public static final String FILE_INPUT_NAME = "gpxFile";
-    public static final String CANNOT_READ_ERROR_MESSAGE = "Could not read GPX file.";
-
-    public static final int BAD_REQUEST_STATUS_CODE = 400;
     public static final String EMPTY_CODE_VALUE_ERROR_MESSAGE = "Empty code value";
 
     public static final String TMP_FOLDER = "tmp";
@@ -75,7 +69,7 @@ public class TrailController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RESTResponse importTrail(@RequestBody TrailImport request) {
         final Set<String> errors = trailValidator.validate(request);
-        final TrailRestResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailRestResponse.
+        final TrailResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailResponse.
                 TrailRestResponseBuilder.aTrailRestResponse().withTrails(Collections.emptyList()).withMessages(errors);
         if (errors.isEmpty()) {
             trailImporterManager.save(request);
@@ -85,16 +79,20 @@ public class TrailController {
     }
 
     @GetMapping
-    public TrailRestResponse getAll() {
-        return new TrailRestResponse(trailManager.getAll());
+    public TrailResponse getAll(@RequestParam(required = false) Boolean light) {
+        if(light == null) {
+            return new TrailResponse(trailManager.getAll(false));
+        }
+        return new TrailResponse(trailManager.getAll(light));
     }
 
+
     @GetMapping("/{code}")
-    public TrailRestResponse getByCode(@PathVariable String code) {
+    public TrailResponse getByCode(@PathVariable String code) {
         if(isBlank(code)) {
-            return new TrailRestResponse(Collections.emptyList(), Status.ERROR, Collections.singleton("Empty code value"));
+            return new TrailResponse(Collections.emptyList(), Status.ERROR, Collections.singleton("Empty code value"));
         }
-        return new TrailRestResponse(trailManager.getByCode(code));
+        return new TrailResponse(trailManager.getByCode(code));
     }
 
     @DeleteMapping("/{code}")

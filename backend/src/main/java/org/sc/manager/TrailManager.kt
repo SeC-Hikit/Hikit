@@ -21,8 +21,8 @@ class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
 
 
 
-    fun getAll(): MutableList<Trail> = trailDAO.trails
-    fun getByCode(code: String): MutableList<Trail> = trailDAO.getTrailByCode(code)
+    fun getAll(isLightQuality : Boolean): List<Trail> = trailDAO.getTrails(isLightQuality)
+    fun getByCode(code: String): List<Trail> = trailDAO.getTrailByCode(code)
     fun delete(code: String) = trailDAO.delete(code)
     fun allPreview() : List<TrailPreview> = trailDAO.allTrailPreviews
     fun previewByCode(code: String): List<TrailPreview> = trailDAO.trailPreviewByCode(code)

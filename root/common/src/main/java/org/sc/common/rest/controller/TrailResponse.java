@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class TrailRestResponse extends RESTResponse {
+public class TrailResponse extends RESTResponse {
     final List<Trail> trails;
 
-    public TrailRestResponse(List<Trail> trails, Status status, Set<String> messages) {
+    public TrailResponse(List<Trail> trails, Status status, Set<String> messages) {
         super(status, messages);
         this.trails = trails;
     }
 
-    public TrailRestResponse(List<Trail> trails) {
+    public TrailResponse(List<Trail> trails) {
         super(Status.OK, Collections.emptySet());
         this.trails = trails;
     }
@@ -48,8 +48,8 @@ public class TrailRestResponse extends RESTResponse {
             return this;
         }
 
-        public TrailRestResponse build() {
-            return new TrailRestResponse(trails, status, messages);
+        public TrailResponse build() {
+            return new TrailResponse(trails, status, messages);
         }
     }
 }
