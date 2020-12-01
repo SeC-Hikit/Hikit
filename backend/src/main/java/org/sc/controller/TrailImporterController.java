@@ -2,7 +2,6 @@ package org.sc.controller;
 
 import org.sc.common.rest.controller.*;
 import org.sc.data.TrailImport;
-import org.sc.common.rest.controller.TrailPreparationModel;
 import org.sc.importer.TrailImportValidator;
 import org.sc.importer.TrailImporterManager;
 import org.sc.manager.TrailManager;
@@ -19,35 +18,31 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
-import static org.apache.logging.log4j.util.Strings.isBlank;
 
 @RestController
-@RequestMapping(TrailController.PREFIX)
-public class TrailController {
+@RequestMapping(TrailImporterController.PREFIX)
+public class TrailImporterController {
 
-    public final static String PREFIX = "/trail";
-
-    public static final String EMPTY_CODE_VALUE_ERROR_MESSAGE = "Empty code value";
+    public final static String PREFIX = "/import";
 
     public static final String TMP_FOLDER = "tmp";
     public static final File UPLOAD_DIR = new File(TMP_FOLDER);
 
     private final GpxManager gpxManager;
-    private final TrailManager trailManager;
     private final TrailImporterManager trailImporterManager;
     private final TrailImportValidator trailValidator;
 
     @Autowired
-    public TrailController(final GpxManager gpxManager,
-                           final TrailManager trailManager,
-                           final TrailImporterManager trailImporterManager,
-                           final TrailImportValidator trailValidator) {
+    public TrailImporterController(final GpxManager gpxManager,
+                                   final TrailImporterManager trailImporterManager,
+                                   final TrailImportValidator trailValidator) {
         this.gpxManager = gpxManager;
-        this.trailManager = trailManager;
         this.trailImporterManager = trailImporterManager;
         this.trailValidator = trailValidator;
     }
@@ -63,7 +58,6 @@ public class TrailController {
         return gpxManager.getTrailPreparationFromGpx(tempFile);
     }
 
-
     @PutMapping(path = "/save",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -76,41 +70,6 @@ public class TrailController {
             return trailRestResponseBuilder.withStatus(Status.OK).build();
         }
         return trailRestResponseBuilder.withMessages(errors).withStatus(Status.ERROR).build();
-    }
-
-    @GetMapping
-    public TrailResponse getAll(@RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return new TrailResponse(trailManager.getAll(light));
-    }
-
-
-    @GetMapping("/{code}")
-    public TrailResponse getByCode(@PathVariable String code, @RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return new TrailResponse(trailManager.getByCode(code, light));
-    }
-
-    @DeleteMapping("/{code}")
-    public RESTResponse deleteByCode(@PathVariable String code) {
-        boolean isDeleted = trailManager.delete(code);
-        if (isDeleted) {
-            return new RESTResponse(Status.OK, Collections.emptySet());
-        } else {
-            return new RESTResponse(Status.ERROR,
-                    new HashSet<>(Collections.singletonList(
-                            format("No trail deleted with code '%s'", code))));
-        }
-    }
-
-    @GetMapping("/download/{code}")
-    public FileDownloadResponse getDownloadableLink(@PathVariable String code) {
-        if(!StringUtils.hasText(code)) {
-            return new FileDownloadResponse("", Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
-        }
-        final List<Trail> byCode = trailManager.getByCode(code, false);
-        if(!byCode.isEmpty()){
-            return new FileDownloadResponse(trailManager.getDownloadableLink(code));
-        }
-        return new FileDownloadResponse("", Status.ERROR, Collections.singleton("Trail does not exist"));
     }
 
 }

@@ -45,14 +45,17 @@ public class TrailDAO {
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
+    private final Mapper<Trail> trailLightMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
 
     @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
+                    final TrailLightMapper trailLightMapper,
                     final TrailPreviewMapper trailPreviewMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.trailLightMapper = trailLightMapper;
         this.trailPreviewMapper = trailPreviewMapper;
     }
 
@@ -96,19 +99,17 @@ public class TrailDAO {
     @NotNull
     public List<Trail> getTrails(boolean isLight) {
         if(isLight){
-            // TODO: filter the points at db level
-            return executeQueryAndGetResult(new Document());
+            return toTrailsLightList(collection.find(new Document()).limit(RESULT_LIMIT));
         }
-        return executeQueryAndGetResult(new Document());
+        return toTrailsList(collection.find(new Document()).limit(RESULT_LIMIT));
     }
 
     @NotNull
-    public List<Trail> getTrailByCode(@NotNull String code) {
+    public List<Trail> getTrailByCode(@NotNull String code, boolean isLight) {
+        if(isLight){
+            return toTrailsLightList(collection.find(new Document("code", code)));
+        }
         return toTrailsList(collection.find(new Document("code", code)));
-    }
-
-    public List<Trail> executeQueryAndGetResult(final Document doc) {
-        return toTrailsList(collection.find(doc).limit(RESULT_LIMIT));
     }
 
     public boolean delete(final String code) {
@@ -138,6 +139,11 @@ public class TrailDAO {
     private Document projectPreview() {
         return new Document(Trail.CODE, 1).append(Trail.START_POS, 1).append(Trail.FINAL_POS, 1).append(Trail.CLASSIFICATION, 1)
                 .append(Trail.LAST_UPDATE_DATE, 1);
+    }
+
+    @NotNull
+    private List<Trail> toTrailsLightList(Iterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
     }
 
     @NotNull
