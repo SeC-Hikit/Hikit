@@ -5,6 +5,7 @@ import org.sc.service.DistanceProcessor
 import org.springframework.stereotype.Service
 import kotlin.math.abs
 import kotlin.math.exp
+import kotlin.math.roundToInt
 
 @Service
 class TrailsCalculator {
@@ -53,10 +54,10 @@ class TrailsCalculator {
         return totalTrailDistance
     }
 
-    fun calculateLengthFromTo(coordinates : List<CoordinatesWithAltitude>, coordinate : CoordinatesWithAltitude) : Double {
+    fun calculateLengthFromTo(coordinates : List<CoordinatesWithAltitude>, coordinate : CoordinatesWithAltitude) : Int {
         return coordinates.filterIndexed { index, _ -> index < coordinates.indexOf(coordinate) }
                 .mapIndexed { index: Int, coord: CoordinatesWithAltitude -> toEntry(index, coord, coordinates) }
-                .map { DistanceProcessor.distanceBetweenPoints(it.first, it.second) }
+                .map { DistanceProcessor.distanceBetweenPoints(it.first, it.second).roundToInt() }
                 .sum()
     }
 

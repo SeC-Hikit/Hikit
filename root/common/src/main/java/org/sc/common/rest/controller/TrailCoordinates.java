@@ -7,12 +7,12 @@ public class TrailCoordinates extends CoordinatesWithAltitude {
 
     public final static String DISTANCE_FROM_START = "distFromStart";
 
-    private final double distanceFromTrailStart;
+    private final int distanceFromTrailStart;
 
     public TrailCoordinates(final double longitude,
                             final double latitude,
                             final double altitude,
-                            final double distanceFromTrailStart) {
+                            final int distanceFromTrailStart) {
         super(longitude, latitude, altitude);
         this.distanceFromTrailStart = distanceFromTrailStart;
     }
@@ -30,7 +30,7 @@ public class TrailCoordinates extends CoordinatesWithAltitude {
     }
 
     public static final class TrailCoordinatesBuilder {
-        private double distanceFromTrailStart;
+        private int distanceFromTrailStart;
         private double altitude;
         private double longitude;
         private double latitude;
@@ -42,7 +42,7 @@ public class TrailCoordinates extends CoordinatesWithAltitude {
             return new TrailCoordinatesBuilder();
         }
 
-        public TrailCoordinatesBuilder withDistanceFromTrailStart(double distanceFromTrailStart) {
+        public TrailCoordinatesBuilder withDistanceFromTrailStart(int distanceFromTrailStart) {
             this.distanceFromTrailStart = distanceFromTrailStart;
             return this;
         }

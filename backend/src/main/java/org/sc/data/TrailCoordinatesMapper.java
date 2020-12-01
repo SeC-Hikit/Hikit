@@ -17,7 +17,7 @@ public class TrailCoordinatesMapper implements Mapper<TrailCoordinates> {
     public TrailCoordinates mapToObject(final Document document) {
         final List<Double> list = document.get(CoordinatesWithAltitude.COORDINATES, List.class);
         final Double altitude = document.getDouble(TrailCoordinates.ALTITUDE);
-        final Double distanceProgress = document.getDouble(TrailCoordinates.DISTANCE_FROM_START);
+        final Integer distanceProgress = document.getInteger(TrailCoordinates.DISTANCE_FROM_START);
         return TrailCoordinates.TrailCoordinatesBuilder.aTrailCoordinates()
                 .withLongitude(list.get(TrailCoordinates.LONG_INDEX))
                 .withLatitude(list.get(TrailCoordinates.LAT_INDEX))

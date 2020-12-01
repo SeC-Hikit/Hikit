@@ -232,9 +232,9 @@ class TrailsCalculatorTest {
         every { mockPoint2.latitude } returns 44.497017
         every { mockPoint2.longitude } returns 11.318903
 
-        assertEquals(0.0,
+        assertEquals(0,
                 TrailsCalculator().calculateLengthFromTo(
-                        listOf(mockPoint1, mockPoint2), mockPoint1), 0.0)
+                        listOf(mockPoint1, mockPoint2), mockPoint1))
     }
 
 
@@ -252,9 +252,9 @@ class TrailsCalculatorTest {
         every { mockPoint2.latitude } returns 44.497017
         every { mockPoint2.longitude } returns 11.318903
 
-        assertEquals(494.0,
+        assertEquals(495,
                 TrailsCalculator().calculateLengthFromTo(
-                                listOf(mockPoint1, mockPoint2), mockPoint2), 5.0)
+                                listOf(mockPoint1, mockPoint2), mockPoint2))
     }
 
     @Test
@@ -276,9 +276,9 @@ class TrailsCalculatorTest {
         every { mockPoint3.latitude } returns 44.497895
         every { mockPoint3.longitude } returns 11.313611
 
-        assertEquals(926.0,
+        assertEquals(926,
                 TrailsCalculator().calculateLengthFromTo(
-                        listOf(mockPoint1, mockPoint2, mockPoint3), mockPoint3), 5.0)
+                        listOf(mockPoint1, mockPoint2, mockPoint3), mockPoint3))
     }
 
 }

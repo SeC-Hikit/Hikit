@@ -15,7 +15,7 @@ public class Position {
 
     public Position(){}
 
-    public Position(double alt, double lat, double longitude, double distanceFromStart) {
+    public Position(double alt, double lat, double longitude, int distanceFromStart) {
         this.coordinates = new TrailCoordinates(longitude, lat, alt, distanceFromStart);
     }
 
