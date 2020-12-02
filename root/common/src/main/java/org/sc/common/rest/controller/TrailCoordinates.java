@@ -25,7 +25,7 @@ public class TrailCoordinates extends CoordinatesWithAltitude {
         Double.compare(that.getLongitude(), getLongitude()) == 0;
     }
 
-    public double getDistanceFromTrailStart() {
+    public int getDistanceFromTrailStart() {
         return distanceFromTrailStart;
     }
 
