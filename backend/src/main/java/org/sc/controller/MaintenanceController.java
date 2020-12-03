@@ -45,14 +45,6 @@ public class MaintenanceController {
         return new MaintenanceResponse(maintenanceDao.getPast());
     }
 
-    @GetMapping("/past/{from}/{to}")
-    public RESTResponse getPastPaged(@PathVariable int from, @PathVariable int to) {
-        if(from <= to){
-            return new MaintenanceResponse(maintenanceDao.getPast(from, to));
-        }
-        return null;
-    }
-
     @DeleteMapping("/delete/{code}")
     public RESTResponse deleteMaintenance(@PathVariable String id) {
         boolean isDeleted = maintenanceDao.delete(id);

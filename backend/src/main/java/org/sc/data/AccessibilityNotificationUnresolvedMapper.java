@@ -12,8 +12,8 @@ public class AccessibilityNotificationUnresolvedMapper implements Mapper<Accessi
     public AccessibilityNotificationUnresolved mapToObject(Document document) {
         return new AccessibilityNotificationUnresolved(
                 document.getString(AccessibilityNotification.OBJECT_ID),
-                document.getString(AccessibilityNotification.TRAIL_CODE),
                 document.getString(AccessibilityNotification.DESCRIPTION),
+                document.getString(AccessibilityNotification.TRAIL_CODE),
                 document.getDate(AccessibilityNotification.REPORT_DATE),
                 document.getBoolean(AccessibilityNotification.IS_MINOR));
     }

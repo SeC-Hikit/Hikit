@@ -9,18 +9,19 @@ import java.util.*
 class AccessibilityCreationValidator : Validator<AccessibilityNotificationCreation> {
 
     companion object {
-        const val noParamSpecified = "Empty field '%s'"
+        const val noParamSpecifiedError = "Empty field '%s'"
+        const val dateInFutureError = "Date field '%s' is in the future"
     }
 
     override fun validate(request: AccessibilityNotificationCreation): Set<String> {
         val errors = mutableSetOf<String>()
         if (request.code.isBlank()) {
-            errors.add(String.format(noParamSpecified, "Code"))
+            errors.add(String.format(noParamSpecifiedError, "Code"))
         }
         if(request.description.isBlank()) {
-            errors.add(String.format(noParamSpecified, "Description"))
+            errors.add(String.format(noParamSpecifiedError, "Description"))
         }
-        if(request.reportDate.after(Date())) errors.add(String.format(noParamSpecified, "Description"))
+        if(request.reportDate.after(Date())) errors.add(String.format(dateInFutureError, request.reportDate.toString()))
 
         return errors
     }
