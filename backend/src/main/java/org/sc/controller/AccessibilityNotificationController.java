@@ -46,12 +46,12 @@ public class AccessibilityNotificationController {
     }
 
     @GetMapping("/unresolved/{code}")
-    public AccessibilityUnresolvedResponse getByTrailCode(@PathVariable String code) {
+    public AccessibilityUnresolvedResponse getNotSolvedByTrailCode(@PathVariable String code) {
         return new AccessibilityUnresolvedResponse(accessibilityDAO.getUnresolvedByCode(code));
     }
 
-    @PostMapping("/resolve/{code}")
-    public RESTResponse resolveNotification(@PathVariable AccessibilityNotificationResolution accessibilityRes) {
+    @PostMapping("/resolve")
+    public RESTResponse resolveNotification(@RequestBody AccessibilityNotificationResolution accessibilityRes) {
         boolean hasBeenResolved = accessibilityDAO.resolve(accessibilityRes);
         if (hasBeenResolved) {
             return new RESTResponse(Status.OK, Collections.emptySet());
@@ -62,15 +62,15 @@ public class AccessibilityNotificationController {
 
     }
 
-    @DeleteMapping("/delete/{code}")
-    public RESTResponse deleteAccessibilityNotification(@PathVariable String code) {
-        boolean isDeleted = accessibilityDAO.delete(code);
+    @DeleteMapping("/{objectId}")
+    public RESTResponse deleteAccessibilityNotification(@PathVariable String objectId) {
+        boolean isDeleted = accessibilityDAO.delete(objectId);
         if (isDeleted) {
             return new RESTResponse(Status.OK, Collections.emptySet());
         } else {
             return new RESTResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No accessibility notification was found with id '%s'", code))));
+                            format("No accessibility notification was found with id '%s'", objectId))));
         }
     }
 

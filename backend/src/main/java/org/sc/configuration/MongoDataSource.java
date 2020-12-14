@@ -4,10 +4,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.Logger;
-import org.sc.common.config.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import static java.lang.String.format;
 import static org.apache.logging.log4j.LogManager.getLogger;

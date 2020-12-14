@@ -2,7 +2,7 @@ package org.sc.data;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import org.sc.common.config.DataSource;
+import org.sc.configuration.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

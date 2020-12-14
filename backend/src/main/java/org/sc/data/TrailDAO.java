@@ -6,7 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
-import org.sc.common.config.DataSource;
+import org.sc.configuration.DataSource;
 import org.sc.common.rest.controller.Position;
 import org.sc.common.rest.controller.Trail;
 import org.sc.common.rest.controller.TrailPreview;

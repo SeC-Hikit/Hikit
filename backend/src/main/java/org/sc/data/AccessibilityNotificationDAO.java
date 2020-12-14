@@ -6,7 +6,7 @@ import com.mongodb.client.model.ReplaceOptions;
 import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.common.config.DataSource;
+import org.sc.configuration.DataSource;
 import org.sc.common.rest.controller.AccessibilityNotification;
 import org.sc.common.rest.controller.AccessibilityNotificationCreation;
 import org.sc.common.rest.controller.AccessibilityNotificationResolution;
@@ -71,7 +71,7 @@ public class AccessibilityNotificationDAO {
     public boolean resolve(final AccessibilityNotificationResolution accessibilityNotificationResolution) {
         return collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolution.get_id()),
                 new Document("$set", new Document(AccessibilityNotification.RESOLUTION,accessibilityNotificationResolution.getResolution())
-                        .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolution.getResolution()))).getModifiedCount() > 0;
+                        .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolution.getResolutionDate()))).getModifiedCount() > 0;
     }
 
     public boolean delete(final String objectId) {

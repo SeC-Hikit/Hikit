@@ -1,4 +1,4 @@
-package org.sc.common.config;
+package org.sc.configuration;
 
 
 import com.mongodb.client.MongoClient;

@@ -2,6 +2,7 @@ package org.sc.common.rest.controller;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Position {
 
@@ -36,7 +37,7 @@ public class Position {
     }
 
     public List<String> getTags() {
-        return tags;
+        return tags.stream().filter(a->!a.equals("")).collect(Collectors.toList());
     }
 
     public static final class PositionBuilder {
