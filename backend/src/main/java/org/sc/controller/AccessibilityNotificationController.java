@@ -74,7 +74,7 @@ public class AccessibilityNotificationController {
         }
     }
 
-    @PutMapping(path = "/save",
+    @PutMapping(path = "",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RESTResponse createAccessibilityNotification(@RequestBody AccessibilityNotificationCreation accessibilityNotificationCreation) {
