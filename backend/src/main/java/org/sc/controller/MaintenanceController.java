@@ -45,20 +45,20 @@ public class MaintenanceController {
         return new MaintenanceResponse(maintenanceDao.getPast());
     }
 
-    @DeleteMapping("/delete/{code}")
+    @DeleteMapping("/{id}")
     public RESTResponse deleteMaintenance(@PathVariable String id) {
         boolean isDeleted = maintenanceDao.delete(id);
         if (isDeleted) {
             return new RESTResponse(Status.OK, Collections.emptySet());
         } else {
-            LOGGER.warning(format("Could not delete maintenance with id %s", id));
+            LOGGER.warning(format("Could not delete maintenance with id '%s'", id));
             return new RESTResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
                             format("No maintenance was found with id '%s'", id))));
         }
     }
 
-    @PutMapping("/save")
+    @PutMapping
     public RESTResponse createMaintenance(@RequestBody Maintenance request) {
         final Set<String> errors = maintenanceValidator.validate(request);
         if(errors.isEmpty()) {
