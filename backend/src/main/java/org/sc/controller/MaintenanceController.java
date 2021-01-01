@@ -7,7 +7,6 @@ import org.sc.common.rest.controller.Status;
 import org.sc.data.MaintenanceDAO;
 import org.sc.importer.MaintenanceCreationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -16,6 +15,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
+import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
 @RestController
 @RequestMapping(MaintenanceController.PREFIX)
@@ -36,13 +37,15 @@ public class MaintenanceController {
     }
 
     @GetMapping("/future")
-    public MaintenanceResponse getFutureMaintenance() {
-        return new MaintenanceResponse(maintenanceDao.getFuture());
+    public MaintenanceResponse getFutureMaintenance(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                                    @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        return new MaintenanceResponse(maintenanceDao.getFuture(page, count));
     }
 
     @GetMapping("/past")
-    public MaintenanceResponse getPastMaintenance() {
-        return new MaintenanceResponse(maintenanceDao.getPast());
+    public MaintenanceResponse getPastMaintenance(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        return new MaintenanceResponse(maintenanceDao.getPast(page, count));
     }
 
     @DeleteMapping("/{id}")

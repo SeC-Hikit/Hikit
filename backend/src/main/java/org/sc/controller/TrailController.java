@@ -1,29 +1,22 @@
 package org.sc.controller;
 
 import org.sc.common.rest.controller.*;
-import org.sc.data.TrailImport;
-import org.sc.common.rest.controller.TrailPreparationModel;
 import org.sc.importer.TrailImportValidator;
 import org.sc.importer.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.sc.service.GpxManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 import static java.lang.String.format;
-import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
+import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
 @RestController
 @RequestMapping(TrailController.PREFIX)
@@ -52,37 +45,13 @@ public class TrailController {
         this.trailValidator = trailValidator;
     }
 
-    @PostMapping(path = "/read",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public TrailPreparationModel readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
-        final Path tempFile = Files.createTempFile(UPLOAD_DIR.toPath(), "", "");
-        try (final InputStream input = gpxFile.getInputStream()) {
-            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
-        }
-        return gpxManager.getTrailPreparationFromGpx(tempFile);
-    }
-
-
-    @PutMapping(path = "/save",
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public RESTResponse importTrail(@RequestBody TrailImport request) {
-        final Set<String> errors = trailValidator.validate(request);
-        final TrailResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailResponse.
-                TrailRestResponseBuilder.aTrailRestResponse().withTrails(Collections.emptyList()).withMessages(errors);
-        if (errors.isEmpty()) {
-            trailImporterManager.save(request);
-            return trailRestResponseBuilder.withStatus(Status.OK).build();
-        }
-        return trailRestResponseBuilder.withMessages(errors).withStatus(Status.ERROR).build();
-    }
-
     @GetMapping
-    public TrailResponse getAll(@RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return new TrailResponse(trailManager.getAll(light));
+    public TrailResponse get(
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count,
+            @RequestParam(required = false, defaultValue = "false") Boolean light) {
+        return new TrailResponse(trailManager.get(light, page, count));
     }
-
 
     @GetMapping("/{code}")
     public TrailResponse getByCode(@PathVariable String code, @RequestParam(required = false, defaultValue = "false") Boolean light) {
@@ -90,8 +59,9 @@ public class TrailController {
     }
 
     @DeleteMapping("/{code}")
-    public RESTResponse deleteByCode(@PathVariable String code) {
-        boolean isDeleted = trailManager.delete(code);
+    public RESTResponse deleteByCode(@PathVariable String code,
+                                     @RequestParam(required = false, defaultValue = "false") boolean isPurged) {
+        boolean isDeleted = trailManager.delete(code, isPurged);
         if (isDeleted) {
             return new RESTResponse(Status.OK, Collections.emptySet());
         } else {
@@ -103,11 +73,11 @@ public class TrailController {
 
     @GetMapping("/download/{code}")
     public FileDownloadResponse getDownloadableLink(@PathVariable String code) {
-        if(!StringUtils.hasText(code)) {
+        if (!StringUtils.hasText(code)) {
             return new FileDownloadResponse("", Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
         }
         final List<Trail> byCode = trailManager.getByCode(code, false);
-        if(!byCode.isEmpty()){
+        if (!byCode.isEmpty()) {
             return new FileDownloadResponse(trailManager.getDownloadableLink(code));
         }
         return new FileDownloadResponse("", Status.ERROR, Collections.singleton("Trail does not exist"));
