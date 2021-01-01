@@ -1,6 +1,7 @@
 package org.sc.controller;
 
 import org.sc.common.rest.controller.*;
+import org.sc.configuration.AppProperties;
 import org.sc.data.AccessibilityNotificationDAO;
 import org.sc.importer.AccessibilityCreationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +13,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
+import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
 @RestController
 @RequestMapping(AccessibilityNotificationController.PREFIX)
 public class AccessibilityNotificationController {
 
-    public final static String PREFIX =  "/accessibility";
+    public final static String PREFIX = "/accessibility";
 
     private final AccessibilityCreationValidator accessibilityValidator;
     private final AccessibilityNotificationDAO accessibilityDAO;
 
-
     @Autowired
     public AccessibilityNotificationController(final AccessibilityNotificationDAO accessibilityDao,
-                                               final AccessibilityCreationValidator accessibilityValidator) {
+                                               final AccessibilityCreationValidator accessibilityValidator,
+                                               final AppProperties appProperties) {
         this.accessibilityDAO = accessibilityDao;
         this.accessibilityValidator = accessibilityValidator;
     }
 
     @GetMapping("/solved")
-    public AccessibilityResponse getSolved() {
-        return new AccessibilityResponse(accessibilityDAO.getSolved());
+    public AccessibilityResponse getSolved(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        return new AccessibilityResponse(accessibilityDAO.getSolved(page, count));
     }
 
     @GetMapping("/solved/{code}")
@@ -41,8 +45,9 @@ public class AccessibilityNotificationController {
     }
 
     @GetMapping("/unresolved")
-    public AccessibilityUnresolvedResponse getNotSolved() {
-        return new AccessibilityUnresolvedResponse(accessibilityDAO.getNotSolved());
+    public AccessibilityUnresolvedResponse getNotSolved(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                                        @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        return new AccessibilityUnresolvedResponse(accessibilityDAO.getNotSolved(page, count));
     }
 
     @GetMapping("/unresolved/{code}")
@@ -58,7 +63,7 @@ public class AccessibilityNotificationController {
         }
         return new RESTResponse(Status.ERROR,
                 new HashSet<>(Collections.singletonList(
-                    format("No accessibility notification was found with id '%s'", accessibilityRes.get_id()))));
+                        format("No accessibility notification was found with id '%s'", accessibilityRes.get_id()))));
 
     }
 
@@ -79,10 +84,10 @@ public class AccessibilityNotificationController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RESTResponse createAccessibilityNotification(@RequestBody AccessibilityNotificationCreation accessibilityNotificationCreation) {
         final Set<String> errors = accessibilityValidator.validate(accessibilityNotificationCreation);
-        if(!errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             return new RESTResponse(errors);
         }
-        if(accessibilityDAO.upsert(accessibilityNotificationCreation)) {
+        if (accessibilityDAO.upsert(accessibilityNotificationCreation)) {
             return new RESTResponse();
         }
         throw new IllegalStateException();
