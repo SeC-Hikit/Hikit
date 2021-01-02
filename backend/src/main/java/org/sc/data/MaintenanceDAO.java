@@ -5,8 +5,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.configuration.DataSource;
 import org.sc.common.rest.controller.Maintenance;
+import org.sc.configuration.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -30,17 +30,20 @@ public class MaintenanceDAO {
         this.mapper = mapper;
     }
 
-    public List<Maintenance> getFuture() {
-        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$gt", new Date()))));
+    public List<Maintenance> getFuture(final int from,
+                                       final int to) {
+
+        return toMaintenanceList(collection.find(
+                new Document(Maintenance.DATE, new Document("$gt", new Date())))
+                .skip(from).limit(to));
     }
 
-    public List<Maintenance> getPast() {
-        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, new Document("$lt", new Date()))));
-    }
-
-    public List<Maintenance> getPast(int from, int to) {
-        return toMaintenanceList(collection.find(new Document(Maintenance.DATE, ""))
-                .sort(new Document(Maintenance.DATE, -1)).skip(from).limit(to));
+    public List<Maintenance> getPast(final int from,
+                                     final int to) {
+        return toMaintenanceList(collection.find(
+                new Document(Maintenance.DATE, new Document("$lt", new Date())))
+                .sort(new Document(Maintenance.DATE, -1))
+                .skip(from).limit(to));
     }
 
     public void upsert(final Maintenance maintenance) {
@@ -53,6 +56,10 @@ public class MaintenanceDAO {
 
     public boolean delete(final String objectId) {
         return collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId)).getDeletedCount() > 0;
+    }
+
+    public boolean deleteByCode(final String trailCode) {
+        return collection.deleteOne(new Document(Maintenance.TRAIL_CODE, trailCode)).getDeletedCount() > 0;
     }
 
     private List<Maintenance> toMaintenanceList(FindIterable<Document> documents) {

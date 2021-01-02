@@ -1,30 +1,47 @@
 package org.sc.manager
 
-import org.sc.service.DistanceProcessor
-import org.sc.service.GpxManager
-import org.sc.common.rest.controller.*
+import org.sc.common.rest.controller.CoordinatesWithAltitude
+import org.sc.common.rest.controller.Trail
+import org.sc.common.rest.controller.TrailPreview
+import org.sc.common.rest.controller.UnitOfMeasurement
 import org.sc.configuration.AppProperties
 import org.sc.converter.MetricConverter
+import org.sc.data.AccessibilityNotificationDAO
+import org.sc.data.MaintenanceDAO
 import org.sc.data.TrailDAO
 import org.sc.data.TrailDistance
 import org.sc.service.AltitudeServiceHelper
+import org.sc.service.DistanceProcessor
+import org.sc.service.GpxManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.File
+import java.util.logging.Logger
 import kotlin.math.roundToInt
 
 @Component
 class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
+                                          private val maintenanceDAO: MaintenanceDAO,
+                                          private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
                                           private val altitudeService: AltitudeServiceHelper,
                                           private val gpxHelper: GpxManager,
-                                          private val appProperties: AppProperties){
+                                          private val appProperties: AppProperties) {
+
+    private val logger = Logger.getLogger(TrailManager::class.java.name)
 
 
-
-    fun getAll(isLight : Boolean): List<Trail> = trailDAO.getTrails(isLight)
+    fun get(isLight: Boolean, page: Int, count: Int): List<Trail> = trailDAO.getTrails(isLight, page, count)
     fun getByCode(code: String, isLight: Boolean): List<Trail> = trailDAO.getTrailByCode(code, isLight)
-    fun delete(code: String) = trailDAO.delete(code)
-    fun allPreview() : List<TrailPreview> = trailDAO.allTrailPreviews
+    fun delete(code: String, isPurged: Boolean): Boolean {
+        if (isPurged) {
+            val deletedMaintenance = maintenanceDAO.deleteByCode(code)
+            val deletedAccessibilityNotification = accessibilityNotificationDAO.deleteByCode(code)
+            logger.info("Purge deleting trail $code. Maintenance deleted: $deletedMaintenance, deleted notifications: $deletedAccessibilityNotification")
+        }
+        return trailDAO.delete(code)
+    }
+
+    fun getPreviews(page: Int, count: Int): List<TrailPreview> = trailDAO.getTrailPreviews(page, count)
     fun previewByCode(code: String): List<TrailPreview> = trailDAO.trailPreviewByCode(code)
     fun save(trail: Trail) {
         trailDAO.upsert(trail)
