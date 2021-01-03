@@ -6,12 +6,12 @@ import org.sc.common.rest.controller.TrailPreviewResponse;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+
+import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
+import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
 @RestController
 @RequestMapping(TrailPreviewController.PREFIX)
@@ -28,8 +28,9 @@ public class TrailPreviewController {
     }
 
     @GetMapping
-    public TrailPreviewResponse getAllPreview() {
-        return new TrailPreviewResponse(trailManager.allPreview());
+    public TrailPreviewResponse getAllPreview(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                              @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        return new TrailPreviewResponse(trailManager.getPreviews(page, count));
     }
 
     @GetMapping("/{code}")

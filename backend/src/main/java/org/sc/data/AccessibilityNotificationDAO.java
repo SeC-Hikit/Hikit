@@ -3,14 +3,13 @@ package org.sc.data;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
-import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.configuration.DataSource;
 import org.sc.common.rest.controller.AccessibilityNotification;
 import org.sc.common.rest.controller.AccessibilityNotificationCreation;
 import org.sc.common.rest.controller.AccessibilityNotificationResolution;
 import org.sc.common.rest.controller.AccessibilityNotificationUnresolved;
+import org.sc.configuration.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -41,15 +40,18 @@ public class AccessibilityNotificationDAO {
         this.mapperCreation = mapperCreation;
     }
 
-    public List<AccessibilityNotificationUnresolved> getNotSolved() {
+    public List<AccessibilityNotificationUnresolved> getNotSolved(final int from,
+                                                                  final int to) {
         return toUnresolvedNotificationList(collection.find(
-                new Document(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false))));
+                new Document(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)))
+                .skip(from)
+                .limit(to));
     }
 
     public List<AccessibilityNotificationUnresolved> getUnresolvedByCode(String code) {
         return toUnresolvedNotificationList(collection.find(
                 new Document(AccessibilityNotification.TRAIL_CODE, code)
-                .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false))));
+                        .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false))));
     }
 
     public List<AccessibilityNotification> getResolvedByCode(String code) {
@@ -58,8 +60,10 @@ public class AccessibilityNotificationDAO {
                         .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true))));
     }
 
-    public List<AccessibilityNotification> getSolved() {
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true))));
+    public List<AccessibilityNotification> getSolved(final int from,
+                                                     final int to) {
+        return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION,
+                new Document(EXISTS_PARAM, true))).skip(from).limit(to));
     }
 
     public boolean upsert(final AccessibilityNotificationCreation accessibilityNotification) {
@@ -70,12 +74,16 @@ public class AccessibilityNotificationDAO {
 
     public boolean resolve(final AccessibilityNotificationResolution accessibilityNotificationResolution) {
         return collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolution.get_id()),
-                new Document("$set", new Document(AccessibilityNotification.RESOLUTION,accessibilityNotificationResolution.getResolution())
+                new Document("$set", new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolution.getResolution())
                         .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolution.getResolutionDate()))).getModifiedCount() > 0;
     }
 
     public boolean delete(final String objectId) {
         return collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, objectId)).getDeletedCount() > 0;
+    }
+
+    public boolean deleteByCode(final String code) {
+        return collection.deleteOne(new Document(AccessibilityNotification.TRAIL_CODE, code)).getDeletedCount() > 0;
     }
 
     private List<AccessibilityNotification> toNotificationList(FindIterable<Document> documents) {

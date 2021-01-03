@@ -6,10 +6,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
-import org.sc.configuration.DataSource;
 import org.sc.common.rest.controller.Position;
 import org.sc.common.rest.controller.Trail;
 import org.sc.common.rest.controller.TrailPreview;
+import org.sc.configuration.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -97,8 +97,8 @@ public class TrailDAO {
     }
 
     @NotNull
-    public List<Trail> getTrails(boolean isLight) {
-        if(isLight){
+    public List<Trail> getTrails(boolean isLight, int page, int count) {
+        if (isLight) {
             return toTrailsLightList(collection.find(new Document()).limit(RESULT_LIMIT));
         }
         return toTrailsList(collection.find(new Document()).limit(RESULT_LIMIT));
@@ -106,7 +106,7 @@ public class TrailDAO {
 
     @NotNull
     public List<Trail> getTrailByCode(@NotNull String code, boolean isLight) {
-        if(isLight){
+        if (isLight) {
             return toTrailsLightList(collection.find(new Document("code", code)));
         }
         return toTrailsList(collection.find(new Document("code", code)));
@@ -123,17 +123,22 @@ public class TrailDAO {
     }
 
     @NotNull
-    public List<TrailPreview> getAllTrailPreviews() {
-        return toTrailsPreviewList(collection.find().projection(projectPreview()));
+    public List<TrailPreview> getTrailPreviews(final int page, final int count) {
+        return toTrailsPreviewList(collection.find()
+                .projection(projectPreview())
+                .skip(page)
+                .limit(count));
     }
 
     @NotNull
-    public List<TrailPreview> trailPreviewByCode(@NotNull String code) {
-        return toTrailsPreviewList(collection.find(new Document(Trail.CODE, code)).projection(projectPreview()));
+    public List<TrailPreview> trailPreviewByCode(final @NotNull String code) {
+        return toTrailsPreviewList(collection.find(new Document(Trail.CODE, code))
+                .projection(projectPreview()));
     }
 
-    private List<TrailPreview> toTrailsPreviewList(FindIterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailPreviewMapper::mapToObject).collect(toList());
+    private List<TrailPreview> toTrailsPreviewList(final FindIterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(trailPreviewMapper::mapToObject).collect(toList());
     }
 
     private Document projectPreview() {
