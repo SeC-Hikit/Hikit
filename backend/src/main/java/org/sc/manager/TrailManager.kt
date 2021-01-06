@@ -1,16 +1,16 @@
 package org.sc.manager
 
-import org.sc.common.rest.controller.CoordinatesWithAltitude
-import org.sc.common.rest.controller.Trail
-import org.sc.common.rest.controller.TrailPreview
-import org.sc.common.rest.controller.UnitOfMeasurement
+import org.sc.common.rest.CoordinatesWithAltitude
+import org.sc.common.rest.Trail
+import org.sc.common.rest.TrailPreview
+import org.sc.common.rest.UnitOfMeasurement
 import org.sc.configuration.AppProperties
-import org.sc.converter.MetricConverter
+import org.sc.utils.MetricConverter
 import org.sc.data.AccessibilityNotificationDAO
 import org.sc.data.MaintenanceDAO
 import org.sc.data.TrailDAO
 import org.sc.data.TrailDistance
-import org.sc.service.AltitudeServiceHelper
+import org.sc.service.AltitudeServiceAdapter
 import org.sc.service.DistanceProcessor
 import org.sc.service.GpxManager
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
                                           private val maintenanceDAO: MaintenanceDAO,
                                           private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
-                                          private val altitudeService: AltitudeServiceHelper,
+                                          private val altitudeService: AltitudeServiceAdapter,
                                           private val gpxHelper: GpxManager,
                                           private val appProperties: AppProperties) {
 

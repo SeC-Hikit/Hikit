@@ -2,9 +2,10 @@ package org.sc.service
 
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
-import org.sc.common.rest.controller.*
+import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
-import org.sc.importer.TrailsCalculator
+import org.sc.configuration.AppProperties.VERSION
+import org.sc.data.validator.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.File
@@ -13,8 +14,8 @@ import java.nio.file.Path
 @Component
 class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFileHandlerHelper,
                                         private val trailsCalculator: TrailsCalculator,
-                                        private val altitudeService: AltitudeServiceHelper,
-                                        appProps: AppProperties) {
+                                        private val altitudeService: AltitudeServiceAdapter,
+                                        private val appProps: AppProperties) {
 
     private val pathToStoredFiles = File(appProps.trailStorage).toPath()
     private val emptyDefaultString = ""
@@ -43,7 +44,7 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
     }
 
     fun writeTrailToGpx(trail: Trail) {
-        val creator = "S&C_BO_" + org.sc.common.config.ConfigurationProperties.VERSION
+        val creator = "S&C_BO_$VERSION"
         val gpx = GPX.builder(creator)
                 .addTrack { track ->
                     track.addSegment { segment ->

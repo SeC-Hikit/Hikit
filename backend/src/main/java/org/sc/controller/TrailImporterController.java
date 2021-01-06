@@ -1,14 +1,15 @@
 package org.sc.controller;
 
-import org.sc.common.rest.controller.*;
+import org.sc.common.rest.RESTResponse;
+import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailPreparationModel;
+import org.sc.common.rest.TrailResponse;
 import org.sc.data.TrailImport;
-import org.sc.importer.TrailImportValidator;
-import org.sc.importer.TrailImporterManager;
-import org.sc.manager.TrailManager;
+import org.sc.data.validator.TrailImportValidator;
+import org.sc.data.validator.TrailImporterManager;
 import org.sc.service.GpxManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,8 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -49,7 +48,7 @@ public class TrailImporterController {
 
     @PostMapping(path = "/read",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailPreparationModel readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
         final Path tempFile = Files.createTempFile(UPLOAD_DIR.toPath(), "", "");
         try (final InputStream input = gpxFile.getInputStream()) {
@@ -59,8 +58,8 @@ public class TrailImporterController {
     }
 
     @PutMapping(path = "/save",
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public RESTResponse importTrail(@RequestBody TrailImport request) {
         final Set<String> errors = trailValidator.validate(request);
         final TrailResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailResponse.

@@ -5,14 +5,15 @@ import io.mockk.every
 import io.mockk.mockkClass
 import junit.framework.Assert.assertEquals
 import org.junit.Test
-import org.sc.common.rest.controller.Position
-import org.sc.common.rest.controller.TrailClassification
-import org.sc.common.rest.controller.TrailCoordinates
+import org.sc.common.rest.Position
+import org.sc.common.rest.TrailClassification
+import org.sc.common.rest.TrailCoordinates
 import org.sc.data.TrailImport
 import org.sc.data.validator.PositionCreationValidator
 import org.sc.data.validator.TrailCoordinatesCreationValidator
-import org.sc.importer.TrailImportValidator.Companion.dateInFutureError
-import org.sc.importer.TrailImportValidator.Companion.posToTrailCoordError
+import org.sc.data.validator.TrailImportValidator
+import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError
+import org.sc.data.validator.TrailImportValidator.Companion.posToTrailCoordError
 import java.util.*
 
 class TrailsImporterValidatorTest {

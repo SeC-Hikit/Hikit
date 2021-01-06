@@ -1,7 +1,7 @@
 package org.sc.data;
 
-import org.sc.common.rest.controller.CoordinatesWithAltitude;
-import org.sc.common.rest.controller.Trail;
+import org.sc.common.rest.CoordinatesWithAltitude;
+import org.sc.common.rest.Trail;
 
 public class TrailDistance {
 

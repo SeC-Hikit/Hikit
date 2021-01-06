@@ -1,7 +1,7 @@
 package org.sc.data;
 
 import org.bson.Document;
-import org.sc.common.rest.controller.*;
+import org.sc.common.rest.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;

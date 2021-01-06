@@ -6,9 +6,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
-import org.sc.common.rest.controller.Position;
-import org.sc.common.rest.controller.Trail;
-import org.sc.common.rest.controller.TrailPreview;
+import org.sc.common.rest.Position;
+import org.sc.common.rest.Trail;
+import org.sc.common.rest.TrailPreview;
 import org.sc.configuration.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -40,7 +40,6 @@ public class TrailDAO {
 
     // Max number of documents output per request
     public static final int RESULT_LIMIT = 150;
-    public static final int RESULT_LIMIT_ONE = 1;
 
     private final MongoCollection<Document> collection;
 
@@ -57,15 +56,6 @@ public class TrailDAO {
         this.trailMapper = trailMapper;
         this.trailLightMapper = trailLightMapper;
         this.trailPreviewMapper = trailPreviewMapper;
-    }
-
-    public Trail getTrailByCodeAndPostcodeCountry(final String trailCode,
-                                                  final String country) {
-        final FindIterable<Document> documents = collection.find(
-                new Document(Trail.COUNTRY, country)
-                        .append(Trail.CODE, trailCode))
-                .limit(RESULT_LIMIT_ONE);
-        return toTrailsList(documents).stream().findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
     public List<Trail> getTrailsByStartPosMetricDistance(final double longitude,

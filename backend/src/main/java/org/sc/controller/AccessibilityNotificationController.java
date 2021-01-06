@@ -1,9 +1,9 @@
 package org.sc.controller;
 
-import org.sc.common.rest.controller.*;
+import org.sc.common.rest.*;
 import org.sc.configuration.AppProperties;
 import org.sc.data.AccessibilityNotificationDAO;
-import org.sc.importer.AccessibilityCreationValidator;
+import org.sc.data.validator.AccessibilityCreationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

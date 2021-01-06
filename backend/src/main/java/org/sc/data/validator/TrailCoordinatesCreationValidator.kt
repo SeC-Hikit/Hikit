@@ -1,10 +1,10 @@
 package org.sc.data.validator
 
-import org.sc.common.rest.controller.TrailCoordinates
+import org.sc.common.rest.TrailCoordinates
 import org.springframework.stereotype.Component
 
 @Component
-class TrailCoordinatesCreationValidator : Validator<TrailCoordinates>, CoordinatesValidator {
+class TrailCoordinatesCreationValidator constructor(private val coordsValidator: CoordinatesValidator): Validator<TrailCoordinates> {
 
     companion object {
         const val topPeakInTheWorld = 8848.0
@@ -15,9 +15,9 @@ class TrailCoordinatesCreationValidator : Validator<TrailCoordinates>, Coordinat
     override fun validate(request: TrailCoordinates): Set<String> {
         val listOfErrorMessages = mutableSetOf<String>()
         if (request.altitude < 0.0 || request.altitude > topPeakInTheWorld ) listOfErrorMessages.add(altitudeOutOfBoundsErrorMessage)
-        val validateLongitude = validateCoordinates(request.longitude, CoordinatesValidator.Companion.CoordDimension.LONGITUDE)
+        val validateLongitude = coordsValidator.validateCoordinates(request.longitude, CoordinatesValidator.Companion.CoordDimension.LONGITUDE)
         if (validateLongitude.isNotEmpty()) listOfErrorMessages.add(validateLongitude)
-        val validateLatitude = validateCoordinates(request.latitude, CoordinatesValidator.Companion.CoordDimension.LATITUDE)
+        val validateLatitude = coordsValidator.validateCoordinates(request.latitude, CoordinatesValidator.Companion.CoordDimension.LATITUDE)
         if (validateLatitude.isNotEmpty()) listOfErrorMessages.add(validateLatitude)
         if(request.distanceFromTrailStart < 0) listOfErrorMessages.add(negativeDistanceErrorMessage)
         return listOfErrorMessages

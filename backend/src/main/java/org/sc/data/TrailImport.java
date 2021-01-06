@@ -1,8 +1,8 @@
 package org.sc.data;
 
-import org.sc.common.rest.controller.Position;
-import org.sc.common.rest.controller.TrailClassification;
-import org.sc.common.rest.controller.TrailCoordinates;
+import org.sc.common.rest.Position;
+import org.sc.common.rest.TrailClassification;
+import org.sc.common.rest.TrailCoordinates;
 
 import java.util.Date;
 import java.util.List;
