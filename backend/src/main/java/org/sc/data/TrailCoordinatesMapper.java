@@ -1,8 +1,8 @@
 package org.sc.data;
 
 import org.bson.Document;
-import org.sc.common.rest.controller.CoordinatesWithAltitude;
-import org.sc.common.rest.controller.TrailCoordinates;
+import org.sc.common.rest.CoordinatesWithAltitude;
+import org.sc.common.rest.TrailCoordinates;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;

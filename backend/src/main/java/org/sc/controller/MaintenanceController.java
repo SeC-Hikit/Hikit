@@ -1,11 +1,11 @@
 package org.sc.controller;
 
-import org.sc.common.rest.controller.Maintenance;
-import org.sc.common.rest.controller.MaintenanceResponse;
-import org.sc.common.rest.controller.RESTResponse;
-import org.sc.common.rest.controller.Status;
+import org.sc.common.rest.Maintenance;
+import org.sc.common.rest.MaintenanceResponse;
+import org.sc.common.rest.RESTResponse;
+import org.sc.common.rest.Status;
 import org.sc.data.MaintenanceDAO;
-import org.sc.importer.MaintenanceCreationValidator;
+import org.sc.data.validator.MaintenanceCreationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

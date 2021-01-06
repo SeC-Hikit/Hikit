@@ -1,8 +1,8 @@
 package org.sc.data;
 
 import org.bson.Document;
-import org.sc.common.rest.controller.AccessibilityNotification;
-import org.sc.common.rest.controller.AccessibilityNotificationUnresolved;
+import org.sc.common.rest.AccessibilityNotification;
+import org.sc.common.rest.AccessibilityNotificationUnresolved;
 import org.springframework.stereotype.Component;
 
 @Component

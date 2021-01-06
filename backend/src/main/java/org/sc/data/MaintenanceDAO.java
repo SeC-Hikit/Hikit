@@ -5,7 +5,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.common.rest.controller.Maintenance;
+import org.sc.common.rest.Maintenance;
 import org.sc.configuration.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

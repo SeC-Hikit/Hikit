@@ -1,10 +1,10 @@
 package org.sc.data;
 
 import org.bson.Document;
-import org.sc.common.rest.controller.Position;
-import org.sc.common.rest.controller.Trail;
-import org.sc.common.rest.controller.TrailClassification;
-import org.sc.common.rest.controller.TrailPreview;
+import org.sc.common.rest.Position;
+import org.sc.common.rest.Trail;
+import org.sc.common.rest.TrailClassification;
+import org.sc.common.rest.TrailPreview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

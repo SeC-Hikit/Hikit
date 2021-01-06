@@ -1,7 +1,7 @@
 package org.sc.data;
 
 import org.bson.Document;
-import org.sc.common.rest.controller.StatsTrailMetadata;
+import org.sc.common.rest.StatsTrailMetadata;
 import org.springframework.stereotype.Component;
 
 @Component

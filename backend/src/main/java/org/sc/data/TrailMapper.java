@@ -1,7 +1,7 @@
 package org.sc.data;
 
 import org.bson.Document;
-import org.sc.common.rest.controller.*;
+import org.sc.common.rest.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

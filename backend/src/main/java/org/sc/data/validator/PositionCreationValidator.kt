@@ -1,12 +1,12 @@
 package org.sc.data.validator
 
-import org.sc.common.rest.controller.Position
+import org.sc.common.rest.Position
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class PositionCreationValidator @Autowired constructor(
-        private val trailCoordinatesCreationValidator: TrailCoordinatesCreationValidator) : Validator<Position>, CoordinatesValidator {
+        private val trailCoordinatesCreationValidator: TrailCoordinatesCreationValidator) : Validator<Position> {
 
     companion object {
         const val noNameError = "No name specified in position"

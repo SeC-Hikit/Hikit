@@ -1,6 +1,6 @@
 package org.sc;
 
-import org.sc.common.config.ConfigurationProperties;
+import org.sc.configuration.StartupChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;

@@ -1,8 +1,8 @@
 package org.sc.controller;
 
-import org.sc.common.rest.controller.RESTResponse;
-import org.sc.common.rest.controller.Status;
-import org.sc.common.rest.controller.TrailPreviewResponse;
+import org.sc.common.rest.RESTResponse;
+import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailPreviewResponse;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;

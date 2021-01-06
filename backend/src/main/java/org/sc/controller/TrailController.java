@@ -1,8 +1,6 @@
 package org.sc.controller;
 
-import org.sc.common.rest.controller.*;
-import org.sc.importer.TrailImportValidator;
-import org.sc.importer.TrailImporterManager;
+import org.sc.common.rest.*;
 import org.sc.manager.TrailManager;
 import org.sc.service.GpxManager;
 import org.springframework.beans.factory.annotation.Autowired;
