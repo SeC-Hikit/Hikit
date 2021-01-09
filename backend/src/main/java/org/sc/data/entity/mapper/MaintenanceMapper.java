@@ -1,11 +1,12 @@
-package org.sc.data;
+package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.Maintenance;
+import org.sc.data.entity.mapper.Mapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MaintenanceMapper implements Mapper<Maintenance>{
+public class MaintenanceMapper implements Mapper<Maintenance> {
     @Override
     public Maintenance mapToObject(Document document) {
         return new Maintenance(document.getString(Maintenance.OBJECT_ID),

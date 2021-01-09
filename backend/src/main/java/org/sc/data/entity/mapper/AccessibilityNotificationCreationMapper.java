@@ -1,27 +1,26 @@
-package org.sc.data;
+package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.AccessibilityNotification;
-import org.sc.common.rest.AccessibilityNotificationUnresolved;
+import org.sc.common.rest.AccessibilityNotificationCreation;
+import org.sc.data.entity.mapper.Mapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccessibilityNotificationUnresolvedMapper implements Mapper<AccessibilityNotificationUnresolved> {
+public class AccessibilityNotificationCreationMapper implements Mapper<AccessibilityNotificationCreation> {
 
     @Override
-    public AccessibilityNotificationUnresolved mapToObject(Document document) {
-        return new AccessibilityNotificationUnresolved(
-                document.getString(AccessibilityNotification.OBJECT_ID),
-                document.getString(AccessibilityNotification.DESCRIPTION),
+    public AccessibilityNotificationCreation mapToObject(Document document) {
+        return new AccessibilityNotificationCreation(
                 document.getString(AccessibilityNotification.TRAIL_CODE),
+                document.getString(AccessibilityNotification.DESCRIPTION),
                 document.getDate(AccessibilityNotification.REPORT_DATE),
                 document.getBoolean(AccessibilityNotification.IS_MINOR));
     }
 
     @Override
-    public Document mapToDocument(AccessibilityNotificationUnresolved accessibilityNotification) {
+    public Document mapToDocument(AccessibilityNotificationCreation accessibilityNotification) {
         return new Document(AccessibilityNotification.TRAIL_CODE, accessibilityNotification.getCode())
-                .append(AccessibilityNotification.OBJECT_ID, accessibilityNotification.get_id())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
                 .append(AccessibilityNotification.IS_MINOR, accessibilityNotification.isMinor());

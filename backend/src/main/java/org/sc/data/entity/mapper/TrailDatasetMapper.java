@@ -1,6 +1,7 @@
-package org.sc.data;
+package org.sc.data.entity.mapper;
 
 import org.bson.Document;
+import org.sc.data.TrailDatasetVersion;
 import org.springframework.stereotype.Component;
 
 @Component

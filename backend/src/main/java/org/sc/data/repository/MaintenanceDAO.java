@@ -1,4 +1,4 @@
-package org.sc.data;
+package org.sc.data.repository;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.common.rest.Maintenance;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.mapper.MaintenanceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package org.sc.data;
+package org.sc.data.repository;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -10,6 +10,9 @@ import org.sc.common.rest.AccessibilityNotificationCreation;
 import org.sc.common.rest.AccessibilityNotificationResolution;
 import org.sc.common.rest.AccessibilityNotificationUnresolved;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.mapper.AccessibilityNotificationCreationMapper;
+import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
+import org.sc.data.entity.mapper.AccessibilityNotificationUnresolvedMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

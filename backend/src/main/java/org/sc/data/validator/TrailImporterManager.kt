@@ -2,7 +2,7 @@ package org.sc.data.validator
 
 import org.sc.common.rest.StatsTrailMetadata
 import org.sc.common.rest.Trail
-import org.sc.data.TrailDatasetVersionDao
+import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.TrailImport
 import org.sc.manager.TrailManager
 import org.springframework.beans.factory.annotation.Autowired

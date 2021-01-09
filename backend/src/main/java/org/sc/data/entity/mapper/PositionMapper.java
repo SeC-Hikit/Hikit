@@ -1,4 +1,4 @@
-package org.sc.data;
+package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.Position;

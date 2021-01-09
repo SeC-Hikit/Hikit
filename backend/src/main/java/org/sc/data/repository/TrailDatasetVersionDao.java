@@ -1,8 +1,10 @@
-package org.sc.data;
+package org.sc.data.repository;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.mapper.TrailDatasetMapper;
+import org.sc.data.TrailDatasetVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

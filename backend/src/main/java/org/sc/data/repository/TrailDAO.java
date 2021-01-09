@@ -1,4 +1,4 @@
-package org.sc.data;
+package org.sc.data.repository;
 
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
@@ -10,6 +10,10 @@ import org.sc.common.rest.Position;
 import org.sc.common.rest.Trail;
 import org.sc.common.rest.TrailPreview;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.mapper.Mapper;
+import org.sc.data.entity.mapper.TrailLightMapper;
+import org.sc.data.entity.mapper.TrailMapper;
+import org.sc.data.entity.mapper.TrailPreviewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,27 +22,16 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class TrailDAO {
 
-    public static final String $_NEAR_OPERATOR = "$near";
-    public static final String NEAR_OPERATOR = "near";
-    public static final String LIMIT = "$limit";
-    public static final String RESOLVED_COORDINATES = "coordinates";
-    static final String $_MAX_M_DISTANCE_FILTER = "$maxDistance";
-    static final String $_MIN_DISTANCE_FILTER = "$minDistance";
-    public static final String $_GEO_NEAR_OPERATOR = "$geoNear";
-    public static final String DISTANCE_FIELD = "distanceField";
-    public static final String KEY_FIELD = "key";
-    public static final String INCLUDE_LOCS_FIELD = "includeLocs";
-    public static final String MAX_DISTANCE_M = "maxDistance";
-    public static final String SPHERICAL_FIELD = "spherical";
-    public static final String UNIQUE_DOCS_FIELD = "uniqueDocs";
 
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.COORDINATES;
 
     // Max number of documents output per request
+    // TODO: shall return this amount only if requested amount is greater than it.
     public static final int RESULT_LIMIT = 150;
 
     private final MongoCollection<Document> collection;
@@ -97,9 +90,9 @@ public class TrailDAO {
     @NotNull
     public List<Trail> getTrailByCode(@NotNull String code, boolean isLight) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document("code", code)));
+            return toTrailsLightList(collection.find(new Document(Trail.CODE, code)));
         }
-        return toTrailsList(collection.find(new Document("code", code)));
+        return toTrailsList(collection.find(new Document(Trail.CODE, code)));
     }
 
     public boolean delete(final String code) {
