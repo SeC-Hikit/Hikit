@@ -1,25 +1,29 @@
-package org.sc.data;
+package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.function.IntPredicate;
-import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class TrailLightMapper extends TrailMapper {
+public class TrailMapper implements Mapper<Trail> {
 
-    public static final IntPredicate IS_EVEN = i -> i % 2 == 0;
+    protected final PositionMapper positionMapper;
+    protected final TrailCoordinatesMapper trailCoordinatesMapper;
+    protected final StatsTrailMapper statsTrailMapper;
 
-    public TrailLightMapper(final PositionMapper positionMapper,
-                            final TrailCoordinatesMapper trailCoordinatesMapper,
-                            final StatsTrailMapper statsTrailMapper) {
-        super(positionMapper, trailCoordinatesMapper, statsTrailMapper);
+    @Autowired
+    public TrailMapper(PositionMapper positionMapper,
+                       TrailCoordinatesMapper trailCoordinatesMapper,
+                       StatsTrailMapper statsTrailMapper) {
+        this.positionMapper = positionMapper;
+        this.trailCoordinatesMapper = trailCoordinatesMapper;
+        this.statsTrailMapper = statsTrailMapper;
     }
 
     @Override
@@ -47,10 +51,28 @@ public class TrailLightMapper extends TrailMapper {
                 doc.getDouble(StatsTrailMetadata.LENGTH));
     }
 
+    @Override
+    public Document mapToDocument(final Trail object) {
+        return new Document(
+                Trail.NAME, object.getName())
+                .append(Trail.DESCRIPTION, object.getDescription())
+                .append(Trail.CODE, object.getCode())
+                .append(Trail.START_POS, positionMapper.mapToDocument(object.getStartPos()))
+                .append(Trail.FINAL_POS, positionMapper.mapToDocument(object.getFinalPos()))
+                .append(Trail.LOCATIONS, object.getLocations().stream()
+                        .map(positionMapper::mapToDocument).collect(toList()))
+                .append(Trail.CLASSIFICATION, object.getClassification().toString())
+                .append(Trail.COUNTRY, object.getCountry())
+                .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
+                .append(Trail.LAST_UPDATE_DATE, new Date())
+                .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsMetadata()))
+                .append(Trail.COORDINATES, object.getCoordinates().stream()
+                        .map(trailCoordinatesMapper::mapToDocument).collect(toList()));
+    }
+
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
         final List<Document> list = doc.get(Trail.COORDINATES, List.class);
-        return IntStream.range(0, list.size()).filter(IS_EVEN).mapToObj(elem ->
-                trailCoordinatesMapper.mapToObject(list.get(elem))).collect(toList());
+        return list.stream().map(trailCoordinatesMapper::mapToObject).collect(toList());
     }
 
     private List<Position> getLocations(final Document doc) {

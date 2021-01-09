@@ -4,7 +4,7 @@ import org.sc.common.rest.Maintenance;
 import org.sc.common.rest.MaintenanceResponse;
 import org.sc.common.rest.RESTResponse;
 import org.sc.common.rest.Status;
-import org.sc.data.MaintenanceDAO;
+import org.sc.data.repository.MaintenanceDAO;
 import org.sc.data.validator.MaintenanceCreationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,18 +51,17 @@ public class MaintenanceController {
     @DeleteMapping("/{id}")
     public RESTResponse deleteMaintenance(@PathVariable String id) {
         boolean isDeleted = maintenanceDao.delete(id);
-        if (isDeleted) {
-            return new RESTResponse(Status.OK, Collections.emptySet());
-        } else {
+        if (!isDeleted) {
             LOGGER.warning(format("Could not delete maintenance with id '%s'", id));
             return new RESTResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
                             format("No maintenance was found with id '%s'", id))));
         }
+        return new RESTResponse();
     }
 
     @PutMapping
-    public RESTResponse createMaintenance(@RequestBody Maintenance request) {
+    public RESTResponse upsertMaintenance(@RequestBody Maintenance request) {
         final Set<String> errors = maintenanceValidator.validate(request);
         if(errors.isEmpty()) {
             maintenanceDao.upsert(request);

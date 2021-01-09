@@ -1,4 +1,4 @@
-package org.sc.data;
+package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.Position;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TrailPreviewMapper implements Mapper<TrailPreview>{
+public class TrailPreviewMapper implements Mapper<TrailPreview> {
 
     private final PositionMapper positionMapper;
 

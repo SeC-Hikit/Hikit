@@ -2,12 +2,10 @@ package org.sc.controller;
 
 import org.sc.common.rest.*;
 import org.sc.manager.TrailManager;
-import org.sc.service.GpxManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -24,23 +22,11 @@ public class TrailController {
 
     public static final String EMPTY_CODE_VALUE_ERROR_MESSAGE = "Empty code value";
 
-    public static final String TMP_FOLDER = "tmp";
-    public static final File UPLOAD_DIR = new File(TMP_FOLDER);
-
-    private final GpxManager gpxManager;
     private final TrailManager trailManager;
-    private final TrailImporterManager trailImporterManager;
-    private final TrailImportValidator trailValidator;
 
     @Autowired
-    public TrailController(final GpxManager gpxManager,
-                           final TrailManager trailManager,
-                           final TrailImporterManager trailImporterManager,
-                           final TrailImportValidator trailValidator) {
-        this.gpxManager = gpxManager;
+    public TrailController(final TrailManager trailManager) {
         this.trailManager = trailManager;
-        this.trailImporterManager = trailImporterManager;
-        this.trailValidator = trailValidator;
     }
 
     @GetMapping

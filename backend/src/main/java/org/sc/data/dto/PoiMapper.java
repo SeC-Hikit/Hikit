@@ -1,12 +1,13 @@
-package org.sc.data;
+package org.sc.data.dto;
 
 import org.sc.common.rest.PoiDto;
 import org.sc.data.entity.Poi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PoiMapper {
-    public Poi fromDto(PoiDto poi) {
+public class PoiMapper implements Mapper<Poi, PoiDto>{
+
+    public Poi toEntity(final PoiDto poi) {
         return new Poi(
                 poi.getId(),
                 poi.getName(),
@@ -22,7 +23,7 @@ public class PoiMapper {
         );
     }
 
-    public PoiDto toDto(Poi poi) {
+    public PoiDto toDto(final Poi poi) {
         return new PoiDto(
                 poi.getId(),
                 poi.getName(),
@@ -31,7 +32,7 @@ public class PoiMapper {
                 poi.getMacroType(),
                 poi.getMicroType(),
                 poi.getMediaIds(),
-                poi.getTrailIds(),
+                poi.getTrailCodes(),
                 poi.getTrailCoordinates(),
                 poi.getCreatedOn(),
                 poi.getLastUpdatedOn()

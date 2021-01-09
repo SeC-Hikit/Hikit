@@ -13,7 +13,7 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 @Component
 public class MongoDataSource implements DataSource {
 
-    private final Logger LOGGER = getLogger(MongoDataSource.class);
+    private static final Logger LOGGER = getLogger(MongoDataSource.class);
 
     private final String databaseName;
     private final MongoClient mongoClient;
@@ -22,7 +22,7 @@ public class MongoDataSource implements DataSource {
     public MongoDataSource(final AppProperties appProperties) {
         this.mongoClient = MongoClients.create(appProperties.getMongoDbUri());
         this.databaseName = appProperties.getDbName();
-        LOGGER.info(format("Going to connect to DB '%s'. Connection String '%s'",
+        LOGGER.info(format("Setting connection to DB '%s'. Connection String: '%s'",
                 databaseName, appProperties.getMongoDbUri()));
     }
 

@@ -6,9 +6,9 @@ import org.sc.common.rest.TrailPreview
 import org.sc.common.rest.UnitOfMeasurement
 import org.sc.configuration.AppProperties
 import org.sc.utils.MetricConverter
-import org.sc.data.AccessibilityNotificationDAO
-import org.sc.data.MaintenanceDAO
-import org.sc.data.TrailDAO
+import org.sc.data.repository.AccessibilityNotificationDAO
+import org.sc.data.repository.MaintenanceDAO
+import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
 import org.sc.service.AltitudeServiceAdapter
 import org.sc.service.DistanceProcessor
