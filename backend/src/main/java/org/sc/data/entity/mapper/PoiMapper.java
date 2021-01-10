@@ -4,9 +4,11 @@ import org.bson.Document;
 import org.sc.common.rest.PoiMacroType;
 import org.sc.common.rest.TrailCoordinates;
 import org.sc.data.entity.Poi;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class PoiMapper implements Mapper<Poi> {
 
     final TrailCoordinatesMapper coordinatesMapper;
@@ -27,7 +29,8 @@ public class PoiMapper implements Mapper<Poi> {
                 document.get(Poi.TRAIL_CODES, List.class),
                 getCoordinatesWithAltitude(document),
                 document.getDate(Poi.CREATED_ON),
-                document.getDate(Poi.LAST_UPDATE_ON));
+                document.getDate(Poi.LAST_UPDATE_ON),
+                document.get(Poi.EXTERNAL_RESOURCES, List.class));
     }
 
     @Override
@@ -41,7 +44,8 @@ public class PoiMapper implements Mapper<Poi> {
                 .append(Poi.TRAIL_CODES, object.getTrailCodes())
                 .append(Poi.TRAIL_COORDINATES, coordinatesMapper.mapToDocument(object.getTrailCoordinates()))
                 .append(Poi.CREATED_ON, object.getCreatedOn())
-                .append(Poi.LAST_UPDATE_ON, object.getLastUpdatedOn());
+                .append(Poi.LAST_UPDATE_ON, object.getLastUpdatedOn())
+                .append(Poi.EXTERNAL_RESOURCES, object.getExternalResources());
     }
 
     private TrailCoordinates getCoordinatesWithAltitude(final Document doc) {

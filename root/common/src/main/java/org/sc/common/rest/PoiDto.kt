@@ -2,7 +2,7 @@ package org.sc.common.rest
 
 import java.util.*
 
-data class PoiDto (val id: String,
+data class PoiDto (val id: String?,
                    val name: String,
                    val description: String,
                    val tags: List<String>,
@@ -12,4 +12,5 @@ data class PoiDto (val id: String,
                    val trailIds: List<String>,
                    val trailCoordinates: TrailCoordinates,
                    val createdOn: Date,
-                   val lastUpdatedOn: Date)
+                   val lastUpdatedOn: Date,
+                   val externalResources: List<String>)

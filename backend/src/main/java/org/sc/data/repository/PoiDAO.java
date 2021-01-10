@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.Poi;
 import org.sc.data.entity.mapper.PoiMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -23,6 +24,7 @@ public class PoiDAO {
     private final MongoCollection<Document> collection;
     private final PoiMapper poiMapper;
 
+    @Autowired
     public PoiDAO(final DataSource dataSource,
                   final PoiMapper poiMapper) {
         this.collection = dataSource.getDB().getCollection(Poi.COLLECTION_NAME);
