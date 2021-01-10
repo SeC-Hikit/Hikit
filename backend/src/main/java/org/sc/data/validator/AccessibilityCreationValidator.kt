@@ -9,7 +9,7 @@ class AccessibilityCreationValidator : Validator<AccessibilityNotificationCreati
 
     companion object {
         const val noParamSpecifiedError = "Empty field '%s'"
-        const val dateInFutureError = "Date field '%s' is in the future"
+        const val dateInFutureError = "Date field with value '%s' is in the future"
     }
 
     override fun validate(request: AccessibilityNotificationCreation): Set<String> {

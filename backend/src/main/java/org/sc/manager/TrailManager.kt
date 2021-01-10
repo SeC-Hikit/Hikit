@@ -101,7 +101,7 @@ class TrailManager @Autowired constructor(private val trailDAO: TrailDAO,
      */
     fun getClosestCoordinate(givenCoordinatesWAltitude: CoordinatesWithAltitude, trail: Trail): CoordinatesWithAltitude {
         return trail.coordinates
-                .minBy { DistanceProcessor.distanceBetweenPoints(it, givenCoordinatesWAltitude) }!!
+            .minByOrNull { DistanceProcessor.distanceBetweenPoints(it, givenCoordinatesWAltitude) }!!
     }
 
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =

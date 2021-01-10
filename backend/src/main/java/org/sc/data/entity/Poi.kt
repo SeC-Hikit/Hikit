@@ -2,9 +2,6 @@ package org.sc.data.entity
 
 import org.sc.common.rest.PoiMacroType
 import org.sc.common.rest.TrailCoordinates
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.index.IndexDirection
-import org.springframework.data.mongodb.core.index.Indexed
 import java.util.*
 
 data class Poi (val id: String,
@@ -17,7 +14,8 @@ data class Poi (val id: String,
                 val trailCodes: List<String>,
                 val trailCoordinates: TrailCoordinates,
                 val createdOn: Date,
-                val lastUpdatedOn: Date){
+                val lastUpdatedOn: Date,
+                val externalResources: List<String>){
     companion object {
 
         const val COLLECTION_NAME = "core.Poi"
@@ -33,5 +31,6 @@ data class Poi (val id: String,
         const val TRAIL_COORDINATES = "trailCoordinates"
         const val CREATED_ON = "trailCoordinates"
         const val LAST_UPDATE_ON = "lastUpdateOn"
+        const val EXTERNAL_RESOURCES = "externalResources"
     }
 }

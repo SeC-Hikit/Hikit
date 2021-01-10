@@ -1,11 +1,10 @@
-package org.sc.importer
+package org.sc.data.validator
 
 import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Test
 import org.sc.common.rest.Maintenance
-import org.sc.data.validator.MaintenanceCreationValidator
 import org.sc.data.validator.MaintenanceCreationValidator.Companion.dateInPast
 import java.util.*
 

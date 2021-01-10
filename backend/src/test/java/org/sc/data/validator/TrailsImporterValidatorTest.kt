@@ -1,4 +1,4 @@
-package org.sc.importer
+package org.sc.data.validator
 
 import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import io.mockk.every
@@ -11,7 +11,6 @@ import org.sc.common.rest.TrailCoordinates
 import org.sc.data.TrailImport
 import org.sc.data.validator.PositionCreationValidator
 import org.sc.data.validator.TrailCoordinatesCreationValidator
-import org.sc.data.validator.TrailImportValidator
 import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError
 import org.sc.data.validator.TrailImportValidator.Companion.posToTrailCoordError
 import java.util.*

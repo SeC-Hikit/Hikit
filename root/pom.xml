@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>org.cai.sc</groupId>
+    <groupId>org.sec</groupId>
     <artifactId>root</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Sentieri e Cartografia</name>
@@ -27,12 +27,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-            <version>2.4.0</version>
+            <version>${spring-boot.version}</version>
         </dependency>
     </dependencies>
 
@@ -42,7 +37,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler.version>8</maven-compiler.version>
         <javaruntime.version>1.8</javaruntime.version>
-        <kotlin.version>1.3.72</kotlin.version>
+        <kotlin.version>1.4.10</kotlin.version>
         <jpx.version>1.7.0</jpx.version>
+        <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+        <junit.version>4.13.1</junit.version>
+        <spring-boot.version>2.4.0</spring-boot.version>
     </properties>
 </project>

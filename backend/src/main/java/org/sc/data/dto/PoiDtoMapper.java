@@ -4,12 +4,15 @@ import org.sc.common.rest.PoiDto;
 import org.sc.data.entity.Poi;
 import org.springframework.stereotype.Component;
 
-@Component
-public class PoiMapper implements Mapper<Poi, PoiDto>{
+import java.util.Objects;
 
+@Component
+public class PoiDtoMapper implements Mapper<Poi, PoiDto>{
+
+    @Override
     public Poi toEntity(final PoiDto poi) {
         return new Poi(
-                poi.getId(),
+                Objects.requireNonNull(poi.getId()),
                 poi.getName(),
                 poi.getDescription(),
                 poi.getTags(), 
@@ -19,10 +22,12 @@ public class PoiMapper implements Mapper<Poi, PoiDto>{
                 poi.getTrailIds(),
                 poi.getTrailCoordinates(),
                 poi.getCreatedOn(),
-                poi.getLastUpdatedOn()
+                poi.getLastUpdatedOn(),
+                poi.getExternalResources()
         );
     }
 
+    @Override
     public PoiDto toDto(final Poi poi) {
         return new PoiDto(
                 poi.getId(),
@@ -35,7 +40,8 @@ public class PoiMapper implements Mapper<Poi, PoiDto>{
                 poi.getTrailCodes(),
                 poi.getTrailCoordinates(),
                 poi.getCreatedOn(),
-                poi.getLastUpdatedOn()
+                poi.getLastUpdatedOn(),
+                poi.getExternalResources()
         );
     }
 }

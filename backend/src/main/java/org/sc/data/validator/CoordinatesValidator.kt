@@ -1,6 +1,9 @@
 package org.sc.data.validator
 
-interface CoordinatesValidator {
+import org.springframework.stereotype.Component
+
+@Component
+class CoordinatesValidator {
     companion object {
         enum class CoordDimension {
             LATITUDE, LONGITUDE
