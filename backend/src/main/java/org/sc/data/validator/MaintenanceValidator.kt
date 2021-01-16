@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class MaintenanceCreationValidator : Validator<Maintenance> {
+class MaintenanceValidator : Validator<Maintenance> {
 
     companion object {
         const val noParamSpecified = "Empty field '%s'"

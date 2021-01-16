@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class AccessibilityCreationValidator : Validator<AccessibilityNotificationCreation> {
+class AccessibilityValidator : Validator<AccessibilityNotificationCreation> {
 
     companion object {
         const val noParamSpecifiedError = "Empty field '%s'"

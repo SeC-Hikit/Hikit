@@ -5,7 +5,7 @@ import org.sc.common.rest.MaintenanceResponse;
 import org.sc.common.rest.RESTResponse;
 import org.sc.common.rest.Status;
 import org.sc.data.repository.MaintenanceDAO;
-import org.sc.data.validator.MaintenanceCreationValidator;
+import org.sc.data.validator.MaintenanceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +25,13 @@ public class MaintenanceController {
     public final static String PREFIX = "/maintenance";
     private final static Logger LOGGER = Logger.getLogger(MaintenanceController.class.getName());
 
-    private final MaintenanceCreationValidator maintenanceValidator;
+    private final MaintenanceValidator maintenanceValidator;
     private final MaintenanceDAO maintenanceDao;
 
 
     @Autowired
     public MaintenanceController(final MaintenanceDAO maintenanceDao,
-                                 final MaintenanceCreationValidator maintenanceValidator) {
+                                 final MaintenanceValidator maintenanceValidator) {
         this.maintenanceDao = maintenanceDao;
         this.maintenanceValidator = maintenanceValidator;
     }

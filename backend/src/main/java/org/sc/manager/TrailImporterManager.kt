@@ -1,10 +1,10 @@
-package org.sc.data.validator
+package org.sc.manager
 
 import org.sc.common.rest.StatsTrailMetadata
 import org.sc.common.rest.Trail
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.TrailImport
-import org.sc.manager.TrailManager
+import org.sc.processor.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*

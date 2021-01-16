@@ -9,24 +9,22 @@ import org.sc.common.rest.Position
 import org.sc.common.rest.TrailClassification
 import org.sc.common.rest.TrailCoordinates
 import org.sc.data.TrailImport
-import org.sc.data.validator.PositionCreationValidator
-import org.sc.data.validator.TrailCoordinatesCreationValidator
 import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError
 import org.sc.data.validator.TrailImportValidator.Companion.posToTrailCoordError
 import java.util.*
 
 class TrailsImporterValidatorTest {
 
-    private val trailCoordsValidatorMock: TrailCoordinatesCreationValidator =
-            mockkClass(TrailCoordinatesCreationValidator::class)
+    private val trailCoordsValidatorMock: TrailCoordinatesValidator =
+            mockkClass(TrailCoordinatesValidator::class)
 
-    private val positionCreationValidatorMock: PositionCreationValidator =
-            mockkClass(PositionCreationValidator::class)
+    private val positionValidatorMock: PositionValidator =
+            mockkClass(PositionValidator::class)
 
     @Test
     fun `validation shall pass when all data correct`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionCreationValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
 
         val startPosMock = mockkClass(Position::class)
         val finalPosMock = mockkClass(Position::class)
@@ -38,8 +36,8 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionCreationValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionCreationValidatorMock.validate(finalPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
 
         every { startPosMock.coordinates } returns startTrailCoordsPosMock
         every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
@@ -66,7 +64,7 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation should fail on missing name`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionCreationValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
 
         val startPosMock = mockkClass(Position::class)
         val finalPosMock = mockkClass(Position::class)
@@ -78,8 +76,8 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionCreationValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionCreationValidatorMock.validate(finalPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
 
         every { startPosMock.coordinates } returns startTrailCoordsPosMock
         every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
@@ -107,7 +105,7 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation fails on missing name and code`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionCreationValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
 
         val startPosMock = mockkClass(Position::class)
         val finalPosMock = mockkClass(Position::class)
@@ -119,8 +117,8 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionCreationValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionCreationValidatorMock.validate(finalPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
 
         every { startPosMock.coordinates } returns startTrailCoordsPosMock
         every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
@@ -148,7 +146,7 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation fails on wrong trail coord`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionCreationValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
 
         val startPosMock = mockkClass(Position::class)
         val finalPosMock = mockkClass(Position::class)
@@ -161,8 +159,8 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionCreationValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionCreationValidatorMock.validate(finalPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
 
         every { startPosMock.coordinates } returns startTrailCoordsPosMock
         every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
@@ -191,7 +189,7 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation fails when first pos is not first trail coord`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionCreationValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
 
         val startPosMock = mockkClass(Position::class)
         val finalPosMock = mockkClass(Position::class)
@@ -203,8 +201,8 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionCreationValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionCreationValidatorMock.validate(finalPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
 
         every { startPosMock.coordinates } returns startTrailCoordsPosMock
         every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
@@ -231,7 +229,7 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation fails afterhour`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionCreationValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
 
         val startPosMock = mockkClass(Position::class)
         val finalPosMock = mockkClass(Position::class)
@@ -243,8 +241,8 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionCreationValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionCreationValidatorMock.validate(finalPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
+        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
 
         every { startPosMock.coordinates } returns startTrailCoordsPosMock
         every { finalPosMock.coordinates } returns finalTrailCoordsPosMock

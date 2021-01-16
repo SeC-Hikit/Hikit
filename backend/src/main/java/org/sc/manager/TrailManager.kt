@@ -5,14 +5,13 @@ import org.sc.common.rest.Trail
 import org.sc.common.rest.TrailPreview
 import org.sc.common.rest.UnitOfMeasurement
 import org.sc.configuration.AppProperties
-import org.sc.utils.MetricConverter
+import org.sc.processor.MetricConverter
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
 import org.sc.service.AltitudeServiceAdapter
 import org.sc.service.DistanceProcessor
-import org.sc.service.GpxManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.File
