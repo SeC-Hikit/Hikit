@@ -8,6 +8,10 @@ Requirements:
 - JDK 8
 - Maven 3
 
+## Test
+There are two main types of tests written to address the S&C QA: unit tests and integration tests.
+The latter require the dependencies to be up and running as they test the connection with them. In order to run them, execute `mvn install --P it`. 
+
 ## Dependencies
 S&C needs the following services to run in order to fully operate:
 - [MongoDB 4.x](https://www.mongodb.com)
