@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class PositionCreationValidator @Autowired constructor(
-        private val trailCoordinatesCreationValidator: TrailCoordinatesCreationValidator) : Validator<Position> {
+class PositionValidator @Autowired constructor(
+        private val trailCoordinatesCreationValidator: TrailCoordinatesValidator) : Validator<Position> {
 
     companion object {
         const val noNameError = "No name specified in position"

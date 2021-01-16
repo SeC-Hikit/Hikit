@@ -3,7 +3,7 @@ package org.sc.controller;
 import org.sc.common.rest.*;
 import org.sc.configuration.AppProperties;
 import org.sc.data.repository.AccessibilityNotificationDAO;
-import org.sc.data.validator.AccessibilityCreationValidator;
+import org.sc.data.validator.AccessibilityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +22,12 @@ public class AccessibilityNotificationController {
 
     public final static String PREFIX = "/accessibility";
 
-    private final AccessibilityCreationValidator accessibilityValidator;
+    private final AccessibilityValidator accessibilityValidator;
     private final AccessibilityNotificationDAO accessibilityDAO;
 
     @Autowired
     public AccessibilityNotificationController(final AccessibilityNotificationDAO accessibilityDao,
-                                               final AccessibilityCreationValidator accessibilityValidator,
+                                               final AccessibilityValidator accessibilityValidator,
                                                final AppProperties appProperties) {
         this.accessibilityDAO = accessibilityDao;
         this.accessibilityValidator = accessibilityValidator;

@@ -1,11 +1,13 @@
-package org.sc.service
+package org.sc.manager
 
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
 import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
-import org.sc.data.validator.TrailsCalculator
+import org.sc.processor.TrailsCalculator
+import org.sc.service.AltitudeServiceAdapter
+import org.sc.service.GpxFileHandlerHelper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.File

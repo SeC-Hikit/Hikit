@@ -4,7 +4,7 @@ import org.sc.common.rest.TrailCoordinates
 import org.springframework.stereotype.Component
 
 @Component
-class TrailCoordinatesCreationValidator constructor(private val coordsValidator: CoordinatesValidator): Validator<TrailCoordinates> {
+class TrailCoordinatesValidator constructor(private val coordsValidator: CoordinatesValidator): Validator<TrailCoordinates> {
 
     companion object {
         const val topPeakInTheWorld = 8848.0

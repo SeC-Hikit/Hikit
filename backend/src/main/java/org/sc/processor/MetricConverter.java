@@ -1,4 +1,4 @@
-package org.sc.utils;
+package org.sc.processor;
 
 public class MetricConverter {
     private static final int A_THOUSAND = 1000;

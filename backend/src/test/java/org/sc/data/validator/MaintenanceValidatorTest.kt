@@ -5,15 +5,15 @@ import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Test
 import org.sc.common.rest.Maintenance
-import org.sc.data.validator.MaintenanceCreationValidator.Companion.dateInPast
+import org.sc.data.validator.MaintenanceValidator.Companion.dateInPast
 import java.util.*
 
-class MaintenanceCreationValidatorTest {
+class MaintenanceValidatorTest {
 
     @Test
     fun `validation shall pass when all data correct`() {
 
-        val maintenanceCreationValidator = MaintenanceCreationValidator()
+        val maintenanceCreationValidator = MaintenanceValidator()
 
         val requestMock = mockkClass(Maintenance::class)
 
@@ -30,7 +30,7 @@ class MaintenanceCreationValidatorTest {
     @Test
     fun `validation errors contain missing meeting place when not given`() {
 
-        val maintenanceCreationValidator = MaintenanceCreationValidator()
+        val maintenanceCreationValidator = MaintenanceValidator()
 
         val requestMock = mockkClass(Maintenance::class)
 
@@ -48,7 +48,7 @@ class MaintenanceCreationValidatorTest {
     @Test
     fun `validation errors contain missing meeting place and code when not given`() {
 
-        val maintenanceCreationValidator = MaintenanceCreationValidator()
+        val maintenanceCreationValidator = MaintenanceValidator()
 
         val requestMock = mockkClass(Maintenance::class)
 
@@ -67,7 +67,7 @@ class MaintenanceCreationValidatorTest {
     @Test
     fun `validation errors contain date in past if a past date given`() {
 
-        val maintenanceCreationValidator = MaintenanceCreationValidator()
+        val maintenanceCreationValidator = MaintenanceValidator()
 
         val requestMock = mockkClass(Maintenance::class)
 
@@ -85,7 +85,7 @@ class MaintenanceCreationValidatorTest {
     @Test
     fun `validation errors contain 'date in past' if a past date given and missing contact`() {
 
-        val maintenanceCreationValidator = MaintenanceCreationValidator()
+        val maintenanceCreationValidator = MaintenanceValidator()
 
         val requestMock = mockkClass(Maintenance::class)
 

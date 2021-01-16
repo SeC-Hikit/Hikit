@@ -6,6 +6,7 @@ import org.sc.common.rest.RESTResponse;
 import org.sc.common.rest.Status;
 import org.sc.data.validator.PoiValidator;
 import org.sc.manager.PoiManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -27,6 +28,7 @@ public class POIController {
     private final PoiManager poiManager;
     private final PoiValidator poiValidator;
 
+    @Autowired
     public POIController(final PoiManager poiManager,
                          final PoiValidator poiValidator) {
         this.poiManager = poiManager;
@@ -40,9 +42,7 @@ public class POIController {
     }
 
     @GetMapping("/{id}")
-    public PoiResponse get(@PathVariable String id,
-                    @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                    @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count){
+    public PoiResponse get(@PathVariable String id){
         return new PoiResponse(poiManager.getPoiByID(id));
     }
 

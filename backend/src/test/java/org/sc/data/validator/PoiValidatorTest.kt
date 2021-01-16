@@ -16,8 +16,8 @@ class PoiValidatorTest {
         const val ANY = "ANY"
     }
 
-    private val trailCoordsValidatorMock: TrailCoordinatesCreationValidator =
-        mockkClass(TrailCoordinatesCreationValidator::class)
+    private val trailCoordsValidatorMock: TrailCoordinatesValidator =
+        mockkClass(TrailCoordinatesValidator::class)
 
     @Test
     fun `validation shall pass when all data correct`() {

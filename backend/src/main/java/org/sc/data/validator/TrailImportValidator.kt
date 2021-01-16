@@ -7,8 +7,8 @@ import java.util.*
 
 @Component
 class TrailImportValidator @Autowired constructor (
-        private val coordsValidatorTrail: TrailCoordinatesCreationValidator,
-        private val positionValidator: PositionCreationValidator): Validator<TrailImport> {
+    private val coordsValidatorTrail: TrailCoordinatesValidator,
+    private val positionValidator: PositionValidator): Validator<TrailImport> {
 
     companion object {
         private const val minGeoPoints = 3

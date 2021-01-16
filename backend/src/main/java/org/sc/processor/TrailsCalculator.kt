@@ -1,13 +1,13 @@
-package org.sc.data.validator
+package org.sc.processor
 
 import org.sc.common.rest.CoordinatesWithAltitude
 import org.sc.service.DistanceProcessor
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.roundToInt
 
-@Service
+@Component
 class TrailsCalculator {
 
     companion object {
