@@ -13,7 +13,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Main {
 
     final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    final static String LOGO = "CAI Sentieri e Cartografia v" + AppProperties.VERSION;
+    final static String LOGO = "\n-------------------------\n" +
+            AppProperties.APP_NAME + " v" + AppProperties.VERSION + "\n" +
+            "-------------------------";
 
     @Autowired
     StartupChecker startupChecker;

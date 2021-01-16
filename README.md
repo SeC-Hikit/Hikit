@@ -34,6 +34,10 @@ db.uri=mongodb://localhost:30000
 # trail GPX Storage on local filesystem
 trail.storage.path=your/trail/to/server
 ```
+### OpenAPI
+By default, the openAPI v3 specs are exposed at `api/v<n>/api-docs`.
+Alternatively, to interact directly with the REST API, the Swagger UI can be found at `api/v<n>/api-ui.html`. 
+
 ### UI
 Once the API is running, you could make use of a user interface to make REST calls to it.
 [A sample UI for the Bologna Alpine club](https://github.com/loreV/SeC-Frontend) has been developed to visualize and simplify working with trails data.
