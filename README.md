@@ -8,20 +8,22 @@ Requirements:
 - JDK 8
 - Maven 3
 
-## Test
+### Test
 There are two main types of tests written to address the S&C QA: unit tests and integration tests.
 The latter require the dependencies to be up and running as they test the connection with them. In order to run them, execute `mvn install -P it`. 
 
-## Dependencies
-S&C needs the following services to run in order to fully operate:
+## Run
+
+### Prerequisites
+S&C requires the following services up and running in order to fully operate:
 - [MongoDB 4.x](https://www.mongodb.com)
 - [OpenElevation](https://open-elevation.com/)
 
 The recommended way to get these up and running is trough [docker](https://hub.docker.com/_/mongo).
 
-### Run
-Upon having the dependencies up-and-running, you shall make a MongoDB instance available.
-Once you do so, configure the properties file:
+### Properties
+
+Configure the following properties to fit your system conf:
 
 ```
 # matches the open-elevation local port
@@ -34,6 +36,7 @@ db.uri=mongodb://localhost:30000
 # trail GPX Storage on local filesystem
 trail.storage.path=your/trail/to/server
 ```
+
 ### OpenAPI
 By default, the openAPI v3 specs are exposed at `api/v<n>/api-docs`.
 Alternatively, to interact directly with the REST API, the Swagger UI can be found at `api/v<n>/api-ui.html`. 
