@@ -1,5 +1,6 @@
 package org.sc.data.validator
 
+import org.sc.common.rest.TrailImportDto
 import org.sc.data.TrailImport
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -8,7 +9,7 @@ import java.util.*
 @Component
 class TrailImportValidator @Autowired constructor (
     private val coordsValidatorTrail: TrailCoordinatesValidator,
-    private val positionValidator: PositionValidator): Validator<TrailImport> {
+    private val positionValidator: PositionValidator): Validator<TrailImportDto> {
 
     companion object {
         private const val minGeoPoints = 3
@@ -20,7 +21,7 @@ class TrailImportValidator @Autowired constructor (
         const val lastPosToTrailCoordError = "Last position element does not match the first coordinate"
     }
 
-    override fun validate(request: TrailImport): Set<String> {
+    override fun validate(request: TrailImportDto): Set<String> {
         val errors = mutableSetOf<String>()
         if (request.name.isEmpty()) {
             errors.add(String.format(noParamSpecified, "Name"))
@@ -37,7 +38,7 @@ class TrailImportValidator @Autowired constructor (
             }
         }
         if (request.startPos == null || request.finalPos == null ) {
-            errors.add("The initial or final position is not set");
+            errors.add("The initial or final position is not set")
             return errors
         }
         if (request.startPos.coordinates != request.coordinates.first()) errors.add(posToTrailCoordError)

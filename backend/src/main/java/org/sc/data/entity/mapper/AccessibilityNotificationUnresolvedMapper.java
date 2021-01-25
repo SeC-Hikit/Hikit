@@ -1,17 +1,17 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.AccessibilityNotification;
-import org.sc.common.rest.AccessibilityNotificationUnresolved;
-import org.sc.data.entity.mapper.Mapper;
+import org.sc.common.rest.AccessibilityUnresolvedDto;
+import org.sc.data.entity.AccessibilityNotification;
+import org.sc.data.entity.AccessibilityUnresolved;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccessibilityNotificationUnresolvedMapper implements Mapper<AccessibilityNotificationUnresolved> {
+public class AccessibilityNotificationUnresolvedMapper implements Mapper<AccessibilityUnresolved> {
 
     @Override
-    public AccessibilityNotificationUnresolved mapToObject(Document document) {
-        return new AccessibilityNotificationUnresolved(
+    public AccessibilityUnresolved mapToObject(Document document) {
+        return new AccessibilityUnresolved(
                 document.getString(AccessibilityNotification.OBJECT_ID),
                 document.getString(AccessibilityNotification.DESCRIPTION),
                 document.getString(AccessibilityNotification.TRAIL_CODE),
@@ -20,7 +20,7 @@ public class AccessibilityNotificationUnresolvedMapper implements Mapper<Accessi
     }
 
     @Override
-    public Document mapToDocument(AccessibilityNotificationUnresolved accessibilityNotification) {
+    public Document mapToDocument(AccessibilityUnresolved accessibilityNotification) {
         return new Document(AccessibilityNotification.TRAIL_CODE, accessibilityNotification.getCode())
                 .append(AccessibilityNotification.OBJECT_ID, accessibilityNotification.get_id())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())

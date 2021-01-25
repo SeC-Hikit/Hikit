@@ -1,15 +1,17 @@
 package org.sc.data;
 
-import org.sc.common.rest.CoordinatesWithAltitude;
-import org.sc.common.rest.Trail;
+import org.sc.common.rest.CoordinatesDto;
+import org.sc.common.rest.TrailDto;
+import org.sc.data.entity.CoordinatesWithAltitude;
+import org.sc.data.entity.Trail;
 
 public class TrailDistance {
 
-    private final CoordinatesWithAltitude coordinates;
+    private final CoordinatesDto coordinates;
     private int distance;
-    private Trail trail;
+    private TrailDto trail;
 
-    public TrailDistance(int distance, CoordinatesWithAltitude coordinates, Trail trail) {
+    public TrailDistance(int distance, CoordinatesDto coordinates, TrailDto trail) {
         this.distance = distance;
         this.coordinates = coordinates;
         this.trail = trail;
@@ -19,11 +21,11 @@ public class TrailDistance {
         return distance;
     }
 
-    public Trail getTrail() {
+    public TrailDto getTrail() {
         return trail;
     }
 
-    public CoordinatesWithAltitude getCoordinates() {
+    public CoordinatesDto getCoordinates() {
         return coordinates;
     }
 }

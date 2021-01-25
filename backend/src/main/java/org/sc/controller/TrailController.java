@@ -1,6 +1,9 @@
 package org.sc.controller;
 
 import org.sc.common.rest.*;
+import org.sc.common.rest.response.FileDownloadResponse;
+import org.sc.common.rest.response.TrailResponse;
+import org.sc.data.entity.Trail;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -20,8 +23,6 @@ public class TrailController {
 
     public final static String PREFIX = "/trail";
 
-    public static final String EMPTY_CODE_VALUE_ERROR_MESSAGE = "Empty code value";
-
     private final TrailManager trailManager;
 
     @Autowired
@@ -34,37 +35,24 @@ public class TrailController {
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count,
             @RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return new TrailResponse(trailManager.get(light, page, count));
+        return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.get(light, page, count));
     }
 
     @GetMapping("/{code}")
     public TrailResponse getByCode(@PathVariable String code, @RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return new TrailResponse(trailManager.getByCode(code, light));
+        return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getByCode(code, light));
     }
 
     @DeleteMapping("/{code}")
-    public RESTResponse deleteByCode(@PathVariable String code,
+    public TrailResponse deleteByCode(@PathVariable String code,
                                      @RequestParam(required = false, defaultValue = "false") boolean isPurged) {
-        boolean isDeleted = trailManager.delete(code, isPurged);
-        if (isDeleted) {
-            return new RESTResponse(Status.OK, Collections.emptySet());
+        List<TrailDto> deleted = trailManager.delete(code, isPurged);
+        if (!deleted.isEmpty()) {
+            return new TrailResponse(Status.OK, Collections.emptySet(), deleted);
         } else {
-            return new RESTResponse(Status.ERROR,
+            return new TrailResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No trail deleted with code '%s'", code))));
+                            format("No trail deleted with code '%s'", code))), Collections.emptyList());
         }
     }
-
-    @GetMapping("/download/{code}")
-    public FileDownloadResponse getDownloadableLink(@PathVariable String code) {
-        if (!StringUtils.hasText(code)) {
-            return new FileDownloadResponse("", Status.ERROR, Collections.singleton(EMPTY_CODE_VALUE_ERROR_MESSAGE));
-        }
-        final List<Trail> byCode = trailManager.getByCode(code, false);
-        if (!byCode.isEmpty()) {
-            return new FileDownloadResponse(trailManager.getDownloadableLink(code));
-        }
-        return new FileDownloadResponse("", Status.ERROR, Collections.singleton("Trail does not exist"));
-    }
-
 }

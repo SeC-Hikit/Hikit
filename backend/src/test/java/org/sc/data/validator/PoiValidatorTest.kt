@@ -6,7 +6,8 @@ import io.mockk.mockkClass
 import org.junit.Test
 import org.sc.common.rest.PoiDto
 import org.sc.common.rest.PoiMacroType
-import org.sc.common.rest.TrailCoordinates
+import org.sc.common.rest.TrailCoordinatesDto
+import org.sc.data.entity.TrailCoordinates
 import org.sc.data.entity.Poi
 import java.util.*
 
@@ -21,7 +22,7 @@ class PoiValidatorTest {
 
     @Test
     fun `validation shall pass when all data correct`() {
-        val anyTrailRequestPosMock = mockkClass(TrailCoordinates::class)
+        val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val poiDto = PoiDto(
             null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
             anyTrailRequestPosMock, Date(), Date(), listOf()
@@ -32,7 +33,7 @@ class PoiValidatorTest {
 
     @Test
     fun `validation should fail on missing name`() {
-        val anyTrailRequestPosMock = mockkClass(TrailCoordinates::class)
+        val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val poiDto = PoiDto(
             null, "", ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
             anyTrailRequestPosMock, Date(), Date(), listOf()
@@ -43,7 +44,7 @@ class PoiValidatorTest {
 
     @Test
     fun `validation should fail creation on created after now`() {
-        val anyTrailRequestPosMock = mockkClass(TrailCoordinates::class)
+        val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val poiDto = PoiDto(
             null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
             anyTrailRequestPosMock, Date(System.currentTimeMillis() + 10000), Date(), listOf()
@@ -56,7 +57,7 @@ class PoiValidatorTest {
 
     @Test
     fun `validation should fail creation on update after now`() {
-        val anyTrailRequestPosMock = mockkClass(TrailCoordinates::class)
+        val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val poiDto = PoiDto(
             null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
             anyTrailRequestPosMock, Date(), Date(System.currentTimeMillis() + 10000), listOf()

@@ -6,10 +6,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
-import org.sc.common.rest.Position;
-import org.sc.common.rest.Trail;
-import org.sc.common.rest.TrailPreview;
+import org.sc.data.entity.Position;
+import org.sc.data.entity.Trail;
+import org.sc.common.rest.TrailPreviewDto;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.TrailPreview;
 import org.sc.data.entity.mapper.Mapper;
 import org.sc.data.entity.mapper.TrailLightMapper;
 import org.sc.data.entity.mapper.TrailMapper;
@@ -95,8 +96,10 @@ public class TrailDAO {
         return toTrailsList(collection.find(new Document(Trail.CODE, code)));
     }
 
-    public boolean delete(final String code) {
-        return collection.deleteOne(new Document(Trail.CODE, code)).getDeletedCount() > 0;
+    public List<Trail> delete(final String code) {
+        List<Trail> trailByCode = getTrailByCode(code, false);
+        collection.deleteOne(new Document(Trail.CODE, code));
+        return trailByCode;
     }
 
     public void upsert(final Trail trailRequest) {

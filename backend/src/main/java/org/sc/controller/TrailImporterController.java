@@ -1,9 +1,10 @@
 package org.sc.controller;
 
-import org.sc.common.rest.RESTResponse;
 import org.sc.common.rest.Status;
-import org.sc.common.rest.TrailPreparationModel;
-import org.sc.common.rest.TrailResponse;
+import org.sc.common.rest.TrailDto;
+import org.sc.common.rest.TrailImportDto;
+import org.sc.common.rest.TrailPreparationModelDto;
+import org.sc.common.rest.response.TrailResponse;
 import org.sc.data.TrailImport;
 import org.sc.data.validator.TrailImportValidator;
 import org.sc.manager.TrailImporterManager;
@@ -20,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -49,7 +51,7 @@ public class TrailImporterController {
     @PostMapping(path = "/read",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailPreparationModel readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
+    public TrailPreparationModelDto readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
         final Path tempFile = Files.createTempFile(UPLOAD_DIR.toPath(), "", "");
         try (final InputStream input = gpxFile.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
@@ -60,15 +62,13 @@ public class TrailImporterController {
     @PutMapping(path = "/save",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public RESTResponse importTrail(@RequestBody TrailImport request) {
+    public TrailResponse importTrail(@RequestBody TrailImportDto request) {
         final Set<String> errors = trailValidator.validate(request);
-        final TrailResponse.TrailRestResponseBuilder trailRestResponseBuilder = TrailResponse.
-                TrailRestResponseBuilder.aTrailRestResponse().withTrails(Collections.emptyList()).withMessages(errors);
         if (errors.isEmpty()) {
-            trailImporterManager.save(request);
-            return trailRestResponseBuilder.withStatus(Status.OK).build();
+            List<TrailDto> savedTrail = trailImporterManager.save(request);
+            return new TrailResponse(Status.OK, errors, savedTrail);
         }
-        return trailRestResponseBuilder.withMessages(errors).withStatus(Status.ERROR).build();
+        return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
 }

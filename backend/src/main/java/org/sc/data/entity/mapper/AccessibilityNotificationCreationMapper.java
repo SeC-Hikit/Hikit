@@ -1,17 +1,16 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.AccessibilityNotification;
-import org.sc.common.rest.AccessibilityNotificationCreation;
-import org.sc.data.entity.mapper.Mapper;
+import org.sc.common.rest.AccessibilityNotificationCreationDto;
+import org.sc.data.entity.AccessibilityNotification;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccessibilityNotificationCreationMapper implements Mapper<AccessibilityNotificationCreation> {
+public class AccessibilityNotificationCreationMapper implements Mapper<AccessibilityNotificationCreationDto> {
 
     @Override
-    public AccessibilityNotificationCreation mapToObject(Document document) {
-        return new AccessibilityNotificationCreation(
+    public AccessibilityNotificationCreationDto mapToObject(Document document) {
+        return new AccessibilityNotificationCreationDto(
                 document.getString(AccessibilityNotification.TRAIL_CODE),
                 document.getString(AccessibilityNotification.DESCRIPTION),
                 document.getDate(AccessibilityNotification.REPORT_DATE),
@@ -19,7 +18,7 @@ public class AccessibilityNotificationCreationMapper implements Mapper<Accessibi
     }
 
     @Override
-    public Document mapToDocument(AccessibilityNotificationCreation accessibilityNotification) {
+    public Document mapToDocument(AccessibilityNotificationCreationDto accessibilityNotification) {
         return new Document(AccessibilityNotification.TRAIL_CODE, accessibilityNotification.getCode())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())

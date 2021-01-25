@@ -1,8 +1,8 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.CoordinatesWithAltitude;
-import org.sc.common.rest.TrailCoordinates;
+import org.sc.data.entity.CoordinatesWithAltitude;
+import org.sc.data.entity.TrailCoordinates;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;

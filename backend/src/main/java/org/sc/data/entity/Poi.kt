@@ -1,10 +1,9 @@
 package org.sc.data.entity
 
 import org.sc.common.rest.PoiMacroType
-import org.sc.common.rest.TrailCoordinates
 import java.util.*
 
-data class Poi (val id: String,
+data class Poi (val _id: String,
                 val name: String,
                 val description: String,
                 val tags: List<String>,

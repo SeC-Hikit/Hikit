@@ -1,50 +1,53 @@
 package org.sc.manager
 
 import org.sc.common.rest.PoiDto
-import org.sc.data.dto.PoiDtoMapper
+import org.sc.data.dto.PoiMapper
 import org.sc.data.repository.PoiDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class PoiManager @Autowired constructor(
-    private val poiDtoMapper : PoiDtoMapper,
+    private val poiDtoMapper : PoiMapper,
     private val poiDAO: PoiDAO){
 
     fun getPoiPaginated(page: Int, count: Int) : List<PoiDto>  {
-        return poiDAO.get(page, count).map { poiDtoMapper.toDto(it) }
+        return poiDAO.get(page, count).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
     fun getPoiByID(id: String) : List<PoiDto>  {
-        return poiDAO.getById(id).map { poiDtoMapper.toDto(it) }
+        return poiDAO.getById(id).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
     fun getPoiByName(name: String, page: Int, count: Int) : List<PoiDto>  {
-        val elements = poiDAO.getByName(name, page, count).map { poiDtoMapper.toDto(it) }
+        val elements = poiDAO.getByName(name, page, count).map { poiDtoMapper.poiToPoiDto(it) }
         if(elements.isEmpty()) {
-           return poiDAO.getByTags(name, page, count).map { poiDtoMapper.toDto(it) }
+           return poiDAO.getByTags(name, page, count).map { poiDtoMapper.poiToPoiDto(it) }
         }
         return elements
     }
 
     fun getPoiByTrailCode(code: String, page: Int, count: Int) : List<PoiDto>  {
-        return poiDAO.getByCode(code, page, count).map { poiDtoMapper.toDto(it) }
+        return poiDAO.getByCode(code, page, count).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
     fun getPoiByMacro(macro: String, page: Int, count: Int) : List<PoiDto>  {
-        return poiDAO.getByMacro(macro, page, count).map { poiDtoMapper.toDto(it) }
+        return poiDAO.getByMacro(macro, page, count).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
     fun getPoiByPointDistance(longitude: Double, latitude: Double, meters: Double, page: Int, count: Int) : List<PoiDto>  {
-        return poiDAO.getByPosition(longitude, latitude, meters, page, count).map { poiDtoMapper.toDto(it) }
+        return poiDAO.getByPosition(longitude, latitude, meters, page, count).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
-    fun deleteById(id: String): Boolean {
-        return poiDAO.delete(id)
+    fun deleteById(id: String): List<PoiDto> {
+        val poiByID = getPoiByID(id)
+        poiDAO.delete(id)
+        return poiByID
     }
 
-    fun upsertPoi(poiDto: PoiDto) {
-        val fromDto = poiDtoMapper.toEntity(poiDto)
-        return poiDAO.upsert(fromDto)
+    fun upsertPoi(poiDto: PoiDto): List<PoiDto> {
+        val fromDto = poiDtoMapper.poiDtoToPoi(poiDto)
+        poiDAO.upsert(fromDto)
+        return listOf(poiDto)
     }
 }

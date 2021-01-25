@@ -1,26 +1,27 @@
 package org.sc.data.validator
 
-import org.sc.common.rest.Maintenance
+import org.sc.common.rest.MaintenanceDto
+import org.sc.data.entity.Maintenance
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class MaintenanceValidator : Validator<Maintenance> {
+class MaintenanceValidator : Validator<MaintenanceDto> {
 
     companion object {
         const val noParamSpecified = "Empty field '%s'"
         const val dateInPast = "Planned date is in the past"
     }
 
-    override fun validate(request: Maintenance): Set<String> {
+    override fun validate(request: MaintenanceDto): Set<String> {
         val errors = mutableSetOf<String>()
-        if (request.contact.isNullOrBlank()) {
+        if (request.contact.isBlank()) {
             errors.add(String.format(noParamSpecified, "Contact"))
         }
-        if (request.code.isNullOrBlank()) {
+        if (request.code.isBlank()) {
             errors.add(String.format(noParamSpecified, "Code"))
         }
-        if (request.meetingPlace.isNullOrBlank()) {
+        if (request.meetingPlace.isBlank()) {
             errors.add(String.format(noParamSpecified, "Meeting Place"))
         }
         if (request.date.before(Date())) {

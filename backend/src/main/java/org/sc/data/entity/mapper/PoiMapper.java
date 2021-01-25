@@ -2,7 +2,7 @@ package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.PoiMacroType;
-import org.sc.common.rest.TrailCoordinates;
+import org.sc.data.entity.TrailCoordinates;
 import org.sc.data.entity.Poi;
 import org.springframework.stereotype.Component;
 

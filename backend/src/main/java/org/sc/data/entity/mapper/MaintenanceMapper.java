@@ -1,8 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.Maintenance;
-import org.sc.data.entity.mapper.Mapper;
+import org.sc.data.entity.Maintenance;
 import org.springframework.stereotype.Component;
 
 @Component

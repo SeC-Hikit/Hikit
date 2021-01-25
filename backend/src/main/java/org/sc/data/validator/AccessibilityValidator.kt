@@ -1,18 +1,18 @@
 package org.sc.data.validator
 
-import org.sc.common.rest.AccessibilityNotificationCreation
+import org.sc.common.rest.AccessibilityNotificationCreationDto
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class AccessibilityValidator : Validator<AccessibilityNotificationCreation> {
+class AccessibilityValidator : Validator<AccessibilityNotificationCreationDto> {
 
     companion object {
         const val noParamSpecifiedError = "Empty field '%s'"
         const val dateInFutureError = "Date field with value '%s' is in the future"
     }
 
-    override fun validate(request: AccessibilityNotificationCreation): Set<String> {
+    override fun validate(request: AccessibilityNotificationCreationDto): Set<String> {
         val errors = mutableSetOf<String>()
         if (request.code.isBlank()) {
             errors.add(String.format(noParamSpecifiedError, "Code"))

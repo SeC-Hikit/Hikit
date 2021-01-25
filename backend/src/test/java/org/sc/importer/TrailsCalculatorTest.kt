@@ -4,17 +4,17 @@ import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.sc.common.rest.TrailCoordinates
+import org.sc.common.rest.CoordinatesDto
 import org.sc.processor.TrailsCalculator
 
 class TrailsCalculatorTest {
 
     @Test
     fun `calculate time distance between four points on same elevation`(){
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
-        val mockPoint3 = mockkClass(TrailCoordinates::class)
-        val mockPoint4 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
+        val mockPoint3 = mockkClass(CoordinatesDto::class)
+        val mockPoint4 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint1.latitude } returns 44.49397
@@ -38,8 +38,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate rise, given two points with no rise should return 0`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 0.0
@@ -52,8 +52,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate rise, given two points with fall should return 0`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns -1.0
@@ -66,8 +66,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate rise, given two points with rise should calculate rise`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 10.0
@@ -80,9 +80,9 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate rise, given three points with rise should calculate rise`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
-        val mockPoint3 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
+        val mockPoint3 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 10.0
@@ -98,10 +98,10 @@ class TrailsCalculatorTest {
     @Test
     fun `calculate rise, given four points with rise and fall should calculate rise only`() {
 
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
-        val mockPoint3 = mockkClass(TrailCoordinates::class)
-        val mockPoint4 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
+        val mockPoint3 = mockkClass(CoordinatesDto::class)
+        val mockPoint4 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 10.0
@@ -118,12 +118,12 @@ class TrailsCalculatorTest {
     @Test
     fun `calculate rise, given six points with rise and fall should calculate rise only`() {
 
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
-        val mockPoint3 = mockkClass(TrailCoordinates::class)
-        val mockPoint4 = mockkClass(TrailCoordinates::class)
-        val mockPoint5 = mockkClass(TrailCoordinates::class)
-        val mockPoint6 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
+        val mockPoint3 = mockkClass(CoordinatesDto::class)
+        val mockPoint4 = mockkClass(CoordinatesDto::class)
+        val mockPoint5 = mockkClass(CoordinatesDto::class)
+        val mockPoint6 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 10.0
@@ -142,8 +142,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate fall, given two points with no fall should return 0`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 0.0
@@ -156,8 +156,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate fall, given two points with rise should return 0`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns 1.0
@@ -170,8 +170,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate fall, given two points with fall should calculate fall`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns -10.0
@@ -184,9 +184,9 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate fall, given three points with fall should calculate tot fall`() {
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
-        val mockPoint3 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
+        val mockPoint3 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns -10.0
@@ -202,10 +202,10 @@ class TrailsCalculatorTest {
     @Test
     fun `calculate fall, given four points with fall and rise should calculate fall only`() {
 
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
-        val mockPoint3 = mockkClass(TrailCoordinates::class)
-        val mockPoint4 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
+        val mockPoint3 = mockkClass(CoordinatesDto::class)
+        val mockPoint4 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint2.altitude } returns -10.0
@@ -221,8 +221,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate distance between two points but selecting the first one`(){
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint1.latitude } returns 44.501026
@@ -241,8 +241,8 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate distance between two points`(){
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint1.latitude } returns 44.501026
@@ -260,9 +260,9 @@ class TrailsCalculatorTest {
 
     @Test
     fun `calculate distance between three points`(){
-        val mockPoint1 = mockkClass(TrailCoordinates::class)
-        val mockPoint2 = mockkClass(TrailCoordinates::class)
-        val mockPoint3 = mockkClass(TrailCoordinates::class)
+        val mockPoint1 = mockkClass(CoordinatesDto::class)
+        val mockPoint2 = mockkClass(CoordinatesDto::class)
+        val mockPoint3 = mockkClass(CoordinatesDto::class)
 
         every { mockPoint1.altitude } returns 0.0
         every { mockPoint1.latitude } returns 44.501026

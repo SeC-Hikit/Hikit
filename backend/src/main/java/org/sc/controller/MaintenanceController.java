@@ -1,16 +1,17 @@
 package org.sc.controller;
 
-import org.sc.common.rest.Maintenance;
-import org.sc.common.rest.MaintenanceResponse;
-import org.sc.common.rest.RESTResponse;
+import org.sc.common.rest.MaintenanceDto;
+import org.sc.common.rest.response.MaintenanceResponse;
+import org.sc.data.entity.Maintenance;
 import org.sc.common.rest.Status;
-import org.sc.data.repository.MaintenanceDAO;
 import org.sc.data.validator.MaintenanceValidator;
+import org.sc.manager.MaintenanceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -26,47 +27,48 @@ public class MaintenanceController {
     private final static Logger LOGGER = Logger.getLogger(MaintenanceController.class.getName());
 
     private final MaintenanceValidator maintenanceValidator;
-    private final MaintenanceDAO maintenanceDao;
+    private final MaintenanceManager maintenanceManager;
 
 
     @Autowired
-    public MaintenanceController(final MaintenanceDAO maintenanceDao,
+    public MaintenanceController(final MaintenanceManager maintenanceManager,
                                  final MaintenanceValidator maintenanceValidator) {
-        this.maintenanceDao = maintenanceDao;
+        this.maintenanceManager = maintenanceManager;
         this.maintenanceValidator = maintenanceValidator;
     }
 
     @GetMapping("/future")
     public MaintenanceResponse getFutureMaintenance(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
                                                     @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new MaintenanceResponse(maintenanceDao.getFuture(page, count));
+        return new MaintenanceResponse(Status.OK, Collections.emptySet(), maintenanceManager.getFuture(page, count));
     }
 
     @GetMapping("/past")
     public MaintenanceResponse getPastMaintenance(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
                                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new MaintenanceResponse(maintenanceDao.getPast(page, count));
-    }
-
-    @DeleteMapping("/{id}")
-    public RESTResponse deleteMaintenance(@PathVariable String id) {
-        boolean isDeleted = maintenanceDao.delete(id);
-        if (!isDeleted) {
-            LOGGER.warning(format("Could not delete maintenance with id '%s'", id));
-            return new RESTResponse(Status.ERROR,
-                    new HashSet<>(Collections.singletonList(
-                            format("No maintenance was found with id '%s'", id))));
-        }
-        return new RESTResponse();
+        List<MaintenanceDto> past = maintenanceManager.getPast(page, count);
+        return new MaintenanceResponse(Status.OK, Collections.emptySet(), past);
     }
 
     @PutMapping
-    public RESTResponse upsertMaintenance(@RequestBody Maintenance request) {
+    public MaintenanceResponse upsertMaintenance(@RequestBody MaintenanceDto request) {
         final Set<String> errors = maintenanceValidator.validate(request);
         if(errors.isEmpty()) {
-            maintenanceDao.upsert(request);
-            return new RESTResponse();
+            List<MaintenanceDto> maintenanceDtos = maintenanceManager.upsert(request);
+            return new MaintenanceResponse(Status.OK, Collections.emptySet(), maintenanceDtos);
         }
-        return new RESTResponse(errors);
+        return new MaintenanceResponse(Status.OK, errors, Collections.emptyList());
+    }
+
+    @DeleteMapping("/{id}")
+    public MaintenanceResponse deleteMaintenance(@PathVariable String id) {
+        List<MaintenanceDto> isDeleted = maintenanceManager.delete(id);
+        if (isDeleted.isEmpty()) {
+            LOGGER.warning(format("Could not delete maintenance with id '%s'", id));
+            return new MaintenanceResponse(Status.ERROR,
+                    new HashSet<>(Collections.singletonList(
+                            format("No maintenance was found with id '%s'", id))), isDeleted);
+        }
+        return new MaintenanceResponse(Status.OK, Collections.emptySet(), Collections.emptyList());
     }
 }

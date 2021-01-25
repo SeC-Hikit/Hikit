@@ -1,8 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.AccessibilityNotification;
-import org.sc.data.entity.mapper.Mapper;
+import org.sc.data.entity.AccessibilityNotification;
 import org.springframework.stereotype.Component;
 
 @Component

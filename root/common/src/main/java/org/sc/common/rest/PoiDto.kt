@@ -10,7 +10,7 @@ data class PoiDto (val id: String?,
                    val microType: List<String>,
                    val mediaIds: List<String>,
                    val trailIds: List<String>,
-                   val trailCoordinates: TrailCoordinates,
+                   val trailCoordinates: TrailCoordinatesDto,
                    val createdOn: Date,
                    val lastUpdatedOn: Date,
                    val externalResources: List<String>)

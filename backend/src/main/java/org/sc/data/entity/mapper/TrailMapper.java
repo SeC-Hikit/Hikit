@@ -2,6 +2,10 @@ package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.*;
+import org.sc.data.entity.TrailCoordinates;
+import org.sc.data.entity.Trail;
+import org.sc.data.entity.Position;
+import org.sc.data.entity.StatsTrailMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

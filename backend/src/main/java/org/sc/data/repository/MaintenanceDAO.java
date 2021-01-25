@@ -3,14 +3,16 @@ package org.sc.data.repository;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.common.rest.Maintenance;
+import org.sc.data.entity.Maintenance;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.MaintenanceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +35,6 @@ public class MaintenanceDAO {
 
     public List<Maintenance> getFuture(final int from,
                                        final int to) {
-
         return toMaintenanceList(collection.find(
                 new Document(Maintenance.DATE, new Document("$gt", new Date())))
                 .skip(from).limit(to));
@@ -47,20 +48,39 @@ public class MaintenanceDAO {
                 .skip(from).limit(to));
     }
 
-    public void upsert(final Maintenance maintenance) {
+    public List<Maintenance> upsert(final Maintenance maintenance) {
         final Document MaintenanceDocument = mapper.mapToDocument(maintenance);
         final String existingOrNewObjectId = maintenance.get_id() == null ?
                 new ObjectId().toHexString() : maintenance.get_id();
-        collection.replaceOne(new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
+        UpdateResult updateResult = collection.replaceOne(new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
                 MaintenanceDocument, new ReplaceOptions().upsert(true));
+        return Collections.singletonList(getById(updateResult.getUpsertedId().asString().toString()));
     }
 
-    public boolean delete(final String objectId) {
-        return collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId)).getDeletedCount() > 0;
+    public List<Maintenance> delete(final String objectId) {
+        final Maintenance byId = getById(objectId);
+        collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId));
+        return Collections.singletonList(byId);
     }
 
-    public boolean deleteByCode(final String trailCode) {
-        return collection.deleteOne(new Document(Maintenance.TRAIL_CODE, trailCode)).getDeletedCount() > 0;
+    public List<Maintenance> deleteByCode(final String trailCode) {
+        final Maintenance byCode = getByTrailId(trailCode);
+        collection.deleteOne(new Document(Maintenance.TRAIL_CODE, trailCode));
+        return Collections.singletonList(byCode);
+    }
+
+    private Maintenance getById(final String _id) {
+        return toMaintenanceList(collection.find(
+                new Document(Maintenance.OBJECT_ID, _id)))
+                .stream()
+                .findFirst().orElse(null);
+    }
+
+    private Maintenance getByTrailId(final String trailId) {
+        return toMaintenanceList(collection.find(
+                new Document(Maintenance.TRAIL_CODE, trailId)))
+                .stream()
+                .findFirst().orElse(null);
     }
 
     private List<Maintenance> toMaintenanceList(FindIterable<Document> documents) {

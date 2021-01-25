@@ -5,9 +5,14 @@ import io.jenetics.jpx.Metadata
 import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
+import org.sc.data.dto.TrailCoordinatesMapper
+import org.sc.data.entity.TrailCoordinates
+import org.sc.data.entity.Trail
+import org.sc.data.entity.CoordinatesWithAltitude
+import org.sc.data.entity.Position
 import org.sc.processor.TrailsCalculator
 import org.sc.service.AltitudeServiceAdapter
-import org.sc.service.GpxFileHandlerHelper
+import org.sc.processor.GpxFileHandlerHelper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.File
@@ -17,36 +22,42 @@ import java.nio.file.Path
 class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFileHandlerHelper,
                                         private val trailsCalculator: TrailsCalculator,
                                         private val altitudeService: AltitudeServiceAdapter,
+                                        private val trailCoordinatesMapper: TrailCoordinatesMapper,
                                         private val appProps: AppProperties) {
 
     private val pathToStoredFiles = File(appProps.trailStorage).toPath()
     private val emptyDefaultString = ""
 
-    fun getTrailPreparationFromGpx(tempFile: Path): TrailPreparationModel? {
+    fun getTrailPreparationFromGpx(tempFile: Path): TrailPreparationModelDto {
         val gpx = gpxFileHandlerHelper.readFromFile(tempFile)
         val track = gpx.tracks.first()
         val segment = track.segments.first()
 
-        val coordinatesWithAltitude : List<CoordinatesWithAltitude> = segment.points.map { point ->
-            CoordinatesWithAltitude(point.longitude.toDegrees(), point.latitude.toDegrees(),
-                    altitudeService.getAltitudeByLongLat(point.latitude.toDegrees(), point.longitude.toDegrees()))
+        val coordinatesWithAltitude : List<CoordinatesDto> = segment.points.map { point ->
+            CoordinatesDto(
+                point.longitude.toDegrees(), point.latitude.toDegrees(),
+                altitudeService.getAltitudeByLongLat(point.latitude.toDegrees(), point.longitude.toDegrees())
+            )
         }
 
         val trailCoordinates = coordinatesWithAltitude.map {
-            TrailCoordinates(it.longitude, it.latitude, it.altitude,
-            trailsCalculator.calculateLengthFromTo(coordinatesWithAltitude, it)) }
+            TrailCoordinates(
+                it.longitude, it.latitude, it.altitude,
+                trailsCalculator.calculateLengthFromTo(coordinatesWithAltitude, it)
+            )
+        }
 
-        return TrailPreparationModel(
+        return TrailPreparationModelDto(
                 track.name.orElse(emptyDefaultString),
                 track.description.orElse(emptyDefaultString),
-                Position("", emptyList(), trailCoordinates.first()),
-                Position("", emptyList(), trailCoordinates.last()),
-                trailCoordinates
+            PositionDto("", emptyList(), trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.first())),
+            PositionDto("", emptyList(), trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.last())),
+                trailCoordinates.map { trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(it) }
         )
     }
 
     fun writeTrailToGpx(trail: Trail) {
-        val creator = "S&C_BO_$VERSION"
+        val creator = "S&C_$VERSION"
         val gpx = GPX.builder(creator)
                 .addTrack { track ->
                     track.addSegment { segment ->
@@ -58,7 +69,7 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
                     }
                 }.metadata(
                         Metadata.builder()
-                                .author("CAI Bologna - $creator")
+                                .author("S&C - $creator")
                                 .name(trail.code).time(trail.lastUpdate.toInstant()).build()
                 ).build()
         gpxFileHandlerHelper.writeToFile(gpx, pathToStoredFiles.resolve(trail.code + ".gpx"))
