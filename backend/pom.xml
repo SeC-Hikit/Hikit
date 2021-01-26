@@ -140,17 +140,6 @@
                         </compilerArg>
                     </compilerArgs>
                     <showWarnings>true</showWarnings>
-                    <compilerArgs>
-                        <compilerArg>
-                            -Amapstruct.suppressGeneratorTimestamp=true
-                        </compilerArg>
-                        <compilerArg>
-                            -Amapstruct.suppressGeneratorVersionInfoComment=true
-                        </compilerArg>
-                        <compilerArg>
-                            -Amapstruct.verbose=true
-                        </compilerArg>
-                    </compilerArgs>
                 </configuration>
                 <executions>
                     <!-- Replacing default-compile as it is treated specially by maven -->
