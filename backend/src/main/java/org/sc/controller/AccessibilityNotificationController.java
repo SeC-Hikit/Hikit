@@ -72,7 +72,7 @@ public class AccessibilityNotificationController {
         }
         return new AccessibilityResponse(Status.ERROR,
                 new HashSet<>(Collections.singletonList(
-                        format("No accessibility notification was found with id '%s'", accessibilityRes.get_id()))),
+                        format("No accessibility notification was found with id '%s'", accessibilityRes.getId()))),
                 Collections.emptyList());
 
     }

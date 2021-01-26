@@ -5,7 +5,6 @@ import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Test
 import org.sc.common.rest.MaintenanceDto
-import org.sc.data.entity.Maintenance
 import org.sc.data.validator.MaintenanceValidator.Companion.dateInPast
 import java.util.*
 

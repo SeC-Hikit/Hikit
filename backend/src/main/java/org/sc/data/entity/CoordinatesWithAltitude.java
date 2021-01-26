@@ -1,10 +1,8 @@
 package org.sc.data.entity;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
+import org.sc.common.rest.Coordinates;
 
-public class CoordinatesWithAltitude extends Coordinates {
+public class CoordinatesWithAltitude implements Coordinates {
 
     public static final int LONG_INDEX = 0;
     public static final int LAT_INDEX = 1;
@@ -13,13 +11,15 @@ public class CoordinatesWithAltitude extends Coordinates {
     public final static String COORDINATES = "coordinates";
     public final static String ALTITUDE = "altitude";
 
+    private final double longitude;
+    private final double latitude;
     private final double altitude;
-
 
     public CoordinatesWithAltitude(final double longitude,
                                    final double latitude,
                                    final double altitude) {
-        super(Arrays.asList(longitude, latitude));
+        this.longitude = longitude;
+        this.latitude = latitude;
         this.altitude = altitude;
     }
 
@@ -27,42 +27,11 @@ public class CoordinatesWithAltitude extends Coordinates {
         return altitude;
     }
 
-    public static final class CoordinatesWithAltitudeBuilder {
-        private double altitude;
-        private double longitude;
-        private double latitude;
+    public double getLongitude() {
+        return longitude;
+    }
 
-        private CoordinatesWithAltitudeBuilder() {
-        }
-
-        public static CoordinatesWithAltitudeBuilder aCoordinatesWithAltitude() {
-            return new CoordinatesWithAltitudeBuilder();
-        }
-
-        public CoordinatesWithAltitudeBuilder withAltitude(double altitude) {
-            this.altitude = altitude;
-            return this;
-        }
-
-        public CoordinatesWithAltitudeBuilder withLongitude(double longitude) {
-            this.longitude = longitude;
-            return this;
-        }
-
-        public CoordinatesWithAltitudeBuilder withLatitude(double latitude) {
-            this.latitude = latitude;
-            return this;
-        }
-
-        public CoordinatesWithAltitude build() {
-            assertCorrectValues();
-            return new CoordinatesWithAltitude(longitude, latitude, altitude);
-        }
-
-        private void assertCorrectValues() {
-            if(Stream.of(altitude, longitude, latitude).anyMatch(Objects::isNull)){
-                throw new IllegalArgumentException(NO_CORRECT_PARAMS_ERROR_MESSAGE);
-            }
-        }
+    public double getLatitude() {
+        return latitude;
     }
 }

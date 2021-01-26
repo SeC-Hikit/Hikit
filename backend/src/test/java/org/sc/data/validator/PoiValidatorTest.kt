@@ -7,7 +7,6 @@ import org.junit.Test
 import org.sc.common.rest.PoiDto
 import org.sc.common.rest.PoiMacroType
 import org.sc.common.rest.TrailCoordinatesDto
-import org.sc.data.entity.TrailCoordinates
 import org.sc.data.entity.Poi
 import java.util.*
 

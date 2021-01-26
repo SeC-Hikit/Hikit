@@ -79,10 +79,10 @@ public class AccessibilityNotificationDAO {
     }
 
     public AccessibilityNotification resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
-        collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolutionDto.get_id()),
+        collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolutionDto.getId()),
                 new Document("$set", new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolutionDto.getResolution())
                         .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolutionDto.getResolutionDate())));
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolutionDto.get_id())))
+        return toNotificationList(collection.find(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolutionDto.getId())))
                 .stream().findFirst().orElse(null);
     }
 

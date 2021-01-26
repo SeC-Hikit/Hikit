@@ -18,11 +18,8 @@ public class TrailCoordinatesMapper implements Mapper<TrailCoordinates> {
         final List<Double> list = document.get(CoordinatesWithAltitude.COORDINATES, List.class);
         final Double altitude = document.getDouble(TrailCoordinates.ALTITUDE);
         final Integer distanceProgress = document.getInteger(TrailCoordinates.DISTANCE_FROM_START);
-        return TrailCoordinates.TrailCoordinatesBuilder.aTrailCoordinates()
-                .withLongitude(list.get(TrailCoordinates.LONG_INDEX))
-                .withLatitude(list.get(TrailCoordinates.LAT_INDEX))
-                .withDistanceFromTrailStart(distanceProgress)
-                .withAltitude(altitude).build();
+        return new TrailCoordinates(list.get(TrailCoordinates.LONG_INDEX),
+                list.get(TrailCoordinates.LAT_INDEX), altitude, distanceProgress);
     }
 
     @Override

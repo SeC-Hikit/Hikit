@@ -1,6 +1,5 @@
 package org.sc.common.rest.response
 
-import org.sc.common.rest.MaintenanceDto
 import org.sc.common.rest.PoiDto
 import org.sc.common.rest.Status
 
