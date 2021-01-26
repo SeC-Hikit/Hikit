@@ -14,7 +14,8 @@ public class Position {
     private List<String> tags;
     private TrailCoordinates coordinates;
 
-    public Position(){}
+    public Position() {
+    }
 
     public Position(double alt, double lat, double longitude, int distanceFromStart) {
         this.coordinates = new TrailCoordinates(longitude, lat, alt, distanceFromStart);
@@ -37,7 +38,19 @@ public class Position {
     }
 
     public List<String> getTags() {
-        return tags.stream().filter(a->!a.equals("")).collect(Collectors.toList());
+        return tags.stream().filter(a -> !a.equals("")).collect(Collectors.toList());
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public void setCoordinates(TrailCoordinates coordinates) {
+        this.coordinates = coordinates;
     }
 
     public static final class PositionBuilder {

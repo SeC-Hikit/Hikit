@@ -1,10 +1,7 @@
 package org.sc.manager
 
-import org.sc.common.rest.CoordinatesDto
-import org.sc.common.rest.TrailDto
+import org.sc.common.rest.*
 import org.sc.data.entity.Trail
-import org.sc.common.rest.TrailPreviewDto
-import org.sc.common.rest.UnitOfMeasurement
 import org.sc.processor.MetricConverter
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
@@ -100,7 +97,7 @@ class TrailManager @Autowired constructor(
      * @param givenCoordinatesWAltitude the given coordinate
      * @param trail to refer to
      */
-    fun getClosestCoordinate(givenCoordinatesWAltitude: CoordinatesDto, trail: TrailDto): CoordinatesDto {
+    fun getClosestCoordinate(givenCoordinatesWAltitude: Coordinates, trail: TrailDto): Coordinates {
         return trail.coordinates
             .minByOrNull { DistanceProcessor.distanceBetweenPoints(it, givenCoordinatesWAltitude) }!!
     }

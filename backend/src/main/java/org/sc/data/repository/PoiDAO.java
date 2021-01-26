@@ -8,7 +8,6 @@ import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.Poi;
-import org.sc.data.entity.TrailCoordinates;
 import org.sc.data.entity.mapper.PoiMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -93,7 +92,7 @@ public class PoiDAO {
             return Collections.singletonList(new Poi(updateResult.getUpsertedId().asString().toString(),
                     poiRequest.getName(),
                     poiRequest.getDescription(), poiRequest.getTags(), poiRequest.getMacroType(), poiRequest.getMicroType(),
-                    poiRequest.getMediaIds(), poiRequest.getTrailCodes(), poiRequest.getTrailCoordinates(), poiRequest.getCreatedOn(),
+                    poiRequest.getMediaIds(), poiRequest.getTrailIds(), poiRequest.getTrailCoordinates(), poiRequest.getCreatedOn(),
                      poiRequest.getLastUpdatedOn(), poiRequest.getExternalResources()));
         }
         throw new IllegalArgumentException();

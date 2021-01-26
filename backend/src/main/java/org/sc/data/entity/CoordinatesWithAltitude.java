@@ -6,7 +6,8 @@ import java.util.stream.Stream;
 
 public class CoordinatesWithAltitude extends Coordinates {
 
-    public static final String NO_CORRECT_PARAMS_ERROR_MESSAGE = "Error building coordinates: some values are found null, but that is not allowed";
+    public static final int LONG_INDEX = 0;
+    public static final int LAT_INDEX = 1;
 
     public final static String GEO_TYPE = "Point";
     public final static String COORDINATES = "coordinates";

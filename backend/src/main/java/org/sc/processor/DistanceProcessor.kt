@@ -1,7 +1,6 @@
 package org.sc.processor
 
-import org.sc.common.rest.CoordinatesDto
-import org.sc.data.entity.CoordinatesWithAltitude
+import org.sc.common.rest.Coordinates
 import kotlin.math.*
 
 object DistanceProcessor {
@@ -11,7 +10,7 @@ object DistanceProcessor {
     /**
      * Returns the distance between two points in meters
      */
-    fun distanceBetweenPoints(position: CoordinatesDto, toPoint: CoordinatesDto): Double =
+    fun distanceBetweenPoints(position: Coordinates, toPoint: Coordinates): Double =
             distance(position.latitude, toPoint.latitude,
                     position.longitude, toPoint.longitude,
                     position.altitude, toPoint.altitude)

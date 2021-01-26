@@ -41,7 +41,7 @@ public class PoiMapper implements Mapper<Poi> {
                 .append(Poi.MACROTYPE, object.getMacroType().toString())
                 .append(Poi.MICROTYPES, object.getMicroType())
                 .append(Poi.MEDIA_IDS, object.getMediaIds())
-                .append(Poi.TRAIL_CODES, object.getTrailCodes())
+                .append(Poi.TRAIL_CODES, object.getTrailIds())
                 .append(Poi.TRAIL_COORDINATES, coordinatesMapper.mapToDocument(object.getTrailCoordinates()))
                 .append(Poi.CREATED_ON, object.getCreatedOn())
                 .append(Poi.LAST_UPDATE_ON, object.getLastUpdatedOn())

@@ -22,18 +22,21 @@ public class Trail {
     public static final String SECTION_CARED_BY = "maintainingSection";
     public static final String LOCATIONS = "locations";
 
-    private final String name;
-    private final String description;
-    private final String code;
-    private final Position startPos;
-    private final Position finalPos;
-    private final List<Position> locations;
-    private final List<TrailCoordinates> coordinates;
-    private final TrailClassification classification;
-    private final String country;
-    private final Date lastUpdate;
-    private final String maintainingSection;
+    private String name;
+    private String description;
+    private String code;
+    private Position startPos;
+    private Position finalPos;
+    private List<Position> locations;
+    private List<TrailCoordinates> coordinates;
+    private TrailClassification classification;
+    private String country;
+    private Date lastUpdate;
+    private String maintainingSection;
     private StatsTrailMetadata statsMetadata;
+
+    public Trail() {
+    }
 
     public Trail(final String name,
                  final String description,

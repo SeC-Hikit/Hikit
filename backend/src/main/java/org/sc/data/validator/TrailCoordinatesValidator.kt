@@ -1,7 +1,6 @@
 package org.sc.data.validator
 
 import org.sc.common.rest.TrailCoordinatesDto
-import org.sc.data.entity.TrailCoordinates
 import org.springframework.stereotype.Component
 
 @Component

@@ -1,5 +1,6 @@
 package org.sc.data;
 
+import org.sc.common.rest.Coordinates;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.TrailDto;
 import org.sc.data.entity.CoordinatesWithAltitude;
@@ -25,7 +26,7 @@ public class TrailDistance {
         return trail;
     }
 
-    public CoordinatesDto getCoordinates() {
+    public Coordinates getCoordinates() {
         return coordinates;
     }
 }
