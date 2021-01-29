@@ -1,12 +1,10 @@
 package org.sc.controller;
 
-import org.sc.common.rest.*;
-import org.sc.common.rest.response.FileDownloadResponse;
+import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.data.entity.Trail;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -39,7 +37,8 @@ public class TrailController {
     }
 
     @GetMapping("/{code}")
-    public TrailResponse getByCode(@PathVariable String code, @RequestParam(required = false, defaultValue = "false") Boolean light) {
+    public TrailResponse getByCode(@PathVariable String code,
+                                   @RequestParam(required = false, defaultValue = "false") Boolean light) {
         return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getByCode(code, light));
     }
 

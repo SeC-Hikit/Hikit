@@ -6,8 +6,8 @@ import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.data.entity.Maintenance;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.Maintenance;
 import org.sc.data.entity.mapper.MaintenanceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -57,9 +57,9 @@ public class MaintenanceDAO {
         return Collections.singletonList(getById(updateResult.getUpsertedId().asString().toString()));
     }
 
-    public List<Maintenance> delete(final String objectId) {
-        final Maintenance byId = getById(objectId);
-        collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId));
+    public List<Maintenance> delete(final String id) {
+        final Maintenance byId = getById(id);
+        collection.deleteOne(new Document(Maintenance.OBJECT_ID, id));
         return Collections.singletonList(byId);
     }
 

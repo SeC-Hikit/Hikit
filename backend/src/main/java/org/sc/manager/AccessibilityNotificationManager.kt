@@ -40,8 +40,8 @@ class AccessibilityNotificationManager @Autowired constructor(
         listOf(accessibilityDAO.resolve(accessibilityRes)).map { accessibilityMapper.accessibilityNotificationToAccessibilityNotificationDto(it) }
 
 
-    fun delete(objectId: String) : List<AccessibilityNotificationDto> =
-        listOf(accessibilityDAO.delete(objectId)).map { accessibilityMapper.accessibilityNotificationToAccessibilityNotificationDto(it) }
+    fun delete(id: String) : List<AccessibilityNotificationDto> =
+        listOf(accessibilityDAO.delete(id)).map { accessibilityMapper.accessibilityNotificationToAccessibilityNotificationDto(it) }
 
 
     fun upsert(accessibilityNotificationCreation: AccessibilityNotificationCreationDto): List<AccessibilityUnresolvedDto> =

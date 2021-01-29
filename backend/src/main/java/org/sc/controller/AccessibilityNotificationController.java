@@ -94,16 +94,16 @@ public class AccessibilityNotificationController {
         throw new IllegalStateException();
     }
 
-    @DeleteMapping("/{objectId}")
-    public AccessibilityResponse deleteAccessibilityNotification(@PathVariable String objectId) {
+    @DeleteMapping("/{id}")
+    public AccessibilityResponse deleteAccessibilityNotification(@PathVariable String id) {
         final List<AccessibilityNotificationDto> isDeleted =
-                accessibilityNotManager.delete(objectId);
+                accessibilityNotManager.delete(id);
         if (!isDeleted.isEmpty()) {
             return new AccessibilityResponse(Status.OK, Collections.emptySet(), isDeleted);
         } else {
             return new AccessibilityResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No accessibility notification was found with id '%s'", objectId))),
+                            format("No accessibility notification was found with id '%s'", id))),
                     isDeleted);
         }
     }
