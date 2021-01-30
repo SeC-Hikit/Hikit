@@ -2,10 +2,9 @@ package org.sc.data.repository;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.result.UpdateResult;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.sc.common.rest.AccessibilityNotificationCreationDto;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
@@ -17,6 +16,7 @@ import org.sc.data.entity.mapper.AccessibilityNotificationUnresolvedMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -70,12 +70,16 @@ public class AccessibilityNotificationDAO {
                 new Document(EXISTS_PARAM, true))).skip(from).limit(to));
     }
 
-    public AccessibilityUnresolved upsert(final AccessibilityNotificationCreationDto accessibilityNotification) {
+    public List<AccessibilityUnresolved> insert(final AccessibilityNotificationCreationDto accessibilityNotification) {
         final Document accessibilityNotificationDocument = mapperCreation.mapToDocument(accessibilityNotification);
-        final UpdateResult updateResult = collection.replaceOne(new Document(AccessibilityNotification.OBJECT_ID,
-                new ObjectId().toHexString()), accessibilityNotificationDocument, new ReplaceOptions().upsert(true));
-        return getByIdUnr(updateResult
-                .getUpsertedId().asString().toString());
+        final Document addedResult = collection.findOneAndReplace(
+                new Document(), accessibilityNotificationDocument,
+                new FindOneAndReplaceOptions().upsert(true)
+                        .returnDocument(ReturnDocument.AFTER));
+        if (addedResult != null) {
+            return Collections.singletonList(unresolvedMapper.mapToObject(addedResult));
+        }
+        throw new IllegalStateException();
     }
 
     public AccessibilityNotification resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
@@ -100,12 +104,6 @@ public class AccessibilityNotificationDAO {
 
     private AccessibilityNotification getById(final String objectId) {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.OBJECT_ID, objectId)))
-                .stream().findFirst()
-                .orElse(null);
-    }
-
-    private AccessibilityUnresolved getByIdUnr(final String objectId) {
-        return toUnresolvedNotificationList(collection.find(new Document(AccessibilityNotification.OBJECT_ID, objectId)))
                 .stream().findFirst()
                 .orElse(null);
     }

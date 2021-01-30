@@ -2,9 +2,10 @@ package org.sc.data.repository;
 
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.result.UpdateResult;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.Poi;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
+
 import static org.sc.data.repository.MongoConstants.*;
 
 import static java.util.stream.Collectors.toList;
@@ -24,13 +26,13 @@ import static java.util.stream.Collectors.toList;
 public class PoiDAO {
 
     private final MongoCollection<Document> collection;
-    private final PoiMapper poiMapper;
+    private final PoiMapper mapper;
 
     @Autowired
     public PoiDAO(final DataSource dataSource,
-                  final PoiMapper poiMapper) {
+                  final PoiMapper mapper) {
         this.collection = dataSource.getDB().getCollection(Poi.COLLECTION_NAME);
-        this.poiMapper = poiMapper;
+        this.mapper = mapper;
     }
 
     public List<Poi> get(final int page,
@@ -85,17 +87,17 @@ public class PoiDAO {
 
     public List<Poi> upsert(final Poi poiRequest) {
         // TODO: shall upsert and update the date
-        final Document trail = poiMapper.mapToDocument(poiRequest);
-        UpdateResult updateResult = collection.replaceOne(new Document(Poi.OBJECT_ID, poiRequest.get_id()),
-                trail, new ReplaceOptions().upsert(true));
-        if(updateResult.getModifiedCount() > 0){
-            return Collections.singletonList(new Poi(updateResult.getUpsertedId().asString().toString(),
-                    poiRequest.getName(),
-                    poiRequest.getDescription(), poiRequest.getTags(), poiRequest.getMacroType(), poiRequest.getMicroType(),
-                    poiRequest.getMediaIds(), poiRequest.getTrailIds(), poiRequest.getTrailCoordinates(), poiRequest.getCreatedOn(),
-                     poiRequest.getLastUpdatedOn(), poiRequest.getExternalResources()));
+        final Document poiDoc = mapper.mapToDocument(poiRequest);
+        final String existingOrNewObjectId = poiRequest.get_id() == null ?
+                new ObjectId().toHexString() : poiRequest.get_id();
+        final Document updateResult = collection.findOneAndReplace(
+                new Document(Poi.OBJECT_ID, existingOrNewObjectId),
+                poiDoc, new FindOneAndReplaceOptions().upsert(true)
+                        .returnDocument(ReturnDocument.AFTER));
+        if (updateResult != null) {
+            return Collections.singletonList(mapper.mapToObject(updateResult));
         }
-        throw new IllegalArgumentException();
+        throw new IllegalStateException();
     }
 
     public List<Poi> delete(final String id) {
@@ -106,6 +108,6 @@ public class PoiDAO {
 
     @NotNull
     private List<Poi> toPoisList(final Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(poiMapper::mapToObject).collect(toList());
+        return StreamSupport.stream(documents.spliterator(), false).map(mapper::mapToObject).collect(toList());
     }
 }

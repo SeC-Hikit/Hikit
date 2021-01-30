@@ -82,7 +82,6 @@ public class POIController {
     public PoiResponse upsertPoi(@RequestBody PoiDto poiDto) {
         final Set<String> errors = poiValidator.validate(poiDto);
         if(errors.isEmpty()){
-            final PoiManager poiManager = this.poiManager;
             final List<PoiDto> poiDtos = poiManager.upsertPoi(poiDto);
             return new PoiResponse(Status.OK, errors, poiDtos);
         }

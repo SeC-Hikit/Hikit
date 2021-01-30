@@ -2,12 +2,15 @@ package org.sc.data.repository;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.data.entity.Maintenance;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.Poi;
 import org.sc.data.entity.mapper.MaintenanceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -49,12 +52,17 @@ public class MaintenanceDAO {
     }
 
     public List<Maintenance> upsert(final Maintenance maintenance) {
-        final Document MaintenanceDocument = mapper.mapToDocument(maintenance);
+        final Document maintenanceDocument = mapper.mapToDocument(maintenance);
         final String existingOrNewObjectId = maintenance.get_id() == null ?
                 new ObjectId().toHexString() : maintenance.get_id();
-        UpdateResult updateResult = collection.replaceOne(new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
-                MaintenanceDocument, new ReplaceOptions().upsert(true));
-        return Collections.singletonList(getById(updateResult.getUpsertedId().asString().toString()));
+        final Document updateResult = collection.findOneAndReplace(
+                new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
+                maintenanceDocument, new FindOneAndReplaceOptions().upsert(true)
+                        .returnDocument(ReturnDocument.AFTER));
+        if (updateResult != null) {
+            return Collections.singletonList(mapper.mapToObject(updateResult));
+        }
+        throw new IllegalStateException();
     }
 
     public List<Maintenance> delete(final String objectId) {

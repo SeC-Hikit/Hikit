@@ -17,7 +17,7 @@ public class TrailCoordinates extends CoordinatesWithAltitude {
                             final double longitude,
                             final double altitude,
                             final int distanceFromTrailStart) {
-        super(longitude, latitude, altitude);
+        super(latitude, longitude, altitude);
         this.longitude = longitude;
         this.latitude = latitude;
         this.altitude = altitude;
