@@ -1,9 +1,12 @@
 package org.sc.common.rest;
 
 public class CoordinatesDto implements Coordinates {
-    private final double latitude;
-    private final double longitude;
-    private final double altitude;
+
+    private double latitude;
+    private double longitude;
+    private double altitude;
+
+    public CoordinatesDto(){}
 
     public CoordinatesDto(double latitude, double longitude, double altitude) {
         this.latitude = latitude;
@@ -21,5 +24,17 @@ public class CoordinatesDto implements Coordinates {
 
     public double getAltitude() {
         return altitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
     }
 }

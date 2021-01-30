@@ -2,6 +2,7 @@ package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.common.rest.PoiMacroType;
+import org.sc.data.entity.CoordinatesWithAltitude;
 import org.sc.data.entity.TrailCoordinates;
 import org.sc.data.entity.Poi;
 import org.springframework.stereotype.Component;
@@ -11,9 +12,9 @@ import java.util.List;
 @Component
 public class PoiMapper implements Mapper<Poi> {
 
-    final TrailCoordinatesMapper coordinatesMapper;
+    final CoordinatesMapper coordinatesMapper;
 
-    public PoiMapper(final TrailCoordinatesMapper coordinatesMapper) {
+    public PoiMapper(final CoordinatesMapper coordinatesMapper) {
         this.coordinatesMapper = coordinatesMapper;
     }
 
@@ -34,21 +35,21 @@ public class PoiMapper implements Mapper<Poi> {
     }
 
     @Override
-    public Document mapToDocument(final Poi object) {
-        return new Document(Poi.NAME, object.getName())
-                .append(Poi.DESCRIPTION, object.getDescription())
-                .append(Poi.TAGS, object.getTags())
-                .append(Poi.MACROTYPE, object.getMacroType().toString())
-                .append(Poi.MICROTYPES, object.getMicroType())
-                .append(Poi.MEDIA_IDS, object.getMediaIds())
-                .append(Poi.TRAIL_CODES, object.getTrailIds())
-                .append(Poi.TRAIL_COORDINATES, coordinatesMapper.mapToDocument(object.getTrailCoordinates()))
-                .append(Poi.CREATED_ON, object.getCreatedOn())
-                .append(Poi.LAST_UPDATE_ON, object.getLastUpdatedOn())
-                .append(Poi.EXTERNAL_RESOURCES, object.getExternalResources());
+    public Document mapToDocument(final Poi poi) {
+        return new Document(Poi.NAME, poi.getName())
+                .append(Poi.DESCRIPTION, poi.getDescription())
+                .append(Poi.TAGS, poi.getTags())
+                .append(Poi.MACROTYPE, poi.getMacroType().toString())
+                .append(Poi.MICROTYPES, poi.getMicroType())
+                .append(Poi.MEDIA_IDS, poi.getMediaIds())
+                .append(Poi.TRAIL_CODES, poi.getTrailIds())
+                .append(Poi.TRAIL_COORDINATES, coordinatesMapper.mapToDocument(poi.getCoordinates()))
+                .append(Poi.CREATED_ON, poi.getCreatedOn())
+                .append(Poi.LAST_UPDATE_ON, poi.getLastUpdatedOn())
+                .append(Poi.EXTERNAL_RESOURCES, poi.getExternalResources());
     }
 
-    private TrailCoordinates getCoordinatesWithAltitude(final Document doc) {
+    private CoordinatesWithAltitude getCoordinatesWithAltitude(final Document doc) {
         final Document document = doc.get(Poi.TRAIL_COORDINATES, Document.class);
         return coordinatesMapper.mapToObject(document);
     }

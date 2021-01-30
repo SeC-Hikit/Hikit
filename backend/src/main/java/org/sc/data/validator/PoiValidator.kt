@@ -8,7 +8,7 @@ import java.util.*
 
 @Component
 class PoiValidator @Autowired constructor(
-    private val trailCoordinatesCreationValidator: TrailCoordinatesValidator) : Validator<PoiDto> {
+    private val coordinatesValidator: CoordinatesValidator) : Validator<PoiDto> {
 
     companion object {
         const val dateInFutureError = "The provided date for field '%s' is in the future"
@@ -21,7 +21,7 @@ class PoiValidator @Autowired constructor(
         if(request.name.isEmpty()) { errors.add(String.format(emptyField, Poi.NAME)) }
         if(request.createdOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.CREATED_ON))
         if(request.lastUpdatedOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.LAST_UPDATE_ON))
-        errors.addAll(trailCoordinatesCreationValidator.validate(request.trailCoordinates))
+        errors.addAll(coordinatesValidator.validate(request.coordinates))
         return errors
     }
 }

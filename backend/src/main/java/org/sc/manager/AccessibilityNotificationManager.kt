@@ -45,6 +45,6 @@ class AccessibilityNotificationManager @Autowired constructor(
 
 
     fun upsert(accessibilityNotificationCreation: AccessibilityNotificationCreationDto): List<AccessibilityUnresolvedDto> =
-        listOf(accessibilityDAO.upsert(accessibilityNotificationCreation)).map { accessibilityNotificationUnrMapper.accessibilityNotificationToAccessibilityUnresolvedDto(it) }
+        listOf(accessibilityDAO.insert(accessibilityNotificationCreation)).map { accessibilityNotificationUnrMapper.accessibilityNotificationToAccessibilityUnresolvedDto(it) }
 
 }

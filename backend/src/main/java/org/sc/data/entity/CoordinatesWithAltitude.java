@@ -11,20 +11,18 @@ public class CoordinatesWithAltitude implements Coordinates {
     public final static String COORDINATES = "coordinates";
     public final static String ALTITUDE = "altitude";
 
-    private final double longitude;
-    private final double latitude;
-    private final double altitude;
+    private double longitude;
+    private double latitude;
+    private double altitude;
 
-    public CoordinatesWithAltitude(final double longitude,
-                                   final double latitude,
+    public CoordinatesWithAltitude() { }
+
+    public CoordinatesWithAltitude(final double latitude,
+                                   final double longitude,
                                    final double altitude) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.altitude = altitude;
-    }
-
-    public double getAltitude() {
-        return altitude;
     }
 
     public double getLongitude() {
@@ -33,5 +31,21 @@ public class CoordinatesWithAltitude implements Coordinates {
 
     public double getLatitude() {
         return latitude;
+    }
+
+    public double getAltitude() {
+        return altitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
     }
 }
