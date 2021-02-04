@@ -4,7 +4,7 @@ import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Test
-import org.sc.common.rest.MaintenanceDto
+import org.sc.common.rest.MaintenanceCreationDto
 import org.sc.data.validator.MaintenanceValidator.Companion.dateInPast
 import java.util.*
 
@@ -15,7 +15,7 @@ class MaintenanceValidatorTest {
 
         val maintenanceCreationValidator = MaintenanceValidator()
 
-        val requestMock = mockkClass(MaintenanceDto::class)
+        val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns "La via"
         every { requestMock.code } returns "100BO"
@@ -32,7 +32,7 @@ class MaintenanceValidatorTest {
 
         val maintenanceCreationValidator = MaintenanceValidator()
 
-        val requestMock = mockkClass(MaintenanceDto::class)
+        val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns ""
         every { requestMock.code } returns "100BO"
@@ -50,7 +50,7 @@ class MaintenanceValidatorTest {
 
         val maintenanceCreationValidator = MaintenanceValidator()
 
-        val requestMock = mockkClass(MaintenanceDto::class)
+        val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns ""
         every { requestMock.code } returns ""
@@ -69,7 +69,7 @@ class MaintenanceValidatorTest {
 
         val maintenanceCreationValidator = MaintenanceValidator()
 
-        val requestMock = mockkClass(MaintenanceDto::class)
+        val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns "a place"
         every { requestMock.code } returns "100bo"
@@ -87,7 +87,7 @@ class MaintenanceValidatorTest {
 
         val maintenanceCreationValidator = MaintenanceValidator()
 
-        val requestMock = mockkClass(MaintenanceDto::class)
+        val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns "a place"
         every { requestMock.code } returns "100bo"

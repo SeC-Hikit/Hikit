@@ -74,4 +74,29 @@ public class TrailImportDto {
      public String getMaintainingSection() {
           return maintainingSection;
      }
+
+     @Override
+     public boolean equals(Object o) {
+          if (this == o) return true;
+          if (o == null || getClass() != o.getClass()) return false;
+          TrailImportDto that = (TrailImportDto) o;
+          return getCode().equals(that.getCode()) &&
+                  getName().equals(that.getName()) &&
+                  getDescription().equals(that.getDescription()) &&
+                  getStartPos().equals(that.getStartPos()) &&
+                  getFinalPos().equals(that.getFinalPos()) &&
+                  getLocations().equals(that.getLocations()) &&
+                  getClassification() == that.getClassification() &&
+                  getCountry().equals(that.getCountry()) &&
+                  getCoordinates().equals(that.getCoordinates()) &&
+                  getLastUpdate().equals(that.getLastUpdate()) &&
+                  getMaintainingSection().equals(that.getMaintainingSection());
+     }
+
+     @Override
+     public int hashCode() {
+          return Objects.hash(getCode(), getName(), getDescription(), getStartPos(),
+                  getFinalPos(), getLocations(), getClassification(), getCountry(),
+                  getCoordinates(), getLastUpdate(), getMaintainingSection());
+     }
 }

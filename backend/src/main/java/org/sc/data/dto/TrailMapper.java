@@ -1,11 +1,13 @@
 package org.sc.data.dto;
 
+import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.TrailDto;
 import org.sc.data.entity.Trail;
 
-// TODO: ensure mapping works
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface TrailMapper {
     TrailDto trailToTrailDto(Trail trail);
     Trail trailDtoToTrail(TrailDto trail);

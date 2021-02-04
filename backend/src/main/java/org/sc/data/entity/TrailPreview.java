@@ -9,18 +9,18 @@ public class TrailPreview {
     private String code;
     private TrailClassification classification;
     private Position startPos;
-    private Position Pos;
+    private Position finalPos;
     private Date date;
 
     public TrailPreview() {
     }
 
     public TrailPreview(String code, TrailClassification classification,
-                        Position startPos, Position Pos, Date date) {
+                        Position startPos, Position finalPos, Date date) {
         this.code = code;
         this.classification = classification;
         this.startPos = startPos;
-        this.Pos = Pos;
+        this.finalPos = finalPos;
         this.date = date;
     }
 
@@ -36,8 +36,8 @@ public class TrailPreview {
         return startPos;
     }
 
-    public Position getPos() {
-        return Pos;
+    public Position getFinalPos() {
+        return finalPos;
     }
 
     public Date getDate() {
@@ -56,8 +56,8 @@ public class TrailPreview {
         this.startPos = startPos;
     }
 
-    public void setPos(Position pos) {
-        Pos = pos;
+    public void setFinalPos(Position finalPos) {
+        this.finalPos = finalPos;
     }
 
     public void setDate(Date date) {

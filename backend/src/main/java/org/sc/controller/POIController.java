@@ -70,9 +70,9 @@ public class POIController {
     }
 
     @GetMapping("/name/{name}")
-    public PoiResponse getLikeNameAndTags(@PathVariable String name,
-                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+    public PoiResponse getByNameOrTags(@PathVariable String name,
+                                       @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                       @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
         return new PoiResponse(Status.OK,
                 Collections.emptySet(),
                 poiManager.getPoiByName(name, page, count));

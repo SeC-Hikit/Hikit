@@ -2,6 +2,7 @@ package org.sc.common.rest;
 
 
 import java.util.Date;
+import java.util.Objects;
 
 public class AccessibilityNotificationDto {
     private String id;
@@ -11,6 +12,7 @@ public class AccessibilityNotificationDto {
     private Date resolutionDate;
     private boolean isMinor;
     private String resolution;
+    private CoordinatesDto coordinates;
 
     public AccessibilityNotificationDto() {
     }
@@ -21,7 +23,8 @@ public class AccessibilityNotificationDto {
                                         Date reportDate,
                                         Date resolutionDate,
                                         boolean isMinor,
-                                        String resolution) {
+                                        String resolution,
+                                        CoordinatesDto coordinates) {
         this.id = id;
         this.description = description;
         this.code = code;
@@ -29,6 +32,7 @@ public class AccessibilityNotificationDto {
         this.resolutionDate = resolutionDate;
         this.isMinor = isMinor;
         this.resolution = resolution;
+        this.coordinates = coordinates;
     }
 
     public String getDescription() {
@@ -85,6 +89,33 @@ public class AccessibilityNotificationDto {
 
     public void setResolution(String resolution) {
         this.resolution = resolution;
+    }
+
+    public CoordinatesDto getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(CoordinatesDto coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AccessibilityNotificationDto that = (AccessibilityNotificationDto) o;
+        return isMinor() == that.isMinor() && getId().equals(that.getId()) &&
+                getDescription().equals(that.getDescription()) &&
+                getCode().equals(that.getCode()) &&
+                getReportDate().equals(that.getReportDate()) &&
+                getResolutionDate().equals(that.getResolutionDate()) &&
+                getResolution().equals(that.getResolution());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getDescription(), getCode(), getReportDate(),
+                getResolutionDate(), isMinor(), getResolution());
     }
 }
 

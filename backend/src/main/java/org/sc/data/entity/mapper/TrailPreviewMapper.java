@@ -21,7 +21,8 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
 
     @Override
     public TrailPreview mapToObject(Document doc) {
-        return new TrailPreview(doc.getString(Trail.CODE), getClassification(doc),
+        return new TrailPreview(doc.getString(Trail.CODE),
+                getClassification(doc),
                 getPos(doc, Trail.START_POS),
                 getPos(doc, Trail.FINAL_POS),
                 doc.getDate(Trail.LAST_UPDATE_DATE));

@@ -133,4 +133,30 @@ public class PoiDto {
     public void setExternalResources(List<String> externalResources) {
         this.externalResources = externalResources;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PoiDto poiDto = (PoiDto) o;
+        return getId().equals(poiDto.getId()) &&
+                getName().equals(poiDto.getName()) &&
+                getDescription().equals(poiDto.getDescription()) &&
+                getTags().equals(poiDto.getTags()) &&
+                getMacroType() == poiDto.getMacroType() &&
+                getMicroType().equals(poiDto.getMicroType()) &&
+                getMediaIds().equals(poiDto.getMediaIds()) &&
+                getTrailIds().equals(poiDto.getTrailIds()) &&
+                getCoordinates().equals(poiDto.getCoordinates()) &&
+                getCreatedOn().equals(poiDto.getCreatedOn()) &&
+                getLastUpdatedOn().equals(poiDto.getLastUpdatedOn()) &&
+                getExternalResources().equals(poiDto.getExternalResources());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), getTags(), getMacroType(),
+                getMicroType(), getMediaIds(), getTrailIds(), getCoordinates(), getCreatedOn(),
+                getLastUpdatedOn(), getExternalResources());
+    }
 }
