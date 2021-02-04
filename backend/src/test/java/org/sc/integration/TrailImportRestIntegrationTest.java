@@ -52,14 +52,16 @@ public class TrailImportRestIntegrationTest {
 
     // End Pos coordinates
     public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 50);
+    public static final List<TrailCoordinatesDto> EXPECTED_TRAIL_COORDINATES = Arrays.asList(
+            START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
+    );
+
     public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
             new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE),
             new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE),
             Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE)),
             EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
-            Arrays.asList(
-                    START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
-            ), EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION);
+            EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION);
 
     @Autowired
     private DataSource dataSource;
@@ -81,7 +83,7 @@ public class TrailImportRestIntegrationTest {
         TrailResponse getTrail = controller.getByCode(EXPECTED_TRAIL_CODE, false);
         TrailDto firstElement = getTrail.getTrails().get(0);
         assertThat(getTrail.getTrails().size()).isEqualTo(1);
-        firstElement.equals(EXPECTED_TRAIL_DTO);
+        assertFirtElement(firstElement);
     }
 
     @Test
@@ -89,7 +91,7 @@ public class TrailImportRestIntegrationTest {
         TrailResponse getTrail = controller.get(0, 0, false);
         TrailDto firstElement = getTrail.getTrails().get(0);
         assertThat(getTrail.getTrails().size()).isEqualTo(1);
-        firstElement.equals(EXPECTED_TRAIL_DTO);
+        assertFirtElement(firstElement);
     }
 
     @Test
@@ -108,6 +110,16 @@ public class TrailImportRestIntegrationTest {
     @After
     public void setDown(){
         IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
+    }
+
+    private void assertFirtElement(TrailDto firstElement) {
+        assertThat(firstElement.getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+        assertThat(firstElement.getCoordinates()).isEqualTo(EXPECTED_TRAIL_COORDINATES);
+        assertThat(firstElement.getDescription()).isEqualTo(EXPECTED_DESCRIPTION);
+        assertThat(firstElement.getCountry()).isEqualTo(EXPECTED_COUNTRY);
+        assertThat(firstElement.getLastUpdate()).isEqualToIgnoringMinutes(EXPECTED_DATE);
+        assertThat(firstElement.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
+
     }
 
 }
