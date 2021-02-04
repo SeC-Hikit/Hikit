@@ -12,6 +12,7 @@ public class AccessibilityNotification {
     public final static String RESOLUTION_DATE = "resolutionDate";
     public final static String IS_MINOR = "isMinor";
     public final static String RESOLUTION = "resolution";
+    public final static String COORDINATES = "coordinates";
 
 
     private final String _id;
@@ -19,7 +20,8 @@ public class AccessibilityNotification {
     private String code;
     private Date reportDate;
     private Date resolutionDate;
-    private boolean isMinor;
+    private boolean minor;
+    private CoordinatesWithAltitude coordinates;
     private String resolution;
 
 
@@ -28,14 +30,16 @@ public class AccessibilityNotification {
                                      String code,
                                      Date reportDate,
                                      Date resolutionDate,
-                                     boolean isMinor,
+                                     boolean minor,
+                                     CoordinatesWithAltitude coordinates,
                                      String resolution) {
         this._id = _id;
         this.description = description;
         this.code = code;
         this.reportDate = reportDate;
         this.resolutionDate = resolutionDate;
-        this.isMinor = isMinor;
+        this.minor = minor;
+        this.coordinates = coordinates;
         this.resolution = resolution;
     }
 
@@ -59,8 +63,12 @@ public class AccessibilityNotification {
         return resolutionDate;
     }
 
+    public CoordinatesWithAltitude getCoordinates() {
+        return coordinates;
+    }
+
     public boolean isMinor() {
-        return isMinor;
+        return minor;
     }
 
     public String getResolution() {
@@ -84,10 +92,14 @@ public class AccessibilityNotification {
     }
 
     public void setMinor(boolean minor) {
-        isMinor = minor;
+        this.minor = minor;
     }
 
     public void setResolution(String resolution) {
         this.resolution = resolution;
+    }
+
+    public void setCoordinates(CoordinatesWithAltitude coordinates) {
+        this.coordinates = coordinates;
     }
 }

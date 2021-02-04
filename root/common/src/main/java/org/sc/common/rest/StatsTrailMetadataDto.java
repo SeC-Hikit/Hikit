@@ -1,5 +1,7 @@
 package org.sc.common.rest;
 
+import java.util.Objects;
+
 public class StatsTrailMetadataDto {
     private double totalRise;
     private double totalFall;
@@ -46,5 +48,21 @@ public class StatsTrailMetadataDto {
 
     public void setLength(double length) {
         this.length = length;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StatsTrailMetadataDto that = (StatsTrailMetadataDto) o;
+        return Double.compare(that.getTotalRise(), getTotalRise()) == 0 &&
+                Double.compare(that.getTotalFall(), getTotalFall()) == 0 &&
+                Double.compare(that.getEta(), getEta()) == 0 &&
+                Double.compare(that.getLength(), getLength()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTotalRise(), getTotalFall(), getEta(), getLength());
     }
 }

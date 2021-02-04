@@ -6,4 +6,4 @@ import org.sc.common.rest.Status
 data class AccessibilityResponse (val status: Status,
                                   val messages: Set<String>,
                                   val accessibilityNotifications : List<AccessibilityNotificationDto>) :
-    RESTResponse(status, messages)
+    RESTResponse()

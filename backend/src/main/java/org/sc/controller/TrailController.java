@@ -46,7 +46,7 @@ public class TrailController {
     @DeleteMapping("/{code}")
     public TrailResponse deleteByCode(@PathVariable String code,
                                      @RequestParam(required = false, defaultValue = "false") boolean isPurged) {
-        List<TrailDto> deleted = trailManager.delete(code, isPurged);
+        final List<TrailDto> deleted = trailManager.delete(code, isPurged);
         if (!deleted.isEmpty()) {
             return new TrailResponse(Status.OK, Collections.emptySet(), deleted);
         } else {

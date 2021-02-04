@@ -43,7 +43,7 @@ public class AccessibilityNotificationController {
     }
 
     @GetMapping("/solved/{code}")
-    public AccessibilityResponse getSolved(@PathVariable String code) {
+    public AccessibilityResponse getSolvedByTrailCode(@PathVariable String code) {
         return new AccessibilityResponse(Status.OK,
                 Collections.emptySet(),
                 accessibilityNotManager.getResolvedByCode(code));
@@ -65,16 +65,15 @@ public class AccessibilityNotificationController {
 
     @PostMapping("/resolve")
     public AccessibilityResponse resolveNotification(@RequestBody AccessibilityNotificationResolutionDto accessibilityRes) {
-        final List<AccessibilityNotificationDto> hasBeenResolved =
+        final List<AccessibilityNotificationDto> resolved =
                 accessibilityNotManager.resolve(accessibilityRes);
-        if (!hasBeenResolved.isEmpty()) {
-            return new AccessibilityResponse(Status.OK, Collections.emptySet(), Collections.emptyList());
+        if (resolved.isEmpty()) {
+            return new AccessibilityResponse(Status.ERROR,
+                    new HashSet<>(Collections.singletonList(
+                            format("No accessibility notification was found with id '%s'", accessibilityRes.getId()))),
+                    Collections.emptyList());
         }
-        return new AccessibilityResponse(Status.ERROR,
-                new HashSet<>(Collections.singletonList(
-                        format("No accessibility notification was found with id '%s'", accessibilityRes.getId()))),
-                Collections.emptyList());
-
+        return new AccessibilityResponse(Status.OK, Collections.emptySet(), resolved);
     }
 
     @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
@@ -98,14 +97,12 @@ public class AccessibilityNotificationController {
     public AccessibilityResponse deleteAccessibilityNotification(@PathVariable String objectId) {
         final List<AccessibilityNotificationDto> isDeleted =
                 accessibilityNotManager.delete(objectId);
-        if (!isDeleted.isEmpty()) {
-            return new AccessibilityResponse(Status.OK, Collections.emptySet(), isDeleted);
-        } else {
+        if (isDeleted.isEmpty()) {
             return new AccessibilityResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
                             format("No accessibility notification was found with id '%s'", objectId))),
-                    isDeleted);
+                    Collections.emptyList());
         }
+        return new AccessibilityResponse(Status.OK, Collections.emptySet(), isDeleted);
     }
-
 }
