@@ -4,8 +4,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.PoiDto;
@@ -64,53 +62,53 @@ public class PoiRestIntegrationTest {
     @Test
     public void getById_shouldFindOne(){
         PoiResponse getPoi = controller.get(EXPECTED_ID);
-        PoiDto firstElement = getPoi.getPoiList().get(0);
-        assertThat(getPoi.getPoiList().size()).isEqualTo(1);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
     }
 
     @Test
     public void getAllPaged_shouldFindOne(){
         PoiResponse getPoi = controller.get(0, 1);
-        PoiDto firstElement = getPoi.getPoiList().get(0);
-        assertThat(getPoi.getPoiList().size()).isEqualTo(1);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
     }
 
     @Test
     public void getByMacro_shouldFindOne(){
         PoiResponse getPoi = controller.getByMacro(EXPECTED_MACRO_TYPE.toString(), 0, 1);
-        PoiDto firstElement = getPoi.getPoiList().get(0);
-        assertThat(getPoi.getPoiList().size()).isEqualTo(1);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
     }
 
     @Test
     public void getTrailByTrailId_shouldFindOne(){
         PoiResponse getPoi = controller.getByTrail("123BO", 0, 1);
-        PoiDto firstElement = getPoi.getPoiList().get(0);
-        assertThat(getPoi.getPoiList().size()).isEqualTo(1);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
     }
 
     @Test
     public void getTrailLikeName_shouldFind(){
         PoiResponse getPoi = controller.getByNameOrTags("poiType", 0, 1);
-        PoiDto firstElement = getPoi.getPoiList().get(0);
-        assertThat(getPoi.getPoiList().size()).isEqualTo(1);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
     }
 
     @Test
     public void getTrailByNonExistingTrailId_shouldNotFindAny(){
         PoiResponse getPoi = controller.getByTrail("100BO_NOT_EXISTING", 0, 1);
-        Assert.assertTrue(getPoi.getPoiList().isEmpty());
+        Assert.assertTrue(getPoi.getContent().isEmpty());
     }
 
     @Test
     public void getTrailByNonExistingMacro_shouldNotFindAny(){
         PoiResponse getPoi = controller.getByMacro(PoiMacroType.CULTURAL.toString(), 0, 1);
-        Assert.assertTrue(getPoi.getPoiList().isEmpty());
+        Assert.assertTrue(getPoi.getContent().isEmpty());
     }
 
     @Test
@@ -126,9 +124,9 @@ public class PoiRestIntegrationTest {
                 EXPECTED_EXTERNAL_RESOURCES));
 
         PoiResponse getPoi = controller.get( 0, 3);
-        PoiDto firstElement = getPoi.getPoiList().get(0);
+        PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
-        PoiDto secondElement = getPoi.getPoiList().get(1);
+        PoiDto secondElement = getPoi.getContent().get(1);
         assertThat(secondElement.getId()).isEqualTo(anyOtherId);
         assertThat(secondElement.getName()).isEqualTo(anyOtherName);
     }
@@ -136,11 +134,11 @@ public class PoiRestIntegrationTest {
     @Test
     public void delete() {
         PoiResponse getPoi = controller.get(EXPECTED_ID);
-        assertThat(getPoi.getPoiList().get(0).getId()).isEqualTo(EXPECTED_ID);
+        assertThat(getPoi.getContent().get(0).getId()).isEqualTo(EXPECTED_ID);
 
         controller.deletePoi(EXPECTED_ID);
         PoiResponse poiResponse = controller.get(EXPECTED_ID);
-        assertThat(poiResponse.getPoiList().size()).isEqualTo(0);
+        assertThat(poiResponse.getContent().size()).isEqualTo(0);
     }
 
     @Test

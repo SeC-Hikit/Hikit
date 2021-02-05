@@ -79,27 +79,27 @@ public class MaintenanceRestIntegrationTest {
     @Test
     public void getPast_shouldFindOne() {
         MaintenanceResponse response = maintenanceController.getPastMaintenance(0, 2);
-        assertThat(response.getMaintenanceResponse().size()).isEqualTo(1);
-        assertThat(response.getMaintenanceResponse().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+        assertThat(response.getContent().size()).isEqualTo(1);
+        assertThat(response.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
     }
 
     @Test
     public void getFuture_shouldFindOne() {
         MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2);
-        assertThat(response.getMaintenanceResponse().size()).isEqualTo(1);
-        assertThat(response.getMaintenanceResponse().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE_FUTURE);
+        assertThat(response.getContent().size()).isEqualTo(1);
+        assertThat(response.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE_FUTURE);
     }
 
     @Test
     public void delete() {
         MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2);
-        String id = response.getMaintenanceResponse().get(0).getId();
+        String id = response.getContent().get(0).getId();
 
         MaintenanceResponse maintenanceResponse = maintenanceController.deleteMaintenance(id);
-        assertThat(maintenanceResponse.getMaintenanceResponse().get(0).getId()).isEqualTo(id);
+        assertThat(maintenanceResponse.getContent().get(0).getId()).isEqualTo(id);
 
         MaintenanceResponse responseAfterSecondCall = maintenanceController.getFutureMaintenance(0, 2);
-        Assert.assertTrue(responseAfterSecondCall.getMaintenanceResponse().isEmpty());
+        Assert.assertTrue(responseAfterSecondCall.getContent().isEmpty());
     }
 
     @Test

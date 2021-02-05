@@ -51,6 +51,16 @@ public class MaintenanceDAO {
                 .skip(from).limit(to));
     }
 
+    public List<Maintenance> getPastForTrailCode(final String code,
+                                                 final int from,
+                                                 final int to) {
+        return toMaintenanceList(collection.find(
+                new Document(Maintenance.DATE, new Document("$lt", new Date()))
+                        .append(Maintenance.TRAIL_CODE, code))
+                .sort(new Document(Maintenance.DATE, -1))
+                .skip(from).limit(to));
+    }
+
     public List<Maintenance> upsert(final Maintenance maintenance) {
         final Document maintenanceDocument = mapper.mapToDocument(maintenance);
         final String existingOrNewObjectId = maintenance.get_id() == null ?

@@ -4,21 +4,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
-import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailImporterController;
-import org.sc.data.entity.Poi;
 import org.sc.data.entity.Trail;
-import org.sc.processor.GpxFileHandlerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -81,25 +75,25 @@ public class TrailImportRestIntegrationTest {
     @Test
     public void getById_shouldFindOne(){
         TrailResponse getTrail = controller.getByCode(EXPECTED_TRAIL_CODE, false);
-        TrailDto firstElement = getTrail.getTrails().get(0);
-        assertThat(getTrail.getTrails().size()).isEqualTo(1);
+        TrailDto firstElement = getTrail.getContent().get(0);
+        assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
     }
 
     @Test
     public void getPaged_shouldFindOne(){
         TrailResponse getTrail = controller.get(0, 0, false);
-        TrailDto firstElement = getTrail.getTrails().get(0);
-        assertThat(getTrail.getTrails().size()).isEqualTo(1);
+        TrailDto firstElement = getTrail.getContent().get(0);
+        assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
     }
 
     @Test
     public void delete() {
         TrailResponse deletedByCode = controller.deleteByCode(EXPECTED_TRAIL_CODE, false);
-        assertThat(deletedByCode.getTrails().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+        assertThat(deletedByCode.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
         TrailResponse getTrail = controller.getByCode(EXPECTED_TRAIL_CODE, false);
-        Assert.assertTrue(getTrail.getTrails().isEmpty());
+        Assert.assertTrue(getTrail.getContent().isEmpty());
     }
 
     @Test

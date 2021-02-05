@@ -5,5 +5,5 @@ import org.sc.common.rest.TrailPreviewDto
 
 data class TrailPreviewResponse (val status: Status,
                                  val messages: Set<String>,
-                                 val trailPreview: List<TrailPreviewDto>) :
+                                 val content: List<TrailPreviewDto>) :
     RESTResponse()

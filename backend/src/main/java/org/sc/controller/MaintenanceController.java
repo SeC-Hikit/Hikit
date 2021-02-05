@@ -51,6 +51,14 @@ public class MaintenanceController {
         return new MaintenanceResponse(Status.OK, Collections.emptySet(), past);
     }
 
+    @GetMapping("/past/{trailCode}")
+    public MaintenanceResponse getPastMaintenance(@PathVariable String trailCode,
+                                                  @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        List<MaintenanceDto> past = maintenanceManager.getPastMaintenanceForTrailCode(trailCode, page, count);
+        return new MaintenanceResponse(Status.OK, Collections.emptySet(), past);
+    }
+
     @PutMapping
     public MaintenanceResponse create(@RequestBody MaintenanceCreationDto request) {
         final Set<String> errors = maintenanceValidator.validate(request);
