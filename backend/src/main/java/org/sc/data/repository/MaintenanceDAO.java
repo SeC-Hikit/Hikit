@@ -2,8 +2,8 @@ package org.sc.data.repository;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.result.UpdateResult;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
@@ -48,18 +48,33 @@ public class MaintenanceDAO {
                 .skip(from).limit(to));
     }
 
-    public List<Maintenance> upsert(final Maintenance maintenance) {
-        final Document MaintenanceDocument = mapper.mapToDocument(maintenance);
-        final String existingOrNewObjectId = maintenance.get_id() == null ?
-                new ObjectId().toHexString() : maintenance.get_id();
-        UpdateResult updateResult = collection.replaceOne(new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
-                MaintenanceDocument, new ReplaceOptions().upsert(true));
-        return Collections.singletonList(getById(updateResult.getUpsertedId().asString().toString()));
+    public List<Maintenance> getPastForTrailCode(final String code,
+                                                 final int from,
+                                                 final int to) {
+        return toMaintenanceList(collection.find(
+                new Document(Maintenance.DATE, new Document("$lt", new Date()))
+                        .append(Maintenance.TRAIL_CODE, code))
+                .sort(new Document(Maintenance.DATE, -1))
+                .skip(from).limit(to));
     }
 
-    public List<Maintenance> delete(final String id) {
-        final Maintenance byId = getById(id);
-        collection.deleteOne(new Document(Maintenance.OBJECT_ID, id));
+    public List<Maintenance> upsert(final Maintenance maintenance) {
+        final Document maintenanceDocument = mapper.mapToDocument(maintenance);
+        final String existingOrNewObjectId = maintenance.get_id() == null ?
+                new ObjectId().toHexString() : maintenance.get_id();
+        final Document updateResult = collection.findOneAndReplace(
+                new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
+                maintenanceDocument, new FindOneAndReplaceOptions().upsert(true)
+                        .returnDocument(ReturnDocument.AFTER));
+        if (updateResult != null) {
+            return Collections.singletonList(mapper.mapToObject(updateResult));
+        }
+        throw new IllegalStateException();
+    }
+
+    public List<Maintenance> delete(final String objectId) {
+        final Maintenance byId = getById(objectId);
+        collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId));
         return Collections.singletonList(byId);
     }
 

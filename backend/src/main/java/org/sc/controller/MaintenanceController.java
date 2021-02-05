@@ -1,9 +1,9 @@
 package org.sc.controller;
 
+import org.sc.common.rest.MaintenanceCreationDto;
 import org.sc.common.rest.MaintenanceDto;
-import org.sc.common.rest.response.MaintenanceResponse;
-import org.sc.data.entity.Maintenance;
 import org.sc.common.rest.Status;
+import org.sc.common.rest.response.MaintenanceResponse;
 import org.sc.data.validator.MaintenanceValidator;
 import org.sc.manager.MaintenanceManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +50,16 @@ public class MaintenanceController {
         return new MaintenanceResponse(Status.OK, Collections.emptySet(), past);
     }
 
+    @GetMapping("/past/{trailCode}")
+    public MaintenanceResponse getPastMaintenance(@PathVariable String trailCode,
+                                                  @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        List<MaintenanceDto> past = maintenanceManager.getPastMaintenanceForTrailCode(trailCode, page, count);
+        return new MaintenanceResponse(Status.OK, Collections.emptySet(), past);
+    }
+
     @PutMapping
-    public MaintenanceResponse upsertMaintenance(@RequestBody MaintenanceDto request) {
+    public MaintenanceResponse create(@RequestBody MaintenanceCreationDto request) {
         final Set<String> errors = maintenanceValidator.validate(request);
         if(errors.isEmpty()) {
             List<MaintenanceDto> maintenanceDtos = maintenanceManager.upsert(request);
@@ -62,13 +70,13 @@ public class MaintenanceController {
 
     @DeleteMapping("/{id}")
     public MaintenanceResponse deleteMaintenance(@PathVariable String id) {
-        List<MaintenanceDto> isDeleted = maintenanceManager.delete(id);
-        if (isDeleted.isEmpty()) {
+        List<MaintenanceDto> deleted = maintenanceManager.delete(id);
+        if (deleted.isEmpty()) {
             LOGGER.warning(format("Could not delete maintenance with id '%s'", id));
             return new MaintenanceResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No maintenance was found with id '%s'", id))), isDeleted);
+                            format("No maintenance was found with id '%s'", id))), deleted);
         }
-        return new MaintenanceResponse(Status.OK, Collections.emptySet(), Collections.emptyList());
+        return new MaintenanceResponse(Status.OK, Collections.emptySet(), deleted);
     }
 }

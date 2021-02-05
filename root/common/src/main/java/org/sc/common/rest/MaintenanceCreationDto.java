@@ -3,19 +3,17 @@ package org.sc.common.rest;
 import java.util.Date;
 import java.util.Objects;
 
-public class MaintenanceDto {
-    private String id;
+public class MaintenanceCreationDto {
     private Date date;
     private String code;
     private String meetingPlace;
     private String description;
     private String contact;
 
-    public MaintenanceDto() { }
+    public MaintenanceCreationDto() { }
 
-    public MaintenanceDto(String id, Date date, String code, String meetingPlace,
+    public MaintenanceCreationDto(Date date, String code, String meetingPlace,
                           String description, String contact) {
-        this.id = id;
         this.date = date;
         this.code = code;
         this.meetingPlace = meetingPlace;
@@ -63,14 +61,6 @@ public class MaintenanceDto {
         this.contact = contact;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,4 +77,5 @@ public class MaintenanceDto {
     public int hashCode() {
         return Objects.hash(getDate(), getCode(), getMeetingPlace(), getDescription(), getContact());
     }
+
 }

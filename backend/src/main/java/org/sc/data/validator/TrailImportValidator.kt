@@ -1,7 +1,8 @@
 package org.sc.data.validator
 
+import org.apache.commons.lang3.StringUtils.isBlank
+import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.TrailImportDto
-import org.sc.data.TrailImport
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -23,10 +24,10 @@ class TrailImportValidator @Autowired constructor (
 
     override fun validate(request: TrailImportDto): Set<String> {
         val errors = mutableSetOf<String>()
-        if (request.name.isEmpty()) {
+        if (isEmpty(request.name)) {
             errors.add(String.format(noParamSpecified, "Name"))
         }
-        if (request.code.isEmpty()) {
+        if (isEmpty(request.code)) {
             errors.add(String.format(noParamSpecified, "Code"))
         }
 
@@ -46,7 +47,7 @@ class TrailImportValidator @Autowired constructor (
 
         errors.addAll(positionValidator.validate(request.startPos))
         errors.addAll(positionValidator.validate(request.finalPos))
-        if(request.coordinates.isEmpty()) errors.add(emptyListPointError)
+        if(request.coordinates == null || request.coordinates.isEmpty()) errors.add(emptyListPointError)
         if(request.coordinates.size < minGeoPoints) errors.add(tooFewPointsError)
         request.coordinates.map { coordsValidatorTrail.validate(it) }
                 .forEach{ errors.addAll(it)}

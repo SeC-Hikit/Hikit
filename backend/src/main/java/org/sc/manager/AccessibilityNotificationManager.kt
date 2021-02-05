@@ -5,7 +5,6 @@ import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityNotificationResolutionDto
 import org.sc.common.rest.AccessibilityUnresolvedDto
 import org.sc.data.dto.AccessibilityNotificationMapper
-import org.sc.data.dto.AccessibilityNotificationUnrMapper
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,38 +12,42 @@ import org.springframework.stereotype.Component
 @Component
 class AccessibilityNotificationManager @Autowired constructor(
     private val accessibilityDAO: AccessibilityNotificationDAO,
-    private val accessibilityMapper : AccessibilityNotificationMapper,
-    private val accessibilityNotificationUnrMapper: AccessibilityNotificationUnrMapper) {
+    private val accessibilityMapper: AccessibilityNotificationMapper,
+    private val accessibilityNotificationUnrMapper: AccessibilityNotificationMapper
+) {
 
-    fun getSolved(page: Int, count: Int) : List<AccessibilityNotificationDto> {
+    fun getSolved(page: Int, count: Int): List<AccessibilityNotificationDto> {
         val solved = accessibilityDAO.getSolved(page, count)
-        return solved.map { accessibilityMapper.accessibilityNotificationToAccessibilityNotificationDto(it) }
+        return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getResolvedByCode(code: String) : List<AccessibilityNotificationDto> {
+    fun getResolvedByCode(code: String): List<AccessibilityNotificationDto> {
         val solved = accessibilityDAO.getResolvedByCode(code)
-        return solved.map { accessibilityMapper.accessibilityNotificationToAccessibilityNotificationDto(it) }
+        return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getUnresolved(page: Int, count: Int) : List<AccessibilityUnresolvedDto> {
+    fun getUnresolved(page: Int, count: Int): List<AccessibilityUnresolvedDto> {
         val unresolved = accessibilityDAO.getUnresolved(page, count)
-        return unresolved.map { accessibilityNotificationUnrMapper.accessibilityNotificationToAccessibilityUnresolvedDto(it) }
+        return unresolved.map { accessibilityNotificationUnrMapper.map(it) }
     }
 
-    fun getUnresolvedByCode(code: String) : List<AccessibilityUnresolvedDto> {
+    fun getUnresolvedByCode(code: String): List<AccessibilityUnresolvedDto> {
         val unresolved = accessibilityDAO.getUnresolvedByCode(code)
-        return unresolved.map { accessibilityNotificationUnrMapper.accessibilityNotificationToAccessibilityUnresolvedDto(it) }
+        return unresolved.map { accessibilityNotificationUnrMapper.map(it) }
     }
 
     fun resolve(accessibilityRes: AccessibilityNotificationResolutionDto) =
-        listOf(accessibilityDAO.resolve(accessibilityRes)).map { accessibilityMapper.accessibilityNotificationToAccessibilityNotificationDto(it) }
+        accessibilityDAO.resolve(accessibilityRes).map { accessibilityMapper.map(it) }
 
 
-    fun delete(id: String) : List<AccessibilityNotificationDto> =
-        listOf(accessibilityDAO.delete(id)).map { accessibilityMapper.accessibilityNotificationToAccessibilityNotificationDto(it) }
+    fun delete(objectId: String): List<AccessibilityNotificationDto> =
+        accessibilityDAO.delete(objectId).map { accessibilityMapper.map(it) }
 
 
     fun upsert(accessibilityNotificationCreation: AccessibilityNotificationCreationDto): List<AccessibilityUnresolvedDto> =
-        listOf(accessibilityDAO.upsert(accessibilityNotificationCreation)).map { accessibilityNotificationUnrMapper.accessibilityNotificationToAccessibilityUnresolvedDto(it) }
+        accessibilityDAO.insert(accessibilityNotificationCreation)
+            .map {
+                accessibilityNotificationUnrMapper.map(it)
+            }
 
 }

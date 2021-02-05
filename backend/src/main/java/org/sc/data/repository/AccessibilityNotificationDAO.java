@@ -2,8 +2,8 @@ package org.sc.data.repository;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.result.UpdateResult;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.common.rest.AccessibilityNotificationCreationDto;
@@ -11,12 +11,13 @@ import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.AccessibilityNotification;
 import org.sc.data.entity.AccessibilityUnresolved;
-import org.sc.data.entity.mapper.AccessibilityNotificationCreationMapper;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
 import org.sc.data.entity.mapper.AccessibilityNotificationUnresolvedMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -31,17 +32,14 @@ public class AccessibilityNotificationDAO {
 
     private final AccessibilityNotificationMapper mapper;
     private final AccessibilityNotificationUnresolvedMapper unresolvedMapper;
-    private final AccessibilityNotificationCreationMapper mapperCreation;
 
     @Autowired
     public AccessibilityNotificationDAO(final DataSource dataSource,
                                         final AccessibilityNotificationMapper mapper,
-                                        final AccessibilityNotificationUnresolvedMapper unresolvedMapper,
-                                        final AccessibilityNotificationCreationMapper mapperCreation) {
+                                        final AccessibilityNotificationUnresolvedMapper unresolvedMapper) {
         this.collection = dataSource.getDB().getCollection(AccessibilityNotification.COLLECTION_NAME);
         this.mapper = mapper;
         this.unresolvedMapper = unresolvedMapper;
-        this.mapperCreation = mapperCreation;
     }
 
     public List<AccessibilityUnresolved> getUnresolved(final int from,
@@ -70,25 +68,28 @@ public class AccessibilityNotificationDAO {
                 new Document(EXISTS_PARAM, true))).skip(from).limit(to));
     }
 
-    public AccessibilityUnresolved upsert(final AccessibilityNotificationCreationDto accessibilityNotification) {
-        final Document accessibilityNotificationDocument = mapperCreation.mapToDocument(accessibilityNotification);
-        final UpdateResult updateResult = collection.replaceOne(new Document(AccessibilityNotification.OBJECT_ID,
-                new ObjectId().toHexString()), accessibilityNotificationDocument, new ReplaceOptions().upsert(true));
-        return getByIdUnr(updateResult
-                .getUpsertedId().asString().toString());
+    public List<AccessibilityUnresolved> insert(final AccessibilityNotificationCreationDto accessibilityNotification) {
+        final Document accessibilityNotificationDocument = mapper.mapCreationToDocument(accessibilityNotification);
+        final Document addedResult = collection.findOneAndReplace(
+                new Document(), accessibilityNotificationDocument,
+                new FindOneAndReplaceOptions().upsert(true)
+                        .returnDocument(ReturnDocument.AFTER));
+        if (addedResult != null) {
+            return Collections.singletonList(unresolvedMapper.mapToObject(addedResult));
+        }
+        throw new IllegalStateException();
     }
 
-    public AccessibilityNotification resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
-        collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolutionDto.getId()),
+    public List<AccessibilityNotification> resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
+        collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(accessibilityNotificationResolutionDto.getId())),
                 new Document("$set", new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolutionDto.getResolution())
                         .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolutionDto.getResolutionDate())));
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.OBJECT_ID, accessibilityNotificationResolutionDto.getId())))
-                .stream().findFirst().orElse(null);
+        return getById(accessibilityNotificationResolutionDto.getId());
     }
 
-    public AccessibilityNotification delete(final String objectId) {
-        final AccessibilityNotification accessibilityNotification = getById(objectId);
-        collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, objectId));
+    public List<AccessibilityNotification> delete(final String objectId) {
+        final List<AccessibilityNotification> accessibilityNotification = getById(objectId);
+        collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(objectId)));
         return accessibilityNotification;
     }
 
@@ -98,16 +99,9 @@ public class AccessibilityNotificationDAO {
         return accessibilityNotification;
     }
 
-    private AccessibilityNotification getById(final String objectId) {
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.OBJECT_ID, objectId)))
-                .stream().findFirst()
-                .orElse(null);
-    }
-
-    private AccessibilityUnresolved getByIdUnr(final String objectId) {
-        return toUnresolvedNotificationList(collection.find(new Document(AccessibilityNotification.OBJECT_ID, objectId)))
-                .stream().findFirst()
-                .orElse(null);
+    private List<AccessibilityNotification> getById(final String objectId) {
+        return new ArrayList<>(toNotificationList(collection.find(
+                new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(objectId)))));
     }
 
     private AccessibilityNotification getByCode(final String code) {

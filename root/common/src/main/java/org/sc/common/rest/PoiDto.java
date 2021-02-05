@@ -1,6 +1,8 @@
 package org.sc.common.rest;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 public class PoiDto {
     private String id;
@@ -11,7 +13,7 @@ public class PoiDto {
     private List<String> microType;
     private List<String> mediaIds;
     private List<String> trailIds;
-    private TrailCoordinatesDto trailCoordinates;
+    private CoordinatesDto coordinates;
     private Date createdOn;
     private Date lastUpdatedOn;
     private List<String> externalResources;
@@ -22,7 +24,7 @@ public class PoiDto {
     public PoiDto(String id, String name, String description, List<String> tags,
                   PoiMacroType macroType, List<String> microType,
                   List<String> mediaIds, List<String> trailIds,
-                  TrailCoordinatesDto trailCoordinates, Date createdOn,
+                  CoordinatesDto coordinates, Date createdOn,
                   Date lastUpdatedOn, List<String> externalResources) {
         this.id = id;
         this.name = name;
@@ -32,7 +34,7 @@ public class PoiDto {
         this.microType = microType;
         this.mediaIds = mediaIds;
         this.trailIds = trailIds;
-        this.trailCoordinates = trailCoordinates;
+        this.coordinates = coordinates;
         this.createdOn = createdOn;
         this.lastUpdatedOn = lastUpdatedOn;
         this.externalResources = externalResources;
@@ -70,8 +72,8 @@ public class PoiDto {
         return trailIds;
     }
 
-    public TrailCoordinatesDto getTrailCoordinates() {
-        return trailCoordinates;
+    public CoordinatesDto getCoordinates() {
+        return coordinates;
     }
 
     public Date getCreatedOn() {
@@ -118,8 +120,8 @@ public class PoiDto {
         this.trailIds = trailIds;
     }
 
-    public void setTrailCoordinates(TrailCoordinatesDto trailCoordinates) {
-        this.trailCoordinates = trailCoordinates;
+    public void setCoordinates(CoordinatesDto coordinates) {
+        this.coordinates = coordinates;
     }
 
     public void setCreatedOn(Date createdOn) {
@@ -132,5 +134,31 @@ public class PoiDto {
 
     public void setExternalResources(List<String> externalResources) {
         this.externalResources = externalResources;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PoiDto poiDto = (PoiDto) o;
+        return getId().equals(poiDto.getId()) &&
+                getName().equals(poiDto.getName()) &&
+                getDescription().equals(poiDto.getDescription()) &&
+                getTags().equals(poiDto.getTags()) &&
+                getMacroType() == poiDto.getMacroType() &&
+                getMicroType().equals(poiDto.getMicroType()) &&
+                getMediaIds().equals(poiDto.getMediaIds()) &&
+                getTrailIds().equals(poiDto.getTrailIds()) &&
+                getCoordinates().equals(poiDto.getCoordinates()) &&
+                getCreatedOn().equals(poiDto.getCreatedOn()) &&
+                getLastUpdatedOn().equals(poiDto.getLastUpdatedOn()) &&
+                getExternalResources().equals(poiDto.getExternalResources());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), getTags(), getMacroType(),
+                getMicroType(), getMediaIds(), getTrailIds(), getCoordinates(), getCreatedOn(),
+                getLastUpdatedOn(), getExternalResources());
     }
 }

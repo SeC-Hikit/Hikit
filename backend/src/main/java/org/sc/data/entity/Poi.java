@@ -16,7 +16,7 @@ public class Poi {
     public static final String MEDIA_IDS = "mediaIds";
     public static final String TRAIL_CODES = "trailIds";
     public static final String TRAIL_COORDINATES = "trailCoordinates";
-    public static final String CREATED_ON = "trailCoordinates";
+    public static final String CREATED_ON = "createdOn";
     public static final String LAST_UPDATE_ON = "lastUpdateOn";
     public static final String EXTERNAL_RESOURCES = "externalResources";
 
@@ -28,13 +28,13 @@ public class Poi {
     private List<String> microType;
     private List<String> mediaIds;
     private List<String> trailIds;
-    private TrailCoordinates trailCoordinates;
+    private CoordinatesWithAltitude coordinates;
     private Date createdOn;
     private Date lastUpdatedOn;
     private List<String> externalResources;
 
     public Poi(String _id, String name, String description, List<String> tags, PoiMacroType macroType, List<String> microType, List<String> mediaIds,
-               List<String> trailIds, TrailCoordinates trailCoordinates, Date createdOn, Date lastUpdatedOn, List<String> externalResources) {
+               List<String> trailIds, CoordinatesWithAltitude coordinates, Date createdOn, Date lastUpdatedOn, List<String> externalResources) {
         this._id = _id;
         this.name = name;
         this.description = description;
@@ -43,7 +43,7 @@ public class Poi {
         this.microType = microType;
         this.mediaIds = mediaIds;
         this.trailIds = trailIds;
-        this.trailCoordinates = trailCoordinates;
+        this.coordinates = coordinates;
         this.createdOn = createdOn;
         this.lastUpdatedOn = lastUpdatedOn;
         this.externalResources = externalResources;
@@ -81,8 +81,8 @@ public class Poi {
         return trailIds;
     }
 
-    public TrailCoordinates getTrailCoordinates() {
-        return trailCoordinates;
+    public CoordinatesWithAltitude getCoordinates() {
+        return coordinates;
     }
 
     public Date getCreatedOn() {
@@ -125,8 +125,8 @@ public class Poi {
         this.trailIds = trailIds;
     }
 
-    public void setTrailCoordinates(TrailCoordinates trailCoordinates) {
-        this.trailCoordinates = trailCoordinates;
+    public void setCoordinates(CoordinatesWithAltitude coordinates) {
+        this.coordinates = coordinates;
     }
 
     public void setCreatedOn(Date createdOn) {

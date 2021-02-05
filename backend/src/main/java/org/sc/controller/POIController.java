@@ -3,7 +3,6 @@ package org.sc.controller;
 import org.sc.common.rest.PoiDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.response.PoiResponse;
-import org.sc.data.entity.Poi;
 import org.sc.data.validator.PoiValidator;
 import org.sc.manager.PoiManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,9 +69,9 @@ public class POIController {
     }
 
     @GetMapping("/name/{name}")
-    public PoiResponse getLikeNameAndTags(@PathVariable String name,
-                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+    public PoiResponse getByNameOrTags(@PathVariable String name,
+                                       @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+                                       @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
         return new PoiResponse(Status.OK,
                 Collections.emptySet(),
                 poiManager.getPoiByName(name, page, count));
@@ -82,7 +81,6 @@ public class POIController {
     public PoiResponse upsertPoi(@RequestBody PoiDto poiDto) {
         final Set<String> errors = poiValidator.validate(poiDto);
         if(errors.isEmpty()){
-            final PoiManager poiManager = this.poiManager;
             final List<PoiDto> poiDtos = poiManager.upsertPoi(poiDto);
             return new PoiResponse(Status.OK, errors, poiDtos);
         }

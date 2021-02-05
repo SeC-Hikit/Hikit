@@ -1,27 +1,31 @@
 package org.sc.manager
 
+import org.sc.common.rest.MaintenanceCreationDto
 import org.sc.common.rest.MaintenanceDto
+import org.sc.data.dto.MaintenanceMapper
 import org.sc.data.repository.MaintenanceDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class MaintenanceManager @Autowired constructor(val maintenanceDao: MaintenanceDAO) {
+class MaintenanceManager @Autowired constructor(
+    private val maintenanceDao: MaintenanceDAO,
+    private val maintenanceMapper: MaintenanceMapper) {
 
-    fun getFuture(page: Int, count: Int): MutableList<MaintenanceDto> {
-        TODO("Not yet implemented")
-    }
+    fun getFuture(page: Int, count: Int): List<MaintenanceDto> =
+        maintenanceDao.getFuture(page, count).map { maintenanceMapper.map(it) }
 
-    fun getPast(page: Int, count: Int): MutableList<MaintenanceDto> {
-        TODO("Not yet implemented")
-    }
 
-    fun upsert(request: MaintenanceDto): MutableList<MaintenanceDto> {
-        TODO("Not yet implemented")
-    }
+    fun getPast(page: Int, count: Int): List<MaintenanceDto> =
+        maintenanceDao.getPast(page, count).map { maintenanceMapper.map(it) }
 
-    fun delete(id: String): List<MaintenanceDto> {
-        TODO("Not yet implemented")
-    }
+    fun getPastMaintenanceForTrailCode(trailCode: String, page: Int, count: Int): List<MaintenanceDto> =
+        maintenanceDao.getPastForTrailCode(trailCode, page, count).map { maintenanceMapper.map(it) }
 
+    fun upsert(request: MaintenanceCreationDto): List<MaintenanceDto> =
+        maintenanceDao.upsert( maintenanceMapper.map(request) ).map { maintenanceMapper.map(it) }
+
+
+    fun delete(id: String): List<MaintenanceDto> =
+      maintenanceDao.delete(id).map { maintenanceMapper.map(it) }
 }

@@ -13,12 +13,15 @@ public class Maintenance {
     public static final String CONTACT = "contact";
     public static final String MEETING_PLACE = "meetingPlace";
 
-    private final String _id;
+    private String _id;
     private Date date;
     private String code;
     private String meetingPlace;
     private String description;
     private String contact;
+
+    public Maintenance() {
+    }
 
     public Maintenance(String id,
                        Date date,
@@ -56,6 +59,10 @@ public class Maintenance {
 
     public String get_id() {
         return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public void setDate(Date date) {
