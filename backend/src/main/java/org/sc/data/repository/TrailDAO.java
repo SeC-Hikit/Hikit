@@ -31,8 +31,6 @@ public class TrailDAO {
 
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.COORDINATES;
 
-    // Max number of documents output per request
-    // TODO: shall return this amount only if requested amount is greater than it.
     public static final int RESULT_LIMIT = 150;
 
     private final MongoCollection<Document> collection;

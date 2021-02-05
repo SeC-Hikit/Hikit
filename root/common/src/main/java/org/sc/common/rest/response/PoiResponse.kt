@@ -5,4 +5,4 @@ import org.sc.common.rest.Status
 
 data class PoiResponse (val status: Status,
                         val messages: Set<String>,
-                        val poiList: List<PoiDto>) : RESTResponse()
+                        val content: List<PoiDto>) : RESTResponse()

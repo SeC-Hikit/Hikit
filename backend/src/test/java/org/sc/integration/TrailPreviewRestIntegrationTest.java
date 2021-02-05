@@ -4,12 +4,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailPreviewResponse;
-import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailImporterController;
 import org.sc.controller.TrailPreviewController;
@@ -78,8 +75,8 @@ public class TrailPreviewRestIntegrationTest {
     @Test
     public void getById_shouldFindOne(){
         TrailPreviewResponse response = controller.getPreviewByCode(EXPECTED_TRAIL_CODE);
-        assertThat(response.getTrailPreview().size()).isEqualTo(1);
-        TrailPreviewDto firstResult = response.getTrailPreview().get(0);
+        assertThat(response.getContent().size()).isEqualTo(1);
+        TrailPreviewDto firstResult = response.getContent().get(0);
 
         assertThat(firstResult.getDate()).isEqualToIgnoringSeconds(EXPECTED_DATE);
         assertThat(firstResult.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
@@ -91,8 +88,8 @@ public class TrailPreviewRestIntegrationTest {
     @Test
     public void getPaged_shouldFindOne(){
         TrailPreviewResponse response = controller.getAllPreview(0, 1);
-        assertThat(response.getTrailPreview().size()).isEqualTo(1);
-        TrailPreviewDto firstResult = response.getTrailPreview().get(0);
+        assertThat(response.getContent().size()).isEqualTo(1);
+        TrailPreviewDto firstResult = response.getContent().get(0);
 
         assertThat(firstResult.getDate()).isEqualToIgnoringSeconds(EXPECTED_DATE);
         assertThat(firstResult.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
@@ -104,7 +101,7 @@ public class TrailPreviewRestIntegrationTest {
     @Test
     public void get0Paged_shouldNotFindAny(){
         TrailPreviewResponse response = controller.getPreviewByCode("123_NOT_FOUND");
-        Assert.assertTrue(response.getTrailPreview().isEmpty());
+        Assert.assertTrue(response.getContent().isEmpty());
     }
 
     @Test

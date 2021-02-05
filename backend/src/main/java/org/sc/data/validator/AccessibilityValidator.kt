@@ -1,5 +1,6 @@
 package org.sc.data.validator
 
+import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.AccessibilityNotificationCreationDto
 import org.springframework.stereotype.Component
 import java.util.*
@@ -14,13 +15,14 @@ class AccessibilityValidator : Validator<AccessibilityNotificationCreationDto> {
 
     override fun validate(request: AccessibilityNotificationCreationDto): Set<String> {
         val errors = mutableSetOf<String>()
-        if (request.code.isBlank()) {
+        if (isEmpty(request.code)) {
             errors.add(String.format(noParamSpecifiedError, "Code"))
         }
-        if(request.description.isBlank()) {
+        if(isEmpty(request.description)) {
             errors.add(String.format(noParamSpecifiedError, "Description"))
         }
-        if(request.reportDate.after(Date())) errors.add(String.format(dateInFutureError, request.reportDate.toString()))
+        if(request.reportDate == null || request.reportDate.after(Date()))
+            errors.add(String.format(dateInFutureError, request.reportDate.toString()))
 
         return errors
     }
