@@ -19,6 +19,7 @@ public class Poi {
     public static final String CREATED_ON = "createdOn";
     public static final String LAST_UPDATE_ON = "lastUpdateOn";
     public static final String EXTERNAL_RESOURCES = "externalResources";
+    public static final String KEY_VAL = "kvps";
 
     private final String _id;
     private String name;
@@ -32,9 +33,12 @@ public class Poi {
     private Date createdOn;
     private Date lastUpdatedOn;
     private List<String> externalResources;
+    private List<KeyVal> keyVal;
 
-    public Poi(String _id, String name, String description, List<String> tags, PoiMacroType macroType, List<String> microType, List<String> mediaIds,
-               List<String> trailIds, CoordinatesWithAltitude coordinates, Date createdOn, Date lastUpdatedOn, List<String> externalResources) {
+    public Poi(String _id, String name, String description, List<String> tags,
+               PoiMacroType macroType, List<String> microType, List<String> mediaIds,
+               List<String> trailIds, CoordinatesWithAltitude coordinates, Date createdOn,
+               Date lastUpdatedOn, List<String> externalResources, List<KeyVal> keyVal) {
         this._id = _id;
         this.name = name;
         this.description = description;
@@ -47,6 +51,7 @@ public class Poi {
         this.createdOn = createdOn;
         this.lastUpdatedOn = lastUpdatedOn;
         this.externalResources = externalResources;
+        this.keyVal = keyVal;
     }
 
     public String get_id() {
@@ -139,5 +144,13 @@ public class Poi {
 
     public void setExternalResources(List<String> externalResources) {
         this.externalResources = externalResources;
+    }
+
+    public List<KeyVal> getKeyVal() {
+        return keyVal;
+    }
+
+    public void setKeyVal(List<KeyVal> keyVal) {
+        this.keyVal = keyVal;
     }
 }

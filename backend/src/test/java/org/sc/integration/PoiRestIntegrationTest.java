@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.CoordinatesDto;
+import org.sc.common.rest.KeyValueDto;
 import org.sc.common.rest.PoiDto;
 import org.sc.common.rest.PoiMacroType;
 import org.sc.common.rest.response.PoiResponse;
@@ -41,6 +42,7 @@ public class PoiRestIntegrationTest {
     public static final List<String> EXPECTED_TRAIL_IDS = Collections.singletonList(EXPECTED_TRAIL_CODE);
     public static final List<String> EXPECTED_MEDIA_IDS = Collections.singletonList("12");
     public static final List<String> EXPECTED_TAGS = Arrays.asList("poiType", "poiType2");
+    public static final List<KeyValueDto> EXPECTED_KEY_VAL = Collections.singletonList(new KeyValueDto("a", "b"));
 
     @Autowired
     private DataSource dataSource;
@@ -56,7 +58,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VAL));
     }
 
     @Test
@@ -121,7 +123,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VAL));
 
         PoiResponse getPoi = controller.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);

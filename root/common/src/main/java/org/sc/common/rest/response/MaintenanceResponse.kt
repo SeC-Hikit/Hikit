@@ -5,5 +5,4 @@ import org.sc.common.rest.Status
 
 data class MaintenanceResponse (val status: Status,
                                 val messages: Set<String>,
-                                val content: List<MaintenanceDto>,
-) : RESTResponse()
+                                val content: List<MaintenanceDto>) : RESTResponse()

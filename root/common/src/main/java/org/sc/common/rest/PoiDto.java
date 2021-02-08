@@ -17,6 +17,7 @@ public class PoiDto {
     private Date createdOn;
     private Date lastUpdatedOn;
     private List<String> externalResources;
+    private List<KeyValueDto> keyVal;
 
     public PoiDto() {
     }
@@ -25,7 +26,8 @@ public class PoiDto {
                   PoiMacroType macroType, List<String> microType,
                   List<String> mediaIds, List<String> trailIds,
                   CoordinatesDto coordinates, Date createdOn,
-                  Date lastUpdatedOn, List<String> externalResources) {
+                  Date lastUpdatedOn, List<String> externalResources,
+                  List<KeyValueDto> keyVal) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -38,6 +40,7 @@ public class PoiDto {
         this.createdOn = createdOn;
         this.lastUpdatedOn = lastUpdatedOn;
         this.externalResources = externalResources;
+        this.keyVal = keyVal;
     }
 
     public String getId() {
@@ -136,6 +139,14 @@ public class PoiDto {
         this.externalResources = externalResources;
     }
 
+    public List<KeyValueDto> getKeyVal() {
+        return keyVal;
+    }
+
+    public void setKeyVal(List<KeyValueDto> keyVal) {
+        this.keyVal = keyVal;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -152,13 +163,16 @@ public class PoiDto {
                 getCoordinates().equals(poiDto.getCoordinates()) &&
                 getCreatedOn().equals(poiDto.getCreatedOn()) &&
                 getLastUpdatedOn().equals(poiDto.getLastUpdatedOn()) &&
-                getExternalResources().equals(poiDto.getExternalResources());
+                getExternalResources().equals(poiDto.getExternalResources()) &&
+                getKeyVal().equals(poiDto.getKeyVal());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getTags(), getMacroType(),
-                getMicroType(), getMediaIds(), getTrailIds(), getCoordinates(), getCreatedOn(),
-                getLastUpdatedOn(), getExternalResources());
+        return Objects.hash(getId(), getName(), getDescription(), getTags(),
+                getMacroType(), getMicroType(), getMediaIds(), getTrailIds(),
+                getCoordinates(), getCreatedOn(), getLastUpdatedOn(),
+                getExternalResources(), getKeyVal());
     }
+
 }
