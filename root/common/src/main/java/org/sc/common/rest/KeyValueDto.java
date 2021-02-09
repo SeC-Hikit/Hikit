@@ -1,5 +1,7 @@
 package org.sc.common.rest;
 
+import java.util.Objects;
+
 public class KeyValueDto {
     private String key;
     private String val;
@@ -23,5 +25,18 @@ public class KeyValueDto {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KeyValueDto that = (KeyValueDto) o;
+        return getKey().equals(that.getKey()) && getVal().equals(that.getVal());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getKey(), getVal());
     }
 }

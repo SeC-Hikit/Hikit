@@ -7,6 +7,10 @@ import org.sc.data.entity.KeyVal;
 import org.sc.data.entity.Poi;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+
 @Component
 public class PoiMapper implements Mapper<Poi> {
 
@@ -33,7 +37,7 @@ public class PoiMapper implements Mapper<Poi> {
                 document.getDate(Poi.CREATED_ON),
                 document.getDate(Poi.LAST_UPDATE_ON),
                 document.getList(Poi.EXTERNAL_RESOURCES, String.class),
-                document.getList(Poi.KEY_VAL, KeyVal.class));
+                getKeyVals(document));
     }
 
     @Override
@@ -49,12 +53,17 @@ public class PoiMapper implements Mapper<Poi> {
                 .append(Poi.CREATED_ON, poi.getCreatedOn())
                 .append(Poi.LAST_UPDATE_ON, poi.getLastUpdatedOn())
                 .append(Poi.EXTERNAL_RESOURCES, poi.getExternalResources())
-                .append(Poi.KEY_VAL, poi.getKeyVal());
+                .append(Poi.KEY_VAL, poi.getKeyVal().stream().map(keyValMapper::mapToDocument).collect(toList()));
     }
 
     private CoordinatesWithAltitude getCoordinatesWithAltitude(final Document doc) {
         final Document document = doc.get(Poi.TRAIL_COORDINATES, Document.class);
         return coordinatesMapper.mapToObject(document);
+    }
+
+    private List<KeyVal> getKeyVals(Document document) {
+        List<Document> list = document.getList(Poi.KEY_VAL, Document.class);
+        return list.stream().map(keyValMapper::mapToObject).collect(toList());
     }
 
 }

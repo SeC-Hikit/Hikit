@@ -42,7 +42,8 @@ public class PoiRestIntegrationTest {
     public static final List<String> EXPECTED_TRAIL_IDS = Collections.singletonList(EXPECTED_TRAIL_CODE);
     public static final List<String> EXPECTED_MEDIA_IDS = Collections.singletonList("12");
     public static final List<String> EXPECTED_TAGS = Arrays.asList("poiType", "poiType2");
-    public static final List<KeyValueDto> EXPECTED_KEY_VAL = Collections.singletonList(new KeyValueDto("a", "b"));
+    public static final KeyValueDto EXPECTED_KEYVAL = new KeyValueDto("a", "b");
+    public static final List<KeyValueDto> EXPECTED_KEY_VALS = Collections.singletonList(EXPECTED_KEYVAL);
 
     @Autowired
     private DataSource dataSource;
@@ -58,7 +59,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VAL));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
     }
 
     @Test
@@ -123,7 +124,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VAL));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
 
         PoiResponse getPoi = controller.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);
@@ -131,6 +132,72 @@ public class PoiRestIntegrationTest {
         PoiDto secondElement = getPoi.getContent().get(1);
         assertThat(secondElement.getId()).isEqualTo(anyOtherId);
         assertThat(secondElement.getName()).isEqualTo(anyOtherName);
+    }
+
+    @Test
+    public void shouldUpdateKeyVals(){
+        String anyOtherName = "ANY_OTHER_NAME";
+        String anyOtherId = "ANY_OTHER_ID";
+        KeyValueDto anyOtherKeyVal = new KeyValueDto("age", "3");
+
+        List<KeyValueDto> expectedKeyVals = Arrays.asList(EXPECTED_KEYVAL, anyOtherKeyVal);
+
+        controller.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+                EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
+                EXPECTED_MICRO_TYPES,
+                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals));
+
+        PoiResponse getPoi = controller.get( 0, 3);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertGetFirstElement(firstElement);
+        PoiDto secondElement = getPoi.getContent().get(1);
+        assertThat(secondElement.getKeyVal().get(0)).isEqualTo(EXPECTED_KEYVAL);
+        assertThat(secondElement.getKeyVal().get(1)).isEqualTo(anyOtherKeyVal);
+
+        controller.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+                EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
+                EXPECTED_MICRO_TYPES,
+                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
+
+        PoiResponse getAgainPoi = controller.get( 0, 3);
+
+        PoiDto actual = getAgainPoi.getContent()
+                .stream()
+                .filter(poiDto -> poiDto.getId().equals(anyOtherId)).findFirst().get();
+        assertThat(actual.getKeyVal().size()).isEqualTo(1);
+        assertThat(actual.getKeyVal().get(0)).isEqualTo(EXPECTED_KEYVAL);
+
+
+        PoiDto actualElement = getPoi.getContent().get(0);
+        assertGetFirstElement(actualElement);
+
+    }
+
+    @Test
+    public void afterSomeKeyValuesAreAlreadyPresent_shouldUpdateKeyValsWithOneOnly(){
+        String anyOtherName = "ANY_OTHER_NAME";
+        String anyOtherId = "ANY_OTHER_ID";
+        KeyValueDto anyOtherKeyVal = new KeyValueDto("age", "3");
+
+        List<KeyValueDto> expectedKeyVals = Arrays.asList(EXPECTED_KEYVAL, anyOtherKeyVal);
+
+        controller.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+                EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
+                EXPECTED_MICRO_TYPES,
+                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals));
+
+        PoiResponse getPoi = controller.get( 0, 3);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertGetFirstElement(firstElement);
+        PoiDto secondElement = getPoi.getContent().get(1);
+        assertThat(secondElement.getKeyVal().get(0)).isEqualTo(EXPECTED_KEYVAL);
+        assertThat(secondElement.getKeyVal().get(1)).isEqualTo(anyOtherKeyVal);
     }
 
     @Test
