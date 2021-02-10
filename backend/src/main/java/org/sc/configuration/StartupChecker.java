@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import java.io.File;
+
 import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Component
@@ -14,10 +16,20 @@ public class StartupChecker {
 
     private static final Logger LOGGER = getLogger(StartupChecker.class);
 
-    @Autowired TrailDatasetVersionDao trailDatasetVersionDao;
+    @Autowired
+    TrailDatasetVersionDao trailDatasetVersionDao;
+    @Autowired
+    AppProperties appProperties;
 
     @PostConstruct
-    public void init(){
+    public void init() {
+        final File uploadDir = new File(appProperties.getTempStorage());
+        if (!uploadDir.exists()) {
+            if (!uploadDir.mkdir()) {
+                throw new IllegalStateException("Could not create temp folder");
+            }
+        }
+
         try {
             trailDatasetVersionDao.getLast();
         } catch (Exception mongoSocketOpenException) {

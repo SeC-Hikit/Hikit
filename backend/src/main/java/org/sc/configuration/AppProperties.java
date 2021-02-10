@@ -14,6 +14,7 @@ public class AppProperties {
 
     private final String port;
     private final String trailStorage;
+    private final String tempStorage;
     private final Integer altitudeServicePort;
     private final String mongoDbUri;
     private final String dbName;
@@ -21,11 +22,13 @@ public class AppProperties {
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
                          final @Value("${trail.storage.path}") String trailStorage,
+                         final @Value("${temp.storage.path}") String tempStorage,
                          final @Value("${service.altitude.port}") Integer altitudeServicePort,
                          final @Value("${db.uri}") String mongoDbUri,
                          final @Value("${db.name}") String dbName) {
         this.port = port;
         this.trailStorage = trailStorage;
+        this.tempStorage = tempStorage;
         this.altitudeServicePort = altitudeServicePort;
         this.mongoDbUri = mongoDbUri;
         this.dbName = dbName;
@@ -49,5 +52,9 @@ public class AppProperties {
 
     public String getDbName() {
         return dbName;
+    }
+
+    public String getTempStorage() {
+        return tempStorage;
     }
 }

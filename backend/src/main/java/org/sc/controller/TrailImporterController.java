@@ -5,6 +5,7 @@ import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailImportDto;
 import org.sc.common.rest.TrailPreparationModelDto;
 import org.sc.common.rest.response.TrailResponse;
+import org.sc.configuration.AppProperties;
 import org.sc.data.TrailImport;
 import org.sc.data.validator.TrailImportValidator;
 import org.sc.manager.TrailImporterManager;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,27 +34,34 @@ public class TrailImporterController {
 
     public final static String PREFIX = "/import";
 
-    public static final String TMP_FOLDER = "tmp";
-    public static final File UPLOAD_DIR = new File(TMP_FOLDER);
+    public File uploadDir;
 
     private final GpxManager gpxManager;
     private final TrailImporterManager trailImporterManager;
     private final TrailImportValidator trailValidator;
+    private final AppProperties appProperties;
 
     @Autowired
     public TrailImporterController(final GpxManager gpxManager,
                                    final TrailImporterManager trailImporterManager,
-                                   final TrailImportValidator trailValidator) {
+                                   final TrailImportValidator trailValidator,
+                                   final AppProperties appProperties) {
         this.gpxManager = gpxManager;
         this.trailImporterManager = trailImporterManager;
         this.trailValidator = trailValidator;
+        this.appProperties = appProperties;
+    }
+
+    @PostConstruct
+    public void init() {
+        uploadDir = new File(appProperties.getTempStorage());
     }
 
     @PostMapping(path = "/read",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailPreparationModelDto readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
-        final Path tempFile = Files.createTempFile(UPLOAD_DIR.toPath(), "", "");
+        final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", "");
         try (final InputStream input = gpxFile.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
         }
