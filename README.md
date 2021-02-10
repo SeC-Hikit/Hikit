@@ -23,7 +23,7 @@ S&C requires the following services up and running in order to fully operate:
 - [MongoDB 4.x](https://www.mongodb.com)
 - [OpenElevation](https://open-elevation.com/)
 
-To get these up and running in the least time possible, consider using [docker images](https://hub.docker.com/_/mongo) and [here](https://hub.docker.com/r/openelevation/open-elevation/).
+To get these up and running in the least time possible, consider using docker images [here](https://hub.docker.com/_/mongo) and [here](https://hub.docker.com/r/openelevation/open-elevation/).
 
 ### Properties
 
