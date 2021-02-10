@@ -1,8 +1,8 @@
 package org.sc.data.validator
 
-import org.apache.commons.lang3.StringUtils.isBlank
 import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.TrailImportDto
+import org.sc.data.validator.ValidatorUtils.Companion.emptyFieldError
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -16,7 +16,6 @@ class TrailImportValidator @Autowired constructor (
         private const val minGeoPoints = 3
         const val emptyListPointError = "No coordinates"
         const val tooFewPointsError = "At least $minGeoPoints geoPoints should be specified"
-        const val noParamSpecified = "Empty field '%s'"
         const val dateInFutureError = "The provided date is in the future"
         const val posToTrailCoordError = "First position element does not match the first coordinate"
         const val lastPosToTrailCoordError = "Last position element does not match the first coordinate"
@@ -25,10 +24,10 @@ class TrailImportValidator @Autowired constructor (
     override fun validate(request: TrailImportDto): Set<String> {
         val errors = mutableSetOf<String>()
         if (isEmpty(request.name)) {
-            errors.add(String.format(noParamSpecified, "Name"))
+            errors.add(String.format(emptyFieldError, "Name"))
         }
         if (isEmpty(request.code)) {
-            errors.add(String.format(noParamSpecified, "Code"))
+            errors.add(String.format(emptyFieldError, "Code"))
         }
 
         if(request.lastUpdate == null) {

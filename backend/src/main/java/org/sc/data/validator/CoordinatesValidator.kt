@@ -10,11 +10,12 @@ class CoordinatesValidator : Validator<CoordinatesDto> {
             LATITUDE, LONGITUDE, ALTITUDE
         }
         const val topPeakInTheWorld = 8848.0
+        const val bottomPointKnown = -100
         const val limitLat = 90
         const val limitLong = 180
         const val longitudeValueOutOfBoundErrorMessage = "Longitude value out of bound"
         const val latitudeValueOutOfBoundErrorMessage = "Latitude value out of bound"
-        const val altitudeOutOfBoundsErrorMessage = "Altitude should be a value contained between 0 and ${TrailCoordinatesValidator.topPeakInTheWorld}"
+        const val altitudeOutOfBoundsErrorMessage = "Altitude should be a value contained between $bottomPointKnown and $topPeakInTheWorld"
     }
 
     override fun validate(request: CoordinatesDto): Set<String> {
@@ -29,6 +30,7 @@ class CoordinatesValidator : Validator<CoordinatesDto> {
     }
 
     fun validateCoordinates(value: Double, dim: CoordDimension): String {
+
         if (dim == CoordDimension.LONGITUDE) {
             if (value > limitLong || value < -limitLong) {
                 return longitudeValueOutOfBoundErrorMessage
@@ -37,7 +39,7 @@ class CoordinatesValidator : Validator<CoordinatesDto> {
         }
 
         if (dim == CoordDimension.ALTITUDE) {
-            if (value > topPeakInTheWorld || value < -20) {
+            if (value > topPeakInTheWorld || value < bottomPointKnown) {
                 return altitudeOutOfBoundsErrorMessage
             }
             return ""
