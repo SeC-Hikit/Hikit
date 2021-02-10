@@ -4,19 +4,19 @@ import java.util.Objects;
 
 public class KeyValueDto {
     private String key;
-    private String val;
+    private String value;
 
-    public KeyValueDto(String key, String val) {
+    public KeyValueDto(String key, String value) {
         this.key = key;
-        this.val = val;
+        this.value = value;
     }
 
-    public String getVal() {
-        return val;
+    public String getValue() {
+        return value;
     }
 
-    public void setVal(String val) {
-        this.val = val;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getKey() {
@@ -32,11 +32,11 @@ public class KeyValueDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         KeyValueDto that = (KeyValueDto) o;
-        return getKey().equals(that.getKey()) && getVal().equals(that.getVal());
+        return getKey().equals(that.getKey()) && getValue().equals(that.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getKey(), getVal());
+        return Objects.hash(getKey(), getValue());
     }
 }

@@ -1,5 +1,6 @@
 package org.sc.data.validator
 
+import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.PoiDto
 import org.sc.data.entity.Poi
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,6 +9,7 @@ import java.util.*
 
 @Component
 class PoiValidator @Autowired constructor(
+    private val keyValValidator: KeyValValidator,
     private val coordinatesValidator: CoordinatesValidator) : Validator<PoiDto> {
 
     companion object {
@@ -18,10 +20,16 @@ class PoiValidator @Autowired constructor(
 
     override fun validate(request: PoiDto): Set<String> {
         val errors = mutableSetOf<String>()
-        if(request.name.isEmpty()) { errors.add(String.format(emptyField, Poi.NAME)) }
+        if(isEmpty(request.name)) { errors.add(String.format(emptyField, Poi.NAME)) }
+        if(request.createdOn == null) { String.format(dateInFutureError, Poi.CREATED_ON) }
         if(request.createdOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.CREATED_ON))
+        if(request.lastUpdatedOn == null) { String.format(dateInFutureError, Poi.LAST_UPDATE_ON) }
         if(request.lastUpdatedOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.LAST_UPDATE_ON))
         errors.addAll(coordinatesValidator.validate(request.coordinates))
+        request.keyVal.forEach {
+            val err = keyValValidator.validate(it);
+            errors.addAll(err)
+        }
         return errors
     }
 }

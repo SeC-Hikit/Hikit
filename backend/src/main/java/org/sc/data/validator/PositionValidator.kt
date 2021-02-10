@@ -1,5 +1,6 @@
 package org.sc.data.validator
 
+import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.PositionDto
 import org.sc.data.entity.Position
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +19,7 @@ class PositionValidator @Autowired constructor(
 
         val coordinatesError = trailCoordinatesCreationValidator.validate(request.coordinates)
         listOfErrorMessages.addAll(coordinatesError)
-        if (request.name.isBlank()) listOfErrorMessages.add(noNameError)
+        if (isEmpty(request.name)) listOfErrorMessages.add(noNameError)
         listOfErrorMessages.addAll(trailCoordinatesCreationValidator.validate(request.coordinates))
         return listOfErrorMessages
     }
