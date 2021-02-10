@@ -16,6 +16,6 @@ public class KeyValMapper implements Mapper<KeyVal> {
     @Override
     public Document mapToDocument(KeyVal object) {
         return new Document(KeyVal.KEY, object.getKey())
-                .append(KeyVal.VAL, object.getVal());
+                .append(KeyVal.VAL, object.getValue());
     }
 }

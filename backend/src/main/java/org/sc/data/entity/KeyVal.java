@@ -6,19 +6,19 @@ public class KeyVal {
     public final static String VAL = "val";
 
     private String key;
-    private String val;
+    private String value;
 
-    public KeyVal(String key, String val) {
+    public KeyVal(String key, String value) {
         this.key = key;
-        this.val = val;
+        this.value = value;
     }
 
-    public String getVal() {
-        return val;
+    public String getValue() {
+        return value;
     }
 
-    public void setVal(String val) {
-        this.val = val;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getKey() {
