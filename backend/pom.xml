@@ -34,6 +34,11 @@
             <version>1.5.2</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <version>${spring-boot-mail.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.jenetics</groupId>
             <artifactId>jpx</artifactId>
             <version>${jpx.version}</version>
@@ -76,6 +81,7 @@
             <artifactId>mapstruct</artifactId>
             <version>${org.mapstruct.version}</version>
         </dependency>
+
     </dependencies>
 
     <build>

@@ -42,6 +42,7 @@
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <junit.version>4.13.1</junit.version>
         <spring-boot.version>2.4.0</spring-boot.version>
+        <spring-boot-mail.version>2.3.8.RELEASE</spring-boot-mail.version>
         <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
     </properties>
 </project>

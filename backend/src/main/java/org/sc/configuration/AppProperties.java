@@ -18,6 +18,7 @@ public class AppProperties {
     private final Integer altitudeServicePort;
     private final String mongoDbUri;
     private final String dbName;
+    private final String mailFrom;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
@@ -25,13 +26,15 @@ public class AppProperties {
                          final @Value("${temp.storage.path}") String tempStorage,
                          final @Value("${service.altitude.port}") Integer altitudeServicePort,
                          final @Value("${db.uri}") String mongoDbUri,
-                         final @Value("${db.name}") String dbName) {
+                         final @Value("${db.name}") String dbName,
+                         final @Value("${spring.mail.from}") String mailFrom) {
         this.port = port;
         this.trailStorage = trailStorage;
         this.tempStorage = tempStorage;
         this.altitudeServicePort = altitudeServicePort;
         this.mongoDbUri = mongoDbUri;
         this.dbName = dbName;
+        this.mailFrom = mailFrom;
     }
 
     public String getPort() {
@@ -56,5 +59,9 @@ public class AppProperties {
 
     public String getTempStorage() {
         return tempStorage;
+    }
+
+    public String getMailFrom() {
+        return mailFrom;
     }
 }
