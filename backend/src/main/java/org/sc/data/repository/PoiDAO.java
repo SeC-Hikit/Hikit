@@ -11,7 +11,7 @@ import org.sc.configuration.DataSource;
 import org.sc.data.entity.Poi;
 import org.sc.data.entity.mapper.PoiMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,7 +21,7 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.toList;
 import static org.sc.data.repository.MongoConstants.*;
 
-@Component
+@Repository
 public class PoiDAO {
 
     private final MongoCollection<Document> collection;
