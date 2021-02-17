@@ -7,8 +7,8 @@ import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
-import org.sc.data.dto.TrailMapper
-import org.sc.data.dto.TrailPreviewMapper
+import org.sc.data.mapper.TrailMapper
+import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.processor.DistanceProcessor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

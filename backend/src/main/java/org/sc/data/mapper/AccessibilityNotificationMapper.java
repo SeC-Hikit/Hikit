@@ -1,4 +1,4 @@
-package org.sc.data.dto;
+package org.sc.data.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,7 +9,7 @@ import org.sc.common.rest.AccessibilityUnresolvedDto;
 import org.sc.data.entity.AccessibilityNotification;
 import org.sc.data.entity.AccessibilityUnresolved;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AccessibilityNotificationMapper {
     @Mapping(source = "_id", target = "id")
     AccessibilityNotificationDto map(AccessibilityNotification an);

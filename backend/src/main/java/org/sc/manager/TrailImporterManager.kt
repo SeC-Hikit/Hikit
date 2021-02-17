@@ -2,8 +2,8 @@ package org.sc.manager
 
 import org.sc.common.rest.TrailDto
 import org.sc.common.rest.TrailImportDto
-import org.sc.data.dto.PositionMapper
-import org.sc.data.dto.TrailCoordinatesMapper
+import org.sc.data.mapper.PositionMapper
+import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.entity.StatsTrailMetadata
 import org.sc.data.entity.Trail
 import org.sc.data.repository.TrailDatasetVersionDao

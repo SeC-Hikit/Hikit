@@ -1,12 +1,11 @@
-package org.sc.data.dto;
+package org.sc.data.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.StatsTrailMetadataDto;
 import org.sc.data.entity.StatsTrailMetadata;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface StatsTrailMetadataMapper {
     StatsTrailMetadata map(StatsTrailMetadataDto statsTrailMetadataDto);
     StatsTrailMetadataDto map(StatsTrailMetadata statsTrailMetadata);

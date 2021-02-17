@@ -1,7 +1,7 @@
 package org.sc.manager
 
 import org.sc.common.rest.PoiDto
-import org.sc.data.dto.PoiMapper
+import org.sc.data.mapper.PoiMapper
 import org.sc.data.repository.PoiDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
