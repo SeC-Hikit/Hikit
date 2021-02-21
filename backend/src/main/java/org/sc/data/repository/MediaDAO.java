@@ -11,6 +11,7 @@ import org.sc.data.entity.Maintenance;
 import org.sc.data.entity.Media;
 import org.sc.data.entity.mapper.MediaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
+@Repository
 public class MediaDAO {
     private final MongoCollection<Document> collection;
     private final MediaMapper mapper;
@@ -35,11 +37,11 @@ public class MediaDAO {
     }
 
     public List<Media> save(final Media media) {
-        final Document maintenanceDocument = mapper.mapToDocument(media);
+        final Document mediaDoc = mapper.mapToDocument(media);
         final String objectId = new ObjectId().toHexString();
         final Document updateResult = collection.findOneAndReplace(
-                new Document(Maintenance.OBJECT_ID, objectId),
-                maintenanceDocument, new FindOneAndReplaceOptions().upsert(true)
+                new Document(Media.OBJECT_ID, objectId),
+                mediaDoc, new FindOneAndReplaceOptions().upsert(true)
                         .returnDocument(ReturnDocument.AFTER));
         if (updateResult != null) {
             return Collections.singletonList(mapper.mapToObject(updateResult));

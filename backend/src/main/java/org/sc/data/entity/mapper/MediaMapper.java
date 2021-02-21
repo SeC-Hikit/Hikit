@@ -20,7 +20,7 @@ public class MediaMapper implements Mapper<Media> {
 
     @Override
     public Document mapToDocument(final Media object) {
-        return new Document(Media.OBJECT_ID, object.get_id())
+        return new Document()
                 .append(Media.CREATION_DATE, object.getCreationDate())
                 .append(Media.NAME, object.getName())
                 .append(Media.FILENAME, object.getFileName())

@@ -3,6 +3,7 @@ package org.sc.controller;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.MediaCreationResponse;
 import org.sc.configuration.AppProperties;
+import org.sc.data.validator.FileNameValidator;
 import org.sc.data.validator.MediaValidator;
 import org.sc.manager.MediaManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +31,18 @@ public class MediaController {
     public File uploadDir;
 
     private final MediaValidator mediaValidator;
+    private final FileNameValidator fileNameValidator;
     private final MediaManager mediaManager;
     private final AppProperties appProperties;
 
 
     @Autowired
     public MediaController(final MediaValidator mediaValidator,
+                           final FileNameValidator fileNameValidator,
                            final MediaManager mediaManager,
                            final AppProperties appProperties) {
         this.mediaValidator = mediaValidator;
+        this.fileNameValidator = fileNameValidator;
         this.mediaManager = mediaManager;
         this.appProperties = appProperties;
     }
@@ -50,19 +54,22 @@ public class MediaController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public MediaCreationResponse upload(@RequestAttribute("file") MultipartFile mediaFile) throws IOException {
+    public MediaCreationResponse upload(@RequestAttribute("file") MultipartFile file) throws IOException {
         final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", "");
-        try (final InputStream input = mediaFile.getInputStream()) {
+        final String originalFileName = file.getOriginalFilename();
+        final Set<String> validationErrors =
+                fileNameValidator.validate(originalFileName);
+        try (final InputStream input = file.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        final Set<String> validationErrors = mediaValidator.validate(tempFile.toFile());
-        if(validationErrors.isEmpty()){
-            List<MediaDto> saveResult = mediaManager.save(mediaFile.getName(), tempFile);
+        validationErrors.addAll(mediaValidator.validate(tempFile.toFile()));
+
+        if (validationErrors.isEmpty()) {
+            final List<MediaDto> saveResult = mediaManager.save(originalFileName, tempFile);
             return new MediaCreationResponse(Status.OK, Collections.emptySet(), saveResult);
         }
         return new MediaCreationResponse(Status.ERROR, validationErrors, Collections.emptyList());
     }
-
 
 
 }

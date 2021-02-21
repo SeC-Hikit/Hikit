@@ -11,11 +11,11 @@ public class MediaDto {
     private String fileName;
     private String fileUrl;
     private String mime;
-    private String fileSize;
+    private long fileSize;
 
     public MediaDto(String id, Date creationDate, String name,
                     String fileName, String fileUrl,
-                    String mime, String fileSize) {
+                    String mime, long fileSize) {
         this.creationDate = creationDate;
         this.id = id;
         this.name = name;
@@ -49,10 +49,6 @@ public class MediaDto {
         return mime;
     }
 
-    public String getFileSize() {
-        return fileSize;
-    }
-
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
@@ -77,7 +73,11 @@ public class MediaDto {
         this.mime = mime;
     }
 
-    public void setFileSize(String fileSize) {
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 
@@ -85,8 +85,8 @@ public class MediaDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MediaDto that = (MediaDto) o;
-        return getCreationDate().equals(that.getCreationDate()) && getId().equals(that.getId()) && getName().equals(that.getName()) && getFileName().equals(that.getFileName()) && getFileUrl().equals(that.getFileUrl()) && getMime().equals(that.getMime()) && getFileSize().equals(that.getFileSize());
+        MediaDto mediaDto = (MediaDto) o;
+        return getFileSize() == mediaDto.getFileSize() && getCreationDate().equals(mediaDto.getCreationDate()) && getId().equals(mediaDto.getId()) && getName().equals(mediaDto.getName()) && getFileName().equals(mediaDto.getFileName()) && getFileUrl().equals(mediaDto.getFileUrl()) && getMime().equals(mediaDto.getMime());
     }
 
     @Override
