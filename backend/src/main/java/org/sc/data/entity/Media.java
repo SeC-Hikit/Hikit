@@ -20,13 +20,13 @@ public class Media {
     private String fileName;
     private String fileUrl;
     private String mime;
-    private String fileSize;
+    private long fileSize;
 
     public Media() { }
 
     public Media(String _id, Date creationDate, String name,
                  String fileName, String fileUrl, String mime,
-                 String fileSize) {
+                 long fileSize) {
         this._id = _id;
         this.creationDate = creationDate;
         this.name = name;
@@ -60,9 +60,6 @@ public class Media {
         return mime;
     }
 
-    public String getFileSize() {
-        return fileSize;
-    }
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
@@ -84,7 +81,11 @@ public class Media {
         this.mime = mime;
     }
 
-    public void setFileSize(String fileSize) {
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 }

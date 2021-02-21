@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(org.sc.controller.MediaController.PREFIX)
@@ -49,14 +50,19 @@ public class MediaController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public MediaCreationResponse upload(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
+    public MediaCreationResponse upload(@RequestAttribute("file") MultipartFile mediaFile) throws IOException {
         final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", "");
-        try (final InputStream input = gpxFile.getInputStream()) {
+        try (final InputStream input = mediaFile.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        List<MediaDto> saveResult = mediaManager.save(tempFile);
-
-        return new MediaCreationResponse(Status.OK, Collections.emptySet(), saveResult);
+        final Set<String> validationErrors = mediaValidator.validate(tempFile.toFile());
+        if(validationErrors.isEmpty()){
+            List<MediaDto> saveResult = mediaManager.save(mediaFile.getName(), tempFile);
+            return new MediaCreationResponse(Status.OK, Collections.emptySet(), saveResult);
+        }
+        return new MediaCreationResponse(Status.ERROR, validationErrors, Collections.emptyList());
     }
+
+
 
 }

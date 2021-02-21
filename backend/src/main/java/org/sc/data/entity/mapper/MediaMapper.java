@@ -15,7 +15,7 @@ public class MediaMapper implements Mapper<Media> {
                 document.getString(Media.FILENAME),
                 document.getString(Media.FILE_URL),
                 document.getString(Media.MIME),
-                document.getString(Media.FILE_SIZE));
+                document.getLong(Media.FILE_SIZE));
     }
 
     @Override

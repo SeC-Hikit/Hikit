@@ -36,9 +36,9 @@ public class MediaDAO {
 
     public List<Media> save(final Media media) {
         final Document maintenanceDocument = mapper.mapToDocument(media);
-        final String existingOrNewObjectId = new ObjectId().toHexString();
+        final String objectId = new ObjectId().toHexString();
         final Document updateResult = collection.findOneAndReplace(
-                new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
+                new Document(Maintenance.OBJECT_ID, objectId),
                 maintenanceDocument, new FindOneAndReplaceOptions().upsert(true)
                         .returnDocument(ReturnDocument.AFTER));
         if (updateResult != null) {

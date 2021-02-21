@@ -10,4 +10,5 @@ class FileProbeUtil {
     private val tika = Tika()
 
     fun getFileMimeType(file : File) : String = tika.detect(file)
+    fun getFileExtensionFromName(fileName : String) : String = fileName.split(".").last()
 }
