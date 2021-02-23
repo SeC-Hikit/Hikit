@@ -6,6 +6,8 @@ import org.sc.controller.MediaController
 import org.sc.data.entity.Media
 import org.sc.data.mapper.MediaMapper
 import org.sc.data.repository.MediaDAO
+import org.sc.data.repository.PoiDAO
+import org.sc.data.repository.TrailDAO
 import org.sc.util.FileProbeUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -16,10 +18,18 @@ import java.nio.file.Path
 import java.util.*
 
 @Component
-class MediaManager @Autowired constructor(private val mediaDAO: MediaDAO,
-                                          private val mediaMapper: MediaMapper,
-                                          private val mediaProbeUtil: FileProbeUtil,
-                                          private val appProperties: AppProperties){
+class MediaManager @Autowired constructor(
+    private val trailDAO: TrailDAO,
+    private val poiDAO: PoiDAO,
+    private val mediaDAO: MediaDAO,
+    private val mediaMapper: MediaMapper,
+    private val mediaProbeUtil: FileProbeUtil,
+    private val appProperties: AppProperties
+) {
+    companion object {
+        const val MEDIA_MID = "file"
+    }
+
     fun save(originalFileName: String, tempFile: Path): List<MediaDto> {
 
         val fileMimeType = mediaProbeUtil.getFileMimeType(tempFile.toFile())
@@ -27,31 +37,45 @@ class MediaManager @Autowired constructor(private val mediaDAO: MediaDAO,
 
         val fileName = makeFileName(fileExtension)
         val pathToSavedFile = makePathToSavedFile(fileName)
-        val save = mediaDAO.save(
-            Media(
-                null,
-                Date(),
-                originalFileName,
-                fileName,
-                pathToSavedFile,
-                fileMimeType,
-                Files.size(tempFile)
+        val saveFile = saveFile(tempFile, fileName)
+
+        if (hasFileBeenSaved(saveFile)) {
+            val save = mediaDAO.save(
+                Media(
+                    null,
+                    Date(),
+                    originalFileName,
+                    fileName,
+                    pathToSavedFile,
+                    fileMimeType,
+                    Files.size(tempFile)
+                )
             )
-        )
-        if(Files.copy(tempFile, FileOutputStream(getPathToFileOut(fileName))) != 0L) {
             return mediaDAO.getById(save.first()._id).map { mediaMapper.mediaToDto(it) }
         }
         return emptyList()
     }
 
+    fun getById(id: String) = mediaDAO.getById(id).map { mediaMapper.mediaToDto(it) }
+
+    fun deleteById(id: String): List<MediaDto> {
+        poiDAO.unlinkMediaId(id)
+        trailDAO.unlinkMediaId(id)
+        return mediaDAO.deleteById(id).map { mediaMapper.mediaToDto(it) }
+    }
+
+    private fun hasFileBeenSaved(saveFile: Long) = saveFile != 0L
+
+    private fun saveFile(tempFile: Path, fileName: String) =
+        Files.copy(tempFile, FileOutputStream(getPathToFileOut(fileName)))
+
     private fun getPathToFileOut(fileName: String) =
         appProperties.trailStorage + separator + fileName
 
     private fun makePathToSavedFile(fileName: String) =
-        MediaController.PREFIX + separator + fileName
+        MediaController.PREFIX + "/" + MEDIA_MID + "/" + fileName
 
     private fun makeFileName(fileExtension: String) =
         Date().time.toString() + "." + fileExtension
-
-
 }
+

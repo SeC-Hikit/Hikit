@@ -105,7 +105,11 @@ public class PoiDAO {
         return byId;
     }
 
-    @NotNull
+    public void unlinkMediaId(String id) {
+        collection.updateOne(new Document(),
+                new Document(MongoConstants.PULL, new Document(Poi.MEDIA_IDS, id)));
+    }
+
     private List<Poi> toPoisList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(mapper::mapToObject).collect(toList());
     }

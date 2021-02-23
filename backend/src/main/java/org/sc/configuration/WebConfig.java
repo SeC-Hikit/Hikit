@@ -1,6 +1,7 @@
 package org.sc.configuration;
 
 import org.sc.controller.MediaController;
+import org.sc.manager.MediaManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -21,9 +22,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(MediaController.PREFIX + "/file/**")
+        registry.addResourceHandler(MediaController.PREFIX + "/" + MediaManager.MEDIA_MID + "/**")
                 .addResourceLocations("file:" + appProperties.getTrailStorage() + File.separator)
-                .setCachePeriod(3600)
+                .setCachePeriod(appProperties.getResourcesCachePeriod())
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver());
     }

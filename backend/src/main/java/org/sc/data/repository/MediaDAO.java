@@ -4,10 +4,11 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.Maintenance;
 import org.sc.data.entity.Media;
 import org.sc.data.entity.mapper.MediaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,4 +56,9 @@ public class MediaDAO {
                 .stream().map(mapper::mapToObject).collect(toList());
     }
 
+    public List<Media> deleteById(String id) {
+        final List<Media> byId = getById(id);
+        collection.deleteOne(new Document(Media.OBJECT_ID, id));
+        return byId;
+    }
 }

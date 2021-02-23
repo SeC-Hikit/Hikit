@@ -51,9 +51,9 @@ public class TrailImportRestIntegrationTest {
     );
 
     public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-            new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE),
-            new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE),
-            Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE)),
+            new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE, Collections.emptyList()),
+            new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE, Collections.emptyList()),
+            Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE, Collections.emptyList())),
             EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
             EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION);
 

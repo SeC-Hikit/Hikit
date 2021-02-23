@@ -4,6 +4,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
@@ -80,13 +81,13 @@ public class TrailDAO {
     @NotNull
     public List<Trail> getTrails(boolean isLight, int page, int count) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document()).limit(RESULT_LIMIT));
+            return toTrailsLightList(collection.find(new Document()).skip(page).limit(count));
         }
-        return toTrailsList(collection.find(new Document()).limit(RESULT_LIMIT));
+        return toTrailsList(collection.find(new Document()).skip(page).limit(count));
     }
 
     @NotNull
-    public List<Trail> getTrailByCode(@NotNull String code, boolean isLight) {
+    public List<Trail> getTrailByCode(String code, boolean isLight) {
         if (isLight) {
             return toTrailsLightList(collection.find(new Document(Trail.CODE, code)));
         }
@@ -105,7 +106,6 @@ public class TrailDAO {
                 trail, new ReplaceOptions().upsert(true));
     }
 
-    @NotNull
     public List<TrailPreview> getTrailPreviews(final int page, final int count) {
         return toTrailsPreviewList(collection.find()
                 .projection(projectPreview())
@@ -113,10 +113,19 @@ public class TrailDAO {
                 .limit(count));
     }
 
-    @NotNull
-    public List<TrailPreview> trailPreviewByCode(final @NotNull String code) {
+    public List<TrailPreview> trailPreviewByCode(final String code) {
         return toTrailsPreviewList(collection.find(new Document(Trail.CODE, code))
                 .projection(projectPreview()));
+    }
+
+    public void unlinkMediaId(String id) {
+        // E.g: db.core.test.update({"b.mediaId": 1}, { $pull : { "b.$.mediaId": 1}}, {multi: true})
+        collection.updateMany(new Document(Trail.LOCATIONS + "." + Position.MEDIA_IDS, id),
+                new Document(PULL, new Document(Trail.LOCATIONS + "." + DOLLAR + "." + Position.MEDIA_IDS, id)));
+        collection.updateOne(new Document(Trail.START_POS + "." + Position.MEDIA_IDS, id),
+                new Document(PULL, new Document(Trail.START_POS + "." + Position.MEDIA_IDS, id)));
+        collection.updateOne(new Document(Trail.FINAL_POS + "." + Position.MEDIA_IDS, id),
+                new Document(PULL, new Document(Trail.START_POS + "." + Position.MEDIA_IDS, id)));
     }
 
     private List<TrailPreview> toTrailsPreviewList(final FindIterable<Document> documents) {
@@ -129,14 +138,11 @@ public class TrailDAO {
                 .append(Trail.LAST_UPDATE_DATE, 1);
     }
 
-    @NotNull
     private List<Trail> toTrailsLightList(Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
     }
 
-    @NotNull
     private List<Trail> toTrailsList(Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
-
 }
