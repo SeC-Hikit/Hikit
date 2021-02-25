@@ -2,10 +2,13 @@ package org.sc.manager
 
 import org.sc.common.rest.TrailDto
 import org.sc.common.rest.TrailImportDto
+import org.sc.data.entity.GeoLineString
+import org.sc.data.entity.SimpleCoordinates
 import org.sc.data.mapper.PositionMapper
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.entity.StatsTrailMetadata
 import org.sc.data.entity.Trail
+import org.sc.data.entity.mapper.GeoLineMapper
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.processor.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +44,8 @@ class TrailImporterManager @Autowired constructor(private val trailsManager : Tr
             statsTrailMetadata,
             importingTrail.coordinates.map { trailCoordinatesMapper.trailCoordinatesDtoToTrailCoordinates(it) },
             Date(),
-            importingTrail.maintainingSection
+            importingTrail.maintainingSection,
+            GeoLineString(importingTrail.coordinates.map { SimpleCoordinates(it.longitude, it.latitude) })
         )
 
         trailsManager.save(trail)

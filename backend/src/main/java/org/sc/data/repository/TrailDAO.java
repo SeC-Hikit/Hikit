@@ -31,8 +31,6 @@ public class TrailDAO {
 
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.COORDINATES;
 
-    public static final int RESULT_LIMIT = 150;
-
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
