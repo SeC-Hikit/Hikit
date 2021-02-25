@@ -104,4 +104,7 @@ public class MaintenanceDAO {
                 .stream().map(mapper::mapToObject).collect(toList());
     }
 
+    public long countMaintenance() {
+        return collection.countDocuments();
+    }
 }

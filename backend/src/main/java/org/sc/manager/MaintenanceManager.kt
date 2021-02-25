@@ -28,4 +28,7 @@ class MaintenanceManager @Autowired constructor(
 
     fun delete(id: String): List<MaintenanceDto> =
       maintenanceDao.delete(id).map { maintenanceMapper.map(it) }
+
+    fun countMaintenance(): Long = maintenanceDao.countMaintenance()
+
 }
