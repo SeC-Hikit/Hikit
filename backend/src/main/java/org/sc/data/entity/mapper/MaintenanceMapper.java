@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MaintenanceMapper implements Mapper<Maintenance> {
+
     @Override
     public Maintenance mapToObject(Document document) {
         return new Maintenance(

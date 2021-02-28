@@ -7,6 +7,7 @@ import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
+import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.TrailMapper
 import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.processor.DistanceProcessor
@@ -22,7 +23,8 @@ class TrailManager @Autowired constructor(
     private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
     private val gpxHelper: GpxManager,
     private val trailMapper: TrailMapper,
-    private val trailPreviewMapper: TrailPreviewMapper
+    private val trailPreviewMapper: TrailPreviewMapper,
+    private val linkedMediaMapper: LinkedMediaMapper,
 ) {
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
@@ -50,6 +52,13 @@ class TrailManager @Autowired constructor(
     fun save(trail: Trail) {
         trailDAO.upsert(trail)
         gpxHelper.writeTrailToGpx(trail)
+    }
+
+    fun linkMedia(id: String, placeName: String, linkedMediaRequest: LinkedMediaDto): List<LinkedMediaResultDto> {
+        val linkMedia = linkedMediaMapper.map(linkedMediaRequest)
+        val result = trailDAO.linkMedia(id, placeName, linkMedia)
+        return result.map { LinkedMediaResultDto(id, linkedMediaMapper.map(it)) }
+
     }
 
     fun getByGeo(coords: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement,

@@ -76,7 +76,7 @@ public class MediaController {
     @GetMapping("/{id}")
     public MediaResponse getById(@PathVariable String id) {
         if(StringUtils.isEmpty(id)){
-            return new MediaResponse(Status.ERROR, Collections.singleton("Empty Id"), Collections.emptyList());
+            return new MediaResponse(Status.ERROR, Collections.singleton(EMPTY_ID_ERROR), Collections.emptyList());
         }
         List<MediaDto> medias = mediaManager.getById(id);
         return new MediaResponse(Status.OK, Collections.emptySet(), medias);

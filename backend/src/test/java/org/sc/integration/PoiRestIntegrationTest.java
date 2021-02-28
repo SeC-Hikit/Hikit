@@ -5,10 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.sc.common.rest.CoordinatesDto;
-import org.sc.common.rest.KeyValueDto;
-import org.sc.common.rest.PoiDto;
-import org.sc.common.rest.PoiMacroType;
+import org.sc.common.rest.*;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.POIController;
@@ -40,7 +37,7 @@ public class PoiRestIntegrationTest {
     public static final PoiMacroType EXPECTED_MACRO_TYPE = PoiMacroType.BELVEDERE;
     public static final List<String> EXPECTED_EXTERNAL_RESOURCES = Arrays.asList("http://externalresource.com", "http://externalresource2.com");
     public static final List<String> EXPECTED_TRAIL_IDS = Collections.singletonList(EXPECTED_TRAIL_CODE);
-    public static final List<String> EXPECTED_MEDIA_IDS = Collections.singletonList("12");
+    public static final List<LinkedMediaDto> EXPECTED_MEDIA_IDS = Collections.emptyList();
     public static final List<String> EXPECTED_TAGS = Arrays.asList("poiType", "poiType2");
     public static final KeyValueDto EXPECTED_KEYVAL = new KeyValueDto("a", "b");
     public static final List<KeyValueDto> EXPECTED_KEY_VALS = Collections.singletonList(EXPECTED_KEYVAL);
@@ -230,7 +227,7 @@ public class PoiRestIntegrationTest {
         assertThat(firstElement.getMicroType()).isEqualTo(EXPECTED_MICRO_TYPES);
         assertThat(firstElement.getExternalResources()).isEqualTo(EXPECTED_EXTERNAL_RESOURCES);
         assertThat(firstElement.getTags()).isEqualTo(EXPECTED_TAGS);
-        assertThat(firstElement.getMediaIds()).isEqualTo(EXPECTED_MEDIA_IDS);
+        assertThat(firstElement.getMediaList()).isEqualTo(EXPECTED_MEDIA_IDS);
         assertThat(firstElement.getTrailIds()).isEqualTo(EXPECTED_TRAIL_IDS);
     }
 }

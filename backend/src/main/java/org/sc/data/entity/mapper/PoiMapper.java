@@ -4,6 +4,7 @@ import org.bson.Document;
 import org.sc.common.rest.PoiMacroType;
 import org.sc.data.entity.CoordinatesWithAltitude;
 import org.sc.data.entity.KeyVal;
+import org.sc.data.entity.LinkedMedia;
 import org.sc.data.entity.Poi;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,15 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class PoiMapper implements Mapper<Poi> {
 
-    final CoordinatesMapper coordinatesMapper;
-    final KeyValMapper keyValMapper;
+    private final CoordinatesMapper coordinatesMapper;
+    private final KeyValMapper keyValMapper;
+    private final LinkedMediaMapper linkedMediaMapper;
 
     public PoiMapper(final CoordinatesMapper coordinatesMapper,
-                     final KeyValMapper keyValMapper) {
+                     final KeyValMapper keyValMapper,
+                     final LinkedMediaMapper linkedMediaMapper) {
         this.coordinatesMapper = coordinatesMapper;
+        this.linkedMediaMapper = linkedMediaMapper;
         this.keyValMapper = keyValMapper;
     }
 
@@ -31,7 +35,7 @@ public class PoiMapper implements Mapper<Poi> {
                 document.getList(Poi.TAGS, String.class),
                 PoiMacroType.valueOf(document.getString(Poi.MACROTYPE)),
                 document.getList(Poi.MICROTYPES, String.class),
-                document.getList(Poi.MEDIA_IDS, String.class),
+                getLinkedMediaMapper(document),
                 document.getList(Poi.TRAIL_CODES, String.class),
                 getCoordinatesWithAltitude(document),
                 document.getDate(Poi.CREATED_ON),
@@ -47,13 +51,17 @@ public class PoiMapper implements Mapper<Poi> {
                 .append(Poi.TAGS, poi.getTags())
                 .append(Poi.MACROTYPE, poi.getMacroType().toString())
                 .append(Poi.MICROTYPES, poi.getMicroType())
-                .append(Poi.MEDIA_IDS, poi.getMediaIds())
+                .append(Poi.MEDIA, poi.getMediaList().stream()
+                        .map(linkedMediaMapper::mapToDocument)
+                        .collect(toList()))
                 .append(Poi.TRAIL_CODES, poi.getTrailIds())
                 .append(Poi.TRAIL_COORDINATES, coordinatesMapper.mapToDocument(poi.getCoordinates()))
                 .append(Poi.CREATED_ON, poi.getCreatedOn())
                 .append(Poi.LAST_UPDATE_ON, poi.getLastUpdatedOn())
                 .append(Poi.EXTERNAL_RESOURCES, poi.getExternalResources())
-                .append(Poi.KEY_VAL, poi.getKeyVal().stream().map(keyValMapper::mapToDocument).collect(toList()));
+                .append(Poi.KEY_VAL, poi.getKeyVal().stream()
+                        .map(keyValMapper::mapToDocument)
+                        .collect(toList()));
     }
 
     private CoordinatesWithAltitude getCoordinatesWithAltitude(final Document doc) {
@@ -64,6 +72,12 @@ public class PoiMapper implements Mapper<Poi> {
     private List<KeyVal> getKeyVals(Document document) {
         List<Document> list = document.getList(Poi.KEY_VAL, Document.class);
         return list.stream().map(keyValMapper::mapToObject).collect(toList());
+    }
+
+
+    private List<LinkedMedia> getLinkedMediaMapper(Document document) {
+        List<Document> list = document.getList(Poi.MEDIA, Document.class);
+        return list.stream().map(linkedMediaMapper::mapToObject).collect(toList());
     }
 
 }

@@ -7,18 +7,15 @@ import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.Position;
-import org.sc.data.entity.Trail;
-import org.sc.data.entity.TrailPreview;
-import org.sc.data.entity.mapper.Mapper;
-import org.sc.data.entity.mapper.TrailLightMapper;
-import org.sc.data.entity.mapper.TrailMapper;
-import org.sc.data.entity.mapper.TrailPreviewMapper;
+import org.sc.data.entity.*;
+import org.sc.data.entity.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -34,16 +31,19 @@ public class TrailDAO {
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
+    private final LinkedMediaMapper linkedMediaMapper;
     private final Mapper<Trail> trailLightMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
 
     @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
+                    final LinkedMediaMapper linkedMediaMapper,
                     final TrailLightMapper trailLightMapper,
                     final TrailPreviewMapper trailPreviewMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.linkedMediaMapper = linkedMediaMapper;
         this.trailLightMapper = trailLightMapper;
         this.trailPreviewMapper = trailPreviewMapper;
     }
@@ -116,7 +116,7 @@ public class TrailDAO {
                 .projection(projectPreview()));
     }
 
-    public void unlinkMediaId(String id) {
+    public void unlinkMediaByAllTrails(String id) {
         // E.g: db.core.test.update({"b.mediaId": 1}, { $pull : { "b.$.mediaId": 1}}, {multi: true})
         collection.updateMany(new Document(Trail.LOCATIONS + "." + Position.MEDIA_IDS, id),
                 new Document(PULL, new Document(Trail.LOCATIONS + "." + DOLLAR + "." + Position.MEDIA_IDS, id)));
@@ -124,6 +124,16 @@ public class TrailDAO {
                 new Document(PULL, new Document(Trail.START_POS + "." + Position.MEDIA_IDS, id)));
         collection.updateOne(new Document(Trail.FINAL_POS + "." + Position.MEDIA_IDS, id),
                 new Document(PULL, new Document(Trail.START_POS + "." + Position.MEDIA_IDS, id)));
+    }
+
+    public List<LinkedMedia> linkMedia(String code,
+                            String name,
+                            LinkedMedia linkMedia) {
+        // TODO: Add it to right object
+        String abc = "";
+        collection.updateOne(new Document(Trail.CODE, code).append(Trail.LOCATIONS + "." + Position.NAME, name),
+                new Document(ADD_TO_SET, new Document(abc, linkedMediaMapper.mapToDocument(linkMedia))));
+        return Collections.singletonList(linkMedia);
     }
 
     private List<TrailPreview> toTrailsPreviewList(final FindIterable<Document> documents) {

@@ -1,17 +1,16 @@
 package org.sc.manager
 
 import org.sc.common.rest.MediaDto
-import org.sc.configuration.AppProperties
 import org.sc.controller.MediaController
 import org.sc.data.entity.Media
 import org.sc.data.mapper.MediaMapper
 import org.sc.data.repository.MediaDAO
 import org.sc.data.repository.PoiDAO
 import org.sc.data.repository.TrailDAO
+import org.sc.util.FileManagementUtil
 import org.sc.util.FileProbeUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.io.File.separator
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -24,7 +23,7 @@ class MediaManager @Autowired constructor(
     private val mediaDAO: MediaDAO,
     private val mediaMapper: MediaMapper,
     private val mediaProbeUtil: FileProbeUtil,
-    private val appProperties: AppProperties
+    private val fileManagementUtil: FileManagementUtil
 ) {
     companion object {
         const val MEDIA_MID = "file"
@@ -59,8 +58,8 @@ class MediaManager @Autowired constructor(
     fun getById(id: String) = mediaDAO.getById(id).map { mediaMapper.mediaToDto(it) }
 
     fun deleteById(id: String): List<MediaDto> {
-        poiDAO.unlinkMediaId(id)
-        trailDAO.unlinkMediaId(id)
+        poiDAO.unlinkMediaByAllPoi(id)
+        trailDAO.unlinkMediaByAllTrails(id)
         return mediaDAO.deleteById(id).map { mediaMapper.mediaToDto(it) }
     }
 
@@ -70,7 +69,7 @@ class MediaManager @Autowired constructor(
         Files.copy(tempFile, FileOutputStream(getPathToFileOut(fileName)))
 
     private fun getPathToFileOut(fileName: String) =
-        appProperties.trailStorage + separator + fileName
+        fileManagementUtil.getMediaStoragePath() + fileName
 
     private fun makePathToSavedFile(fileName: String) =
         MediaController.PREFIX + "/" + MEDIA_MID + "/" + fileName
