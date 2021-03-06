@@ -1,14 +1,9 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.*;
-import org.sc.data.entity.TrailCoordinates;
-import org.sc.data.entity.Trail;
-import org.sc.data.entity.Position;
-import org.sc.data.entity.StatsTrailMetadata;
+import org.sc.data.entity.*;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
@@ -22,8 +17,10 @@ public class TrailLightMapper extends TrailMapper {
 
     public TrailLightMapper(final PositionMapper positionMapper,
                             final TrailCoordinatesMapper trailCoordinatesMapper,
-                            final StatsTrailMapper statsTrailMapper) {
-        super(positionMapper, trailCoordinatesMapper, statsTrailMapper);
+                            final GeoLineMapper geoLineMapper,
+                            final StatsTrailMapper statsTrailMapper,
+                            final LinkedMediaMapper linkedMediaMapper) {
+        super(positionMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper);
     }
 
     @Override
@@ -41,40 +38,17 @@ public class TrailLightMapper extends TrailMapper {
                 .withCoordinates(getCoordinatesWithAltitude(doc))
                 .withDate(getLastUpdateDate(doc))
                 .withMaintainingSection(doc.getString(Trail.SECTION_CARED_BY))
+                .withGeoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .withMediaList(getLinkedMediaMapper(doc))
                 .build();
     }
 
-    private StatsTrailMetadata getMetadata(final Document doc) {
-        return new StatsTrailMetadata(doc.getDouble(StatsTrailMetadata.TOTAL_RISE),
-                doc.getDouble(StatsTrailMetadata.TOTAL_FALL),
-                doc.getDouble(StatsTrailMetadata.ETA),
-                doc.getDouble(StatsTrailMetadata.LENGTH));
-    }
+
 
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
-        final List<Document> list = doc.get(Trail.COORDINATES, List.class);
+        final List<Document> list = doc.getList(Trail.COORDINATES, Document.class);
         return IntStream.range(0, list.size()).filter(IS_EVEN).mapToObj(elem ->
                 trailCoordinatesMapper.mapToObject(list.get(elem))).collect(toList());
-    }
-
-    private List<Position> getLocations(final Document doc) {
-        final List<Document> list = doc.get(Trail.LOCATIONS, List.class);
-        return list.stream().map(positionMapper::mapToObject).collect(toList());
-    }
-
-    private Position getPos(final Document doc,
-                            final String fieldName) {
-        final Document pos = doc.get(fieldName, Document.class);
-        return positionMapper.mapToObject(pos);
-    }
-
-    private Date getLastUpdateDate(Document doc) {
-        return doc.getDate(Trail.LAST_UPDATE_DATE);
-    }
-
-    private TrailClassification getClassification(Document doc) {
-        final String classification = doc.getString(Trail.CLASSIFICATION);
-        return TrailClassification.valueOf(classification);
     }
 
 }

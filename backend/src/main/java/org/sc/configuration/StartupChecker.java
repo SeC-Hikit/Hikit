@@ -2,6 +2,7 @@ package org.sc.configuration;
 
 import org.apache.logging.log4j.Logger;
 import org.sc.data.repository.TrailDatasetVersionDao;
+import org.sc.util.FileManagementUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,20 +21,29 @@ public class StartupChecker {
     TrailDatasetVersionDao trailDatasetVersionDao;
     @Autowired
     AppProperties appProperties;
+    @Autowired
+    FileManagementUtil fileManagementUtil;
 
     @PostConstruct
     public void init() {
-        final File uploadDir = new File(appProperties.getTempStorage());
-        if (!uploadDir.exists()) {
-            if (!uploadDir.mkdir()) {
-                throw new IllegalStateException("Could not create temp folder");
-            }
-        }
+        configureDir(appProperties.getTempStorage(), "Could not create temp folder");
+        configureDir(appProperties.getTrailStorage(), "Could not create storage folder");
+        configureDir(fileManagementUtil.getMediaStoragePath(), "Could not create media folder");
 
         try {
             trailDatasetVersionDao.getLast();
         } catch (Exception mongoSocketOpenException) {
             LOGGER.error("Could not establish a correct configuration. Is the database available and running?");
+        }
+    }
+
+    private void configureDir(final String path,
+                              final String errorPath) {
+        final File dir = new File(path);
+        if (!dir.exists()) {
+            if (!dir.mkdir()) {
+                throw new IllegalStateException(errorPath);
+            }
         }
     }
 }

@@ -7,15 +7,18 @@ public class PositionDto {
     private String name;
     private List<String> tags;
     private TrailCoordinatesDto coordinates;
+    private List<String> mediaIds;
 
     public PositionDto() {
     }
 
     public PositionDto(String name, List<String> tags,
-                       TrailCoordinatesDto coordinates) {
+                       TrailCoordinatesDto coordinates,
+                       List<String> mediaIds) {
         this.name = name;
         this.tags = tags;
         this.coordinates = coordinates;
+        this.mediaIds = mediaIds;
     }
 
     public String getName() {
@@ -55,5 +58,13 @@ public class PositionDto {
     @Override
     public int hashCode() {
         return Objects.hash(getName(), getTags(), getCoordinates());
+    }
+
+    public List<String> getMediaIds() {
+        return mediaIds;
+    }
+
+    public void setMediaIds(List<String> mediaIds) {
+        this.mediaIds = mediaIds;
     }
 }

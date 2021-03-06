@@ -11,6 +11,7 @@ public class Trail {
 
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
+    public static final String MEDIA = "media";
     public static final String CODE = "code";
     public static final String START_POS = "startPos";
     public static final String FINAL_POS = "finalPos";
@@ -18,6 +19,7 @@ public class Trail {
     public static final String COUNTRY = "country";
     public static final String STATS_METADATA = "statsMetadata";
     public static final String COORDINATES = "coordinates";
+    public static final String GEO_LINE = "geoLine";
     public static final String LAST_UPDATE_DATE = "lastUpdate";
     public static final String SECTION_CARED_BY = "maintainingSection";
     public static final String LOCATIONS = "locations";
@@ -25,6 +27,7 @@ public class Trail {
     private String name;
     private String description;
     private String code;
+    private List<LinkedMedia> mediaList;
     private Position startPos;
     private Position finalPos;
     private List<Position> locations;
@@ -34,6 +37,7 @@ public class Trail {
     private Date lastUpdate;
     private String maintainingSection;
     private StatsTrailMetadata statsMetadata;
+    private GeoLineString geoLineString;
 
     public Trail() {
     }
@@ -49,7 +53,9 @@ public class Trail {
                  final StatsTrailMetadata statsMetadata,
                  final List<TrailCoordinates> coordinates,
                  final Date lastUpdate,
-                 final String maintainingSection) {
+                 final String maintainingSection,
+                 final GeoLineString geoLineString,
+                 final List<LinkedMedia> mediaList) {
         this.name = name;
         this.description = description;
         this.code = code;
@@ -62,6 +68,8 @@ public class Trail {
         this.coordinates = coordinates;
         this.lastUpdate = lastUpdate;
         this.maintainingSection = maintainingSection;
+        this.geoLineString = geoLineString;
+        this.mediaList = mediaList;
     }
 
     public String getName() {
@@ -116,6 +124,19 @@ public class Trail {
         return locations;
     }
 
+    public GeoLineString getGeoLineString() {
+        return geoLineString;
+    }
+
+    public List<LinkedMedia> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<LinkedMedia> mediaList) {
+        this.mediaList = mediaList;
+    }
+
+
     public static final class TrailBuilder {
         private String name;
         private String description;
@@ -129,6 +150,8 @@ public class Trail {
         private String country;
         private Date date;
         private String maintainingSection;
+        private GeoLineString geoLineString;
+        private List<LinkedMedia> mediaList;
 
         private TrailBuilder() {
         }
@@ -197,9 +220,19 @@ public class Trail {
             return this;
         }
 
+        public TrailBuilder withGeoLine(GeoLineString lineString) {
+            this.geoLineString = lineString;
+            return this;
+        }
+
+        public TrailBuilder withMediaList(List<LinkedMedia> mediaList) {
+            this.mediaList = mediaList;
+            return this;
+        }
+
         public Trail build() {
             return new Trail(name, description, code, startPos, finalPos, locations, classification,
-                    country, statsTrailMetadata, coordinates, date, maintainingSection);
+                    country, statsTrailMetadata, coordinates, date, maintainingSection, geoLineString, mediaList);
         }
     }
 }

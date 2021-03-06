@@ -10,7 +10,7 @@ import org.sc.common.rest.TrailClassification;
 import org.sc.common.rest.response.MaintenanceResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.MaintenanceController;
-import org.sc.data.dto.MaintenanceMapper;
+import org.sc.data.mapper.MaintenanceMapper;
 import org.sc.data.entity.Maintenance;
 import org.sc.data.repository.MaintenanceDAO;
 import org.springframework.beans.factory.annotation.Autowired;

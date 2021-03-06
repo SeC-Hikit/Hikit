@@ -51,20 +51,20 @@ public class TrailImportRestIntegrationTest {
     );
 
     public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-            new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE),
-            new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE),
-            Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE)),
+            new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE, Collections.emptyList()),
+            new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE, Collections.emptyList()),
+            Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE, Collections.emptyList())),
             EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
             EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION);
 
     @Autowired
-    private DataSource dataSource;
+    DataSource dataSource;
 
     @Autowired
-    private TrailImporterController importController;
+    TrailImporterController importController;
 
     @Autowired
-    private TrailController controller;
+    TrailController trailController;
 
     @Before
     public void setUp(){
@@ -74,7 +74,7 @@ public class TrailImportRestIntegrationTest {
 
     @Test
     public void getById_shouldFindOne(){
-        TrailResponse getTrail = controller.getByCode(EXPECTED_TRAIL_CODE, false);
+        TrailResponse getTrail = trailController.getByCode(EXPECTED_TRAIL_CODE, false);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
@@ -82,7 +82,7 @@ public class TrailImportRestIntegrationTest {
 
     @Test
     public void getPaged_shouldFindOne(){
-        TrailResponse getTrail = controller.get(0, 0, false);
+        TrailResponse getTrail = trailController.get(0, 0, false);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
@@ -90,15 +90,15 @@ public class TrailImportRestIntegrationTest {
 
     @Test
     public void delete() {
-        TrailResponse deletedByCode = controller.deleteByCode(EXPECTED_TRAIL_CODE, false);
+        TrailResponse deletedByCode = trailController.deleteByCode(EXPECTED_TRAIL_CODE, false);
         assertThat(deletedByCode.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
-        TrailResponse getTrail = controller.getByCode(EXPECTED_TRAIL_CODE, false);
+        TrailResponse getTrail = trailController.getByCode(EXPECTED_TRAIL_CODE, false);
         Assert.assertTrue(getTrail.getContent().isEmpty());
     }
 
     @Test
     public void contextLoads(){
-        assertThat(controller).isNotNull();
+        assertThat(trailController).isNotNull();
     }
 
     @After
