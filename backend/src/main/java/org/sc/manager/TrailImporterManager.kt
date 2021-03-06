@@ -8,7 +8,6 @@ import org.sc.data.mapper.PositionMapper
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.entity.StatsTrailMetadata
 import org.sc.data.entity.Trail
-import org.sc.data.entity.mapper.GeoLineMapper
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.processor.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,12 +15,13 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class TrailImporterManager @Autowired constructor(private val trailsManager : TrailManager,
-                                                  private val trailsCalculator : TrailsCalculator,
-                                                  private val trailDatasetVersionDao: TrailDatasetVersionDao,
-                                                  private val positionMapper : PositionMapper,
-                                                  private val trailCoordinatesMapper: TrailCoordinatesMapper
-){
+class TrailImporterManager @Autowired constructor(
+    private val trailsManager: TrailManager,
+    private val trailsCalculator: TrailsCalculator,
+    private val trailDatasetVersionDao: TrailDatasetVersionDao,
+    private val positionMapper: PositionMapper,
+    private val trailCoordinatesMapper: TrailCoordinatesMapper
+) {
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
 
@@ -45,7 +45,8 @@ class TrailImporterManager @Autowired constructor(private val trailsManager : Tr
             importingTrail.coordinates.map { trailCoordinatesMapper.trailCoordinatesDtoToTrailCoordinates(it) },
             Date(),
             importingTrail.maintainingSection,
-            GeoLineString(importingTrail.coordinates.map { SimpleCoordinates(it.longitude, it.latitude) })
+            GeoLineString(importingTrail.coordinates.map { SimpleCoordinates(it.longitude, it.latitude) }),
+            emptyList()
         )
 
         trailsManager.save(trail)

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import java.io.File
 
 @Component
-class MediaValidator @Autowired constructor(private val fileProbeUtil: FileProbeUtil) : Validator<File?> {
+class MediaFileValidator @Autowired constructor(private val fileProbeUtil: FileProbeUtil) : Validator<File?> {
     companion object {
         val mimeAllowed = setOf("image/png", "image/jpeg")
         const val fileMimeError = "Posted file is not in a correct format"

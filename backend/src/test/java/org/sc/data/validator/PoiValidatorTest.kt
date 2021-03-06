@@ -9,6 +9,7 @@ import org.sc.common.rest.KeyValueDto
 import org.sc.common.rest.PoiDto
 import org.sc.common.rest.PoiMacroType
 import org.sc.data.entity.Poi
+import org.sc.data.validator.poi.PoiValidator
 import java.lang.String.format
 import java.util.*
 

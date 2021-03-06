@@ -35,7 +35,7 @@ public class LinkedMediaMapper implements Mapper<LinkedMedia> {
         return new Document(LinkedMedia.ID, object.getId())
                 .append(LinkedMedia.DESCRIPTION, object.getDescription())
                 .append(LinkedMedia.KEY_VAL,
-                        object.getKeyValList().stream()
+                        object.getKeyVal().stream()
                                 .map(keyValMapper::mapToDocument)
                                 .collect(toList()));
     }

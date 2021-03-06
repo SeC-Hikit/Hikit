@@ -2,6 +2,7 @@ package org.sc.data.repository;
 
 public class MongoConstants {
     public static final String DOLLAR = "$";
+    public static final String DOT = ".";
     public static final String $_NEAR_OPERATOR = "$near";
     public static final String NEAR_OPERATOR = "near";
     public static final String LIMIT = "$limit";

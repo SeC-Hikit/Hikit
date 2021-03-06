@@ -1,14 +1,14 @@
 package org.sc.controller;
 
 import org.sc.common.rest.*;
-import org.sc.common.rest.response.LinkedMediaResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.data.validator.LinkedMediaValidator;
-import org.sc.data.validator.PoiValidator;
+import org.sc.data.validator.MediaExistenceValidator;
+import org.sc.data.validator.poi.PoiExistenceValidator;
+import org.sc.data.validator.poi.PoiValidator;
 import org.sc.manager.PoiManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,15 +29,21 @@ public class POIController {
 
     private final PoiManager poiManager;
     private final PoiValidator poiValidator;
+    private final PoiExistenceValidator poiExistenceValidator;
     private final LinkedMediaValidator linkedMediaValidator;
+    private final MediaExistenceValidator mediaExistanceValidator;
 
     @Autowired
     public POIController(final PoiManager poiManager,
                          final PoiValidator poiValidator,
-                         final LinkedMediaValidator linkedMediaValidator) {
+                         final PoiExistenceValidator poiExistenceValidator,
+                         final LinkedMediaValidator linkedMediaValidator,
+                         final MediaExistenceValidator mediaExistanceValidator) {
         this.poiManager = poiManager;
         this.poiValidator = poiValidator;
+        this.poiExistenceValidator = poiExistenceValidator;
         this.linkedMediaValidator = linkedMediaValidator;
+        this.mediaExistanceValidator = mediaExistanceValidator;
     }
 
     @GetMapping
@@ -93,22 +99,27 @@ public class POIController {
     }
 
     @PutMapping("/media/{id}")
-    public LinkedMediaResponse addMediaToPoi(@PathVariable String id,
-                                             @RequestBody LinkedMediaDto linkedMediaRequest) {
-        final Set<String> errors = linkedMediaValidator.validate(linkedMediaRequest);
+    public PoiResponse addMediaToPoi(@PathVariable String id,
+                                     @RequestBody LinkedMediaDto linkedMediaRequest) {
+        final Set<String> errors = poiExistenceValidator.validate(id);
+        errors.addAll(linkedMediaValidator.validate(linkedMediaRequest));
         if (errors.isEmpty()) {
-            final List<LinkedMediaResultDto> linkedMediaResultDtos =
+            final List<PoiDto> poiDtos =
                     poiManager.linkMedia(id, linkedMediaRequest);
-            return new LinkedMediaResponse(Status.OK, Collections.emptySet(), linkedMediaResultDtos);
+            return new PoiResponse(Status.OK, Collections.emptySet(), poiDtos);
         }
-        return new LinkedMediaResponse(Status.ERROR, errors, Collections.emptyList());
+        return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
     @DeleteMapping("/media/{id}")
-    public LinkedMediaResponse addMediaToPoi(@PathVariable String id,
-                                             @RequestBody LinkedMediaDelRequestDto linkedMediaRequest) {
-        // TODO
-        throw new NotImplementedException();
+    public PoiResponse removeMediaFromPoi(@PathVariable String id,
+                                          @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
+        final Set<String> errors = poiExistenceValidator.validate(id);
+        errors.addAll(mediaExistanceValidator.validate(unLinkeMediaRequestDto.getId()));
+        if (errors.isEmpty()) {
+            return new PoiResponse(Status.OK, errors, poiManager.unlinkMedia(id, unLinkeMediaRequestDto));
+        }
+        return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
     @DeleteMapping("/{id}")
@@ -121,7 +132,6 @@ public class POIController {
                             format("No POI was found with id '%s'", id))), Collections.emptyList());
         }
         return new PoiResponse(Status.OK, Collections.emptySet(), deleted);
-
     }
 
 

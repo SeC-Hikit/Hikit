@@ -3,6 +3,8 @@ package org.sc.manager
 import org.sc.common.rest.LinkedMediaDto
 import org.sc.common.rest.LinkedMediaResultDto
 import org.sc.common.rest.PoiDto
+import org.sc.common.rest.UnLinkeMediaRequestDto
+import org.sc.data.entity.Poi
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PoiMapper
 import org.sc.data.repository.PoiDAO
@@ -13,8 +15,8 @@ import org.springframework.stereotype.Component
 class PoiManager @Autowired constructor(
     private val poiDtoMapper: PoiMapper,
     private val poiDAO: PoiDAO,
-    private val linkedMediaMapper: LinkedMediaMapper
-) {
+    private val linkedMediaMapper: LinkedMediaMapper)
+{
 
     fun getPoiPaginated(page: Int, count: Int): List<PoiDto> {
         return poiDAO.get(page, count).map { poiDtoMapper.poiToPoiDto(it) }
@@ -23,6 +25,9 @@ class PoiManager @Autowired constructor(
     fun getPoiByID(id: String): List<PoiDto> {
         return poiDAO.getById(id).map { poiDtoMapper.poiToPoiDto(it) }
     }
+
+    fun doesPoiExist(id: String): Boolean = poiDAO.getById(id).isNotEmpty()
+
 
     fun getPoiByName(name: String, page: Int, count: Int): List<PoiDto> {
         val elements = poiDAO.getByName(name, page, count).map { poiDtoMapper.poiToPoiDto(it) }
@@ -62,9 +67,13 @@ class PoiManager @Autowired constructor(
         return listOf(poiDto)
     }
 
-    fun linkMedia(id: String, linkedMedia: LinkedMediaDto): List<LinkedMediaResultDto> {
+    fun linkMedia(id: String, linkedMedia: LinkedMediaDto): List<PoiDto> {
         val linkMedia = linkedMediaMapper.map(linkedMedia)
-        val result = poiDAO.linkMedia(id, linkMedia)
-        return result.map { LinkedMediaResultDto(id, linkedMediaMapper.map(it)) }
+        val mediaLinkingResult = poiDAO.linkMedia(id, linkMedia)
+        return mediaLinkingResult.map { poiDtoMapper.poiToPoiDto(it) }
+    }
+
+    fun unlinkMedia(id: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto) : List<PoiDto>{
+        return poiDAO.unlinkMediaId(id, unLinkeMediaRequestDto.id).map { poiDtoMapper.poiToPoiDto(it) }
     }
 }

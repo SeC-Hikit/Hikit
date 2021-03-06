@@ -10,14 +10,14 @@ public class LinkedMedia {
 
     private String id;
     private String description;
-    private List<KeyVal> keyValList;
+    private List<KeyVal> keyVal;
 
     public LinkedMedia(String id,
                        String description,
-                       List<KeyVal> keyValList) {
+                       List<KeyVal> keyVal) {
         this.id = id;
         this.description = description;
-        this.keyValList = keyValList;
+        this.keyVal = keyVal;
     }
 
     public String getId() {
@@ -28,8 +28,8 @@ public class LinkedMedia {
         return description;
     }
 
-    public List<KeyVal> getKeyValList() {
-        return keyValList;
+    public List<KeyVal> getKeyVal() {
+        return keyVal;
     }
 
     public void setId(String id) {
@@ -40,7 +40,7 @@ public class LinkedMedia {
         this.description = description;
     }
 
-    public void setKeyValList(List<KeyVal> keyValList) {
-        this.keyValList = keyValList;
+    public void setKeyVal(List<KeyVal> keyVal) {
+        this.keyVal = keyVal;
     }
 }

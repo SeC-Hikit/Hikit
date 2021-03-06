@@ -1,11 +1,9 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.*;
 import org.sc.data.entity.*;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
@@ -20,8 +18,9 @@ public class TrailLightMapper extends TrailMapper {
     public TrailLightMapper(final PositionMapper positionMapper,
                             final TrailCoordinatesMapper trailCoordinatesMapper,
                             final GeoLineMapper geoLineMapper,
-                            final StatsTrailMapper statsTrailMapper) {
-        super(positionMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper);
+                            final StatsTrailMapper statsTrailMapper,
+                            final LinkedMediaMapper linkedMediaMapper) {
+        super(positionMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper);
     }
 
     @Override
@@ -40,11 +39,14 @@ public class TrailLightMapper extends TrailMapper {
                 .withDate(getLastUpdateDate(doc))
                 .withMaintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .withGeoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .withMediaList(getLinkedMediaMapper(doc))
                 .build();
     }
 
+
+
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
-        final List<Document> list = doc.get(Trail.COORDINATES, List.class);
+        final List<Document> list = doc.getList(Trail.COORDINATES, Document.class);
         return IntStream.range(0, list.size()).filter(IS_EVEN).mapToObj(elem ->
                 trailCoordinatesMapper.mapToObject(list.get(elem))).collect(toList());
     }

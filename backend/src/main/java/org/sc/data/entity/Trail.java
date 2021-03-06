@@ -11,6 +11,7 @@ public class Trail {
 
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
+    public static final String MEDIA = "media";
     public static final String CODE = "code";
     public static final String START_POS = "startPos";
     public static final String FINAL_POS = "finalPos";
@@ -26,6 +27,7 @@ public class Trail {
     private String name;
     private String description;
     private String code;
+    private List<LinkedMedia> mediaList;
     private Position startPos;
     private Position finalPos;
     private List<Position> locations;
@@ -52,7 +54,8 @@ public class Trail {
                  final List<TrailCoordinates> coordinates,
                  final Date lastUpdate,
                  final String maintainingSection,
-                 final GeoLineString geoLineString) {
+                 final GeoLineString geoLineString,
+                 final List<LinkedMedia> mediaList) {
         this.name = name;
         this.description = description;
         this.code = code;
@@ -66,6 +69,7 @@ public class Trail {
         this.lastUpdate = lastUpdate;
         this.maintainingSection = maintainingSection;
         this.geoLineString = geoLineString;
+        this.mediaList = mediaList;
     }
 
     public String getName() {
@@ -124,6 +128,14 @@ public class Trail {
         return geoLineString;
     }
 
+    public List<LinkedMedia> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<LinkedMedia> mediaList) {
+        this.mediaList = mediaList;
+    }
+
 
     public static final class TrailBuilder {
         private String name;
@@ -139,6 +151,7 @@ public class Trail {
         private Date date;
         private String maintainingSection;
         private GeoLineString geoLineString;
+        private List<LinkedMedia> mediaList;
 
         private TrailBuilder() {
         }
@@ -212,9 +225,14 @@ public class Trail {
             return this;
         }
 
+        public TrailBuilder withMediaList(List<LinkedMedia> mediaList) {
+            this.mediaList = mediaList;
+            return this;
+        }
+
         public Trail build() {
             return new Trail(name, description, code, startPos, finalPos, locations, classification,
-                    country, statsTrailMetadata, coordinates, date, maintainingSection, geoLineString);
+                    country, statsTrailMetadata, coordinates, date, maintainingSection, geoLineString, mediaList);
         }
     }
 }

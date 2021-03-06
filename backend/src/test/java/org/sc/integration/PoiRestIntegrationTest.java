@@ -27,11 +27,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class PoiRestIntegrationTest {
 
-    private static final String EXPECTED_ID = "MY_ID";
-    private static final String EXPECTED_NAME = "ANY_POI";
-    private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
+    public static final String EXPECTED_ID = "MY_ID";
+    public static final String EXPECTED_NAME = "ANY_POI";
+    public static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
     public static final String EXPECTED_TRAIL_CODE = "123BO";
-    private static final Date EXPECTED_DATE = new Date();
+    public static final Date EXPECTED_DATE = new Date();
     public static final CoordinatesDto EXPECTED_COORDINATE = new CoordinatesDto(44.436084, 11.315620, 250.0);
     public static final List<String> EXPECTED_MICRO_TYPES = Arrays.asList("minorType1", "minorType2");
     public static final PoiMacroType EXPECTED_MACRO_TYPE = PoiMacroType.BELVEDERE;

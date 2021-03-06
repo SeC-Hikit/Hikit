@@ -6,8 +6,6 @@ import org.sc.data.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.print.Doc;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,16 +18,18 @@ public class TrailMapper implements Mapper<Trail> {
     protected final TrailCoordinatesMapper trailCoordinatesMapper;
     protected final GeoLineMapper geoLineMapper;
     protected final StatsTrailMapper statsTrailMapper;
+    private final LinkedMediaMapper linkedMediaMapper;
 
     @Autowired
     public TrailMapper(final PositionMapper positionMapper,
                        final TrailCoordinatesMapper trailCoordinatesMapper,
                        final GeoLineMapper geoLineMapper,
-                       final StatsTrailMapper statsTrailMapper) {
+                       final StatsTrailMapper statsTrailMapper, LinkedMediaMapper linkedMediaMapper) {
         this.positionMapper = positionMapper;
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.geoLineMapper = geoLineMapper;
         this.statsTrailMapper = statsTrailMapper;
+        this.linkedMediaMapper = linkedMediaMapper;
     }
 
     @Override
@@ -48,6 +48,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .withDate(getLastUpdateDate(doc))
                 .withMaintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .withGeoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .withMediaList(getLinkedMediaMapper(doc))
                 .build();
     }
 
@@ -68,6 +69,9 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsMetadata()))
                 .append(Trail.COORDINATES, object.getCoordinates().stream()
                         .map(trailCoordinatesMapper::mapToDocument).collect(toList()))
+                .append(Trail.MEDIA, object.getMediaList().stream()
+                        .map(linkedMediaMapper::mapToDocument)
+                        .collect(toList()))
                 .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()));
     }
 
@@ -80,6 +84,11 @@ public class TrailMapper implements Mapper<Trail> {
                 doc.getDouble(StatsTrailMetadata.TOTAL_FALL),
                 doc.getDouble(StatsTrailMetadata.ETA),
                 doc.getDouble(StatsTrailMetadata.LENGTH));
+    }
+
+    protected List<LinkedMedia> getLinkedMediaMapper(Document doc) {
+        List<Document> list = doc.getList(Poi.MEDIA, Document.class);
+        return list.stream().map(linkedMediaMapper::mapToObject).collect(toList());
     }
 
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {

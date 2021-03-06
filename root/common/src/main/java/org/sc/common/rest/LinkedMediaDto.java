@@ -6,17 +6,17 @@ import java.util.Objects;
 public class LinkedMediaDto {
     private String id;
     private String description;
-    private List<KeyValueDto> keyValList;
+    private List<KeyValueDto> keyVal;
 
     public LinkedMediaDto() {
     }
 
     public LinkedMediaDto(String id,
                           String description,
-                          List<KeyValueDto> keyValList) {
+                          List<KeyValueDto> keyVal) {
         this.id = id;
         this.description = description;
-        this.keyValList = keyValList;
+        this.keyVal = keyVal;
     }
 
     public String getId() {
@@ -35,12 +35,12 @@ public class LinkedMediaDto {
         this.description = description;
     }
 
-    public List<KeyValueDto> getKeyValList() {
-        return keyValList;
+    public List<KeyValueDto> getKeyVal() {
+        return keyVal;
     }
 
-    public void setKeyValList(List<KeyValueDto> keyValList) {
-        this.keyValList = keyValList;
+    public void setKeyVal(List<KeyValueDto> keyVal) {
+        this.keyVal = keyVal;
     }
 
     @Override
@@ -50,11 +50,11 @@ public class LinkedMediaDto {
         LinkedMediaDto that = (LinkedMediaDto) o;
         return getId().equals(that.getId()) &&
                 getDescription().equals(that.getDescription()) &&
-                getKeyValList().equals(that.getKeyValList());
+                getKeyVal().equals(that.getKeyVal());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDescription(), getKeyValList());
+        return Objects.hash(getId(), getDescription(), getKeyVal());
     }
 }

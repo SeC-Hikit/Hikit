@@ -57,6 +57,8 @@ class MediaManager @Autowired constructor(
 
     fun getById(id: String) = mediaDAO.getById(id).map { mediaMapper.mediaToDto(it) }
 
+    fun doesMediaExist(id: String) = getById(id).isNotEmpty()
+
     fun deleteById(id: String): List<MediaDto> {
         poiDAO.unlinkMediaByAllPoi(id)
         trailDAO.unlinkMediaByAllTrails(id)

@@ -16,6 +16,7 @@ public class TrailDto {
     private String country;
     private StatsTrailMetadataDto statsMetadata;
     private List<TrailCoordinatesDto> coordinates;
+    private List<LinkedMediaDto> mediaList;
     private Date lastUpdate;
     private String maintainingSection;
 
@@ -25,7 +26,7 @@ public class TrailDto {
     public TrailDto(String code, String name, String description, PositionDto startPos,
                     PositionDto finalPos, List<PositionDto> locations, TrailClassification classification, String country,
                     StatsTrailMetadataDto statsMetadata, List<TrailCoordinatesDto> coordinates,
-                    Date lastUpdate, String maintainingSection) {
+                    Date lastUpdate, String maintainingSection, List<LinkedMediaDto> mediaList) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -38,6 +39,7 @@ public class TrailDto {
         this.coordinates = coordinates;
         this.lastUpdate = lastUpdate;
         this.maintainingSection = maintainingSection;
+        this.mediaList = mediaList;
     }
 
     public String getCode() {
@@ -136,23 +138,21 @@ public class TrailDto {
         this.maintainingSection = maintainingSection;
     }
 
+
+    public List<LinkedMediaDto> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<LinkedMediaDto> mediaList) {
+        this.mediaList = mediaList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TrailDto trailDto = (TrailDto) o;
-        return getCode().equals(trailDto.getCode()) &&
-                getName().equals(trailDto.getName()) &&
-                getDescription().equals(trailDto.getDescription()) &&
-                getStartPos().equals(trailDto.getStartPos()) &&
-                getFinalPos().equals(trailDto.getFinalPos()) &&
-                getLocations().equals(trailDto.getLocations()) &&
-                getClassification() == trailDto.getClassification() &&
-                getCountry().equals(trailDto.getCountry()) &&
-                getStatsMetadata().equals(trailDto.getStatsMetadata()) &&
-                getCoordinates().equals(trailDto.getCoordinates()) &&
-                getLastUpdate().equals(trailDto.getLastUpdate()) &&
-                getMaintainingSection().equals(trailDto.getMaintainingSection());
+        return getCode().equals(trailDto.getCode()) && getName().equals(trailDto.getName()) && getDescription().equals(trailDto.getDescription()) && getStartPos().equals(trailDto.getStartPos()) && getFinalPos().equals(trailDto.getFinalPos()) && getLocations().equals(trailDto.getLocations()) && getClassification() == trailDto.getClassification() && getCountry().equals(trailDto.getCountry()) && getStatsMetadata().equals(trailDto.getStatsMetadata()) && getCoordinates().equals(trailDto.getCoordinates()) && getMediaList().equals(trailDto.getMediaList()) && getLastUpdate().equals(trailDto.getLastUpdate()) && getMaintainingSection().equals(trailDto.getMaintainingSection());
     }
 
     @Override

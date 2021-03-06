@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.sc.common.rest.PoiDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.LinkedMedia;
 import org.sc.data.entity.Poi;
@@ -113,16 +114,18 @@ public class PoiDAO {
         return byId;
     }
 
-    public List<LinkedMedia> linkMedia(final String id,
-                                       final LinkedMedia linkMedia) {
+    public List<Poi> linkMedia(final String id,
+                               final LinkedMedia linkMedia) {
         collection.updateOne(new Document(Poi.OBJECT_ID, id), new Document(ADD_TO_SET,
                 new Document(Poi.MEDIA, linkedMediaMapper.mapToDocument(linkMedia))));
-        return Collections.singletonList(linkMedia);
+        return getById(id);
     }
 
-    public void unlinkMediaId(final String id, final String mediaId) {
+    public List<Poi> unlinkMediaId(final String id, final String mediaId) {
         collection.updateOne(new Document(Poi.OBJECT_ID, id),
-                new Document(MongoConstants.PULL, new Document(Poi.MEDIA, mediaId)));
+                new Document(MongoConstants.PULL,
+                        new Document(Poi.MEDIA, new Document(LinkedMedia.ID, mediaId))));
+        return getById(id);
     }
 
     public void unlinkMediaByAllPoi(final String mediaId) {

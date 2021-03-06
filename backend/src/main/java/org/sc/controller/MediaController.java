@@ -5,7 +5,7 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.MediaResponse;
 import org.sc.configuration.AppProperties;
 import org.sc.data.validator.FileNameValidator;
-import org.sc.data.validator.MediaValidator;
+import org.sc.data.validator.MediaFileValidator;
 import org.sc.manager.MediaManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,17 +32,17 @@ public class MediaController {
 
     public File uploadDir;
 
-    private final MediaValidator mediaValidator;
+    private final MediaFileValidator mediaFileValidator;
     private final FileNameValidator fileNameValidator;
     private final MediaManager mediaManager;
     private final AppProperties appProperties;
 
     @Autowired
-    public MediaController(final MediaValidator mediaValidator,
+    public MediaController(final MediaFileValidator mediaFileValidator,
                            final FileNameValidator fileNameValidator,
                            final MediaManager mediaManager,
                            final AppProperties appProperties) {
-        this.mediaValidator = mediaValidator;
+        this.mediaFileValidator = mediaFileValidator;
         this.fileNameValidator = fileNameValidator;
         this.mediaManager = mediaManager;
         this.appProperties = appProperties;
@@ -63,7 +63,7 @@ public class MediaController {
         try (final InputStream input = file.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        validationErrors.addAll(mediaValidator.validate(tempFile.toFile()));
+        validationErrors.addAll(mediaFileValidator.validate(tempFile.toFile()));
 
         if (validationErrors.isEmpty()) {
             assert originalFileName != null;
@@ -87,7 +87,7 @@ public class MediaController {
         if(StringUtils.isEmpty(id)){
             return new MediaResponse(Status.ERROR, Collections.singleton(EMPTY_ID_ERROR), Collections.emptyList());
         }
-        List<MediaDto> medias = mediaManager.getById(id);
+        List<MediaDto> medias = mediaManager.deleteById(id);
         return new MediaResponse(Status.OK, Collections.emptySet(), medias);
     }
 
