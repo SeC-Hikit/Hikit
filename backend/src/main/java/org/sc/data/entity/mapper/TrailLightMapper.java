@@ -1,8 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.model.Trail;
-import org.sc.data.model.TrailCoordinates;
+import org.sc.data.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,8 +17,10 @@ public class TrailLightMapper extends TrailMapper {
 
     public TrailLightMapper(final PositionMapper positionMapper,
                             final TrailCoordinatesMapper trailCoordinatesMapper,
-                            final StatsTrailMapper statsTrailMapper) {
-        super(positionMapper, trailCoordinatesMapper, statsTrailMapper);
+                            final GeoLineMapper geoLineMapper,
+                            final StatsTrailMapper statsTrailMapper,
+                            final LinkedMediaMapper linkedMediaMapper) {
+        super(positionMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper);
     }
 
     @Override
@@ -42,8 +43,12 @@ public class TrailLightMapper extends TrailMapper {
                 .lastUpdate(getLastUpdateDate(doc))
                 .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
+                .geoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .mediaList(getLinkedMediaMapper(doc))
                 .build();
     }
+
+
 
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
         final List<Document> list = doc.getList(Trail.COORDINATES, Document.class);

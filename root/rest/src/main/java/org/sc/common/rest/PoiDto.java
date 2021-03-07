@@ -13,7 +13,7 @@ public class PoiDto {
     private List<String> tags;
     private PoiMacroType macroType;
     private List<String> microType;
-    private List<String> mediaIds;
+    private List<LinkedMediaDto> mediaList;
     private List<String> trailIds;
     private CoordinatesDto coordinates;
     private Date createdOn;
@@ -26,7 +26,7 @@ public class PoiDto {
 
     public PoiDto(String id, String name, String description, List<String> tags,
                   PoiMacroType macroType, List<String> microType,
-                  List<String> mediaIds, List<String> trailIds,
+                  List<LinkedMediaDto> mediaList, List<String> trailIds,
                   CoordinatesDto coordinates, Date createdOn,
                   Date lastUpdatedOn, List<String> externalResources,
                   List<KeyValueDto> keyVal) {
@@ -36,7 +36,7 @@ public class PoiDto {
         this.tags = tags;
         this.macroType = macroType;
         this.microType = microType;
-        this.mediaIds = mediaIds;
+        this.mediaList = mediaList;
         this.trailIds = trailIds;
         this.coordinates = coordinates;
         this.createdOn = createdOn;
@@ -69,8 +69,8 @@ public class PoiDto {
         return microType;
     }
 
-    public List<String> getMediaIds() {
-        return mediaIds;
+    public List<LinkedMediaDto> getMediaList() {
+        return mediaList;
     }
 
     public List<String> getTrailIds() {
@@ -117,8 +117,8 @@ public class PoiDto {
         this.microType = microType;
     }
 
-    public void setMediaIds(List<String> mediaIds) {
-        this.mediaIds = mediaIds;
+    public void setMediaList(List<LinkedMediaDto> mediaList) {
+        this.mediaList = mediaList;
     }
 
     public void setTrailIds(List<String> trailIds) {
@@ -160,7 +160,7 @@ public class PoiDto {
                 getTags().equals(poiDto.getTags()) &&
                 getMacroType() == poiDto.getMacroType() &&
                 getMicroType().equals(poiDto.getMicroType()) &&
-                getMediaIds().equals(poiDto.getMediaIds()) &&
+                getMediaList().equals(poiDto.getMediaList()) &&
                 getTrailIds().equals(poiDto.getTrailIds()) &&
                 getCoordinates().equals(poiDto.getCoordinates()) &&
                 getCreatedOn().equals(poiDto.getCreatedOn()) &&
@@ -172,7 +172,7 @@ public class PoiDto {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getName(), getDescription(), getTags(),
-                getMacroType(), getMicroType(), getMediaIds(), getTrailIds(),
+                getMacroType(), getMicroType(), getMediaList(), getTrailIds(),
                 getCoordinates(), getCreatedOn(), getLastUpdatedOn(),
                 getExternalResources(), getKeyVal());
     }

@@ -1,4 +1,4 @@
-package org.sc.data.dto;
+package org.sc.data.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -8,8 +8,7 @@ import org.sc.common.rest.PoiDto;
 import org.sc.data.model.KeyVal;
 import org.sc.data.model.Poi;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface PoiMapper {
 
     @Mapping(source = "_id", target = "id")

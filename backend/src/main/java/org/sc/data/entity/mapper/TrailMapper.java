@@ -15,15 +15,21 @@ public class TrailMapper implements Mapper<Trail> {
 
     protected final PositionMapper positionMapper;
     protected final TrailCoordinatesMapper trailCoordinatesMapper;
+    protected final GeoLineMapper geoLineMapper;
     protected final StatsTrailMapper statsTrailMapper;
+    private final LinkedMediaMapper linkedMediaMapper;
 
     @Autowired
-    public TrailMapper(PositionMapper positionMapper,
-                       TrailCoordinatesMapper trailCoordinatesMapper,
-                       StatsTrailMapper statsTrailMapper) {
+    public TrailMapper(final PositionMapper positionMapper,
+                       final TrailCoordinatesMapper trailCoordinatesMapper,
+                       final GeoLineMapper geoLineMapper,
+                       final StatsTrailMapper statsTrailMapper,
+                       final LinkedMediaMapper linkedMediaMapper) {
         this.positionMapper = positionMapper;
         this.trailCoordinatesMapper = trailCoordinatesMapper;
+        this.geoLineMapper = geoLineMapper;
         this.statsTrailMapper = statsTrailMapper;
+        this.linkedMediaMapper = linkedMediaMapper;
     }
 
     @Override
@@ -46,6 +52,8 @@ public class TrailMapper implements Mapper<Trail> {
                 .lastUpdate(getLastUpdateDate(doc))
                 .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
+                .geoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .mediaList(getLinkedMediaMapper(doc))
                 .build();
     }
 
@@ -68,43 +76,52 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.TERRITORIAL_CARED_BY, object.getTerritorialDivision())
                 .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsTrailMetadata()))
                 .append(Trail.COORDINATES, object.getCoordinates().stream()
-                        .map(trailCoordinatesMapper::mapToDocument).collect(toList()));
+                        .map(trailCoordinatesMapper::mapToDocument).collect(toList()))
+                .append(Trail.MEDIA, object.getMediaList().stream()
+                        .map(linkedMediaMapper::mapToDocument)
+                        .collect(toList()))
+                .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()));
     }
 
-    StatsTrailMetadata getMetadata(final Document doc) {
+    protected GeoLineString getGeoLine(final Document doc) {
+        return geoLineMapper.mapToObject(doc);
+    }
+
+    protected StatsTrailMetadata getMetadata(final Document doc) {
         return new StatsTrailMetadata(doc.getDouble(StatsTrailMetadata.TOTAL_RISE),
                 doc.getDouble(StatsTrailMetadata.TOTAL_FALL),
                 doc.getDouble(StatsTrailMetadata.ETA),
                 doc.getDouble(StatsTrailMetadata.LENGTH));
     }
 
-    List<Position> getLocations(final Document doc) {
-        final List<Document> list = doc.getList(Trail.LOCATIONS, Document.class);
-        return list.stream().map(positionMapper::mapToObject).collect(toList());
-    }
-
-    Position getPos(final Document doc,
-                            final String fieldName) {
-        final Document pos = doc.get(fieldName, Document.class);
-        return positionMapper.mapToObject(pos);
-    }
-
-    Date getLastUpdateDate(Document doc) {
-        return doc.getDate(Trail.LAST_UPDATE_DATE);
-    }
-
-    Date getCreatedDate(Document doc) {
-        return doc.getDate(Trail.CREATED_ON_DATE);
-    }
-
-    TrailClassification getClassification(Document doc) {
-        final String classification = doc.getString(Trail.CLASSIFICATION);
-        return TrailClassification.valueOf(classification);
+    protected List<LinkedMedia> getLinkedMediaMapper(Document doc) {
+        List<Document> list = doc.getList(Poi.MEDIA, Document.class);
+        return list.stream().map(linkedMediaMapper::mapToObject).collect(toList());
     }
 
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
         final List<Document> list = doc.getList(Trail.COORDINATES, Document.class);
         return list.stream().map(trailCoordinatesMapper::mapToObject).collect(toList());
+    }
+
+    protected List<Position> getLocations(final Document doc) {
+        List<Document> list = doc.getList(Trail.LOCATIONS, Document.class);
+        return list.stream().map(positionMapper::mapToObject).collect(toList());
+    }
+
+    protected Position getPos(final Document doc,
+                            final String fieldName) {
+        final Document pos = doc.get(fieldName, Document.class);
+        return positionMapper.mapToObject(pos);
+    }
+
+    protected Date getLastUpdateDate(Document doc) {
+        return doc.getDate(Trail.LAST_UPDATE_DATE);
+    }
+
+    protected TrailClassification getClassification(Document doc) {
+        final String classification = doc.getString(Trail.CLASSIFICATION);
+        return TrailClassification.valueOf(classification);
     }
 
 }

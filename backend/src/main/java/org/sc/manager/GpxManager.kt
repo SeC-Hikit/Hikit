@@ -21,7 +21,7 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
                                         private val trailsCalculator: TrailsCalculator,
                                         private val altitudeService: AltitudeServiceAdapter,
                                         private val trailCoordinatesMapper: TrailCoordinatesMapper,
-                                        private val appProps: AppProperties) {
+                                        appProps: AppProperties) {
 
     private val pathToStoredFiles = File(appProps.trailStorage).toPath()
     private val emptyDefaultString = ""
@@ -48,8 +48,18 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
         return TrailPreparationModelDto(
                 track.name.orElse(emptyDefaultString),
                 track.description.orElse(emptyDefaultString),
-            PositionDto("", emptyList(), trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.first())),
-            PositionDto("", emptyList(), trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.last())),
+            PositionDto(
+                "",
+                emptyList(),
+                trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.first()),
+                emptyList()
+            ),
+            PositionDto(
+                "",
+                emptyList(),
+                trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.last()),
+                emptyList()
+            ),
                 trailCoordinates.map { trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(it) }
         )
     }

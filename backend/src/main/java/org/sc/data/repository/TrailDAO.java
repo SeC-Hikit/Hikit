@@ -11,10 +11,8 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.mapper.Mapper;
-import org.sc.data.entity.mapper.TrailLightMapper;
-import org.sc.data.entity.mapper.TrailMapper;
-import org.sc.data.entity.mapper.TrailPreviewMapper;
+import org.sc.data.entity.*;
+import org.sc.data.entity.mapper.*;
 import org.sc.data.model.Maintenance;
 import org.sc.data.model.Position;
 import org.sc.data.model.Trail;
@@ -35,21 +33,22 @@ public class TrailDAO {
 
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.COORDINATES;
 
-    public static final int RESULT_LIMIT = 150;
-
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
+    private final LinkedMediaMapper linkedMediaMapper;
     private final Mapper<Trail> trailLightMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
 
     @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
+                    final LinkedMediaMapper linkedMediaMapper,
                     final TrailLightMapper trailLightMapper,
                     final TrailPreviewMapper trailPreviewMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.linkedMediaMapper = linkedMediaMapper;
         this.trailLightMapper = trailLightMapper;
         this.trailPreviewMapper = trailPreviewMapper;
     }
@@ -86,7 +85,7 @@ public class TrailDAO {
         if (isLight) {
             return toTrailsLightList(collection.find(new Document()).skip(page).limit(count));
         }
-        return toTrailsList(collection.find(new Document()).limit(RESULT_LIMIT));
+        return toTrailsList(collection.find(new Document()).skip(page).limit(count));
     }
 
     public List<Trail> getTrailById(String id, boolean isLight) {
@@ -124,7 +123,6 @@ public class TrailDAO {
         throw new IllegalStateException();
     }
 
-    @NotNull
     public List<TrailPreview> getTrailPreviews(final int page, final int count) {
         return toTrailsPreviewList(collection.find()
                 .projection(projectPreview())
@@ -132,10 +130,30 @@ public class TrailDAO {
                 .limit(count));
     }
 
-    @NotNull
-    public List<TrailPreview> trailPreviewByCode(final @NotNull String code) {
+    public List<TrailPreview> trailPreviewByCode(final String code) {
         return toTrailsPreviewList(collection.find(new Document(Trail.CODE, code))
                 .projection(projectPreview()));
+    }
+
+    public void unlinkMediaByAllTrails(final String mediaId) {
+        // E.g: db.core.test.update({"b.mediaId": 1}, { $pull : { "b.$.mediaId": 1}}, {multi: true})
+        collection.updateMany(new Document(),
+                new Document(PULL, new Document((Trail.MEDIA),
+                        new Document(LinkedMedia.ID, mediaId))));
+    }
+
+    public List<Trail> linkMedia(final String code,
+                                 final LinkedMedia linkMedia) {
+        collection.updateOne(new Document(Trail.CODE, code),
+                new Document(ADD_TO_SET, new Document(Trail.MEDIA, linkedMediaMapper.mapToDocument(linkMedia))));
+        return getTrailByCode(code, true);
+    }
+
+    public List<Trail> unlinkMedia(final String code,
+                                   final String mediaId) {
+        collection.updateOne(new Document(Trail.CODE, code),
+                new Document(PULL, new Document(Trail.MEDIA, new Document(LinkedMedia.ID, mediaId))));
+        return getTrailByCode(code, true);
     }
 
     private List<TrailPreview> toTrailsPreviewList(final FindIterable<Document> documents) {
@@ -144,18 +162,18 @@ public class TrailDAO {
     }
 
     private Document projectPreview() {
-        return new Document(Trail.CODE, 1).append(Trail.START_POS, 1).append(Trail.FINAL_POS, 1).append(Trail.CLASSIFICATION, 1)
+        return new Document(Trail.CODE, 1)
+                .append(Trail.START_POS, 1)
+                .append(Trail.FINAL_POS, 1)
+                .append(Trail.CLASSIFICATION, 1)
                 .append(Trail.LAST_UPDATE_DATE, 1);
     }
 
-    @NotNull
     private List<Trail> toTrailsLightList(Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
     }
 
-    @NotNull
     private List<Trail> toTrailsList(Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
-
 }

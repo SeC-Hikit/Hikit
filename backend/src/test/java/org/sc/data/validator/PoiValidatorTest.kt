@@ -9,6 +9,7 @@ import org.sc.common.rest.KeyValueDto
 import org.sc.common.rest.PoiDto
 import org.sc.data.model.PoiMacroType
 import java.lang.String.format
+import org.sc.data.validator.poi.PoiValidator
 import java.util.*
 
 class PoiValidatorTest {

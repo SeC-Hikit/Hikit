@@ -4,10 +4,15 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.sc.common.rest.PoiDto;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.LinkedMedia;
+import org.sc.data.entity.mapper.LinkedMediaMapper;
 import org.sc.data.entity.mapper.PoiMapper;
 import org.sc.data.model.Poi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +29,18 @@ import static org.sc.data.repository.MongoConstants.*;
 @Repository
 public class PoiDAO {
 
+
     private final MongoCollection<Document> collection;
     private final PoiMapper mapper;
+    private final LinkedMediaMapper linkedMediaMapper;
 
     @Autowired
     public PoiDAO(final DataSource dataSource,
-                  final PoiMapper mapper) {
+                  final PoiMapper mapper,
+                  final LinkedMediaMapper linkedMediaMapper) {
         this.collection = dataSource.getDB().getCollection(Poi.COLLECTION_NAME);
         this.mapper = mapper;
+        this.linkedMediaMapper = linkedMediaMapper;
     }
 
     public List<Poi> get(final int page,
@@ -105,7 +114,25 @@ public class PoiDAO {
         return byId;
     }
 
-    @NotNull
+    public List<Poi> linkMedia(final String id,
+                               final LinkedMedia linkMedia) {
+        collection.updateOne(new Document(Poi.OBJECT_ID, id), new Document(ADD_TO_SET,
+                new Document(Poi.MEDIA, linkedMediaMapper.mapToDocument(linkMedia))));
+        return getById(id);
+    }
+
+    public List<Poi> unlinkMediaId(final String id, final String mediaId) {
+        collection.updateOne(new Document(Poi.OBJECT_ID, id),
+                new Document(MongoConstants.PULL,
+                        new Document(Poi.MEDIA, new Document(LinkedMedia.ID, mediaId))));
+        return getById(id);
+    }
+
+    public void unlinkMediaByAllPoi(final String mediaId) {
+        collection.updateOne(new Document(),
+                new Document(MongoConstants.PULL, new Document(Poi.MEDIA, mediaId)));
+    }
+
     private List<Poi> toPoisList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(mapper::mapToObject).collect(toList());
     }

@@ -7,6 +7,7 @@ import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
 import org.sc.data.dto.TrailMapper
+import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.dto.TrailPreviewMapper
 import org.sc.data.model.Coordinates
 import org.sc.data.model.Trail
@@ -23,7 +24,8 @@ class TrailManager @Autowired constructor(
     private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
     private val gpxHelper: GpxManager,
     private val trailMapper: TrailMapper,
-    private val trailPreviewMapper: TrailPreviewMapper
+    private val trailPreviewMapper: TrailPreviewMapper,
+    private val linkedMediaMapper: LinkedMediaMapper,
 ) {
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
@@ -54,33 +56,54 @@ class TrailManager @Autowired constructor(
         return trailDAO.upsert(trail).map { trailMapper.trailToTrailDto(it) }
     }
 
-    fun getByGeo(coords: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement,
-                 isAnyPoint: Boolean, limit: Int): List<TrailDistance> {
+    fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto): List<TrailDto> {
+        val linkMedia = linkedMediaMapper.map(linkedMediaRequest)
+        val result = trailDAO.linkMedia(id, linkMedia)
+        return result.map{ trailMapper.trailToTrailDto(it) }
+    }
+
+    fun unlinkMedia(code: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<TrailDto> {
+        val unlinkedTrail = trailDAO.unlinkMedia(code, unLinkeMediaRequestDto.id)
+        return unlinkedTrail.map { trailMapper.trailToTrailDto(it) }
+    }
+
+    fun getByGeo(
+        coords: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement,
+        isAnyPoint: Boolean, limit: Int
+    ): List<TrailDistance> {
         val meters = getMeters(unitOfMeasurement, distance)
         return if (!isAnyPoint) {
 
             val trailsByStartPosMetricDistance = trailDAO.getTrailsByStartPosMetricDistance(
-                    coords.longitude,
-                    coords.latitude,
-                    meters, limit)
+                coords.longitude,
+                coords.latitude,
+                meters, limit
+            )
             val trailsDto = trailsByStartPosMetricDistance.map { trailMapper.trailToTrailDto(it) }
 
             trailsDto.map {
                 TrailDistance(
                     DistanceProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
-                        it.startPos.coordinates, it)
+                    it.startPos.coordinates, it
+                )
             }
         } else {
             getTrailDistancesWithinRangeAtPoint(coords, distance, unitOfMeasurement, limit)
         }
     }
 
-    fun getTrailDistancesWithinRangeAtPoint(coordinates: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement, limit: Int): List<TrailDistance> {
+    fun getTrailDistancesWithinRangeAtPoint(
+        coordinates: CoordinatesDto,
+        distance: Int,
+        unitOfMeasurement: UnitOfMeasurement,
+        limit: Int
+    ): List<TrailDistance> {
         val meters = getMeters(unitOfMeasurement, distance)
         val trailsByPointDistance = trailDAO.trailsByPointDistance(
-                coordinates.longitude,
-                coordinates.latitude,
-                meters, limit)
+            coordinates.longitude,
+            coordinates.latitude,
+            meters, limit
+        )
 
         val trailsDto = trailsByPointDistance.map { trailMapper.trailToTrailDto(it) }
 
@@ -88,10 +111,13 @@ class TrailManager @Autowired constructor(
         return trailsDto.map {
             val closestCoordinate = getClosestCoordinate(coordinates, it)
             TrailDistance(
-                    DistanceProcessor.distanceBetweenPoints(coordinates, closestCoordinate).toInt(),
-                    closestCoordinate, it)
+                DistanceProcessor.distanceBetweenPoints(coordinates, closestCoordinate).toInt(),
+                closestCoordinate, it
+            )
         }
     }
+
+    fun doesTrailExist(code: String): Boolean = trailDAO.getTrailByCode(code, true).isNotEmpty()
 
     /**
      * Get the trail closest point to a given coordinate
@@ -105,6 +131,6 @@ class TrailManager @Autowired constructor(
     }
 
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
-            if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
+        if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
 
 }

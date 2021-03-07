@@ -1,11 +1,11 @@
-package org.sc.data.dto;
+package org.sc.data.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.data.model.CoordinatesWithAltitude;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface CoordinatesMapper {
     CoordinatesDto mapToCoordinatesDto(CoordinatesWithAltitude an);
     CoordinatesWithAltitude mapToCoordinatesWithAltitude(CoordinatesDto an);

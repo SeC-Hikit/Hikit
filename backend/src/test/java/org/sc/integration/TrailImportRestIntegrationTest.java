@@ -10,8 +10,7 @@ import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailImporterController;
-import org.sc.data.model.Trail;
-import org.sc.data.model.TrailClassification;
+import org.sc.data.entity.Trail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -52,40 +51,29 @@ public class TrailImportRestIntegrationTest {
     );
 
     public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-            new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE),
-            new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE),
-            20, Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE)),
+            new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE, Collections.emptyList()),
+            new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE, Collections.emptyList()),
+            Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE, Collections.emptyList())),
             EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
-            EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, true, "Porretta", new Date());
-
-    private TrailResponse trailImportResponse;
+            EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION);
 
     @Autowired
-    private DataSource dataSource;
+    DataSource dataSource;
 
     @Autowired
-    private TrailImporterController importController;
+    TrailImporterController importController;
 
     @Autowired
-    private TrailController trailController;
+    TrailController trailController;
 
     @Before
     public void setUp(){
         IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
-        this.trailImportResponse = importController.importTrail(EXPECTED_TRAIL_DTO);
+        importController.importTrail(EXPECTED_TRAIL_DTO);
     }
 
     @Test
     public void getById_shouldFindOne(){
-        String importedTrail = trailImportResponse.getContent().get(0).getId();
-        TrailResponse byId = this.trailController.getById(importedTrail, false);
-        assertThat(byId.getContent().size()).isEqualTo(1);
-        TrailDto firstElement = byId.getContent().get(0);
-        assertFirtElement(firstElement);
-    }
-
-    @Test
-    public void getByCode_shouldFindOne(){
         TrailResponse getTrail = trailController.getByCode(EXPECTED_TRAIL_CODE, false);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);

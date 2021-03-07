@@ -5,6 +5,9 @@ import org.sc.common.rest.TrailImportDto
 import org.sc.data.dto.PositionMapper
 import org.sc.data.dto.TrailCoordinatesMapper
 import org.sc.data.model.Trail
+import org.sc.data.model.GeoLineString
+import org.sc.data.model.StatsTrailMetadata
+import org.sc.data.entity.SimpleCoordinates
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.processor.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +25,7 @@ class TrailImporterManager @Autowired constructor(
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
 
-        val statsTrailMetadata = org.sc.data.model.StatsTrailMetadata(
+        val statsTrailMetadata = StatsTrailMetadata(
             trailsCalculator.calculateTotRise(importingTrail.coordinates),
             trailsCalculator.calculateTotFall(importingTrail.coordinates),
             trailsCalculator.calculateEta(importingTrail.coordinates),
@@ -50,7 +53,9 @@ class TrailImporterManager @Autowired constructor(
             .lastUpdate(createdOn)
             .maintainingSection(importingTrail.maintainingSection)
             .territorialDivision(importingTrail.territorialDivision)
-            .build()
+            .GeoLineString(importingTrail.coordinates.map { SimpleCoordinates(it.longitude, it.latitude) }),
+            .images
+        .build()
 
         val savedTrailDao = trailsManager.save(trail)
         trailDatasetVersionDao.increaseVersion()
