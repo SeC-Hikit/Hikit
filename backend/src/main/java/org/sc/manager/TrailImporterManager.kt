@@ -2,12 +2,12 @@ package org.sc.manager
 
 import org.sc.common.rest.TrailDto
 import org.sc.common.rest.TrailImportDto
-import org.sc.data.dto.PositionMapper
-import org.sc.data.dto.TrailCoordinatesMapper
 import org.sc.data.model.Trail
-import org.sc.data.model.GeoLineString
 import org.sc.data.model.StatsTrailMetadata
-import org.sc.data.entity.SimpleCoordinates
+import org.sc.data.model.SimpleCoordinates
+import org.sc.data.mapper.PositionMapper
+import org.sc.data.mapper.TrailCoordinatesMapper
+import org.sc.data.model.GeoLineString
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.processor.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,8 +53,14 @@ class TrailImporterManager @Autowired constructor(
             .lastUpdate(createdOn)
             .maintainingSection(importingTrail.maintainingSection)
             .territorialDivision(importingTrail.territorialDivision)
-            .GeoLineString(importingTrail.coordinates.map { SimpleCoordinates(it.longitude, it.latitude) }),
-            .images
+            .geoLineString(GeoLineString( importingTrail.coordinates.map {
+                SimpleCoordinates(
+                    it.longitude,
+                    it.latitude
+                )
+            }))
+            .mediaList(emptyList())
+
         .build()
 
         val savedTrailDao = trailsManager.save(trail)

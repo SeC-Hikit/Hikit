@@ -52,7 +52,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .lastUpdate(getLastUpdateDate(doc))
                 .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
-                .geoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
                 .build();
     }
@@ -117,6 +117,10 @@ public class TrailMapper implements Mapper<Trail> {
 
     protected Date getLastUpdateDate(Document doc) {
         return doc.getDate(Trail.LAST_UPDATE_DATE);
+    }
+
+    protected Date getCreatedDate(Document doc) {
+        return doc.getDate(Trail.CREATED_ON_DATE);
     }
 
     protected TrailClassification getClassification(Document doc) {

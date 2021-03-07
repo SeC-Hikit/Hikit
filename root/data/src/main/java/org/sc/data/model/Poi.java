@@ -16,7 +16,7 @@ public class Poi {
     public static final String TAGS = "tags";
     public static final String MACROTYPE = "macrotype";
     public static final String MICROTYPES = "microtypes";
-    public static final String MEDIA_IDS = "mediaIds";
+    public static final String MEDIA = "media";
     public static final String TRAIL_CODES = "trailIds";
     public static final String TRAIL_COORDINATES = "trailCoordinates";
     public static final String CREATED_ON = "createdOn";
@@ -30,7 +30,7 @@ public class Poi {
     private List<String> tags;
     private PoiMacroType macroType;
     private List<String> microType;
-    private List<String> mediaIds;
+    private List<LinkedMedia> mediaList;
     private List<String> trailIds;
     private CoordinatesWithAltitude coordinates;
     private Date createdOn;

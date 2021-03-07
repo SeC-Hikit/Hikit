@@ -150,12 +150,6 @@
                         </path>
                     </annotationProcessorPaths>
                     <showWarnings>true</showWarnings>
-                    <compilerArgs>
-                        <arg>
-                            -Amapstruct.defaultComponentModel=spring
-                        </arg>
-                    </compilerArgs>
-                    <showWarnings>true</showWarnings>
                 </configuration>
                 <executions>
                     <!-- Replacing default-compile as it is treated specially by maven -->

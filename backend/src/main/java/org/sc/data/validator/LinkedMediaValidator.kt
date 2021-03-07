@@ -2,7 +2,7 @@ package org.sc.data.validator
 
 import org.apache.commons.lang3.StringUtils
 import org.sc.common.rest.LinkedMediaDto
-import org.sc.data.entity.LinkedMedia
+import org.sc.data.model.LinkedMedia
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

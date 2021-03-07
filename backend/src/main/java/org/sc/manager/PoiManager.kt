@@ -1,10 +1,8 @@
 package org.sc.manager
 
 import org.sc.common.rest.LinkedMediaDto
-import org.sc.common.rest.LinkedMediaResultDto
 import org.sc.common.rest.PoiDto
 import org.sc.common.rest.UnLinkeMediaRequestDto
-import org.sc.data.entity.Poi
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PoiMapper
 import org.sc.data.repository.PoiDAO

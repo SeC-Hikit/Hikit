@@ -43,12 +43,10 @@ public class TrailLightMapper extends TrailMapper {
                 .lastUpdate(getLastUpdateDate(doc))
                 .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
-                .geoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
                 .build();
     }
-
-
 
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
         final List<Document> list = doc.getList(Trail.COORDINATES, Document.class);

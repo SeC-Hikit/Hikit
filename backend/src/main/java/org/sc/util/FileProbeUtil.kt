@@ -11,6 +11,6 @@ class FileProbeUtil {
     private val tika = Tika()
 
     fun isFileNameInCorrectFormat(fileName : String) : Boolean = StringUtils.countMatches(fileName, ".") > 0
-    fun getFileMimeType(file : File) : String = tika.detect(file)
+    fun getFileMimeType(file : File, name : String) : String = tika.detect(file.inputStream(), name)
     fun getFileExtensionFromMimeType(mime : String) : String = mime.split("/").last()
 }

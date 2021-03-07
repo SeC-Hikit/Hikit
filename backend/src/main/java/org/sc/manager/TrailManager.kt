@@ -6,9 +6,9 @@ import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
-import org.sc.data.dto.TrailMapper
 import org.sc.data.mapper.LinkedMediaMapper
-import org.sc.data.dto.TrailPreviewMapper
+import org.sc.data.mapper.TrailMapper
+import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.model.Coordinates
 import org.sc.data.model.Trail
 import org.sc.processor.DistanceProcessor

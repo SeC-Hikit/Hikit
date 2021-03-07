@@ -5,7 +5,7 @@ import org.sc.data.model.CoordinatesWithAltitude;
 import org.sc.data.model.KeyVal;
 import org.sc.data.model.Poi;
 import org.sc.data.model.PoiMacroType;
-import org.sc.data.entity.LinkedMedia;
+import org.sc.data.model.LinkedMedia;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

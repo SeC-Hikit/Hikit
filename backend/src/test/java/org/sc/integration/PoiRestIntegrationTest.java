@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.KeyValueDto;
+import org.sc.common.rest.LinkedMediaDto;
 import org.sc.common.rest.PoiDto;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.configuration.DataSource;

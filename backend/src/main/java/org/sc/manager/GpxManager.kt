@@ -5,7 +5,7 @@ import io.jenetics.jpx.Metadata
 import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
-import org.sc.data.dto.TrailCoordinatesMapper
+import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.model.TrailCoordinates
 import org.sc.data.model.Trail
 import org.sc.processor.TrailsCalculator

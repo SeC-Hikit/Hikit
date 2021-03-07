@@ -2,7 +2,7 @@ package org.sc.manager
 
 import org.sc.common.rest.MediaDto
 import org.sc.controller.MediaController
-import org.sc.data.entity.Media
+import org.sc.data.model.Media
 import org.sc.data.mapper.MediaMapper
 import org.sc.data.repository.MediaDAO
 import org.sc.data.repository.PoiDAO
@@ -31,7 +31,7 @@ class MediaManager @Autowired constructor(
 
     fun save(originalFileName: String, tempFile: Path): List<MediaDto> {
 
-        val fileMimeType = mediaProbeUtil.getFileMimeType(tempFile.toFile())
+        val fileMimeType = mediaProbeUtil.getFileMimeType(tempFile.toFile(), originalFileName)
         val fileExtension = mediaProbeUtil.getFileExtensionFromMimeType(fileMimeType)
 
         val fileName = makeFileName(fileExtension)
@@ -53,6 +53,14 @@ class MediaManager @Autowired constructor(
             return mediaDAO.getById(save.first()._id).map { mediaMapper.mediaToDto(it) }
         }
         return emptyList()
+    }
+
+    fun getExtensionFromName(name: String): String {
+        val parts = name.split(".")
+        if (parts.isNotEmpty()) {
+            return "." + parts[1]
+        }
+        return ""
     }
 
     fun getById(id: String) = mediaDAO.getById(id).map { mediaMapper.mediaToDto(it) }
@@ -79,4 +87,5 @@ class MediaManager @Autowired constructor(
     private fun makeFileName(fileExtension: String) =
         Date().time.toString() + "." + fileExtension
 }
+
 

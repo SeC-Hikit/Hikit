@@ -21,6 +21,7 @@ public class TrailDto {
     private String country;
     private StatsTrailMetadataDto statsTrailMetadata;
     private List<TrailCoordinatesDto> coordinates;
+    private List<LinkedMediaDto> mediaList;
     private Date lastUpdate;
     private Date createdOn;
     private String territorialDivision;

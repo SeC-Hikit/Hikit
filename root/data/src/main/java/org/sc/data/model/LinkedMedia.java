@@ -1,4 +1,4 @@
-package org.sc.data.entity;
+package org.sc.data.model;
 
 import java.util.List;
 

@@ -10,7 +10,8 @@ import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailImporterController;
-import org.sc.data.entity.Trail;
+import org.sc.data.model.Trail;
+import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,6 +39,8 @@ public class TrailImportRestIntegrationTest {
     public static final String EXPECTED_COUNTRY = "Italy";
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
     public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
+    public static final String EXPECTED_TERRITORIAL_DIVISION = "Porretta";
+    public static final boolean IS_VARIANT = false;
 
     // Start POS coordinates
     public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
@@ -53,9 +56,9 @@ public class TrailImportRestIntegrationTest {
     public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
             new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE, Collections.emptyList()),
             new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE, Collections.emptyList()),
-            Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE, Collections.emptyList())),
+            20, Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE, Collections.emptyList())),
             EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
-            EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION);
+            EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, EXPECTED_DATE);
 
     @Autowired
     DataSource dataSource;

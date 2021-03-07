@@ -31,6 +31,9 @@ public class Trail {
     public static final String SECTION_CARED_BY = "maintainingSection";
     public static final String TERRITORIAL_CARED_BY = "territorialDivision";
     public static final String LOCATIONS = "locations";
+    public static final String GEO_LINE = "geoLine";
+    
+    public static final String MEDIA = "media";
 
     private String id;
     private String name;
@@ -49,5 +52,7 @@ public class Trail {
     private Date createdOn;
     private String territorialDivision;
     private StatsTrailMetadata statsTrailMetadata;
+    private GeoLineString geoLineString;
+    private List<LinkedMedia> mediaList;
 }
 
