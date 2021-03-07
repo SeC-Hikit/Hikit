@@ -1,9 +1,9 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.KeyVal;
-import org.sc.data.entity.LinkedMedia;
-import org.sc.data.entity.Poi;
+import org.sc.data.model.KeyVal;
+import org.sc.data.model.LinkedMedia;
+import org.sc.data.model.Poi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

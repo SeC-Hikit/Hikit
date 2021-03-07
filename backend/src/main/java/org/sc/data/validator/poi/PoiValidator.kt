@@ -2,7 +2,7 @@ package org.sc.data.validator.poi
 
 import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.PoiDto
-import org.sc.data.entity.Poi
+import org.sc.data.model.Poi
 import org.sc.data.validator.CoordinatesValidator
 import org.sc.data.validator.KeyValValidator
 import org.sc.data.validator.Validator

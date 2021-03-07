@@ -1,7 +1,8 @@
 package org.sc.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.sc.common.rest.*;
+import org.sc.common.rest.MediaDto;
+import org.sc.common.rest.Status;
 import org.sc.common.rest.response.MediaResponse;
 import org.sc.configuration.AppProperties;
 import org.sc.data.validator.FileNameValidator;
@@ -56,8 +57,13 @@ public class MediaController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public MediaResponse upload(@RequestAttribute("file") MultipartFile file) throws IOException {
-        final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", "");
+        if(file == null || file.getOriginalFilename() == null) {
+            return new MediaResponse(Status.ERROR, Collections.singleton("File is empty"),
+                    Collections.emptyList());
+        }
         final String originalFileName = file.getOriginalFilename();
+        final String extension = mediaManager.getExtensionFromName(originalFileName);
+        final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", extension);
         final Set<String> validationErrors =
                 fileNameValidator.validate(originalFileName);
         try (final InputStream input = file.getInputStream()) {
@@ -66,7 +72,6 @@ public class MediaController {
         validationErrors.addAll(mediaFileValidator.validate(tempFile.toFile()));
 
         if (validationErrors.isEmpty()) {
-            assert originalFileName != null;
             final List<MediaDto> saveResult = mediaManager.save(originalFileName, tempFile);
             return new MediaResponse(Status.OK, Collections.emptySet(), saveResult);
         }

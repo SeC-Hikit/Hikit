@@ -9,9 +9,9 @@ import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.MediaController;
 import org.sc.controller.POIController;
-import org.sc.data.entity.Media;
-import org.sc.data.entity.Poi;
-import org.sc.data.entity.Trail;
+import org.sc.data.model.Media;
+import org.sc.data.model.Poi;
+import org.sc.data.model.Trail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -135,14 +135,6 @@ public class MediaRestIntegrationTest extends TrailImportRestIntegrationTest {
         assertTrue(laterReadResponseMediaList.isEmpty());
     }
 
-    private MediaResponse uploadValidMedia() throws IOException {
-        return mediaController.upload(
-                new MockMultipartFile("file", "sec_map.png", "multipart/form-data",
-                        getClass().getClassLoader().getResourceAsStream("media" + File.separator + FILE_NAME)
-                )
-        );
-    }
-
     private String createAndVerifyCreationById() throws IOException {
         MediaResponse mediaResponse = uploadValidMedia();
         assertThat(mediaResponse.getStatus()).isEqualTo(Status.OK);
@@ -150,5 +142,13 @@ public class MediaRestIntegrationTest extends TrailImportRestIntegrationTest {
         final MediaResponse response = mediaController.getById(uploadId);
         assertThat(response.getStatus()).isEqualTo(Status.OK);
         return uploadId;
+    }
+
+    private MediaResponse uploadValidMedia() throws IOException {
+        return mediaController.upload(
+                new MockMultipartFile("file", FILE_NAME, "multipart/form-data",
+                        getClass().getClassLoader().getResourceAsStream("media" + File.separator + FILE_NAME)
+                )
+        );
     }
 }

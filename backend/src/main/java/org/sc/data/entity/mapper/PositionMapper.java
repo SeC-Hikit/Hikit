@@ -1,7 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.Position;
+import org.sc.data.model.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

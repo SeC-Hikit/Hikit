@@ -3,7 +3,7 @@ package org.sc.data.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.StatsTrailMetadataDto;
-import org.sc.data.entity.StatsTrailMetadata;
+import org.sc.data.model.StatsTrailMetadata;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface StatsTrailMetadataMapper {

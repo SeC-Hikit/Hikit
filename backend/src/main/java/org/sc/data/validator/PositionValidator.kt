@@ -2,7 +2,6 @@ package org.sc.data.validator
 
 import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.PositionDto
-import org.sc.data.entity.Position
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

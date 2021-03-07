@@ -1,7 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.*;
+import org.sc.data.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,25 +25,28 @@ public class TrailLightMapper extends TrailMapper {
 
     @Override
     public Trail mapToObject(final Document doc) {
-        return Trail.TrailBuilder.aTrail()
-                .withName(doc.getString(Trail.NAME))
-                .withDescription(doc.getString(Trail.DESCRIPTION))
-                .withCode(doc.getString(Trail.CODE))
-                .withStartPos(getPos(doc, Trail.START_POS))
-                .withFinalPos(getPos(doc, Trail.FINAL_POS))
-                .withLocations(getLocations(doc))
-                .withClassification(getClassification(doc))
-                .withTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
-                .withCountry(doc.getString(Trail.COUNTRY))
-                .withCoordinates(getCoordinatesWithAltitude(doc))
-                .withDate(getLastUpdateDate(doc))
-                .withMaintainingSection(doc.getString(Trail.SECTION_CARED_BY))
-                .withGeoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
-                .withMediaList(getLinkedMediaMapper(doc))
+        return Trail.builder()
+                .id(doc.getString(Trail.ID))
+                .name(doc.getString(Trail.NAME))
+                .description(doc.getString(Trail.DESCRIPTION))
+                .code(doc.getString(Trail.CODE))
+                .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
+                .variant(doc.getBoolean(Trail.VARIANT))
+                .startPos(getPos(doc, Trail.START_POS))
+                .finalPos(getPos(doc, Trail.FINAL_POS))
+                .locations(getLocations(doc))
+                .classification(getClassification(doc))
+                .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
+                .country(doc.getString(Trail.COUNTRY))
+                .coordinates(getCoordinatesWithAltitude(doc))
+                .createdOn(getCreatedDate(doc))
+                .lastUpdate(getLastUpdateDate(doc))
+                .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
+                .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
+                .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .mediaList(getLinkedMediaMapper(doc))
                 .build();
     }
-
-
 
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
         final List<Document> list = doc.getList(Trail.COORDINATES, Document.class);

@@ -1,10 +1,10 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.CoordinatesWithAltitude;
-import org.sc.data.entity.GeoLineString;
-import org.sc.data.entity.SimpleCoordinates;
-import org.sc.data.entity.Trail;
+import org.sc.data.model.CoordinatesWithAltitude;
+import org.sc.data.model.GeoLineString;
+import org.sc.data.model.SimpleCoordinates;
+import org.sc.data.model.Trail;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

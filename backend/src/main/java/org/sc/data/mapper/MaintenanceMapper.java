@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.MaintenanceCreationDto;
 import org.sc.common.rest.MaintenanceDto;
-import org.sc.data.entity.Maintenance;
+import org.sc.data.model.Maintenance;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface MaintenanceMapper {

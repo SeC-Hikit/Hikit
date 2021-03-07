@@ -23,15 +23,21 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.sec</groupId>
+            <artifactId>rest</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sec</groupId>
+            <artifactId>data</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.sec</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -143,12 +149,6 @@
                             <version>${org.mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
-                    <showWarnings>true</showWarnings>
-                    <compilerArgs>
-                        <arg>
-                            -Amapstruct.defaultComponentModel=spring
-                        </arg>
-                    </compilerArgs>
                     <showWarnings>true</showWarnings>
                 </configuration>
                 <executions>

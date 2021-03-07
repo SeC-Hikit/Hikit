@@ -19,7 +19,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>common</module>
+        <module>data</module>
+        <module>rest</module>
         <module>../backend</module>
     </modules>
 
@@ -29,6 +30,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring-boot.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -37,12 +44,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler.version>8</maven-compiler.version>
         <javaruntime.version>1.8</javaruntime.version>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.31</kotlin.version>
         <jpx.version>1.7.0</jpx.version>
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <junit.version>4.13.1</junit.version>
         <spring-boot.version>2.4.0</spring-boot.version>
         <spring-boot-mail.version>2.3.8.RELEASE</spring-boot-mail.version>
         <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
+        <lombok.version>1.18.10</lombok.version>
     </properties>
 </project>

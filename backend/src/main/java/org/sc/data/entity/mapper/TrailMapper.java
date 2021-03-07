@@ -1,8 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.*;
-import org.sc.data.entity.*;
+import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,8 @@ public class TrailMapper implements Mapper<Trail> {
     public TrailMapper(final PositionMapper positionMapper,
                        final TrailCoordinatesMapper trailCoordinatesMapper,
                        final GeoLineMapper geoLineMapper,
-                       final StatsTrailMapper statsTrailMapper, LinkedMediaMapper linkedMediaMapper) {
+                       final StatsTrailMapper statsTrailMapper,
+                       final LinkedMediaMapper linkedMediaMapper) {
         this.positionMapper = positionMapper;
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.geoLineMapper = geoLineMapper;
@@ -34,30 +34,36 @@ public class TrailMapper implements Mapper<Trail> {
 
     @Override
     public Trail mapToObject(final Document doc) {
-        return Trail.TrailBuilder.aTrail()
-                .withName(doc.getString(Trail.NAME))
-                .withDescription(doc.getString(Trail.DESCRIPTION))
-                .withCode(doc.getString(Trail.CODE))
-                .withStartPos(getPos(doc, Trail.START_POS))
-                .withFinalPos(getPos(doc, Trail.FINAL_POS))
-                .withLocations(getLocations(doc))
-                .withClassification(getClassification(doc))
-                .withTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
-                .withCountry(doc.getString(Trail.COUNTRY))
-                .withCoordinates(getCoordinatesWithAltitude(doc))
-                .withDate(getLastUpdateDate(doc))
-                .withMaintainingSection(doc.getString(Trail.SECTION_CARED_BY))
-                .withGeoLine(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
-                .withMediaList(getLinkedMediaMapper(doc))
+        return Trail.builder()
+                .id(doc.getString(Trail.ID))
+                .name(doc.getString(Trail.NAME))
+                .description(doc.getString(Trail.DESCRIPTION))
+                .code(doc.getString(Trail.CODE))
+                .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
+                .variant(doc.getBoolean(Trail.VARIANT))
+                .startPos(getPos(doc, Trail.START_POS))
+                .finalPos(getPos(doc, Trail.FINAL_POS))
+                .locations(getLocations(doc))
+                .classification(getClassification(doc))
+                .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
+                .country(doc.getString(Trail.COUNTRY))
+                .coordinates(getCoordinatesWithAltitude(doc))
+                .createdOn(getCreatedDate(doc))
+                .lastUpdate(getLastUpdateDate(doc))
+                .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
+                .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
+                .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .mediaList(getLinkedMediaMapper(doc))
                 .build();
     }
 
     @Override
     public Document mapToDocument(final Trail object) {
-        return new Document(
-                Trail.NAME, object.getName())
+        return new Document()
+                .append(Trail.NAME, object.getName())
                 .append(Trail.DESCRIPTION, object.getDescription())
                 .append(Trail.CODE, object.getCode())
+                .append(Trail.OFFICIAL_ETA, object.getOfficialEta())
                 .append(Trail.START_POS, positionMapper.mapToDocument(object.getStartPos()))
                 .append(Trail.FINAL_POS, positionMapper.mapToDocument(object.getFinalPos()))
                 .append(Trail.LOCATIONS, object.getLocations().stream()
@@ -66,7 +72,9 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.COUNTRY, object.getCountry())
                 .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
                 .append(Trail.LAST_UPDATE_DATE, new Date())
-                .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsMetadata()))
+                .append(Trail.VARIANT, object.isVariant())
+                .append(Trail.TERRITORIAL_CARED_BY, object.getTerritorialDivision())
+                .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsTrailMetadata()))
                 .append(Trail.COORDINATES, object.getCoordinates().stream()
                         .map(trailCoordinatesMapper::mapToDocument).collect(toList()))
                 .append(Trail.MEDIA, object.getMediaList().stream()
@@ -109,6 +117,10 @@ public class TrailMapper implements Mapper<Trail> {
 
     protected Date getLastUpdateDate(Document doc) {
         return doc.getDate(Trail.LAST_UPDATE_DATE);
+    }
+
+    protected Date getCreatedDate(Document doc) {
+        return doc.getDate(Trail.CREATED_ON_DATE);
     }
 
     protected TrailClassification getClassification(Document doc) {

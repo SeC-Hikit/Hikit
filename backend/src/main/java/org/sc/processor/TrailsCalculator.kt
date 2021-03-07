@@ -1,6 +1,6 @@
 package org.sc.processor
 
-import org.sc.common.rest.Coordinates
+import org.sc.data.model.Coordinates
 import org.springframework.stereotype.Component
 import kotlin.math.abs
 import kotlin.math.exp

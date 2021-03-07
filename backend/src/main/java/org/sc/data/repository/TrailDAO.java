@@ -3,17 +3,19 @@ package org.sc.data.repository;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.*;
 import org.sc.data.entity.mapper.*;
+import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -22,7 +24,6 @@ import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class TrailDAO {
-
 
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.COORDINATES;
 
@@ -74,7 +75,6 @@ public class TrailDAO {
         return toTrailsList(aggregate);
     }
 
-    @NotNull
     public List<Trail> getTrails(boolean isLight, int page, int count) {
         if (isLight) {
             return toTrailsLightList(collection.find(new Document()).skip(page).limit(count));
@@ -82,7 +82,13 @@ public class TrailDAO {
         return toTrailsList(collection.find(new Document()).skip(page).limit(count));
     }
 
-    @NotNull
+    public List<Trail> getTrailById(String id, boolean isLight) {
+        if (isLight) {
+            return toTrailsLightList(collection.find(new Document(Trail.ID, id)));
+        }
+        return toTrailsList(collection.find(new Document(Trail.ID, id)));
+    }
+
     public List<Trail> getTrailByCode(String code, boolean isLight) {
         if (isLight) {
             return toTrailsLightList(collection.find(new Document(Trail.CODE, code)));
@@ -96,10 +102,19 @@ public class TrailDAO {
         return trailByCode;
     }
 
-    public void upsert(final Trail trailRequest) {
-        final Document trail = trailMapper.mapToDocument(trailRequest);
-        collection.replaceOne(new Document(Trail.CODE, trailRequest.getCode()),
-                trail, new ReplaceOptions().upsert(true));
+    public List<Trail> upsert(final Trail trailRequest) {
+        final String existingOrNewObjectId = trailRequest.getId() == null ?
+                new ObjectId().toHexString() : trailRequest.getId();
+        final Document trailDocument = trailMapper.mapToDocument(trailRequest)
+                .append(Trail.ID, existingOrNewObjectId);
+        final Document updateResult = collection.findOneAndReplace(
+                new Document(Trail.ID, existingOrNewObjectId),
+                trailDocument, new FindOneAndReplaceOptions().upsert(true)
+                        .returnDocument(ReturnDocument.AFTER));
+        if (updateResult != null) {
+            return Collections.singletonList(trailMapper.mapToObject(updateResult));
+        }
+        throw new IllegalStateException();
     }
 
     public List<TrailPreview> getTrailPreviews(final int page, final int count) {
