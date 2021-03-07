@@ -7,8 +7,7 @@ import org.junit.Test
 import org.sc.common.rest.CoordinatesDto
 import org.sc.common.rest.KeyValueDto
 import org.sc.common.rest.PoiDto
-import org.sc.common.rest.PoiMacroType
-import org.sc.data.entity.Poi
+import org.sc.data.model.PoiMacroType
 import java.lang.String.format
 import java.util.*
 
@@ -57,7 +56,7 @@ class PoiValidatorTest {
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
         val validate = PoiValidator(keyValValidatorMock, trailCoordsValidatorMock).validate(poiDto)
         assertTrue(validate.isNotEmpty())
-        validate.contains(String.format(PoiValidator.dateInFutureError, Poi.CREATED_ON))
+        validate.contains(String.format(PoiValidator.dateInFutureError, org.sc.data.model.Poi.CREATED_ON))
     }
 
     @Test
@@ -70,7 +69,7 @@ class PoiValidatorTest {
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
         val validate = PoiValidator(keyValValidatorMock, trailCoordsValidatorMock).validate(poiDto)
         assertTrue(validate.isNotEmpty())
-        validate.contains(String.format(PoiValidator.dateInFutureError, Poi.LAST_UPDATE_ON))
+        validate.contains(String.format(PoiValidator.dateInFutureError, org.sc.data.model.Poi.LAST_UPDATE_ON))
     }
 
     @Test

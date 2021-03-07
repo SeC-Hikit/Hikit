@@ -1,7 +1,6 @@
 package org.sc.manager
 
 import org.sc.common.rest.*
-import org.sc.data.entity.Trail
 import org.sc.processor.MetricConverter
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
@@ -9,6 +8,8 @@ import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
 import org.sc.data.dto.TrailMapper
 import org.sc.data.dto.TrailPreviewMapper
+import org.sc.data.model.Coordinates
+import org.sc.data.model.Trail
 import org.sc.processor.DistanceProcessor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -30,6 +31,7 @@ class TrailManager @Autowired constructor(
     fun get(isLight: Boolean, page: Int, count: Int): List<TrailDto> = trailDAO.getTrails(isLight, page, count)
         .map { trailMapper.trailToTrailDto(it) }
 
+    fun getById(id: String, isLight: Boolean): List<TrailDto> = trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
     fun getByCode(code: String, isLight: Boolean): List<TrailDto> = trailDAO.getTrailByCode(code, isLight).map { trailMapper.trailToTrailDto(it) }
 
     fun delete(code: String, isPurged: Boolean): List<TrailDto> {
@@ -47,9 +49,9 @@ class TrailManager @Autowired constructor(
     fun previewByCode(code: String): List<TrailPreviewDto> = trailDAO.trailPreviewByCode(code)
         .map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
 
-    fun save(trail: Trail) {
-        trailDAO.upsert(trail)
+    fun save(trail: Trail) : List<TrailDto>  {
         gpxHelper.writeTrailToGpx(trail)
+        return trailDAO.upsert(trail).map { trailMapper.trailToTrailDto(it) }
     }
 
     fun getByGeo(coords: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement,

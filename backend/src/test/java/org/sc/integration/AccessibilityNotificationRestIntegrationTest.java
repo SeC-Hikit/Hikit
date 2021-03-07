@@ -10,7 +10,7 @@ import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.AccessibilityUnresolvedResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.AccessibilityNotificationController;
-import org.sc.data.entity.AccessibilityNotification;
+import org.sc.data.model.AccessibilityNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

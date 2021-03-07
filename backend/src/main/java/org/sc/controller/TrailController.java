@@ -36,6 +36,12 @@ public class TrailController {
         return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.get(light, page, count));
     }
 
+    @GetMapping("/{id}")
+    public TrailResponse getById(@PathVariable String id,
+                                 @RequestParam(required = false, defaultValue = "false") Boolean light) {
+        return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getById(id, light));
+    }
+
     @GetMapping("/{code}")
     public TrailResponse getByCode(@PathVariable String code,
                                    @RequestParam(required = false, defaultValue = "false") Boolean light) {

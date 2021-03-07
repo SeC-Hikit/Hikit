@@ -1,7 +1,7 @@
 package org.sc.data;
 
 import org.sc.common.rest.PositionDto;
-import org.sc.common.rest.TrailClassification;
+import org.sc.data.model.TrailClassification;
 import org.sc.common.rest.TrailCoordinatesDto;
 
 import java.util.Date;

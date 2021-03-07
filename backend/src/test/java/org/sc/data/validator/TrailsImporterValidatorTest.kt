@@ -6,7 +6,7 @@ import io.mockk.mockkClass
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.sc.common.rest.PositionDto
-import org.sc.common.rest.TrailClassification
+import org.sc.data.model.TrailClassification
 import org.sc.common.rest.TrailCoordinatesDto
 import org.sc.common.rest.TrailImportDto
 import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError

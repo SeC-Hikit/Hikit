@@ -3,7 +3,7 @@ package org.sc.data.dto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.TrailPreviewDto;
-import org.sc.data.entity.TrailPreview;
+import org.sc.data.model.TrailPreview;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR)

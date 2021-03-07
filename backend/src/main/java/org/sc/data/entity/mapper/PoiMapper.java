@@ -1,10 +1,10 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.PoiMacroType;
-import org.sc.data.entity.CoordinatesWithAltitude;
-import org.sc.data.entity.KeyVal;
-import org.sc.data.entity.Poi;
+import org.sc.data.model.CoordinatesWithAltitude;
+import org.sc.data.model.KeyVal;
+import org.sc.data.model.Poi;
+import org.sc.data.model.PoiMacroType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

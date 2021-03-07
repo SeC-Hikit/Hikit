@@ -1,7 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.KeyVal;
+import org.sc.data.model.KeyVal;
 import org.springframework.stereotype.Component;
 
 @Component

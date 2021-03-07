@@ -6,10 +6,8 @@ import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
 import org.sc.data.dto.TrailCoordinatesMapper
-import org.sc.data.entity.TrailCoordinates
-import org.sc.data.entity.Trail
-import org.sc.data.entity.CoordinatesWithAltitude
-import org.sc.data.entity.Position
+import org.sc.data.model.TrailCoordinates
+import org.sc.data.model.Trail
 import org.sc.processor.TrailsCalculator
 import org.sc.service.AltitudeServiceAdapter
 import org.sc.processor.GpxFileHandlerHelper

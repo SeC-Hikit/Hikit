@@ -9,10 +9,10 @@ import org.bson.types.ObjectId;
 import org.sc.common.rest.AccessibilityNotificationCreationDto;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.AccessibilityNotification;
-import org.sc.data.entity.AccessibilityUnresolved;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
 import org.sc.data.entity.mapper.AccessibilityNotificationUnresolvedMapper;
+import org.sc.data.model.AccessibilityNotification;
+import org.sc.data.model.AccessibilityUnresolved;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,7 +43,7 @@ public class AccessibilityNotificationDAO {
     }
 
     public List<AccessibilityUnresolved> getUnresolved(final int from,
-                                                          final int to) {
+                                                       final int to) {
         return toUnresolvedNotificationList(collection.find(
                 new Document(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)))
                 .skip(from)

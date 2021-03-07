@@ -1,8 +1,8 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.CoordinatesWithAltitude;
-import org.sc.data.entity.TrailCoordinates;
+import org.sc.data.model.CoordinatesWithAltitude;
+import org.sc.data.model.TrailCoordinates;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -15,7 +15,7 @@ public class TrailCoordinatesMapper implements Mapper<TrailCoordinates> {
 
     @Override
     public TrailCoordinates mapToObject(final Document document) {
-        final List<Double> list = document.get(CoordinatesWithAltitude.COORDINATES, List.class);
+        final List<Double> list = document.getList(CoordinatesWithAltitude.COORDINATES, Double.class);
         final Double altitude = document.getDouble(TrailCoordinates.ALTITUDE);
         final Integer distanceProgress = document.getInteger(TrailCoordinates.DISTANCE_FROM_START);
         return new TrailCoordinates(list.get(TrailCoordinates.LAT_INDEX),

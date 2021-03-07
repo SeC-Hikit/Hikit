@@ -5,8 +5,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.KeyValueDto;
 import org.sc.common.rest.PoiDto;
-import org.sc.data.entity.KeyVal;
-import org.sc.data.entity.Poi;
+import org.sc.data.model.KeyVal;
+import org.sc.data.model.Poi;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR)

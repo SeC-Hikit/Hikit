@@ -3,7 +3,7 @@ package org.sc.data.dto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.PositionDto;
-import org.sc.data.entity.Position;
+import org.sc.data.model.Position;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR)

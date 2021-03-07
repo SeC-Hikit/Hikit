@@ -2,7 +2,7 @@ package org.sc.data.validator
 
 import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.PoiDto
-import org.sc.data.entity.Poi
+import org.sc.data.model.Poi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -27,7 +27,7 @@ class PoiValidator @Autowired constructor(
         if(request.lastUpdatedOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.LAST_UPDATE_ON))
         errors.addAll(coordinatesValidator.validate(request.coordinates))
         request.keyVal.forEach {
-            val err = keyValValidator.validate(it);
+            val err = keyValValidator.validate(it)
             errors.addAll(err)
         }
         return errors

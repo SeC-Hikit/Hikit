@@ -8,8 +8,8 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.Poi;
 import org.sc.data.entity.mapper.PoiMapper;
+import org.sc.data.model.Poi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

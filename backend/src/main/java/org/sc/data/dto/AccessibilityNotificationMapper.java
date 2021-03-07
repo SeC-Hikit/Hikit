@@ -6,8 +6,8 @@ import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.AccessibilityNotificationCreationDto;
 import org.sc.common.rest.AccessibilityNotificationDto;
 import org.sc.common.rest.AccessibilityUnresolvedDto;
-import org.sc.data.entity.AccessibilityNotification;
-import org.sc.data.entity.AccessibilityUnresolved;
+import org.sc.data.model.AccessibilityNotification;
+import org.sc.data.model.AccessibilityUnresolved;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AccessibilityNotificationMapper {
