@@ -50,4 +50,8 @@ class PoiManager @Autowired constructor(
         poiDAO.upsert(fromDto)
         return listOf(poiDto)
     }
+
+    fun countPoi(): Long = poiDAO.countPOI()
+
+
 }

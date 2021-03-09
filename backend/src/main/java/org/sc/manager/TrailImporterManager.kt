@@ -50,4 +50,6 @@ class TrailImporterManager @Autowired constructor(private val trailsManager : Tr
         return trailsManager.getByCode(trail.code, false)
     }
 
+    fun countImport(): Long = trailDatasetVersionDao.countImport()
+
 }

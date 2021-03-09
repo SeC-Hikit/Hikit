@@ -3,6 +3,7 @@ package org.sc.controller;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.AccessibilityUnresolvedResponse;
+import org.sc.common.rest.response.CountResponse;
 import org.sc.data.validator.AccessibilityValidator;
 import org.sc.manager.AccessibilityNotificationManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,12 @@ public class AccessibilityNotificationController {
                                                final AccessibilityValidator accessibilityValidator) {
         this.accessibilityNotManager = accessibilityNotificationManager;
         this.accessibilityValidator = accessibilityValidator;
+    }
+
+    @GetMapping("/count")
+    public CountResponse getCount() {
+        final long count = accessibilityNotManager.countAccessibilityNotification();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
     @GetMapping("/solved")

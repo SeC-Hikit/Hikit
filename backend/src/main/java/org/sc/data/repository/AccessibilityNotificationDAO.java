@@ -116,5 +116,7 @@ public class AccessibilityNotificationDAO {
         return StreamSupport.stream(documents.spliterator(), false).map(unresolvedMapper::mapToObject).collect(toList());
     }
 
-
+    public long countAccessibility() {
+        return collection.countDocuments();
+    }
 }

@@ -107,4 +107,12 @@ public class MaintenanceDAO {
     public long countMaintenance() {
         return collection.countDocuments();
     }
+
+    public long countPastMaintenance() {
+        return collection.countDocuments(new Document(Maintenance.DATE, new Document("$lt", new Date())));
+    }
+
+    public long countFutureMaintenance() {
+        return collection.countDocuments(new Document(Maintenance.DATE, new Document("$gt", new Date())));
+    }
 }

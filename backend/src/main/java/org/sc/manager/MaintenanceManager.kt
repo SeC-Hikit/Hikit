@@ -31,4 +31,9 @@ class MaintenanceManager @Autowired constructor(
 
     fun countMaintenance(): Long = maintenanceDao.countMaintenance()
 
+    fun countPastMaintenance(): Long = maintenanceDao.countPastMaintenance()
+
+    fun countFutureMaintenance(): Long = maintenanceDao.countFutureMaintenance()
+
+
 }

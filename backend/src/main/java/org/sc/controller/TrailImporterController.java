@@ -1,9 +1,7 @@
 package org.sc.controller;
 
-import org.sc.common.rest.Status;
-import org.sc.common.rest.TrailDto;
-import org.sc.common.rest.TrailImportDto;
-import org.sc.common.rest.TrailPreparationModelDto;
+import org.sc.common.rest.*;
+import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.AppProperties;
 import org.sc.data.TrailImport;
@@ -50,6 +48,12 @@ public class TrailImporterController {
         this.trailImporterManager = trailImporterManager;
         this.trailValidator = trailValidator;
         this.appProperties = appProperties;
+    }
+
+    @GetMapping("/count")
+    public CountResponse getCount() {
+        final long count = trailImporterManager.countImport();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
     @PostConstruct

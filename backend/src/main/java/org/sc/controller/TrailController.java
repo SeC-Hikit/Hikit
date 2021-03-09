@@ -1,7 +1,9 @@
 package org.sc.controller;
 
+import org.sc.common.rest.CountDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailDto;
+import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,12 @@ public class TrailController {
     @Autowired
     public TrailController(final TrailManager trailManager) {
         this.trailManager = trailManager;
+    }
+
+    @GetMapping("/count")
+    public CountResponse getCount() {
+        final long count = trailManager.countTrail();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
     @GetMapping

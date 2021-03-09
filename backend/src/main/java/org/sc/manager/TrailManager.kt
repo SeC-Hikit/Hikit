@@ -105,4 +105,6 @@ class TrailManager @Autowired constructor(
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
             if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
 
+    fun countTrail(): Long = trailDAO.countTrail()
+
 }

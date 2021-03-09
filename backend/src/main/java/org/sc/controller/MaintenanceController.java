@@ -87,4 +87,16 @@ public class MaintenanceController {
         }
         return new MaintenanceResponse(Status.OK, Collections.emptySet(), deleted);
     }
+
+    @GetMapping("/past/count")
+    public CountResponse getCountPast() {
+        final long count = maintenanceManager.countPastMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+    }
+
+    @GetMapping("/future/count")
+    public CountResponse getCountFuture() {
+        final long count = maintenanceManager.countFutureMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+    }
 }

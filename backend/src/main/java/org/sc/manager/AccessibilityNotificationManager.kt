@@ -50,4 +50,6 @@ class AccessibilityNotificationManager @Autowired constructor(
                 accessibilityNotificationUnrMapper.map(it)
             }
 
+    fun countAccessibilityNotification(): Long = accessibilityDAO.countAccessibility()
+
 }
