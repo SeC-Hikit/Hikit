@@ -7,8 +7,8 @@ import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.Maintenance;
 import org.sc.data.entity.mapper.MaintenanceMapper;
+import org.sc.data.model.Maintenance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

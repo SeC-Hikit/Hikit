@@ -2,7 +2,7 @@ package org.sc.manager
 
 import org.sc.common.rest.MaintenanceCreationDto
 import org.sc.common.rest.MaintenanceDto
-import org.sc.data.dto.MaintenanceMapper
+import org.sc.data.mapper.MaintenanceMapper
 import org.sc.data.repository.MaintenanceDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component
 @Component
 class MaintenanceManager @Autowired constructor(
     private val maintenanceDao: MaintenanceDAO,
-    private val maintenanceMapper: MaintenanceMapper) {
+    private val maintenanceMapper: MaintenanceMapper
+) {
 
     fun getFuture(page: Int, count: Int): List<MaintenanceDto> =
         maintenanceDao.getFuture(page, count).map { maintenanceMapper.map(it) }

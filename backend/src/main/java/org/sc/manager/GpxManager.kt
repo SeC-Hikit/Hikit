@@ -5,11 +5,9 @@ import io.jenetics.jpx.Metadata
 import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
-import org.sc.data.dto.TrailCoordinatesMapper
-import org.sc.data.entity.TrailCoordinates
-import org.sc.data.entity.Trail
-import org.sc.data.entity.CoordinatesWithAltitude
-import org.sc.data.entity.Position
+import org.sc.data.mapper.TrailCoordinatesMapper
+import org.sc.data.model.TrailCoordinates
+import org.sc.data.model.Trail
 import org.sc.processor.TrailsCalculator
 import org.sc.service.AltitudeServiceAdapter
 import org.sc.processor.GpxFileHandlerHelper
@@ -23,7 +21,7 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
                                         private val trailsCalculator: TrailsCalculator,
                                         private val altitudeService: AltitudeServiceAdapter,
                                         private val trailCoordinatesMapper: TrailCoordinatesMapper,
-                                        private val appProps: AppProperties) {
+                                        appProps: AppProperties) {
 
     private val pathToStoredFiles = File(appProps.trailStorage).toPath()
     private val emptyDefaultString = ""
@@ -50,8 +48,18 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
         return TrailPreparationModelDto(
                 track.name.orElse(emptyDefaultString),
                 track.description.orElse(emptyDefaultString),
-            PositionDto("", emptyList(), trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.first())),
-            PositionDto("", emptyList(), trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.last())),
+            PositionDto(
+                "",
+                emptyList(),
+                trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.first()),
+                emptyList()
+            ),
+            PositionDto(
+                "",
+                emptyList(),
+                trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.last()),
+                emptyList()
+            ),
                 trailCoordinates.map { trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(it) }
         )
     }

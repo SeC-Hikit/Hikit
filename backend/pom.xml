@@ -15,8 +15,24 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <jackson-module-kotlin.version>2.11.2</jackson-module-kotlin.version>
+        <mongo-java-driver.version>3.12.7</mongo-java-driver.version>
+        <tika-core.version>1.25</tika-core.version>
+        <springdoc-openapi-ui.version>1.5.2</springdoc-openapi-ui.version>
+        <mockk.version>1.10.6</mockk.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.sec</groupId>
+            <artifactId>rest</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sec</groupId>
+            <artifactId>data</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
@@ -24,14 +40,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.sec</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.2</version>
+            <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -46,7 +61,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
-            <version>1.9.3</version>
+            <version>${mockk.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -69,12 +84,17 @@
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
-            <version>2.11.2</version>
+            <version>${jackson-module-kotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.7</version>
+            <version>${mongo-java-driver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika-core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -129,22 +149,6 @@
                             <version>${org.mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
-                    <showWarnings>true</showWarnings>
-                    <compilerArgs>
-                        <compilerArg>
-                            -Amapstruct.defaultComponentModel=spring
-                        </compilerArg>
-                        <!-- Logging -->
-                        <compilerArg>
-                            -Amapstruct.suppressGeneratorTimestamp=true
-                        </compilerArg>
-                        <compilerArg>
-                            -Amapstruct.suppressGeneratorVersionInfoComment=true
-                        </compilerArg>
-                        <compilerArg>
-                            -Amapstruct.verbose=true
-                        </compilerArg>
-                    </compilerArgs>
                     <showWarnings>true</showWarnings>
                 </configuration>
                 <executions>

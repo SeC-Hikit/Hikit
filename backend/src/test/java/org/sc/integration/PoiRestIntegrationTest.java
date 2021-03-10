@@ -7,12 +7,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.KeyValueDto;
+import org.sc.common.rest.LinkedMediaDto;
 import org.sc.common.rest.PoiDto;
-import org.sc.common.rest.PoiMacroType;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.POIController;
-import org.sc.data.entity.Poi;
+import org.sc.data.model.Poi;
+import org.sc.data.model.PoiMacroType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,17 +31,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class PoiRestIntegrationTest {
 
-    private static final String EXPECTED_ID = "MY_ID";
-    private static final String EXPECTED_NAME = "ANY_POI";
-    private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
+    public static final String EXPECTED_ID = "MY_ID";
+    public static final String EXPECTED_NAME = "ANY_POI";
+    public static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
     public static final String EXPECTED_TRAIL_CODE = "123BO";
-    private static final Date EXPECTED_DATE = new Date();
+    public static final Date EXPECTED_DATE = new Date();
     public static final CoordinatesDto EXPECTED_COORDINATE = new CoordinatesDto(44.436084, 11.315620, 250.0);
     public static final List<String> EXPECTED_MICRO_TYPES = Arrays.asList("minorType1", "minorType2");
     public static final PoiMacroType EXPECTED_MACRO_TYPE = PoiMacroType.BELVEDERE;
     public static final List<String> EXPECTED_EXTERNAL_RESOURCES = Arrays.asList("http://externalresource.com", "http://externalresource2.com");
     public static final List<String> EXPECTED_TRAIL_IDS = Collections.singletonList(EXPECTED_TRAIL_CODE);
-    public static final List<String> EXPECTED_MEDIA_IDS = Collections.singletonList("12");
+    public static final List<LinkedMediaDto> EXPECTED_MEDIA_IDS = Collections.emptyList();
     public static final List<String> EXPECTED_TAGS = Arrays.asList("poiType", "poiType2");
     public static final KeyValueDto EXPECTED_KEYVAL = new KeyValueDto("a", "b");
     public static final List<KeyValueDto> EXPECTED_KEY_VALS = Collections.singletonList(EXPECTED_KEYVAL);
@@ -230,7 +231,7 @@ public class PoiRestIntegrationTest {
         assertThat(firstElement.getMicroType()).isEqualTo(EXPECTED_MICRO_TYPES);
         assertThat(firstElement.getExternalResources()).isEqualTo(EXPECTED_EXTERNAL_RESOURCES);
         assertThat(firstElement.getTags()).isEqualTo(EXPECTED_TAGS);
-        assertThat(firstElement.getMediaIds()).isEqualTo(EXPECTED_MEDIA_IDS);
+        assertThat(firstElement.getMediaList()).isEqualTo(EXPECTED_MEDIA_IDS);
         assertThat(firstElement.getTrailIds()).isEqualTo(EXPECTED_TRAIL_IDS);
     }
 }

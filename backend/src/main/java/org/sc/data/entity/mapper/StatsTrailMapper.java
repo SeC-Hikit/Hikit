@@ -1,7 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.StatsTrailMetadata;
+import org.sc.data.model.StatsTrailMetadata;
 import org.springframework.stereotype.Component;
 
 @Component

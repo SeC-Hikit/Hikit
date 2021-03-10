@@ -10,7 +10,8 @@ import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailImporterController;
 import org.sc.controller.TrailPreviewController;
-import org.sc.data.entity.Trail;
+import org.sc.data.model.Trail;
+import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,16 +47,16 @@ public class TrailPreviewRestIntegrationTest {
 
     // End Pos coordinates
     public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 50);
-    public static final PositionDto EXPECTED_START_POS = new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE);
-    public static final PositionDto EXPECTED_FINAL_POS = new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE);
+    public static final PositionDto EXPECTED_START_POS = new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE, Collections.emptyList());
+    public static final PositionDto EXPECTED_FINAL_POS = new PositionDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE, Collections.emptyList());
     public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
             EXPECTED_START_POS,
             EXPECTED_FINAL_POS,
-            Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE)),
+            20, Collections.singletonList(new PositionDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE, Collections.emptyList())),
             EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
             Arrays.asList(
                     START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
-            ), EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION);
+            ), EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, false, "Porretta", new Date());
 
     @Autowired
     private DataSource dataSource;

@@ -42,36 +42,41 @@ public class AccessibilityNotificationController {
     }
 
     @GetMapping("/solved")
-    public AccessibilityResponse getSolved(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+    public AccessibilityResponse getSolved(
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
         return new AccessibilityResponse(Status.OK,
                 Collections.emptySet(),
                 accessibilityNotManager.getSolved(page, count));
     }
 
     @GetMapping("/solved/{code}")
-    public AccessibilityResponse getSolvedByTrailCode(@PathVariable String code) {
+    public AccessibilityResponse getSolvedByTrailCode(
+            @PathVariable String code) {
         return new AccessibilityResponse(Status.OK,
                 Collections.emptySet(),
                 accessibilityNotManager.getResolvedByCode(code));
     }
 
     @GetMapping("/unresolved")
-    public AccessibilityUnresolvedResponse getNotSolved(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                                        @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+    public AccessibilityUnresolvedResponse getNotSolved(
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
         return new AccessibilityUnresolvedResponse(Status.OK,
                 Collections.emptySet(),
                 accessibilityNotManager.getUnresolved(page, count));
     }
 
     @GetMapping("/unresolved/{code}")
-    public AccessibilityUnresolvedResponse getNotSolvedByTrailCode(@PathVariable String code) {
+    public AccessibilityUnresolvedResponse getNotSolvedByTrailCode(
+            @PathVariable String code) {
         return new AccessibilityUnresolvedResponse(Status.OK, Collections.emptySet(),
                 accessibilityNotManager.getUnresolvedByCode(code));
     }
 
     @PostMapping("/resolve")
-    public AccessibilityResponse resolveNotification(@RequestBody AccessibilityNotificationResolutionDto accessibilityRes) {
+    public AccessibilityResponse resolveNotification(
+            @RequestBody AccessibilityNotificationResolutionDto accessibilityRes) {
         final List<AccessibilityNotificationDto> resolved =
                 accessibilityNotManager.resolve(accessibilityRes);
         if (resolved.isEmpty()) {
@@ -100,14 +105,15 @@ public class AccessibilityNotificationController {
         throw new IllegalStateException();
     }
 
-    @DeleteMapping("/{objectId}")
-    public AccessibilityResponse deleteAccessibilityNotification(@PathVariable String objectId) {
+    @DeleteMapping("/{id}")
+    public AccessibilityResponse deleteAccessibilityNotification(
+            @PathVariable String id) {
         final List<AccessibilityNotificationDto> isDeleted =
-                accessibilityNotManager.delete(objectId);
+                accessibilityNotManager.delete(id);
         if (isDeleted.isEmpty()) {
             return new AccessibilityResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No accessibility notification was found with id '%s'", objectId))),
+                            format("No accessibility notification was found with id '%s'", id))),
                     Collections.emptyList());
         }
         return new AccessibilityResponse(Status.OK, Collections.emptySet(), isDeleted);

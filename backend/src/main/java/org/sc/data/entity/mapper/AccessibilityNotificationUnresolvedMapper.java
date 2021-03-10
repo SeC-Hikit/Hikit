@@ -1,9 +1,9 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.AccessibilityNotification;
-import org.sc.data.entity.AccessibilityUnresolved;
-import org.sc.data.entity.CoordinatesWithAltitude;
+import org.sc.data.model.AccessibilityNotification;
+import org.sc.data.model.AccessibilityUnresolved;
+import org.sc.data.model.CoordinatesWithAltitude;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

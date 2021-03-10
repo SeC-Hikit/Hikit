@@ -19,22 +19,25 @@ public class AppProperties {
     private final String mongoDbUri;
     private final String dbName;
     private final String mailFrom;
+    private final int resourcesCachePeriod;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
-                         final @Value("${trail.storage.path}") String trailStorage,
+                         final @Value("${trail.storage.path}") String storage,
                          final @Value("${temp.storage.path}") String tempStorage,
                          final @Value("${service.altitude.port}") Integer altitudeServicePort,
                          final @Value("${db.uri}") String mongoDbUri,
                          final @Value("${db.name}") String dbName,
-                         final @Value("${spring.mail.from}") String mailFrom) {
+                         final @Value("${spring.mail.from}") String mailFrom,
+                         final @Value("${resources.cache.period.seconds:3600}") int resourcesCachePeriod) {
         this.port = port;
-        this.trailStorage = trailStorage;
+        this.trailStorage = storage;
         this.tempStorage = tempStorage;
         this.altitudeServicePort = altitudeServicePort;
         this.mongoDbUri = mongoDbUri;
         this.dbName = dbName;
         this.mailFrom = mailFrom;
+        this.resourcesCachePeriod = resourcesCachePeriod;
     }
 
     public String getPort() {
@@ -63,5 +66,9 @@ public class AppProperties {
 
     public String getMailFrom() {
         return mailFrom;
+    }
+
+    public int getResourcesCachePeriod() {
+        return resourcesCachePeriod;
     }
 }

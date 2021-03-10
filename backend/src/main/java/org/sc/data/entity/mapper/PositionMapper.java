@@ -1,7 +1,7 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.entity.Position;
+import org.sc.data.model.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +19,10 @@ public class PositionMapper implements Mapper<Position> {
 
     @Override
     public Position mapToObject(Document document) {
-        return Position.PositionBuilder.aPosition()
-                .withName(document.getString(Position.NAME))
-                .withCoords(coordinatesMapper.mapToObject(document.get(Position.COORDINATES, Document.class)))
-                .withTags(document.get(Position.TAGS, List.class))
-                .build();
+        return new Position(document.getString(Position.NAME),
+                document.getList(Position.TAGS, String.class),
+                coordinatesMapper.mapToObject(document.get(Position.COORDINATES, Document.class)),
+                document.getList(Position.MEDIA_IDS, String.class));
     }
 
     @Override

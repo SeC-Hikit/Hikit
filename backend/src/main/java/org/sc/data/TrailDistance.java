@@ -1,7 +1,6 @@
 package org.sc.data;
 
-import org.sc.common.rest.Coordinates;
-import org.sc.common.rest.CoordinatesDto;
+import org.sc.data.model.Coordinates;
 import org.sc.common.rest.TrailDto;
 
 public class TrailDistance {

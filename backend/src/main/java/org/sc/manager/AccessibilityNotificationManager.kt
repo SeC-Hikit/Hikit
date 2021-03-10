@@ -4,7 +4,7 @@ import org.sc.common.rest.AccessibilityNotificationCreationDto
 import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityNotificationResolutionDto
 import org.sc.common.rest.AccessibilityUnresolvedDto
-import org.sc.data.dto.AccessibilityNotificationMapper
+import org.sc.data.mapper.AccessibilityNotificationMapper
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

@@ -1,10 +1,10 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.TrailClassification;
-import org.sc.data.entity.Position;
-import org.sc.data.entity.Trail;
-import org.sc.data.entity.TrailPreview;
+import org.sc.data.model.TrailClassification;
+import org.sc.data.model.Position;
+import org.sc.data.model.Trail;
+import org.sc.data.model.TrailPreview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
