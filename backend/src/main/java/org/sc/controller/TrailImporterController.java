@@ -4,7 +4,6 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.AppProperties;
-import org.sc.data.TrailImport;
 import org.sc.data.validator.TrailImportValidator;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.GpxManager;

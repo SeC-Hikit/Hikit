@@ -27,6 +27,7 @@ import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 public class MaintenanceController {
 
     public final static String PREFIX = "/maintenance";
+
     private final static Logger LOGGER = Logger
             .getLogger(MaintenanceController.class.getName());
 

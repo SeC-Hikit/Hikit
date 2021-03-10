@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component
 class AccessibilityNotificationManager @Autowired constructor(
     private val accessibilityDAO: AccessibilityNotificationDAO,
     private val accessibilityMapper: AccessibilityNotificationMapper,
-    private val accessibilityNotificationUnrMapper: AccessibilityNotificationMapper
 ) {
 
     fun getSolved(page: Int, count: Int): List<AccessibilityNotificationDto> {
@@ -28,12 +27,12 @@ class AccessibilityNotificationManager @Autowired constructor(
 
     fun getUnresolved(page: Int, count: Int): List<AccessibilityUnresolvedDto> {
         val unresolved = accessibilityDAO.getUnresolved(page, count)
-        return unresolved.map { accessibilityNotificationUnrMapper.map(it) }
+        return unresolved.map { accessibilityMapper.map(it) }
     }
 
     fun getUnresolvedByCode(code: String): List<AccessibilityUnresolvedDto> {
         val unresolved = accessibilityDAO.getUnresolvedByCode(code)
-        return unresolved.map { accessibilityNotificationUnrMapper.map(it) }
+        return unresolved.map { accessibilityMapper.map(it) }
     }
 
     fun resolve(accessibilityRes: AccessibilityNotificationResolutionDto) =
@@ -46,9 +45,7 @@ class AccessibilityNotificationManager @Autowired constructor(
 
     fun upsert(accessibilityNotificationCreation: AccessibilityNotificationCreationDto): List<AccessibilityUnresolvedDto> =
         accessibilityDAO.insert(accessibilityNotificationCreation)
-            .map {
-                accessibilityNotificationUnrMapper.map(it)
-            }
+            .map { accessibilityMapper.map(it) }
 
     fun countAccessibilityNotification(): Long = accessibilityDAO.countAccessibility()
 

@@ -1,6 +1,7 @@
 package org.sc.controller;
 
 import org.sc.common.rest.*;
+import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.data.validator.LinkedMediaValidator;
 import org.sc.data.validator.MediaExistenceValidator;
