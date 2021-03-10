@@ -69,4 +69,6 @@ class TrailImporterManager @Autowired constructor(
         return savedTrailDao
     }
 
+    fun countImport(): Long = trailDatasetVersionDao.countImport()
+
 }

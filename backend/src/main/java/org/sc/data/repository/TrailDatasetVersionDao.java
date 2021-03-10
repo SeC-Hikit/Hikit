@@ -42,6 +42,9 @@ public class TrailDatasetVersionDao {
         collection.insertOne(mapper.mapToDocument(new TrailDatasetVersion(nextVersion, new Date())));
     }
 
+    public long countImport() {
+        return collection.countDocuments();
+    }
 
 
 }

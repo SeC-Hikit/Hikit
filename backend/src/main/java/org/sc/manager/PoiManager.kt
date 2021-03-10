@@ -74,4 +74,6 @@ class PoiManager @Autowired constructor(
     fun unlinkMedia(id: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto) : List<PoiDto>{
         return poiDAO.unlinkMediaId(id, unLinkeMediaRequestDto.id).map { poiDtoMapper.poiToPoiDto(it) }
     }
+
+    fun countPoi(): Long = poiDAO.countPOI()
 }

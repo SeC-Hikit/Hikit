@@ -133,4 +133,9 @@ public class PoiDAO {
     private List<Poi> toPoisList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(mapper::mapToObject).collect(toList());
     }
+
+    public long countPOI() {
+        return collection.countDocuments();
+    }
+
 }

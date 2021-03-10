@@ -1,6 +1,7 @@
 package org.sc.controller;
 
 import org.sc.common.rest.*;
+import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.data.validator.LinkedMediaValidator;
 import org.sc.data.validator.MediaExistenceValidator;
@@ -44,6 +45,13 @@ public class POIController {
         this.poiExistenceValidator = poiExistenceValidator;
         this.linkedMediaValidator = linkedMediaValidator;
         this.mediaExistanceValidator = mediaExistanceValidator;
+    }
+
+
+    @GetMapping("/count")
+    public CountResponse getCount() {
+        final long count = poiManager.countPoi();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
     @GetMapping

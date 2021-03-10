@@ -1,8 +1,10 @@
 package org.sc.controller;
 
+import org.sc.common.rest.CountDto;
 import org.sc.common.rest.MaintenanceCreationDto;
 import org.sc.common.rest.MaintenanceDto;
 import org.sc.common.rest.Status;
+import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.MaintenanceResponse;
 import org.sc.data.validator.MaintenanceValidator;
 import org.sc.manager.MaintenanceManager;
@@ -25,6 +27,7 @@ import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 public class MaintenanceController {
 
     public final static String PREFIX = "/maintenance";
+
     private final static Logger LOGGER = Logger
             .getLogger(MaintenanceController.class.getName());
 
@@ -36,6 +39,12 @@ public class MaintenanceController {
                                  final MaintenanceValidator maintenanceValidator) {
         this.maintenanceManager = maintenanceManager;
         this.maintenanceValidator = maintenanceValidator;
+    }
+
+    @GetMapping("/count")
+    public CountResponse getCount() {
+        final long count = maintenanceManager.countMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
     @GetMapping("/future")
@@ -84,5 +93,17 @@ public class MaintenanceController {
                             format("No maintenance was found with id '%s'", id))), deleted);
         }
         return new MaintenanceResponse(Status.OK, emptySet(), deleted);
+    }
+
+    @GetMapping("/past/count")
+    public CountResponse getCountPast() {
+        final long count = maintenanceManager.countPastMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+    }
+
+    @GetMapping("/future/count")
+    public CountResponse getCountFuture() {
+        final long count = maintenanceManager.countFutureMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 }

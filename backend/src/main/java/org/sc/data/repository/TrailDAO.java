@@ -170,4 +170,8 @@ public class TrailDAO {
     private List<Trail> toTrailsList(Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
+
+    public long countTrail() {
+        return collection.countDocuments();
+    }
 }
