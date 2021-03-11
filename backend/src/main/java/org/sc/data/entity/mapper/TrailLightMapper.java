@@ -15,12 +15,12 @@ public class TrailLightMapper extends TrailMapper {
 
     public static final IntPredicate IS_EVEN = i -> i % 2 == 0;
 
-    public TrailLightMapper(final PositionMapper positionMapper,
+    public TrailLightMapper(final PlaceMapper placeMapper,
                             final TrailCoordinatesMapper trailCoordinatesMapper,
                             final GeoLineMapper geoLineMapper,
                             final StatsTrailMapper statsTrailMapper,
                             final LinkedMediaMapper linkedMediaMapper) {
-        super(positionMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper);
+        super(placeMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper);
     }
 
     @Override

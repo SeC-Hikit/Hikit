@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TrailPreviewMapper implements Mapper<TrailPreview> {
 
-    private final PositionMapper positionMapper;
+    private final PlaceMapper placeMapper;
 
     @Autowired
-    public TrailPreviewMapper(final PositionMapper positionMapper) {
-        this.positionMapper = positionMapper;
+    public TrailPreviewMapper(final PlaceMapper placeMapper) {
+        this.placeMapper = placeMapper;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
     private Position getPos(final Document doc,
                             final String fieldName) {
         final Document pos = doc.get(fieldName, Document.class);
-        return positionMapper.mapToObject(pos);
+        return placeMapper.mapToObject(pos);
     }
 
     private TrailClassification getClassification(Document doc) {

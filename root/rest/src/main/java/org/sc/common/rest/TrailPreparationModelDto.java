@@ -6,15 +6,15 @@ import java.util.Objects;
 public class TrailPreparationModelDto {
     private String name;
     private String description;
-    private PositionDto startPos;
-    private PositionDto finalPos;
+    private PlaceDto startPos;
+    private PlaceDto finalPos;
     private List<TrailCoordinatesDto> coordinates;
 
     public TrailPreparationModelDto() {
     }
 
-    public TrailPreparationModelDto(String name, String description, PositionDto startPos,
-                                    PositionDto finalPos, List<TrailCoordinatesDto> coordinates) {
+    public TrailPreparationModelDto(String name, String description, PlaceDto startPos,
+                                    PlaceDto finalPos, List<TrailCoordinatesDto> coordinates) {
         this.name = name;
         this.description = description;
         this.startPos = startPos;
@@ -30,11 +30,11 @@ public class TrailPreparationModelDto {
         return description;
     }
 
-    public PositionDto getStartPos() {
+    public PlaceDto getStartPos() {
         return startPos;
     }
 
-    public PositionDto getFinalPos() {
+    public PlaceDto getFinalPos() {
         return finalPos;
     }
 
@@ -50,11 +50,11 @@ public class TrailPreparationModelDto {
         this.description = description;
     }
 
-    public void setStartPos(PositionDto startPos) {
+    public void setStartPos(PlaceDto startPos) {
         this.startPos = startPos;
     }
 
-    public void setFinalPos(PositionDto finalPos) {
+    public void setFinalPos(PlaceDto finalPos) {
         this.finalPos = finalPos;
     }
 

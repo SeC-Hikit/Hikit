@@ -48,15 +48,15 @@ class GpxManager @Autowired constructor(private val gpxFileHandlerHelper: GpxFil
         return TrailPreparationModelDto(
                 track.name.orElse(emptyDefaultString),
                 track.description.orElse(emptyDefaultString),
-            PositionDto(
-                "",
-                emptyList(),
+            PlaceDto(
+                "", "", "",
+                emptyList(), emptyList(),
                 trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.first()),
                 emptyList()
             ),
-            PositionDto(
-                "",
-                emptyList(),
+            PlaceDto(
+                "", "", "",
+                emptyList(), emptyList(),
                 trailCoordinatesMapper.trailCoordinatesToTrailCoordinatesDto(trailCoordinates.last()),
                 emptyList()
             ),

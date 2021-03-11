@@ -9,15 +9,15 @@ import java.util.Objects;
 public class TrailPreviewDto {
     private String code;
     private TrailClassification classification;
-    private PositionDto startPos;
-    private PositionDto finalPos;
+    private PlaceDto startPos;
+    private PlaceDto finalPos;
     private Date date;
 
     public TrailPreviewDto() {
     }
 
     public TrailPreviewDto(String code, TrailClassification classification,
-                           PositionDto startPos, PositionDto finalPos, Date date) {
+                           PlaceDto startPos, PlaceDto finalPos, Date date) {
         this.code = code;
         this.classification = classification;
         this.startPos = startPos;
@@ -33,11 +33,11 @@ public class TrailPreviewDto {
         return classification;
     }
 
-    public PositionDto getStartPos() {
+    public PlaceDto getStartPos() {
         return startPos;
     }
 
-    public PositionDto getFinalPos() {
+    public PlaceDto getFinalPos() {
         return finalPos;
     }
 
@@ -53,11 +53,11 @@ public class TrailPreviewDto {
         this.classification = classification;
     }
 
-    public void setStartPos(PositionDto startPos) {
+    public void setStartPos(PlaceDto startPos) {
         this.startPos = startPos;
     }
 
-    public void setFinalPos(PositionDto finalPos) {
+    public void setFinalPos(PlaceDto finalPos) {
         this.finalPos = finalPos;
     }
 

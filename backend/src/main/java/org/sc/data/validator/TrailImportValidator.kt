@@ -10,7 +10,7 @@ import java.util.*
 @Component
 class TrailImportValidator @Autowired constructor (
     private val coordsValidatorTrail: TrailCoordinatesValidator,
-    private val positionValidator: PositionValidator): Validator<TrailImportDto> {
+    private val placeValidator: PlaceValidator): Validator<TrailImportDto> {
 
     companion object {
         private const val minGeoPoints = 3
@@ -44,8 +44,8 @@ class TrailImportValidator @Autowired constructor (
         if (request.startPos.coordinates != request.coordinates.first()) errors.add(posToTrailCoordError)
         if (request.finalPos.coordinates != request.coordinates.last()) errors.add(lastPosToTrailCoordError)
 
-        errors.addAll(positionValidator.validate(request.startPos))
-        errors.addAll(positionValidator.validate(request.finalPos))
+        errors.addAll(placeValidator.validate(request.startPos))
+        errors.addAll(placeValidator.validate(request.finalPos))
         if(request.coordinates == null || request.coordinates.isEmpty()) errors.add(emptyListPointError)
         if(request.coordinates.size < minGeoPoints) errors.add(tooFewPointsError)
         request.coordinates.map { coordsValidatorTrail.validate(it) }
