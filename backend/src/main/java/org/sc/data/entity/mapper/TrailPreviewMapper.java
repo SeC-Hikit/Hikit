@@ -2,7 +2,7 @@ package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.data.model.TrailClassification;
-import org.sc.data.model.Position;
+import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailPreview;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +32,8 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
         throw new IllegalStateException();
     }
 
-    private Position getPos(final Document doc,
-                            final String fieldName) {
+    private Place getPos(final Document doc,
+                         final String fieldName) {
         final Document pos = doc.get(fieldName, Document.class);
         return placeMapper.mapToObject(pos);
     }
