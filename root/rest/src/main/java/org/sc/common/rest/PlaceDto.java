@@ -2,6 +2,7 @@ package org.sc.common.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.sc.data.model.SimpleCoordinates;
 
 import java.util.List;
 
@@ -13,6 +14,6 @@ public class PlaceDto {
     private String description;
     private List<String> tags;
     private List<String> mediaIds;
-    private TrailCoordinatesDto coordinates;
+    private List<CoordinatesDto> coordinates;
     private List<String> crossingTrailIds;
 }

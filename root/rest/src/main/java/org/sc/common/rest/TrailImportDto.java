@@ -11,10 +11,8 @@ public class TrailImportDto {
     private final String code;
     private final String name;
     private final String description;
-    private final PlaceDto startPos;
-    private final PlaceDto finalPos;
     private final int officialEta;
-    private final List<PlaceDto> locations;
+    private final List<PlaceRefDto> locations;
     private final TrailClassification classification;
     private final String country;
     private final List<TrailCoordinatesDto> coordinates;

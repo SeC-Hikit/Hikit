@@ -2,10 +2,10 @@ package org.sc.common.rest;
 
 import org.sc.data.model.Coordinates;
 
-public class CoordinatesDto implements Coordinates {
 
-    private double latitude;
+public class CoordinatesDto implements Coordinates {
     private double longitude;
+    private double latitude;
     private double altitude;
 
     public CoordinatesDto(){}

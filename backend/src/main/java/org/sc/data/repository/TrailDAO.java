@@ -3,9 +3,12 @@ package org.sc.data.repository;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
@@ -19,13 +22,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import static com.mongodb.client.model.Accumulators.first;
+import static com.mongodb.client.model.Aggregates.project;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.*;
 import static java.util.stream.Collectors.toList;
 import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class TrailDAO {
 
-    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Position.COORDINATES;
+    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Place.COORDINATES;
 
     private final MongoCollection<Document> collection;
 
@@ -111,22 +118,25 @@ public class TrailDAO {
                 new Document(Trail.ID, existingOrNewObjectId),
                 trailDocument, new FindOneAndReplaceOptions().upsert(true)
                         .returnDocument(ReturnDocument.AFTER));
-        if (updateResult != null) {
-            return Collections.singletonList(trailMapper.mapToObject(updateResult));
+        if (updateResult == null) {
+            throw new IllegalStateException();
         }
-        throw new IllegalStateException();
+        return Collections.singletonList(trailMapper.mapToObject(updateResult));
     }
 
     public List<TrailPreview> getTrailPreviews(final int page, final int count) {
-        return toTrailsPreviewList(collection.find()
-                .projection(projectPreview())
-                .skip(page)
-                .limit(count));
+        final Bson project = getTrailPreviewProjection();
+
+        final Bson limit = Aggregates.limit(count);
+        final Bson skip = Aggregates.skip(page);
+
+        return toTrailsPreviewList(collection.aggregate(Arrays.asList(project, limit, skip)));
     }
 
     public List<TrailPreview> trailPreviewByCode(final String code) {
-        return toTrailsPreviewList(collection.find(new Document(Trail.CODE, code))
-                .projection(projectPreview()));
+        final Bson project = getTrailPreviewProjection();
+        final Bson equalId = eq(Trail.CODE, code);
+        return toTrailsPreviewList(collection.aggregate(Arrays.asList(equalId, project)));
     }
 
     public void unlinkMediaByAllTrails(final String mediaId) {
@@ -150,7 +160,7 @@ public class TrailDAO {
         return getTrailByCode(code, true);
     }
 
-    private List<TrailPreview> toTrailsPreviewList(final FindIterable<Document> documents) {
+    private List<TrailPreview> toTrailsPreviewList(final MongoIterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false)
                 .map(trailPreviewMapper::mapToObject).collect(toList());
     }
@@ -169,6 +179,18 @@ public class TrailDAO {
 
     private List<Trail> toTrailsList(Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
+    }
+
+    private Bson getTrailPreviewProjection() {
+        return project(fields(
+                include(Trail.CLASSIFICATION),
+                include(Trail.LAST_UPDATE_DATE),
+                include(Trail.CODE),
+                computed(Trail.START_POS,
+                        new Document("$arrayElementAt", Arrays.asList(Trail.LOCATIONS, 0))),
+                computed(Trail.FINAL_POS,
+                        new Document("$arrayElementAt", Arrays.asList(Trail.LOCATIONS, -1)))
+        ));
     }
 
     public long countTrail() {

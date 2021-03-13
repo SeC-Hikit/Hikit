@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PlaceValidator @Autowired constructor(
-        private val trailCoordinatesCreationValidator: TrailCoordinatesValidator,
+        private val trailCoordinatesCreationValidator: CoordinatesValidator,
         private val mediaExistenceValidator: MediaExistenceValidator,
         private val trailExistenceValidator: TrailExistenceValidator) : Validator<PlaceDto> {
 
@@ -18,13 +18,10 @@ class PlaceValidator @Autowired constructor(
 
     override fun validate(request: PlaceDto): Set<String> {
         val listOfErrorMessages = mutableSetOf<String>()
-
         listOfErrorMessages.addAll(request.mediaIds.flatMap { mediaExistenceValidator.validate(it) })
         listOfErrorMessages.addAll(request.crossingTrailIds.flatMap { trailExistenceValidator.validate(it) })
-        val coordinatesError = trailCoordinatesCreationValidator.validate(request.coordinates)
-        listOfErrorMessages.addAll(coordinatesError)
+        listOfErrorMessages.addAll(request.coordinates.flatMap { trailCoordinatesCreationValidator.validate(it) })
         if (isEmpty(request.name)) listOfErrorMessages.add(noNameError)
-        listOfErrorMessages.addAll(trailCoordinatesCreationValidator.validate(request.coordinates))
         return listOfErrorMessages
     }
 

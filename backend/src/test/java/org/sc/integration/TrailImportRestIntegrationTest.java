@@ -23,19 +23,22 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sc.integration.ImportTrailIT.END_REF_COORDINATE;
+import static org.sc.integration.ImportTrailIT.START_REF_COORDINATE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
 public class TrailImportRestIntegrationTest {
 
+
+    private static final String EXPECTED_PLACE_ID_INTERMEDIATE = "ANY_INTERMEDIATE";
+
     private static final String EXPECTED_NAME = "ANY";
-    private static final String EXPECTED_NAME_2 = "ANY_2";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
     public static final String EXPECTED_TRAIL_CODE = "123BO";
     private static final Date EXPECTED_DATE = new Date();
     public static final List<String> EXPECTED_TAGS = Arrays.asList("one", "two");
-    public static final List<String> EXPECTED_TAGS_2 = Arrays.asList("three", "four");
     public static final String EXPECTED_COUNTRY = "Italy";
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
     public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
@@ -52,11 +55,12 @@ public class TrailImportRestIntegrationTest {
     public static final List<TrailCoordinatesDto> EXPECTED_TRAIL_COORDINATES = Arrays.asList(
             START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
     );
+    public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
+            Collections.singletonList(new PlaceRefDto(EXPECTED_NAME,
+                    INTERMEDIATE_EXPECTED_COORDINATE, EXPECTED_PLACE_ID_INTERMEDIATE));
 
     public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-            new PlaceDto(EXPECTED_NAME, EXPECTED_TAGS, START_EXPECTED_COORDINATE, Collections.emptyList()),
-            new PlaceDto(EXPECTED_NAME_2, EXPECTED_TAGS_2, END_EXPECTED_COORDINATE, Collections.emptyList()),
-            20, Collections.singletonList(new PlaceDto(EXPECTED_NAME, EXPECTED_TAGS, INTERMEDIATE_EXPECTED_COORDINATE, Collections.emptyList())),
+            20, SINGLETON_LIST_OF_REF_PLACES,
             EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
             EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, EXPECTED_DATE);
 
@@ -70,13 +74,13 @@ public class TrailImportRestIntegrationTest {
     TrailController trailController;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
         importController.importTrail(EXPECTED_TRAIL_DTO);
     }
 
     @Test
-    public void getById_shouldFindOne(){
+    public void getById_shouldFindOne() {
         TrailResponse getTrail = trailController.getByCode(EXPECTED_TRAIL_CODE, false);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
@@ -84,7 +88,7 @@ public class TrailImportRestIntegrationTest {
     }
 
     @Test
-    public void getPaged_shouldFindOne(){
+    public void getPaged_shouldFindOne() {
         TrailResponse getTrail = trailController.get(0, 0, false);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
@@ -100,12 +104,12 @@ public class TrailImportRestIntegrationTest {
     }
 
     @Test
-    public void contextLoads(){
+    public void contextLoads() {
         assertThat(trailController).isNotNull();
     }
 
     @After
-    public void setDown(){
+    public void setDown() {
         IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
     }
 

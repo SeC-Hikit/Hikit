@@ -1,6 +1,6 @@
 package org.sc.data.model;
 
-public class TrailCoordinates extends CoordinatesWithAltitude {
+public class TrailCoordinates implements Coordinates {
 
     public final static String DISTANCE_FROM_START = "distFromStart";
 
@@ -10,14 +10,12 @@ public class TrailCoordinates extends CoordinatesWithAltitude {
     private double altitude;
 
     public TrailCoordinates() {
-        super(0.0, 0.0, 0.0);
     }
 
     public TrailCoordinates(final double latitude,
                             final double longitude,
                             final double altitude,
                             final int distanceFromTrailStart) {
-        super(latitude, longitude, altitude);
         this.longitude = longitude;
         this.latitude = latitude;
         this.altitude = altitude;

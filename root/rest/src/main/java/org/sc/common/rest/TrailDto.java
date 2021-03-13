@@ -14,9 +14,7 @@ public class TrailDto {
     private String description;
     private boolean variant;
     private int officialEta;
-    private PlaceDto startPos;
-    private PlaceDto finalPos;
-    private List<PlaceDto> locations;
+    private List<PlaceRefDto> locations;
     private TrailClassification classification;
     private String country;
     private StatsTrailMetadataDto statsTrailMetadata;

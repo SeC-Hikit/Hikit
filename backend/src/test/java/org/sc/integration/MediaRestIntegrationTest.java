@@ -44,7 +44,7 @@ public class MediaRestIntegrationTest extends TrailImportRestIntegrationTest {
         IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Media.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
-        importController.importTrail(EXPECTED_TRAIL_DTO);
+        TrailResponse trailResponse = importController.importTrail(EXPECTED_TRAIL_DTO);
     }
 
     @Test

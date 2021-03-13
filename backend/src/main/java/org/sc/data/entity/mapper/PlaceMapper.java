@@ -5,13 +5,17 @@ import org.sc.data.model.Place;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+
 @Component
 public class PlaceMapper implements Mapper<Place> {
 
-    final TrailCoordinatesMapper coordinatesMapper;
+    final CoordinatesMapper coordinatesMapper;
 
     @Autowired
-    public PlaceMapper(TrailCoordinatesMapper coordinatesMapper) {
+    public PlaceMapper(CoordinatesMapper coordinatesMapper) {
         this.coordinatesMapper = coordinatesMapper;
     }
 
@@ -23,7 +27,9 @@ public class PlaceMapper implements Mapper<Place> {
                 document.getString(Place.DESCRIPTION),
                 document.getList(Place.TAGS, String.class),
                 document.getList(Place.MEDIA_IDS, String.class),
-                coordinatesMapper.mapToObject(document.get(Place.COORDINATES, Document.class)),
+                document.getList(Place.COORDINATES, Document.class).stream().map(
+                        coordinatesMapper::mapToObject
+                ).collect(toList()),
                 document.getList(Place.CROSSING, String.class));
     }
 
@@ -35,6 +41,8 @@ public class PlaceMapper implements Mapper<Place> {
                         .append(Place.TAGS, object.getTags())
                         .append(Place.MEDIA_IDS, object.getMediaIds())
                         .append(Place.CROSSING, object.getCrossingTrailIds())
-                        .append(Place.COORDINATES, coordinatesMapper.mapToDocument(object.getCoordinates()));
+                        .append(Place.COORDINATES, object.getCoordinates()
+                                .stream().map(coordinatesMapper::mapToDocument)
+                                .collect(toList()));
     }
 }

@@ -5,7 +5,8 @@ import org.sc.common.rest.TrailImportDto
 import org.sc.data.model.Trail
 import org.sc.data.model.StatsTrailMetadata
 import org.sc.data.model.SimpleCoordinates
-import org.sc.data.mapper.PositionMapper
+import org.sc.data.mapper.PlaceMapper
+import org.sc.data.mapper.PlaceRefMapper
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.model.GeoLineString
 import org.sc.data.repository.TrailDatasetVersionDao
@@ -19,7 +20,7 @@ class TrailImporterManager @Autowired constructor(
     private val trailsManager: TrailManager,
     private val trailsCalculator: TrailsCalculator,
     private val trailDatasetVersionDao: TrailDatasetVersionDao,
-    private val positionMapper: PositionMapper,
+    private val placeMapper: PlaceRefMapper,
     private val trailCoordinatesMapper: TrailCoordinatesMapper
 ) {
 
@@ -38,17 +39,11 @@ class TrailImporterManager @Autowired constructor(
             .description(importingTrail.description)
             .code(importingTrail.code)
             .variant(importingTrail.isVariant)
-            .startPos(positionMapper.positionDtoToPosition(importingTrail.startPos))
-            .finalPos(positionMapper.positionDtoToPosition(importingTrail.finalPos))
-            .locations(importingTrail.locations.map { positionMapper.positionDtoToPosition(it) })
+            .locations(importingTrail.locations.map { placeMapper.map(it) })
             .classification(importingTrail.classification)
             .country(importingTrail.country)
             .statsTrailMetadata(statsTrailMetadata)
-            .coordinates(importingTrail.coordinates.map {
-                trailCoordinatesMapper.trailCoordinatesDtoToTrailCoordinates(
-                    it
-                )
-            })
+            .coordinates(importingTrail.coordinates.map { trailCoordinatesMapper.map(it) })
             .createdOn(createdOn)
             .lastUpdate(createdOn)
             .maintainingSection(importingTrail.maintainingSection)

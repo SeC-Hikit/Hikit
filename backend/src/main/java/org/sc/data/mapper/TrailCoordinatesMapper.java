@@ -7,6 +7,6 @@ import org.sc.data.model.TrailCoordinates;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface TrailCoordinatesMapper {
-    TrailCoordinatesDto trailCoordinatesToTrailCoordinatesDto(TrailCoordinates value);
-    TrailCoordinates trailCoordinatesDtoToTrailCoordinates(TrailCoordinatesDto value);
+    TrailCoordinatesDto map(TrailCoordinates value);
+    TrailCoordinates map(TrailCoordinatesDto value);
 }

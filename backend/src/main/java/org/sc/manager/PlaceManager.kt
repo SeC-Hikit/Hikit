@@ -1,35 +1,40 @@
 package org.sc.manager
 
 import org.sc.common.rest.PlaceDto
+import org.sc.data.mapper.PlaceMapper
 import org.sc.data.repository.PlaceDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class PlaceManager @Autowired constructor(placeDao: PlaceDAO) {
-
+class PlaceManager @Autowired constructor(
+    private val placeDao: PlaceDAO,
+    private val placeMapper: PlaceMapper
+) {
 
     fun getPaginated(page: Int, count: Int): List<PlaceDto> {
-        TODO("Not yet implemented")
+        return placeDao.get(page, count).map { placeMapper.map(it) }
     }
 
-    fun getLikeNameOrTags(name: String): List<PlaceDto> {
-        TODO("Not yet implemented")
+    fun getLikeNameOrTags(name: String, page: Int, count: Int): List<PlaceDto> {
+        return placeDao.getLikeName(name, page, count).map { placeMapper.map(it) }
     }
+
+    fun doesItExist(id: String) = getById(id).isNotEmpty();
 
     fun getById(id: String): List<PlaceDto> {
-        TODO("Not yet implemented")
+        return placeDao.getById(id).map { placeMapper.map(it) };
     }
 
     fun create(place: PlaceDto): List<PlaceDto> {
-        TODO("Not yet implemented")
+        return placeDao.create(placeMapper.map(place)).map { placeMapper.map(it) };
     }
 
-    fun deleteById(id: Comparable<String>): List<PlaceDto> {
-        TODO("Not yet implemented")
+    fun deleteById(id: String): List<PlaceDto> {
+        return placeDao.delete(id).map { placeMapper.map(it) }
     }
 
     fun update(place: PlaceDto): List<PlaceDto> {
-        TODO("Not yet implemented")
+        return placeDao.update(placeMapper.map(place)).map { placeMapper.map(it) }
     }
 }

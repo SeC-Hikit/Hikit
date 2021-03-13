@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Place {
 
+    public static final String COLLECTION_NAME = "core.Place";
+
     public static final String ID = "_id";
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
@@ -26,6 +28,6 @@ public class Place {
     private String description;
     private List<String> tags;
     private List<String> mediaIds;
-    private TrailCoordinates coordinates;
+    private List<CoordinatesWithAltitude> coordinates;
     private List<String> crossingTrailIds;
 }

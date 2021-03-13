@@ -67,30 +67,30 @@ class TrailManager @Autowired constructor(
         return unlinkedTrail.map { trailMapper.trailToTrailDto(it) }
     }
 
-    fun getByGeo(
-        coords: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement,
-        isAnyPoint: Boolean, limit: Int
-    ): List<TrailDistance> {
-        val meters = getMeters(unitOfMeasurement, distance)
-        return if (!isAnyPoint) {
-
-            val trailsByStartPosMetricDistance = trailDAO.getTrailsByStartPosMetricDistance(
-                coords.longitude,
-                coords.latitude,
-                meters, limit
-            )
-            val trailsDto = trailsByStartPosMetricDistance.map { trailMapper.trailToTrailDto(it) }
-
-            trailsDto.map {
-                TrailDistance(
-                    DistanceProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
-                    it.startPos.coordinates, it
-                )
-            }
-        } else {
-            getTrailDistancesWithinRangeAtPoint(coords, distance, unitOfMeasurement, limit)
-        }
-    }
+//    fun getByGeo(
+//        coords: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement,
+//        isAnyPoint: Boolean, limit: Int
+//    ): List<TrailDistance> {
+////        val meters = getMeters(unitOfMeasurement, distance)
+////        return if (!isAnyPoint) {
+////
+////            val trailsByStartPosMetricDistance = trailDAO.getTrailsByStartPosMetricDistance(
+////                coords.longitude,
+////                coords.latitude,
+////                meters, limit
+////            )
+////            val trailsDto = trailsByStartPosMetricDistance.map { trailMapper.trailToTrailDto(it) }
+////
+////            trailsDto.map {
+////                TrailDistance(
+////                    DistanceProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
+////                    it.startPos.coordinates, it
+////                )
+////            }
+////        } else {
+////            getTrailDistancesWithinRangeAtPoint(coords, distance, unitOfMeasurement, limit)
+////        }
+//    }
 
     fun getTrailDistancesWithinRangeAtPoint(
         coordinates: CoordinatesDto,
