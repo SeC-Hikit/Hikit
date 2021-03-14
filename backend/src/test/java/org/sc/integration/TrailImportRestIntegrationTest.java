@@ -6,10 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
+import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
+import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailImporterController;
+import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +21,23 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sc.integration.ImportTrailIT.END_REF_COORDINATE;
-import static org.sc.integration.ImportTrailIT.START_REF_COORDINATE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class TrailImportRestIntegrationTest {
+public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
 
     private static final String EXPECTED_PLACE_ID_INTERMEDIATE = "ANY_INTERMEDIATE";
+    public static final String EXPECTED_TRAIL_CODE = "123BO";
 
     private static final String EXPECTED_NAME = "ANY";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
-    public static final String EXPECTED_TRAIL_CODE = "123BO";
     private static final Date EXPECTED_DATE = new Date();
     public static final List<String> EXPECTED_TAGS = Arrays.asList("one", "two");
     public static final String EXPECTED_COUNTRY = "Italy";
@@ -44,6 +45,7 @@ public class TrailImportRestIntegrationTest {
     public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
     public static final String EXPECTED_TERRITORIAL_DIVISION = "Porretta";
     public static final boolean IS_VARIANT = false;
+    public static final int ANY_OFFICIAL_ETA = 20;
 
     // Start POS coordinates
     public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
@@ -56,27 +58,28 @@ public class TrailImportRestIntegrationTest {
             START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
     );
     public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
-            Collections.singletonList(new PlaceRefDto(EXPECTED_NAME,
+            singletonList(new PlaceRefDto(EXPECTED_NAME,
                     INTERMEDIATE_EXPECTED_COORDINATE, EXPECTED_PLACE_ID_INTERMEDIATE));
 
-    public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-            20, SINGLETON_LIST_OF_REF_PLACES,
-            EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
-            EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, EXPECTED_DATE);
+    public static List<PlaceRefDto> LOCATION_REFS;
+
+    public TrailImportDto expectedTrailDto;
 
     @Autowired
     DataSource dataSource;
 
     @Autowired
     TrailImporterController importController;
-
+    @Autowired
+    PlaceController placeController;
     @Autowired
     TrailController trailController;
 
     @Before
     public void setUp() {
-        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
-        importController.importTrail(EXPECTED_TRAIL_DTO);
+        IntegrationUtils.clearCollections(dataSource);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createPlaces(placeController);
+        importController.importTrail(trailImportDto);
     }
 
     @Test
@@ -121,6 +124,30 @@ public class TrailImportRestIntegrationTest {
         assertThat(firstElement.getLastUpdate()).isEqualToIgnoringMinutes(EXPECTED_DATE);
         assertThat(firstElement.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
 
+    }
+
+    static TrailImportDto createPlaces(PlaceController placeController) {
+        PlaceResponse firstPlace = placeController.add(START_CORRECT_PLACE_DTO);
+        PlaceResponse addedPlace = placeController.add(CORRECT_PLACE_DTO);
+        PlaceResponse lastPlace = placeController.add(END_CORRECT_PLACE_DTO);
+        assertThat(firstPlace.getContent()).isNotEmpty();
+        assertThat(addedPlace.getContent()).isNotEmpty();
+        assertThat(lastPlace.getContent()).isNotEmpty();
+        return makeCorrectTrailDtoForImport(firstPlace.getContent().get(0).getId(),
+                        addedPlace.getContent().get(0).getId(),
+                        lastPlace.getContent().get(0).getId());
+    }
+
+    public static TrailImportDto makeCorrectTrailDtoForImport(String startPlaceId, String placeId, String endPlaceId) {
+        LOCATION_REFS = Arrays.asList(new PlaceRefDto(EXPECTED_NAME,
+                START_EXPECTED_COORDINATE, startPlaceId), new PlaceRefDto(EXPECTED_NAME,
+                INTERMEDIATE_EXPECTED_COORDINATE, placeId), new PlaceRefDto(EXPECTED_NAME,
+                END_EXPECTED_COORDINATE, endPlaceId));
+
+        return new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
+                ANY_OFFICIAL_ETA, LOCATION_REFS,
+                EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
+                EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, EXPECTED_DATE);
     }
 
 }

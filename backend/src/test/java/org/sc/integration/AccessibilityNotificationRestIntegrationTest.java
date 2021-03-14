@@ -43,7 +43,7 @@ public class AccessibilityNotificationRestIntegrationTest {
 
     @Before
     public void setUp() {
-        IntegrationUtils.emptyCollection(dataSource, AccessibilityNotification.COLLECTION_NAME);
+        IntegrationUtils.clearCollections(dataSource);
         accessibilityNotificationController.createAccessibilityNotification(EXPECTED_AN);
     }
 

@@ -1,12 +1,11 @@
 package org.sc.data.repository;
 
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoIterable;
+import com.mongodb.MongoClient;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -22,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static com.mongodb.client.model.Accumulators.first;
+import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.*;
@@ -135,7 +134,7 @@ public class TrailDAO {
 
     public List<TrailPreview> trailPreviewByCode(final String code) {
         final Bson project = getTrailPreviewProjection();
-        final Bson equalId = eq(Trail.CODE, code);
+        final Bson equalId = match(eq(Trail.CODE, code));
         return toTrailsPreviewList(collection.aggregate(Arrays.asList(equalId, project)));
     }
 
@@ -160,17 +159,9 @@ public class TrailDAO {
         return getTrailByCode(code, true);
     }
 
-    private List<TrailPreview> toTrailsPreviewList(final MongoIterable<Document> documents) {
+    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false)
                 .map(trailPreviewMapper::mapToObject).collect(toList());
-    }
-
-    private Document projectPreview() {
-        return new Document(Trail.CODE, 1)
-                .append(Trail.START_POS, 1)
-                .append(Trail.FINAL_POS, 1)
-                .append(Trail.CLASSIFICATION, 1)
-                .append(Trail.LAST_UPDATE_DATE, 1);
     }
 
     private List<Trail> toTrailsLightList(Iterable<Document> documents) {
@@ -187,9 +178,11 @@ public class TrailDAO {
                 include(Trail.LAST_UPDATE_DATE),
                 include(Trail.CODE),
                 computed(Trail.START_POS,
-                        new Document("$arrayElementAt", Arrays.asList(Trail.LOCATIONS, 0))),
+                        new Document("$arrayElemAt",
+                                Arrays.asList(DOLLAR + Trail.LOCATIONS, 0))),
                 computed(Trail.FINAL_POS,
-                        new Document("$arrayElementAt", Arrays.asList(Trail.LOCATIONS, -1)))
+                        new Document("$arrayElemAt",
+                                Arrays.asList(DOLLAR + Trail.LOCATIONS, -1)))
         ));
     }
 

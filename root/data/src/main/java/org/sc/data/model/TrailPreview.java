@@ -12,7 +12,7 @@ import java.util.Date;
 public class TrailPreview {
     private String code;
     private TrailClassification classification;
-    private Place startPos;
-    private Place finalPos;
+    private PlaceRef startPos;
+    private PlaceRef finalPos;
     private Date date;
 }

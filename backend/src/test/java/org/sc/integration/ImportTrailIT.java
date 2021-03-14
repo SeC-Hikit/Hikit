@@ -4,9 +4,11 @@ import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.PlaceRefDto;
 import org.sc.common.rest.TrailCoordinatesDto;
-import org.sc.data.model.TrailClassification;
+import org.sc.configuration.DataSource;
+import org.sc.data.model.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -44,5 +46,32 @@ public class ImportTrailIT {
 
     public static final PlaceDto EXPECTED_START_POS = new PlaceDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_TAGS, emptyList(), singletonList(START_COORDINATES_DTO), emptyList());
     public static final PlaceDto EXPECTED_FINAL_POS = new PlaceDto(EXPECTED_ID2, EXPECTED_NAME_2, EXPECTED_DESCRIPTION, EXPECTED_TAGS_2, emptyList(), singletonList(END_COORDINATES_DTO), emptyList());
+
+
+    public static final String PLACE_EXPECTED_DESCRIPTION = "<p>ANY_DESCRIPTION</p>";
+    public static final List<String> TAGS = Arrays.asList("Magic", "Place");
+
+
+    public static PlaceDto START_CORRECT_PLACE_DTO = new PlaceDto(null, "The first magical place", PLACE_EXPECTED_DESCRIPTION,
+            TAGS, Collections.emptyList(),
+            Collections.singletonList(START_COORDINATES_DTO), Collections.emptyList());
+
+    public static PlaceDto CORRECT_PLACE_DTO = new PlaceDto(null, "A magical place", PLACE_EXPECTED_DESCRIPTION,
+            TAGS, Collections.emptyList(),
+            Collections.singletonList(INTERMEDIATE_COORDINATES_DTO), Collections.emptyList());
+
+    public static PlaceDto END_CORRECT_PLACE_DTO = new PlaceDto(null, "Another magical place", PLACE_EXPECTED_DESCRIPTION,
+            TAGS, Collections.emptyList(),
+            Collections.singletonList(END_COORDINATES_DTO), Collections.emptyList());
+
+
+    public static void clearCollections(DataSource dataSource) {
+        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, Media.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, Maintenance.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, AccessibilityNotification.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, Place.COLLECTION_NAME);
+    }
 
 }

@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -37,17 +36,15 @@ public class PlaceIntegrationTest extends ImportTrailIT {
 
     @Before
     public void setUp(){
-        IntegrationUtils.emptyCollection(dataSource, Place.COLLECTION_NAME);
-        addedPlace = controller.add(new PlaceDto(null, "A magical place", EXPECTED_DESCRIPTION,
-                TAGS, Collections.emptyList(),
-                Collections.singletonList(INTERMEDIATE_COORDINATES_DTO), Collections.emptyList()));
+        IntegrationUtils.clearCollections(dataSource);
+        addedPlace = controller.add(CORRECT_PLACE_DTO);
     }
 
     @Test
     public void shouldRetrieveItBack(){
         PlaceResponse placeResponse = controller.get(addedPlace.getContent().get(0).getId());
-        PlaceDto placeDto = placeResponse.getContent().get(0);
-        assertThat(addedPlace.getContent().get(0)).isEqualTo(placeDto);
+        PlaceDto returnedPlaceDto = placeResponse.getContent().get(0);
+        assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
     }
 
 

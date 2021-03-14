@@ -5,10 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.MediaResponse;
+import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.MediaController;
 import org.sc.controller.POIController;
+import org.sc.controller.PlaceController;
 import org.sc.data.model.Media;
 import org.sc.data.model.Poi;
 import org.sc.data.model.Trail;
@@ -25,6 +27,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.sc.integration.ImportTrailIT.CORRECT_PLACE_DTO;
 import static org.sc.integration.PoiRestIntegrationTest.*;
 
 @RunWith(SpringRunner.class)
@@ -35,16 +38,17 @@ public class MediaRestIntegrationTest extends TrailImportRestIntegrationTest {
     public static final String FILE_NAME = "sec_map.png";
 
     @Autowired MediaController mediaController;
-
     @Autowired POIController poiController;
+    @Autowired PlaceController placeController;
 
+    public TrailImportDto expectedTrailDto;
 
     @Before
     public void setUp(){
-        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Media.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
-        TrailResponse trailResponse = importController.importTrail(EXPECTED_TRAIL_DTO);
+        IntegrationUtils.clearCollections(dataSource);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createPlaces(placeController);
+        importController.importTrail(trailImportDto);
+
     }
 
     @Test

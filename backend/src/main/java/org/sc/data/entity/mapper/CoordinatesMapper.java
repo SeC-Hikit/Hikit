@@ -18,7 +18,9 @@ public class CoordinatesMapper implements Mapper<Coordinates> {
     public CoordinatesWithAltitude mapToObject(final Document document) {
         final List<Double> list = document.getList(Coordinates.COORDINATES, Double.class);
         final Double altitude = document.getDouble(Coordinates.ALTITUDE);
-        return new CoordinatesWithAltitude(list.get(CoordinatesWithAltitude.LAT_INDEX), list.get(CoordinatesWithAltitude.LONG_INDEX),
+        return new CoordinatesWithAltitude(
+                list.get(CoordinatesWithAltitude.LAT_INDEX),
+                list.get(CoordinatesWithAltitude.LONG_INDEX),
                 altitude);
     }
 
