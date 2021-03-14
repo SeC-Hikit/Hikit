@@ -1,21 +1,18 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.model.TrailClassification;
-import org.sc.data.model.Position;
-import org.sc.data.model.Trail;
-import org.sc.data.model.TrailPreview;
+import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TrailPreviewMapper implements Mapper<TrailPreview> {
 
-    private final PositionMapper positionMapper;
+    private final PlaceRefMapper placeMapper;
 
     @Autowired
-    public TrailPreviewMapper(final PositionMapper positionMapper) {
-        this.positionMapper = positionMapper;
+    public TrailPreviewMapper(final PlaceRefMapper placeMapper) {
+        this.placeMapper = placeMapper;
     }
 
     @Override
@@ -32,10 +29,10 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
         throw new IllegalStateException();
     }
 
-    private Position getPos(final Document doc,
+    private PlaceRef getPos(final Document doc,
                             final String fieldName) {
         final Document pos = doc.get(fieldName, Document.class);
-        return positionMapper.mapToObject(pos);
+        return placeMapper.mapToObject(pos);
     }
 
     private TrailClassification getClassification(Document doc) {

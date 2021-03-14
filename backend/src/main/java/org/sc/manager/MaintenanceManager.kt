@@ -20,7 +20,7 @@ class MaintenanceManager @Autowired constructor(
     fun getPast(page: Int, count: Int): List<MaintenanceDto> =
         maintenanceDao.getPast(page, count).map { maintenanceMapper.map(it) }
 
-    fun getPastMaintenanceForTrailCode(trailCode: String, page: Int, count: Int): List<MaintenanceDto> =
+    fun getPastMaintenanceForTrailId(trailCode: String, page: Int, count: Int): List<MaintenanceDto> =
         maintenanceDao.getPastForTrailCode(trailCode, page, count).map { maintenanceMapper.map(it) }
 
     fun upsert(request: MaintenanceCreationDto): List<MaintenanceDto> =

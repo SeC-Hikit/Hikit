@@ -75,7 +75,7 @@ public class POIController {
                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
         return new PoiResponse(Status.OK,
                 Collections.emptySet(),
-                poiManager.getPoiByTrailCode(code, page, count));
+                poiManager.getPoiByTrailId(code, page, count));
     }
 
     @GetMapping("/type/{type}")

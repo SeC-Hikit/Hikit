@@ -20,9 +20,9 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
     @Override
     public AccessibilityNotification mapToObject(Document document) {
         return new AccessibilityNotification(
-                document.getObjectId(AccessibilityNotification.OBJECT_ID).toHexString(),
+                document.getObjectId(AccessibilityNotification.ID).toHexString(),
                 document.getString(AccessibilityNotification.DESCRIPTION),
-                document.getString(AccessibilityNotification.TRAIL_CODE),
+                document.getString(AccessibilityNotification.TRAIL_ID),
                 document.getDate(AccessibilityNotification.REPORT_DATE),
                 document.getDate(AccessibilityNotification.RESOLUTION_DATE),
                 document.getBoolean(AccessibilityNotification.IS_MINOR),
@@ -32,8 +32,8 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
 
     @Override
     public Document mapToDocument(AccessibilityNotification accessibilityNotification) {
-        return new Document(AccessibilityNotification.TRAIL_CODE, accessibilityNotification.getCode())
-                .append(AccessibilityNotification.OBJECT_ID, accessibilityNotification.get_id())
+        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getCode())
+                .append(AccessibilityNotification.ID, accessibilityNotification.get_id())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
                 .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotification.getResolutionDate())
@@ -44,7 +44,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
     }
 
     public Document mapCreationToDocument(AccessibilityNotificationCreationDto accessibilityNotification) {
-        return new Document(AccessibilityNotification.TRAIL_CODE, accessibilityNotification.getCode())
+        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getCode())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
                 .append(AccessibilityNotification.IS_MINOR, accessibilityNotification.isMinor())

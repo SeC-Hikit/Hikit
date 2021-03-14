@@ -73,7 +73,7 @@ public class MaintenanceRestIntegrationTest {
 
     @Before
     public void setUp() {
-        IntegrationUtils.emptyCollection(dataSource, Maintenance.COLLECTION_NAME);
+        IntegrationUtils.clearCollections(dataSource);
         maintenanceController.create(EXPECTED_MAINTENANCE);
         maintenanceDAO.upsert(maintenanceMapper.map(EXPECTED_MAINTENANCE_PAST));
     }

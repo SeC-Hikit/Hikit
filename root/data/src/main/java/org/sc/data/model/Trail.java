@@ -41,9 +41,7 @@ public class Trail {
     private String code;
     private boolean variant;
     private int officialEta;
-    private Position startPos;
-    private Position finalPos;
-    private List<Position> locations;
+    private List<PlaceRef> locations;
     private List<TrailCoordinates> coordinates;
     private TrailClassification classification;
     private String country;
@@ -54,5 +52,19 @@ public class Trail {
     private StatsTrailMetadata statsTrailMetadata;
     private GeoLineString geoLineString;
     private List<LinkedMedia> mediaList;
+
+    // TODO:
+    // status: solo_file, draft, public
+    // file: { uploadedOn: , uploadedBy: , fileName: }
+    // lastModified: { user: , date: }
+    // bike:
+    //    Difficolta' prevalente (TC, TC+, MC, MC+, BC, BC+, OC, OC+, non percorribile in bici)
+    //    Official ETA (tempo di percorrenza)
+    //    Percorribilità in bici da A a B : yes/no
+    //    Indicazione per pezzi di portage: 15 / 20 / >30 min
+    //    Percorribilità in bici da B a A -> (si/no)
+    //    Indicazione per pezzi di portage: 15 / 20 / >30 min
+    //            Note
+
 }
 

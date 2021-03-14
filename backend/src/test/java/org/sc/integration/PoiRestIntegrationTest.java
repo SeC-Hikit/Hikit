@@ -54,7 +54,7 @@ public class PoiRestIntegrationTest {
 
     @Before
     public void setUp(){
-        IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
+        IntegrationUtils.clearCollections(dataSource);
         controller.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,

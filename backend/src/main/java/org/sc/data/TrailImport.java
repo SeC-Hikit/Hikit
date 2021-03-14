@@ -1,6 +1,6 @@
 package org.sc.data;
 
-import org.sc.common.rest.PositionDto;
+import org.sc.common.rest.PlaceDto;
 import org.sc.data.model.TrailClassification;
 import org.sc.common.rest.TrailCoordinatesDto;
 
@@ -12,9 +12,9 @@ public class TrailImport {
     private final String name;
     private final String description;
     private final String code;
-    private final PositionDto startPos;
-    private final PositionDto finalPos;
-    private final List<PositionDto> locations;
+    private final PlaceDto startPos;
+    private final PlaceDto finalPos;
+    private final List<PlaceDto> locations;
     private final List<TrailCoordinatesDto> coordinates;
     private final TrailClassification classification;
     private final String country;
@@ -24,9 +24,9 @@ public class TrailImport {
     public TrailImport(final String name,
                        final String description,
                        final String code,
-                       final PositionDto startPos,
-                       final PositionDto finalPos,
-                       final List<PositionDto> locations,
+                       final PlaceDto startPos,
+                       final PlaceDto finalPos,
+                       final List<PlaceDto> locations,
                        final TrailClassification classification,
                        final String country,
                        final List<TrailCoordinatesDto> coordinates,
@@ -56,7 +56,7 @@ public class TrailImport {
         return code;
     }
 
-    public PositionDto getStartPos() {
+    public PlaceDto getStartPos() {
         return startPos;
     }
 
@@ -64,7 +64,7 @@ public class TrailImport {
         return classification;
     }
 
-    public PositionDto getFinalPos() {
+    public PlaceDto getFinalPos() {
         return finalPos;
     }
 
@@ -84,7 +84,7 @@ public class TrailImport {
         return maintainingSection;
     }
 
-    public List<PositionDto> getLocations() {
+    public List<PlaceDto> getLocations() {
         return locations;
     }
 }

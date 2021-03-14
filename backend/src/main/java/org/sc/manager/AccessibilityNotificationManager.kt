@@ -20,8 +20,8 @@ class AccessibilityNotificationManager @Autowired constructor(
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getResolvedByCode(code: String): List<AccessibilityNotificationDto> {
-        val solved = accessibilityDAO.getResolvedByCode(code)
+    fun getResolvedById(code: String): List<AccessibilityNotificationDto> {
+        val solved = accessibilityDAO.getResolvedById(code)
         return solved.map { accessibilityMapper.map(it) }
     }
 
@@ -30,8 +30,8 @@ class AccessibilityNotificationManager @Autowired constructor(
         return unresolved.map { accessibilityMapper.map(it) }
     }
 
-    fun getUnresolvedByCode(code: String): List<AccessibilityUnresolvedDto> {
-        val unresolved = accessibilityDAO.getUnresolvedByCode(code)
+    fun getUnresolvedById(code: String): List<AccessibilityUnresolvedDto> {
+        val unresolved = accessibilityDAO.getUnresolvedById(code)
         return unresolved.map { accessibilityMapper.map(it) }
     }
 

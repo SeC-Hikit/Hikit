@@ -5,12 +5,11 @@ import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.sc.common.rest.PositionDto
+import org.sc.common.rest.PlaceDto
 import org.sc.data.model.TrailClassification
 import org.sc.common.rest.TrailCoordinatesDto
 import org.sc.common.rest.TrailImportDto
 import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError
-import org.sc.data.validator.TrailImportValidator.Companion.posToTrailCoordError
 import java.util.*
 
 class TrailsImporterValidatorTest {
@@ -18,16 +17,14 @@ class TrailsImporterValidatorTest {
     private val trailCoordsValidatorMock: TrailCoordinatesValidator =
             mockkClass(TrailCoordinatesValidator::class)
 
-    private val positionValidatorMock: PositionValidator =
-            mockkClass(PositionValidator::class)
+    private val placeValidatorMock: PlaceRefValidator =
+            mockkClass(PlaceRefValidator::class)
 
     @Test
     fun `validation shall pass when all data correct`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, placeValidatorMock)
 
-        val startPosMock = mockkClass(PositionDto::class)
-        val finalPosMock = mockkClass(PositionDto::class)
         val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
         val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
@@ -36,20 +33,12 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
-
-        every { startPosMock.coordinates } returns startTrailCoordsPosMock
-        every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
-
         val requestMock = mockkClass(TrailImportDto::class)
 
         every { requestMock.name } returns "La via"
         every { requestMock.code } returns "100BO"
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
-        every { requestMock.startPos } returns startPosMock
-        every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
         every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
@@ -64,10 +53,8 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation should fail on missing name`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, placeValidatorMock)
 
-        val startPosMock = mockkClass(PositionDto::class)
-        val finalPosMock = mockkClass(PositionDto::class)
         val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
         val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
@@ -76,21 +63,12 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
-
-        every { startPosMock.coordinates } returns startTrailCoordsPosMock
-        every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
-
-
         val requestMock = mockkClass(TrailImportDto::class)
 
         every { requestMock.name } returns ""
         every { requestMock.code } returns "100BO"
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
-        every { requestMock.startPos } returns startPosMock
-        every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
         every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
@@ -105,10 +83,8 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation fails on missing name and code`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, placeValidatorMock)
 
-        val startPosMock = mockkClass(PositionDto::class)
-        val finalPosMock = mockkClass(PositionDto::class)
         val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
         val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
@@ -117,20 +93,12 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
-
-        every { startPosMock.coordinates } returns startTrailCoordsPosMock
-        every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
-
         val requestMock = mockkClass(TrailImportDto::class)
 
         every { requestMock.name } returns ""
         every { requestMock.code } returns ""
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
-        every { requestMock.startPos } returns startPosMock
-        every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
         every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
@@ -146,10 +114,8 @@ class TrailsImporterValidatorTest {
     @Test
     fun `validation fails on wrong trail coord`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, placeValidatorMock)
 
-        val startPosMock = mockkClass(PositionDto::class)
-        val finalPosMock = mockkClass(PositionDto::class)
         val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
         val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
@@ -159,11 +125,6 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
-
-        every { startPosMock.coordinates } returns startTrailCoordsPosMock
-        every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
 
         val requestMock = mockkClass(TrailImportDto::class)
 
@@ -171,8 +132,6 @@ class TrailsImporterValidatorTest {
         every { requestMock.code } returns ""
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
-        every { requestMock.startPos } returns startPosMock
-        every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
         every { requestMock.lastUpdate } returns Date()
         every { requestMock.locations } returns emptyList()
@@ -187,52 +146,10 @@ class TrailsImporterValidatorTest {
     }
 
     @Test
-    fun `validation fails when first pos is not first trail coord`() {
-
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
-
-        val startPosMock = mockkClass(PositionDto::class)
-        val finalPosMock = mockkClass(PositionDto::class)
-        val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
-        val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
-        val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
-
-        every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
-        every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
-        every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
-
-        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
-
-        every { startPosMock.coordinates } returns startTrailCoordsPosMock
-        every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
-
-        val requestMock = mockkClass(TrailImportDto::class)
-
-        every { requestMock.name } returns "Trail name"
-        every { requestMock.code } returns "001BO"
-        every { requestMock.description } returns "A description"
-        every { requestMock.classification } returns TrailClassification.E
-        every { requestMock.startPos } returns startPosMock
-        every { requestMock.finalPos } returns finalPosMock
-        every { requestMock.country } returns "Italy"
-        every { requestMock.lastUpdate } returns Date()
-        every { requestMock.locations } returns emptyList()
-        every { requestMock.coordinates } returns listOf(anyTrailRequestPosMock, startTrailCoordsPosMock, finalTrailCoordsPosMock)
-
-
-        val validateResult = trailsImporterValidator.validate(requestMock)
-        assertTrue(validateResult.contains(posToTrailCoordError))
-        assertEquals(1, validateResult.size)
-    }
-
-    @Test
     fun `validation fails afterhour`() {
 
-        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, positionValidatorMock)
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, placeValidatorMock)
 
-        val startPosMock = mockkClass(PositionDto::class)
-        val finalPosMock = mockkClass(PositionDto::class)
         val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
         val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
@@ -241,11 +158,6 @@ class TrailsImporterValidatorTest {
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
 
-        every { positionValidatorMock.validate(startPosMock) } returns emptySet()
-        every { positionValidatorMock.validate(finalPosMock) } returns emptySet()
-
-        every { startPosMock.coordinates } returns startTrailCoordsPosMock
-        every { finalPosMock.coordinates } returns finalTrailCoordsPosMock
 
         val requestMock = mockkClass(TrailImportDto::class)
 
@@ -253,8 +165,6 @@ class TrailsImporterValidatorTest {
         every { requestMock.code } returns "001BO"
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
-        every { requestMock.startPos } returns startPosMock
-        every { requestMock.finalPos } returns finalPosMock
         every { requestMock.country } returns "Italy"
         every { requestMock.lastUpdate } returns Date(System.currentTimeMillis() + 10000)
         every { requestMock.locations } returns emptyList()

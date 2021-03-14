@@ -4,7 +4,6 @@ import org.sc.common.rest.Status;
 import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -31,9 +30,9 @@ public class TrailPreviewController {
         return new TrailPreviewResponse(Status.OK, Collections.emptySet(), trailManager.getPreviews(page, count));
     }
 
-    @GetMapping("/{code}")
-    public TrailPreviewResponse getPreviewByCode(@PathVariable String code) {
-        return new TrailPreviewResponse(Status.OK, Collections.emptySet(), trailManager.previewByCode(code));
+    @GetMapping("/{id}")
+    public TrailPreviewResponse getPreviewById(@PathVariable String id) {
+        return new TrailPreviewResponse(Status.OK, Collections.emptySet(), trailManager.previewById(id));
     }
 
 
