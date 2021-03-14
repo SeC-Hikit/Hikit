@@ -1,9 +1,11 @@
 package org.sc.data.repository;
 
+import com.mongodb.MongoClient;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -91,18 +93,11 @@ public class TrailDAO {
         return toTrailsList(collection.find(new Document()).skip(page).limit(count));
     }
 
-    public List<Trail> getTrailById(String id, boolean isLight) {
+    public List<Trail> getTrailById(String code, boolean isLight) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document(Trail.ID, id)));
+            return toTrailsLightList(collection.find(new Document(Trail.ID, code)));
         }
-        return toTrailsList(collection.find(new Document(Trail.ID, id)));
-    }
-
-    public List<Trail> getTrailByCode(String code, boolean isLight) {
-        if (isLight) {
-            return toTrailsLightList(collection.find(new Document(Trail.CODE, code)));
-        }
-        return toTrailsList(collection.find(new Document(Trail.CODE, code)));
+        return toTrailsList(collection.find(new Document(Trail.ID, code)));
     }
 
     public List<Trail> getTrailByPlaceId(String id, boolean isLight) {
@@ -112,9 +107,9 @@ public class TrailDAO {
         return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)));
     }
 
-    public List<Trail> delete(final String code) {
-        List<Trail> trailByCode = getTrailByCode(code, false);
-        collection.deleteOne(new Document(Trail.CODE, code));
+    public List<Trail> delete(final String id) {
+        List<Trail> trailByCode = getTrailById(id, false);
+        collection.deleteOne(new Document(Trail.ID, id));
         return trailByCode;
     }
 
@@ -142,9 +137,9 @@ public class TrailDAO {
         return toTrailsPreviewList(collection.aggregate(Arrays.asList(project, limit, skip)));
     }
 
-    public List<TrailPreview> trailPreviewByCode(final String code) {
+    public List<TrailPreview> trailPreviewById(final String id) {
         final Bson project = getTrailPreviewProjection();
-        final Bson equalId = match(eq(Trail.CODE, code));
+        final Bson equalId = match(eq(Trail.ID, id));
         return toTrailsPreviewList(collection.aggregate(Arrays.asList(equalId, project)));
     }
 
@@ -208,14 +203,17 @@ public class TrailDAO {
     public List<Trail> unLinkPlace(String id, PlaceRef placeRef) {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document(PULL, new Document(Trail.LOCATIONS,
-                        new Document(PLACE_ID_IN_LOCATIONS, placeRef.getPlaceId()))));
+                        new Document(PlaceRef.PLACE_ID, placeRef.getPlaceId()))));
         return getTrailById(id, false);
     }
 
-    public void unlinkPlaceFromAllTrails(String id) {
+    public void unlinkPlaceFromAllTrails(String placeId) {
+        Document update = new Document(PULL, new Document(Trail.LOCATIONS,
+                new Document(PlaceRef.PLACE_ID, placeId)));
+        BsonDocument bsonDocument = update.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
+        System.out.println(bsonDocument);
         collection.updateMany(new Document(),
-                new Document(PULL, new Document(Trail.LOCATIONS,
-                        new Document(PLACE_ID_IN_LOCATIONS, id))));
+                update);
     }
 
     public long countTrail() {

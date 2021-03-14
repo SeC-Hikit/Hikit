@@ -19,9 +19,9 @@ public class AccessibilityNotificationUnresolvedMapper implements Mapper<Accessi
     @Override
     public AccessibilityUnresolved mapToObject(Document document) {
         return new AccessibilityUnresolved(
-                document.getObjectId(AccessibilityNotification.OBJECT_ID).toHexString(),
+                document.getObjectId(AccessibilityNotification.ID).toHexString(),
                 document.getString(AccessibilityNotification.DESCRIPTION),
-                document.getString(AccessibilityNotification.TRAIL_CODE),
+                document.getString(AccessibilityNotification.TRAIL_ID),
                 document.getDate(AccessibilityNotification.REPORT_DATE),
                 document.getBoolean(AccessibilityNotification.IS_MINOR),
                 mapToCoordinates(document));
@@ -29,8 +29,8 @@ public class AccessibilityNotificationUnresolvedMapper implements Mapper<Accessi
 
     @Override
     public Document mapToDocument(AccessibilityUnresolved accessibilityNotification) {
-        return new Document(AccessibilityNotification.TRAIL_CODE, accessibilityNotification.getCode())
-                .append(AccessibilityNotification.OBJECT_ID, accessibilityNotification.get_id())
+        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getCode())
+                .append(AccessibilityNotification.ID, accessibilityNotification.get_id())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
                 .append(AccessibilityNotification.IS_MINOR, accessibilityNotification.isMinor())

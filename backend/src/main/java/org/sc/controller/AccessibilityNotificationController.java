@@ -51,11 +51,11 @@ public class AccessibilityNotificationController {
     }
 
     @GetMapping("/solved/{code}")
-    public AccessibilityResponse getSolvedByTrailCode(
+    public AccessibilityResponse getSolvedByTrailId(
             @PathVariable String code) {
         return new AccessibilityResponse(Status.OK,
                 Collections.emptySet(),
-                accessibilityNotManager.getResolvedByCode(code));
+                accessibilityNotManager.getResolvedById(code));
     }
 
     @GetMapping("/unresolved")
@@ -67,11 +67,11 @@ public class AccessibilityNotificationController {
                 accessibilityNotManager.getUnresolved(page, count));
     }
 
-    @GetMapping("/unresolved/{code}")
-    public AccessibilityUnresolvedResponse getNotSolvedByTrailCode(
-            @PathVariable String code) {
+    @GetMapping("/unresolved/{id}")
+    public AccessibilityUnresolvedResponse getNotSolvedByTrailId(
+            @PathVariable String id) {
         return new AccessibilityUnresolvedResponse(Status.OK, Collections.emptySet(),
-                accessibilityNotManager.getUnresolvedByCode(code));
+                accessibilityNotManager.getUnresolvedById(id));
     }
 
     @PostMapping("/resolve")

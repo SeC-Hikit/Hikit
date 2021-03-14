@@ -3,10 +3,7 @@ package org.sc.integration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.sc.common.rest.PlaceDto;
-import org.sc.common.rest.PlaceRefDto;
-import org.sc.common.rest.TrailCoordinatesDto;
-import org.sc.common.rest.TrailImportDto;
+import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
@@ -84,16 +81,20 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         // Import trail
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
         TrailResponse importedResponse = importerController.importTrail(trailImportDto);
+        String trailId = importedResponse.getContent().get(0).getId();
 
-        TrailResponse addPlaceToTrailResponse = trailController.addPlaceToTrail(importedResponse.getContent().get(0).getId(),
-                new PlaceRefDto("", INTERMEDIATE_EXPECTED_COORDINATE, placeId));
+        TrailResponse addPlaceToTrailResponse = trailController.addPlaceToTrail(trailId,
+                new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId));
+
+        assertThat(addPlaceToTrailResponse.getStatus()).isEqualTo(Status.OK);
         TrailResponse trailResponse = trailController.getByPlaceId(placeId, false);
 
         assertThat(trailResponse.getContent().isEmpty()).isEqualTo(false);
 
         placeController.delete(placeId);
 
-        placeResponse = placeController.get(addedPlace.getContent().get(0).getId());
+        // Removed from place collection
+        placeResponse = placeController.get(placeId);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(true);
 
         // Check has been removed from trails too

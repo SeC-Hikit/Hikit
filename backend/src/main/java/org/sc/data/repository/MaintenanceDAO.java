@@ -48,12 +48,12 @@ public class MaintenanceDAO {
                 .skip(from).limit(to));
     }
 
-    public List<Maintenance> getPastForTrailCode(final String code,
+    public List<Maintenance> getPastForTrailCode(final String trailId,
                                                  final int from,
                                                  final int to) {
         return toMaintenanceList(collection.find(
                 new Document(Maintenance.DATE, new Document("$lt", new Date()))
-                        .append(Maintenance.TRAIL_CODE, code))
+                        .append(Maintenance.TRAIL_ID, trailId))
                 .sort(new Document(Maintenance.DATE, -1))
                 .skip(from).limit(to));
     }
@@ -78,22 +78,22 @@ public class MaintenanceDAO {
         return Collections.singletonList(byId);
     }
 
-    public List<Maintenance> deleteByCode(final String trailCode) {
-        final Maintenance byCode = getByTrailId(trailCode);
-        collection.deleteOne(new Document(Maintenance.TRAIL_CODE, trailCode));
-        return Collections.singletonList(byCode);
+    public List<Maintenance> deleteByCode(final String trailId) {
+        final Maintenance byId = getByTrailId(trailId);
+        collection.deleteOne(new Document(Maintenance.TRAIL_ID, trailId));
+        return Collections.singletonList(byId);
     }
 
-    private Maintenance getById(final String _id) {
+    private Maintenance getById(final String id) {
         return toMaintenanceList(collection.find(
-                new Document(Maintenance.OBJECT_ID, _id)))
+                new Document(Maintenance.OBJECT_ID, id)))
                 .stream()
                 .findFirst().orElse(null);
     }
 
     private Maintenance getByTrailId(final String trailId) {
         return toMaintenanceList(collection.find(
-                new Document(Maintenance.TRAIL_CODE, trailId)))
+                new Document(Maintenance.TRAIL_ID, trailId)))
                 .stream()
                 .findFirst().orElse(null);
     }

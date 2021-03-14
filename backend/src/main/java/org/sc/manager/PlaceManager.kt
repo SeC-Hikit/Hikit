@@ -21,19 +21,19 @@ class PlaceManager @Autowired constructor(
         return placeDao.getLikeName(name, page, count).map { placeMapper.map(it) }
     }
 
-    fun doesItExist(id: String) = getById(id).isNotEmpty();
+    fun doesItExist(id: String) = getById(id).isNotEmpty()
 
     fun getById(id: String): List<PlaceDto> {
-        return placeDao.getById(id).map { placeMapper.map(it) };
+        return placeDao.getById(id).map { placeMapper.map(it) }
     }
 
     fun create(place: PlaceDto): List<PlaceDto> {
-        return placeDao.create(placeMapper.map(place)).map { placeMapper.map(it) };
+        return placeDao.create(placeMapper.map(place)).map { placeMapper.map(it) }
     }
 
-    fun deleteById(id: String): List<PlaceDto> {
-        trailManager.removePlaceRefFromTrails(id);
-        return placeDao.delete(id).map { placeMapper.map(it) }
+    fun deleteById(placeId: String): List<PlaceDto> {
+        trailManager.removePlaceRefFromTrails(placeId)
+        return placeDao.delete(placeId).map { placeMapper.map(it) }
     }
 
     fun update(place: PlaceDto): List<PlaceDto> {

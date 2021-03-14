@@ -5,8 +5,8 @@ import java.util.Date;
 public class AccessibilityNotification {
     public final static String COLLECTION_NAME = "core.AccessibilityNotifications";
 
-    public final static String OBJECT_ID = "_id";
-    public final static String TRAIL_CODE = "code";
+    public final static String ID = "_id";
+    public final static String TRAIL_ID = "trailId";
     public final static String DESCRIPTION = "description";
     public final static String REPORT_DATE = "reportDate";
     public final static String RESOLUTION_DATE = "resolutionDate";

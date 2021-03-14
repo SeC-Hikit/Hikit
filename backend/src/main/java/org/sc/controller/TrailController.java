@@ -65,16 +65,10 @@ public class TrailController {
         return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getById(id, light));
     }
 
-    @GetMapping("/{code}")
-    public TrailResponse getByCode(@PathVariable String code,
-                                   @RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getByCode(code, light));
-    }
-
-    @GetMapping("/place/{code}")
-    public TrailResponse getByPlaceId(@PathVariable String code,
+    @GetMapping("/place/{id}")
+    public TrailResponse getByPlaceId(@PathVariable String id,
                                       @RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getByPlaceRefId(code, light));
+        return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getByPlaceRefId(id, light));
     }
 
     @PostMapping("/place/{id}")
@@ -117,29 +111,29 @@ public class TrailController {
         return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
-    @DeleteMapping("/media/{code}")
-    public TrailResponse removeMediaFromTrail(@PathVariable String code,
+    @DeleteMapping("/media/{id}")
+    public TrailResponse removeMediaFromTrail(@PathVariable String id,
                                               @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
-        final Set<String> errors = trailExistenceValidator.validate(code);
+        final Set<String> errors = trailExistenceValidator.validate(id);
         errors.addAll(mediaExistanceValidator.validate(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedMediaResultDtos =
-                    trailManager.unlinkMedia(code, unLinkeMediaRequestDto);
+                    trailManager.unlinkMedia(id, unLinkeMediaRequestDto);
             return new TrailResponse(Status.OK, Collections.emptySet(), linkedMediaResultDtos);
         }
         return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
-    @DeleteMapping("/{code}")
-    public TrailResponse deleteByCode(@PathVariable String code,
-                                      @RequestParam(required = false, defaultValue = "false") boolean isPurged) {
-        final List<TrailDto> deleted = trailManager.delete(code, isPurged);
+    @DeleteMapping("/{id}")
+    public TrailResponse deleteById(@PathVariable String id,
+                                    @RequestParam(required = false, defaultValue = "false") boolean isPurged) {
+        final List<TrailDto> deleted = trailManager.delete(id, isPurged);
         if (!deleted.isEmpty()) {
             return new TrailResponse(Status.OK, Collections.emptySet(), deleted);
         } else {
             return new TrailResponse(Status.ERROR,
                     new HashSet<>(Collections.singletonList(
-                            format("No trail deleted with code '%s'", code))), Collections.emptyList());
+                            format("No trail deleted with id '%s'", id))), Collections.emptyList());
         }
     }
 }

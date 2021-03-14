@@ -66,7 +66,7 @@ public class PlaceController {
 
     @DeleteMapping("/{id}")
     public PlaceResponse delete(@PathVariable String id) {
-        return new PlaceResponse(Status.ERROR, Collections.emptySet(), placeManager.deleteById(id));
+        return new PlaceResponse(Status.OK, Collections.emptySet(), placeManager.deleteById(id));
     }
 
     @PostMapping

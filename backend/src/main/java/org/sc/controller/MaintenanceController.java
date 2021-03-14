@@ -62,12 +62,12 @@ public class MaintenanceController {
         return new MaintenanceResponse(Status.OK, emptySet(), past);
     }
 
-    @GetMapping("/past/{trailCode}")
-    public MaintenanceResponse getPastMaintenance(
-            @PathVariable String trailCode,
+    @GetMapping("/past/{id}")
+    public MaintenanceResponse getPastMaintenanceById(
+            @PathVariable String id,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        List<MaintenanceDto> past = maintenanceManager.getPastMaintenanceForTrailCode(trailCode, page, count);
+        List<MaintenanceDto> past = maintenanceManager.getPastMaintenanceForTrailId(id, page, count);
         return new MaintenanceResponse(Status.OK, emptySet(), past);
     }
 

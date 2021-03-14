@@ -38,24 +38,24 @@ class TrailManager @Autowired constructor(
         trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
 
     fun getByCode(code: String, isLight: Boolean): List<TrailDto> =
-        trailDAO.getTrailByCode(code, isLight).map { trailMapper.trailToTrailDto(it) }
+        trailDAO.getTrailById(code, isLight).map { trailMapper.trailToTrailDto(it) }
 
     fun getByPlaceRefId(code: String, isLight: Boolean): List<TrailDto> =
         trailDAO.getTrailByPlaceId(code, isLight).map { trailMapper.trailToTrailDto(it) }
 
-    fun delete(code: String, isPurged: Boolean): List<TrailDto> {
+    fun delete(id: String, isPurged: Boolean): List<TrailDto> {
         if (isPurged) {
-            val deletedMaintenance = maintenanceDAO.deleteByCode(code)
-            val deletedAccessibilityNotification = accessibilityNotificationDAO.deleteByCode(code)
-            logger.info("Purge deleting trail $code. Maintenance deleted: $deletedMaintenance, deleted notifications: $deletedAccessibilityNotification")
+            val deletedMaintenance = maintenanceDAO.deleteByCode(id)
+            val deletedAccessibilityNotification = accessibilityNotificationDAO.delete(id)
+            logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, deleted notifications: $deletedAccessibilityNotification")
         }
-        return trailDAO.delete(code).map { trailMapper.trailToTrailDto(it) }
+        return trailDAO.delete(id).map { trailMapper.trailToTrailDto(it) }
     }
 
     fun getPreviews(page: Int, count: Int): List<TrailPreviewDto> =
         trailDAO.getTrailPreviews(page, count).map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
 
-    fun previewByCode(code: String): List<TrailPreviewDto> = trailDAO.trailPreviewByCode(code)
+    fun previewById(id: String): List<TrailPreviewDto> = trailDAO.trailPreviewById(id)
         .map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
 
     fun save(trail: Trail): List<TrailDto> {
@@ -124,7 +124,7 @@ class TrailManager @Autowired constructor(
         }
     }
 
-    fun doesTrailExist(code: String): Boolean = trailDAO.getTrailByCode(code, true).isNotEmpty()
+    fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, true).isNotEmpty()
 
     fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> =
         trailDAO.linkPlace(id, placeRefMapper.map(placeRef)).map { trailMapper.trailToTrailDto(it) }
@@ -148,8 +148,8 @@ class TrailManager @Autowired constructor(
 
     fun countTrail(): Long = trailDAO.countTrail()
 
-    fun removePlaceRefFromTrails(id: String) {
-        trailDAO.unlinkPlaceFromAllTrails(id);
+    fun removePlaceRefFromTrails(placeId: String) {
+        trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
 
 }

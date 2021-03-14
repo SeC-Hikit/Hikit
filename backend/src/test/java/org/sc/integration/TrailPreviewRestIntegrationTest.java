@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.sc.common.rest.TrailImportDto;
 import org.sc.common.rest.TrailPreviewDto;
 import org.sc.common.rest.response.TrailPreviewResponse;
+import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailImporterController;
@@ -56,17 +57,20 @@ public class TrailPreviewRestIntegrationTest {
     @Autowired TrailImporterController importController;
     @Autowired TrailPreviewController controller;
     @Autowired PlaceController placeController;
+    private TrailResponse trailResponse;
+    private String trailId;
 
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        importController.importTrail(trailImportDto);
+        trailResponse = importController.importTrail(trailImportDto);
+        trailId = trailResponse.getContent().get(0).getId();
     }
 
     @Test
     public void getById_shouldFindOne() {
-        TrailPreviewResponse response = controller.getPreviewByCode(TrailImportRestIntegrationTest.EXPECTED_TRAIL_CODE);
+        TrailPreviewResponse response = controller.getPreviewById(trailId);
         assertThat(response.getContent().size()).isEqualTo(1);
         TrailPreviewDto firstResult = response.getContent().get(0);
         assertAll(firstResult);
@@ -90,7 +94,7 @@ public class TrailPreviewRestIntegrationTest {
 
     @Test
     public void get0Paged_shouldNotFindAny() {
-        TrailPreviewResponse response = controller.getPreviewByCode("123_NOT_FOUND");
+        TrailPreviewResponse response = controller.getPreviewById("123_NOT_FOUND");
         Assert.assertTrue(response.getContent().isEmpty());
     }
 

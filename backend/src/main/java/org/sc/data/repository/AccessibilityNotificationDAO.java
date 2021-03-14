@@ -50,15 +50,15 @@ public class AccessibilityNotificationDAO {
                 .limit(to));
     }
 
-    public List<AccessibilityUnresolved> getUnresolvedByCode(final String code) {
+    public List<AccessibilityUnresolved> getUnresolvedById(final String id) {
         return toUnresolvedNotificationList(collection.find(
-                new Document(AccessibilityNotification.TRAIL_CODE, code)
+                new Document(AccessibilityNotification.TRAIL_ID, id)
                         .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false))));
     }
 
-    public List<AccessibilityNotification> getResolvedByCode(final String code) {
+    public List<AccessibilityNotification> getResolvedById(final String id) {
         return toNotificationList(collection.find(
-                new Document(AccessibilityNotification.TRAIL_CODE, code)
+                new Document(AccessibilityNotification.TRAIL_ID, id)
                         .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true))));
     }
 
@@ -81,7 +81,7 @@ public class AccessibilityNotificationDAO {
     }
 
     public List<AccessibilityNotification> resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
-        collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(accessibilityNotificationResolutionDto.getId())),
+        collection.updateOne(new Document(AccessibilityNotification.ID, new ObjectId(accessibilityNotificationResolutionDto.getId())),
                 new Document("$set", new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolutionDto.getResolution())
                         .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolutionDto.getResolutionDate())));
         return getById(accessibilityNotificationResolutionDto.getId());
@@ -89,23 +89,13 @@ public class AccessibilityNotificationDAO {
 
     public List<AccessibilityNotification> delete(final String objectId) {
         final List<AccessibilityNotification> accessibilityNotification = getById(objectId);
-        collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(objectId)));
-        return accessibilityNotification;
-    }
-
-    public AccessibilityNotification deleteByCode(final String code) {
-        final AccessibilityNotification accessibilityNotification = getByCode(code);
-        collection.deleteOne(new Document(AccessibilityNotification.TRAIL_CODE, code));
+        collection.deleteOne(new Document(AccessibilityNotification.ID, new ObjectId(objectId)));
         return accessibilityNotification;
     }
 
     private List<AccessibilityNotification> getById(final String objectId) {
         return new ArrayList<>(toNotificationList(collection.find(
-                new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(objectId)))));
-    }
-
-    private AccessibilityNotification getByCode(final String code) {
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.TRAIL_CODE, code))).stream().findFirst().orElse(null);
+                new Document(AccessibilityNotification.ID, new ObjectId(objectId)))));
     }
 
     private List<AccessibilityNotification> toNotificationList(FindIterable<Document> documents) {

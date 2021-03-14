@@ -49,9 +49,6 @@ public class PlaceDAO {
                 new Document(Place.NAME, getStartNameMatchPattern(name)),
                 new Document(Place.TAGS, getStartNameMatchPattern(name))
         ));
-        BsonDocument bsonDocument = filter.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
-        System.out.println(bsonDocument);
-
         return toPlaceList(collection.find(filter).skip(page).limit(count));
     }
 
@@ -76,9 +73,9 @@ public class PlaceDAO {
     }
 
     public List<Place> delete(String id) {
-        List<Place> trailByCode = getById(id);
-        collection.deleteOne(new Document(Trail.CODE, id));
-        return trailByCode;
+        List<Place> places = getById(id);
+        collection.deleteOne(new Document(Place.ID, id));
+        return places;
     }
 
     public List<Place> update(Place place) {

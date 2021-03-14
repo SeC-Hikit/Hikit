@@ -74,16 +74,19 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Autowired
     TrailController trailController;
 
+    private TrailResponse trailResponse;
+
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        importController.importTrail(trailImportDto);
+        trailResponse = importController.importTrail(trailImportDto);
     }
 
     @Test
     public void getById_shouldFindOne() {
-        TrailResponse getTrail = trailController.getByCode(EXPECTED_TRAIL_CODE, false);
+        String importedTrailId = trailResponse.getContent().get(0).getId();
+        TrailResponse getTrail = trailController.getById(importedTrailId, false);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
@@ -99,9 +102,10 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void delete() {
-        TrailResponse deletedByCode = trailController.deleteByCode(EXPECTED_TRAIL_CODE, false);
-        assertThat(deletedByCode.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
-        TrailResponse getTrail = trailController.getByCode(EXPECTED_TRAIL_CODE, false);
+        String importedTrailId = trailResponse.getContent().get(0).getId();
+        TrailResponse deletedById = trailController.deleteById(importedTrailId, false);
+        assertThat(deletedById.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+        TrailResponse getTrail = trailController.getById(importedTrailId, false);
         Assert.assertTrue(getTrail.getContent().isEmpty());
     }
 
@@ -133,8 +137,8 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
         assertThat(addedPlace.getContent()).isNotEmpty();
         assertThat(lastPlace.getContent()).isNotEmpty();
         return makeCorrectTrailDtoForImport(firstPlace.getContent().get(0).getId(),
-                        addedPlace.getContent().get(0).getId(),
-                        lastPlace.getContent().get(0).getId());
+                addedPlace.getContent().get(0).getId(),
+                lastPlace.getContent().get(0).getId());
     }
 
     public static TrailImportDto makeCorrectTrailDtoForImport(String startPlaceId, String placeId, String endPlaceId) {
