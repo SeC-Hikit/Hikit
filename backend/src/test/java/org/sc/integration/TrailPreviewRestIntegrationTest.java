@@ -7,13 +7,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.TrailImportDto;
 import org.sc.common.rest.TrailPreviewDto;
-import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailImporterController;
 import org.sc.controller.TrailPreviewController;
-import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sc.integration.ImportTrailIT.*;
 import static org.sc.integration.TrailImportRestIntegrationTest.*;
 import static org.sc.integration.TrailImportRestIntegrationTest.END_EXPECTED_COORDINATE;
 import static org.sc.integration.TrailImportRestIntegrationTest.INTERMEDIATE_EXPECTED_COORDINATE;
@@ -63,7 +60,7 @@ public class TrailPreviewRestIntegrationTest {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createPlaces(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
         importController.importTrail(trailImportDto);
     }
 

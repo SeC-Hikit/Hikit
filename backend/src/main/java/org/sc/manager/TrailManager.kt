@@ -7,6 +7,7 @@ import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
 import org.sc.data.mapper.LinkedMediaMapper
+import org.sc.data.mapper.PlaceRefMapper
 import org.sc.data.mapper.TrailMapper
 import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.model.Coordinates
@@ -15,7 +16,6 @@ import org.sc.processor.DistanceProcessor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.logging.Logger
-import kotlin.math.roundToInt
 
 @Component
 class TrailManager @Autowired constructor(
@@ -26,6 +26,7 @@ class TrailManager @Autowired constructor(
     private val trailMapper: TrailMapper,
     private val trailPreviewMapper: TrailPreviewMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
+    private val placeRefMapper: PlaceRefMapper
 ) {
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
@@ -33,8 +34,14 @@ class TrailManager @Autowired constructor(
     fun get(isLight: Boolean, page: Int, count: Int): List<TrailDto> = trailDAO.getTrails(isLight, page, count)
         .map { trailMapper.trailToTrailDto(it) }
 
-    fun getById(id: String, isLight: Boolean): List<TrailDto> = trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
-    fun getByCode(code: String, isLight: Boolean): List<TrailDto> = trailDAO.getTrailByCode(code, isLight).map { trailMapper.trailToTrailDto(it) }
+    fun getById(id: String, isLight: Boolean): List<TrailDto> =
+        trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
+
+    fun getByCode(code: String, isLight: Boolean): List<TrailDto> =
+        trailDAO.getTrailByCode(code, isLight).map { trailMapper.trailToTrailDto(it) }
+
+    fun getByPlaceRefId(code: String, isLight: Boolean): List<TrailDto> =
+        trailDAO.getTrailByPlaceId(code, isLight).map { trailMapper.trailToTrailDto(it) }
 
     fun delete(code: String, isPurged: Boolean): List<TrailDto> {
         if (isPurged) {
@@ -51,7 +58,7 @@ class TrailManager @Autowired constructor(
     fun previewByCode(code: String): List<TrailPreviewDto> = trailDAO.trailPreviewByCode(code)
         .map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
 
-    fun save(trail: Trail) : List<TrailDto>  {
+    fun save(trail: Trail): List<TrailDto> {
         gpxHelper.writeTrailToGpx(trail)
         return trailDAO.upsert(trail).map { trailMapper.trailToTrailDto(it) }
     }
@@ -59,11 +66,11 @@ class TrailManager @Autowired constructor(
     fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto): List<TrailDto> {
         val linkMedia = linkedMediaMapper.map(linkedMediaRequest)
         val result = trailDAO.linkMedia(id, linkMedia)
-        return result.map{ trailMapper.trailToTrailDto(it) }
+        return result.map { trailMapper.trailToTrailDto(it) }
     }
 
-    fun unlinkMedia(code: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<TrailDto> {
-        val unlinkedTrail = trailDAO.unlinkMedia(code, unLinkeMediaRequestDto.id)
+    fun unlinkMedia(id: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<TrailDto> {
+        val unlinkedTrail = trailDAO.unlinkMedia(id, unLinkeMediaRequestDto.id)
         return unlinkedTrail.map { trailMapper.trailToTrailDto(it) }
     }
 
@@ -119,6 +126,12 @@ class TrailManager @Autowired constructor(
 
     fun doesTrailExist(code: String): Boolean = trailDAO.getTrailByCode(code, true).isNotEmpty()
 
+    fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> =
+        trailDAO.linkPlace(id, placeRefMapper.map(placeRef)).map { trailMapper.trailToTrailDto(it) }
+
+    fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> =
+        trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef)).map { trailMapper.trailToTrailDto(it) }
+
     /**
      * Get the trail closest point to a given coordinate
      *
@@ -134,5 +147,9 @@ class TrailManager @Autowired constructor(
         if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
 
     fun countTrail(): Long = trailDAO.countTrail()
+
+    fun removePlaceRefFromTrails(id: String) {
+        trailDAO.unlinkPlaceFromAllTrails(id);
+    }
 
 }

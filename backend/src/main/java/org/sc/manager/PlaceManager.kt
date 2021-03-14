@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component
 @Component
 class PlaceManager @Autowired constructor(
     private val placeDao: PlaceDAO,
-    private val placeMapper: PlaceMapper
+    private val placeMapper: PlaceMapper,
+    private val trailManager: TrailManager
 ) {
 
     fun getPaginated(page: Int, count: Int): List<PlaceDto> {
@@ -31,6 +32,7 @@ class PlaceManager @Autowired constructor(
     }
 
     fun deleteById(id: String): List<PlaceDto> {
+        trailManager.removePlaceRefFromTrails(id);
         return placeDao.delete(id).map { placeMapper.map(it) }
     }
 

@@ -12,7 +12,6 @@ import org.sc.configuration.DataSource;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailImporterController;
-import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +77,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createPlaces(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
         importController.importTrail(trailImportDto);
     }
 
@@ -126,7 +125,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     }
 
-    static TrailImportDto createPlaces(PlaceController placeController) {
+    static TrailImportDto createTrailImport(PlaceController placeController) {
         PlaceResponse firstPlace = placeController.add(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.add(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.add(END_CORRECT_PLACE_DTO);

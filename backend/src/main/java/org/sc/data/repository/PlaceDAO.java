@@ -1,8 +1,10 @@
 package org.sc.data.repository;
 
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
@@ -43,10 +45,19 @@ public class PlaceDAO {
     }
 
     public List<Place> getLikeName(final String name, int page, int count) {
-        return toPlaceList(collection.find(new Document(MongoConstants.OR, Arrays.asList(
-                new Document(Place.NAME, Pattern.compile("^" + name + ".*")),
-                new Document(Place.TAGS, Pattern.compile("^" + name + ".*"))
-        ))).skip(page).limit(count));
+        Document filter = new Document(MongoConstants.OR, Arrays.asList(
+                new Document(Place.NAME, getStartNameMatchPattern(name)),
+                new Document(Place.TAGS, getStartNameMatchPattern(name))
+        ));
+        BsonDocument bsonDocument = filter.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
+        System.out.println(bsonDocument);
+
+        return toPlaceList(collection.find(filter).skip(page).limit(count));
+    }
+
+    @NotNull
+    private Pattern getStartNameMatchPattern(String name) {
+        return Pattern.compile("" + name + ".*", Pattern.CASE_INSENSITIVE);
     }
 
     private List<Place> toPlaceList(Iterable<Document> documents) {

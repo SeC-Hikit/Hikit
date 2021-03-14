@@ -56,7 +56,8 @@ public class ImportTrailIT {
             TAGS, Collections.emptyList(),
             Collections.singletonList(START_COORDINATES_DTO), Collections.emptyList());
 
-    public static PlaceDto CORRECT_PLACE_DTO = new PlaceDto(null, "A magical place", PLACE_EXPECTED_DESCRIPTION,
+    public static final String PLACE_NAME = "A magical place";
+    public static PlaceDto CORRECT_PLACE_DTO = new PlaceDto(null, PLACE_NAME, PLACE_EXPECTED_DESCRIPTION,
             TAGS, Collections.emptyList(),
             Collections.singletonList(INTERMEDIATE_COORDINATES_DTO), Collections.emptyList());
 
