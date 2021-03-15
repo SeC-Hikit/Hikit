@@ -10,6 +10,7 @@ import org.sc.data.validator.trail.TrailExistenceValidator;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -136,4 +137,10 @@ public class TrailController {
                             format("No trail deleted with id '%s'", id))), Collections.emptyList());
         }
     }
+
+    @PostMapping
+    public TrailResponse update(@RequestBody TrailDto trailDto) {
+        throw new NotImplementedException();
+    }
+
 }

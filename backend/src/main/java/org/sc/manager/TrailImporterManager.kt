@@ -2,13 +2,12 @@ package org.sc.manager
 
 import org.sc.common.rest.TrailDto
 import org.sc.common.rest.TrailImportDto
-import org.sc.data.model.Trail
-import org.sc.data.model.StatsTrailMetadata
-import org.sc.data.model.SimpleCoordinates
-import org.sc.data.mapper.PlaceMapper
 import org.sc.data.mapper.PlaceRefMapper
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.model.GeoLineString
+import org.sc.data.model.SimpleCoordinates
+import org.sc.data.model.StatsTrailMetadata
+import org.sc.data.model.Trail
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.processor.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,13 +29,19 @@ class TrailImporterManager @Autowired constructor(
             trailsCalculator.calculateTotRise(importingTrail.coordinates),
             trailsCalculator.calculateTotFall(importingTrail.coordinates),
             trailsCalculator.calculateEta(importingTrail.coordinates),
-            trailsCalculator.calculateTrailLength(importingTrail.coordinates)
+            trailsCalculator.calculateTrailLength(importingTrail.coordinates),
+            trailsCalculator.calculateHighestPlace(importingTrail.coordinates),
+            trailsCalculator.calculateLowestPlace(importingTrail.coordinates)
         )
 
         val createdOn = Date()
 
+        // TODO update
         val trail = Trail.builder().name(importingTrail.name)
+            .startLocation(importingTrail.locations.map { placeMapper.map(it) }.first())
+            .endLocation(importingTrail.locations.map { placeMapper.map(it) }.last())
             .description(importingTrail.description)
+            .officialEta(importingTrail.officialEta)
             .code(importingTrail.code)
             .variant(importingTrail.isVariant)
             .locations(importingTrail.locations.map { placeMapper.map(it) })

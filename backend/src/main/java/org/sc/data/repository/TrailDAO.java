@@ -93,11 +93,11 @@ public class TrailDAO {
         return toTrailsList(collection.find(new Document()).skip(page).limit(count));
     }
 
-    public List<Trail> getTrailById(String code, boolean isLight) {
+    public List<Trail> getTrailById(String id, boolean isLight) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document(Trail.ID, code)));
+            return toTrailsLightList(collection.find(new Document(Trail.ID, id)));
         }
-        return toTrailsList(collection.find(new Document(Trail.ID, code)));
+        return toTrailsList(collection.find(new Document(Trail.ID, id)));
     }
 
     public List<Trail> getTrailByPlaceId(String id, boolean isLight) {
@@ -180,7 +180,7 @@ public class TrailDAO {
     }
 
     private Bson getTrailPreviewProjection() {
-        return project(fields(
+        Bson project = project(fields(
                 include(Trail.CLASSIFICATION),
                 include(Trail.LAST_UPDATE_DATE),
                 include(Trail.CODE),
@@ -191,6 +191,10 @@ public class TrailDAO {
                         new Document("$arrayElemAt",
                                 Arrays.asList(DOLLAR + Trail.LOCATIONS, -1)))
         ));
+        BsonDocument bsonDocument = project.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
+        System.out.println(bsonDocument);
+
+        return project;
     }
 
     public List<Trail> linkPlace(String id, PlaceRef placeRef) {
@@ -210,8 +214,6 @@ public class TrailDAO {
     public void unlinkPlaceFromAllTrails(String placeId) {
         Document update = new Document(PULL, new Document(Trail.LOCATIONS,
                 new Document(PlaceRef.PLACE_ID, placeId)));
-        BsonDocument bsonDocument = update.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
-        System.out.println(bsonDocument);
         collection.updateMany(new Document(),
                 update);
     }
