@@ -40,7 +40,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        addedPlace = placeController.add(CORRECT_PLACE_DTO);
+        addedPlace = placeController.create(CORRECT_PLACE_DTO);
     }
 
     @Test

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.MediaResponse;
+import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.sc.integration.ImportTrailIT.CORRECT_PLACE_DTO;
 import static org.sc.integration.PoiRestIntegrationTest.*;
 
 @RunWith(SpringRunner.class)
@@ -48,6 +50,23 @@ public class MediaRestIntegrationTest  {
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
         trailResponse = importController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
+    }
+
+
+    @Test
+    public void shallAddAndRemoveMediaFromPlace() throws IOException {
+        PlaceResponse placeResponse = placeController.create(CORRECT_PLACE_DTO);
+        String placeId = placeResponse.getContent().get(0).getId();
+        final String uploadId = createAndVerifyCreationById();
+
+        placeController.addMedia(placeId, new LinkedMediaDto(uploadId, "", Collections.emptyList()));
+        placeId = placeResponse.getContent().get(0).getId();
+
+        placeResponse = placeController.get(placeId);
+        assertThat(placeResponse.getContent().get(0).getMediaIds().contains(uploadId)).isTrue();
+        placeController.deleteMedia(placeId, new UnLinkeMediaRequestDto(uploadId));
+        placeResponse = placeController.get(placeId);
+        assertThat(placeResponse.getContent().get(0).getMediaIds().contains(uploadId)).isFalse();
     }
 
     @Test
