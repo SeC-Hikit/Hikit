@@ -35,6 +35,7 @@ public class TrailDAO {
     private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Place.COORDINATES;
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
 
+
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
@@ -120,8 +121,7 @@ public class TrailDAO {
                 .append(Trail.ID, existingOrNewObjectId);
         final Document updateResult = collection.findOneAndReplace(
                 new Document(Trail.ID, existingOrNewObjectId),
-                trailDocument, new FindOneAndReplaceOptions().upsert(true)
-                        .returnDocument(ReturnDocument.AFTER));
+                trailDocument, UPSERT_OPTIONS);
         if (updateResult == null) {
             throw new IllegalStateException();
         }
@@ -166,19 +166,6 @@ public class TrailDAO {
         return getTrailById(id, true);
     }
 
-    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false)
-                .map(trailPreviewMapper::mapToObject).collect(toList());
-    }
-
-    private List<Trail> toTrailsLightList(Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
-    }
-
-    private List<Trail> toTrailsList(Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
-    }
-
     private Bson getTrailPreviewProjection() {
         Bson project = project(fields(
                 include(Trail.CLASSIFICATION),
@@ -220,6 +207,19 @@ public class TrailDAO {
 
     public long countTrail() {
         return collection.countDocuments();
+    }
+
+    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(trailPreviewMapper::mapToObject).collect(toList());
+    }
+
+    private List<Trail> toTrailsLightList(Iterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
+    }
+
+    private List<Trail> toTrailsList(Iterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
 
 }

@@ -2,13 +2,11 @@ package org.sc.manager
 
 import org.sc.common.rest.TrailDto
 import org.sc.common.rest.TrailImportDto
-import org.sc.data.mapper.PlaceRefMapper
-import org.sc.data.mapper.TrailCoordinatesMapper
-import org.sc.data.model.GeoLineString
-import org.sc.data.model.SimpleCoordinates
-import org.sc.data.model.StatsTrailMetadata
-import org.sc.data.model.Trail
+import org.sc.common.rest.TrailRawDto
+import org.sc.data.mapper.*
+import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
+import org.sc.data.repository.TrailRawDAO
 import org.sc.processor.TrailsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -20,11 +18,16 @@ class TrailImporterManager @Autowired constructor(
     private val trailsCalculator: TrailsCalculator,
     private val trailDatasetVersionDao: TrailDatasetVersionDao,
     private val placeMapper: PlaceRefMapper,
-    private val trailCoordinatesMapper: TrailCoordinatesMapper
+    private val trailCoordinatesMapper: TrailCoordinatesMapper,
+    private val trailRawMapper: TrailRawMapper,
+    private val fileDetailsMapper: FileDetailsMapper,
+    private val trailRawDao: TrailRawDAO
 ) {
 
-    fun save(importingTrail: TrailImportDto): List<TrailDto> {
+    fun saveRaw(trailRaw: TrailRawDto): List<TrailRawDto> =
+        trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
 
+    fun save(importingTrail: TrailImportDto): List<TrailDto> {
         val statsTrailMetadata = StatsTrailMetadata(
             trailsCalculator.calculateTotRise(importingTrail.coordinates),
             trailsCalculator.calculateTotFall(importingTrail.coordinates),
@@ -36,7 +39,6 @@ class TrailImporterManager @Autowired constructor(
 
         val createdOn = Date()
 
-        // TODO update
         val trail = Trail.builder().name(importingTrail.name)
             .startLocation(importingTrail.locations.map { placeMapper.map(it) }.first())
             .endLocation(importingTrail.locations.map { placeMapper.map(it) }.last())
@@ -53,15 +55,23 @@ class TrailImporterManager @Autowired constructor(
             .lastUpdate(createdOn)
             .maintainingSection(importingTrail.maintainingSection)
             .territorialDivision(importingTrail.territorialDivision)
-            .geoLineString(GeoLineString( importingTrail.coordinates.map {
+            .geoLineString(GeoLineString(importingTrail.coordinates.map {
                 SimpleCoordinates(
                     it.longitude,
                     it.latitude
                 )
             }))
+            .cycloDetails(
+                CycloDetails(
+                    CycloClassification.UNCLASSIFIED, 0,
+                    CycloFeasibility(true, 0),
+                    CycloFeasibility(true, 0), ""
+                )
+            )
             .mediaList(emptyList())
-
-        .build()
+            .fileDetails(fileDetailsMapper.map(importingTrail.fileDetailsDto))
+            .status(importingTrail.trailStatus)
+            .build()
 
         val savedTrailDao = trailsManager.save(trail)
         trailDatasetVersionDao.increaseVersion()

@@ -5,7 +5,7 @@ public enum CycloClassification {
     MC("MC"), MC_PLUS("MC+"),
     BC("BC"), BC_PLUS("BC+"),
     OC("OC"), OC_PLUS("OC+"),
-    NO("NO");
+    NO("NO"), UNCLASSIFIED("UNCLASSIFIED");
 
     private final String classification;
 

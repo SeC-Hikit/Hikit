@@ -33,7 +33,7 @@ public class Trail {
 
     public static final String MEDIA = "media";
     public static final String STATUS = "status";
-    public static final String FILE = "file";
+    public static final String FILE_DETAILS = "fileDetails";
     public static final String CYCLO = "cyclo";
 
     public static final String CREATED_ON_DATE = "lastUpdate";
@@ -59,7 +59,7 @@ public class Trail {
     private GeoLineString geoLineString;
     private List<LinkedMedia> mediaList;
     private TrailStatus status;
-    private FileDetails file;
+    private FileDetails fileDetails;
     private CycloDetails cycloDetails;
 }
 

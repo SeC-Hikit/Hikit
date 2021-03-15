@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class CycloFeasability {
-    private boolean isFeasible;
+public class CycloFeasibility {
+    private boolean feasible;
     private int portage;
 }

@@ -1,16 +1,16 @@
-package org.sc.data.model;
+package org.sc.common.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.sc.data.model.CycloClassification;
 
 @Data
-@Builder
 @AllArgsConstructor
-public class CycloDetails {
+public class CycloDetailsDto {
     private CycloClassification cycloClassification;
     private int officialEta;
-    private CycloFeasibility wayForward;
-    private CycloFeasibility wayBack;
+    private CycloFeasibilityDto wayForward;
+    private CycloFeasibilityDto wayBack;
     private String description;
 }

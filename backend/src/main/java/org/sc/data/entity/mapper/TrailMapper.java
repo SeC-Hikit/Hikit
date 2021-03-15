@@ -87,7 +87,9 @@ public class TrailMapper implements Mapper<Trail> {
         return new StatsTrailMetadata(doc.getDouble(StatsTrailMetadata.TOTAL_RISE),
                 doc.getDouble(StatsTrailMetadata.TOTAL_FALL),
                 doc.getDouble(StatsTrailMetadata.ETA),
-                doc.getDouble(StatsTrailMetadata.LENGTH));
+                doc.getDouble(StatsTrailMetadata.LENGTH),
+                doc.getDouble(StatsTrailMetadata.HIGHEST_PLACE),
+                doc.getDouble(StatsTrailMetadata.LOWEST_PLACE));
     }
 
     protected List<LinkedMedia> getLinkedMediaMapper(Document doc) {

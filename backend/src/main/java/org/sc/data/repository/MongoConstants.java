@@ -1,5 +1,8 @@
 package org.sc.data.repository;
 
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
+
 public class MongoConstants {
     public static final String DOLLAR = "$";
     public static final String DOT = ".";
@@ -20,4 +23,7 @@ public class MongoConstants {
     public static final String MAX_DISTANCE_M = "maxDistance";
     public static final String SPHERICAL_FIELD = "spherical";
     public static final String UNIQUE_DOCS_FIELD = "uniqueDocs";
+
+    public static final FindOneAndReplaceOptions UPSERT_OPTIONS = new FindOneAndReplaceOptions().upsert(true)
+            .returnDocument(ReturnDocument.AFTER);
 }

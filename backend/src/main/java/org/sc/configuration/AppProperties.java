@@ -23,7 +23,7 @@ public class AppProperties {
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
-                         final @Value("${trail.storage.path}") String storage,
+                         final @Value("${storage.path}") String storage,
                          final @Value("${temp.storage.path}") String tempStorage,
                          final @Value("${service.altitude.port}") Integer altitudeServicePort,
                          final @Value("${db.uri}") String mongoDbUri,
@@ -44,7 +44,7 @@ public class AppProperties {
         return port;
     }
 
-    public String getTrailStorage() {
+    public String getStorage() {
         return trailStorage;
     }
 

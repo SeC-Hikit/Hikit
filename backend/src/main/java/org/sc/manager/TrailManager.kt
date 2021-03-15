@@ -12,6 +12,7 @@ import org.sc.data.mapper.TrailMapper
 import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.model.Coordinates
 import org.sc.data.model.Trail
+import org.sc.data.model.TrailRaw
 import org.sc.data.repository.PlaceDAO
 import org.sc.processor.DistanceProcessor
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +25,7 @@ class TrailManager @Autowired constructor(
     private val maintenanceDAO: MaintenanceDAO,
     private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
     private val placeDAO: PlaceDAO,
-    private val gpxHelper: GpxManager,
+    private val trailFileHelper: TrailFileManager,
     private val trailMapper: TrailMapper,
     private val trailPreviewMapper: TrailPreviewMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
@@ -58,7 +59,7 @@ class TrailManager @Autowired constructor(
         .map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
 
     fun save(trail: Trail): List<TrailDto> {
-        gpxHelper.writeTrailToGpx(trail)
+        trailFileHelper.writeTrailToOfficialGpx(trail)
         return trailDAO.upsert(trail).map { trailMapper.trailToTrailDto(it) }
     }
 
@@ -156,6 +157,5 @@ class TrailManager @Autowired constructor(
     fun removePlaceRefFromTrails(placeId: String) {
         trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
-
 }
 

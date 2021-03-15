@@ -27,8 +27,13 @@ public class StartupChecker {
     @PostConstruct
     public void init() {
         configureDir(appProperties.getTempStorage(), "Could not create temp folder");
-        configureDir(appProperties.getTrailStorage(), "Could not create storage folder");
+        configureDir(appProperties.getStorage(), "Could not create storage folder");
         configureDir(fileManagementUtil.getMediaStoragePath(), "Could not create media folder");
+        configureDir(fileManagementUtil.getTrailStoragePath(), "Could not create trail folder");
+        configureDir(fileManagementUtil.getRawTrailStoragePath(), "Could not create raw trail folder");
+        configureDir(fileManagementUtil.getTrailGpxStoragePath(), "Could not create trail/gpx folder");
+        configureDir(fileManagementUtil.getTrailKmlStoragePath(), "Could not create trail/kml folder");
+        configureDir(fileManagementUtil.getTrailPdfStoragePath(), "Could not create trail/pdf folder");
 
         try {
             trailDatasetVersionDao.getLast();
