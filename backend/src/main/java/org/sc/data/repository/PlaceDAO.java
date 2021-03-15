@@ -8,8 +8,11 @@ import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.sc.common.rest.PlaceDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.PlaceMapper;
+import org.sc.data.model.LinkedMedia;
 import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.sc.data.repository.MongoConstants.ADD_TO_SET;
+import static org.sc.data.repository.MongoConstants.PULL;
 
 @Repository
 public class PlaceDAO {
@@ -73,12 +78,26 @@ public class PlaceDAO {
     }
 
     public List<Place> delete(String id) {
-        List<Place> places = getById(id);
+        final List<Place> places = getById(id);
         collection.deleteOne(new Document(Place.ID, id));
         return places;
     }
 
-    public List<Place> update(Place place) {
+    public void addTrailIdToPlace(final String id,
+                                  final String trailId) {
+        collection.updateOne(new Document(Place.ID, id),
+                new Document(ADD_TO_SET, new Document(Place.CROSSING,
+                        trailId)));
+    }
+
+    public void removeTrailFromPlace(final String id,
+                                     final String trailId) {
+        collection.updateOne(new Document(Place.ID, id),
+                new Document(PULL, new Document(Place.CROSSING,
+                        trailId)));
+    }
+
+    public List<Place> update(final Place place) {
         if (place.getId() == null) {
             throw new IllegalStateException();
         }
@@ -91,12 +110,26 @@ public class PlaceDAO {
                                 final String existingOrNewObjectId) {
         doc.append(Place.ID, existingOrNewObjectId);
         Document created = collection.findOneAndReplace(
-                new Document(Place.ID, existingOrNewObjectId),
-                doc,
+                new Document(Place.ID, existingOrNewObjectId), doc,
                 new FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER));
         if (created == null) {
             throw new IllegalStateException();
         }
         return created;
+    }
+
+    public List<Place> addMediaToPlace(@NotNull String placeId, @NotNull LinkedMedia map) {
+        collection.updateOne(new Document(Place.ID, placeId),
+                new Document(ADD_TO_SET,
+                        new Document(Place.MEDIA_IDS,
+                        map.getId())));
+        return getById(placeId);
+    }
+
+    public List<Place> removeMediaFromPlace(@NotNull String placeId, @NotNull String id) {
+        collection.updateOne(new Document(Place.ID, placeId),
+                new Document(PULL, new Document(Place.MEDIA_IDS,
+                        id)));
+        return getById(placeId);
     }
 }

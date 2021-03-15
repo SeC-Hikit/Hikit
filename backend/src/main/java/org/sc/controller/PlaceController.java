@@ -1,8 +1,13 @@
 package org.sc.controller;
 
+import org.sc.common.rest.LinkedMediaDto;
 import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.Status;
+import org.sc.common.rest.UnLinkeMediaRequestDto;
 import org.sc.common.rest.response.PlaceResponse;
+import org.sc.data.validator.LinkedMediaValidator;
+import org.sc.data.validator.MediaExistenceValidator;
+import org.sc.data.validator.PlaceExistenceValidator;
 import org.sc.data.validator.PlaceValidator;
 import org.sc.manager.PlaceManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +27,21 @@ public class PlaceController {
 
     private final PlaceValidator placeValidator;
     private final PlaceManager placeManager;
+    private final LinkedMediaValidator linkedMediaValidator;
+    private final MediaExistenceValidator mediaExistenceValidator;
+    private final PlaceExistenceValidator placeExistenceValidator;
 
     @Autowired
     public PlaceController(PlaceValidator placeValidator,
-                           PlaceManager placeManager) {
+                           PlaceManager placeManager,
+                           LinkedMediaValidator linkedMediaValidator,
+                           MediaExistenceValidator mediaExistenceValidator,
+                           PlaceExistenceValidator placeExistenceValidator) {
         this.placeValidator = placeValidator;
         this.placeManager = placeManager;
+        this.linkedMediaValidator = linkedMediaValidator;
+        this.mediaExistenceValidator = mediaExistenceValidator;
+        this.placeExistenceValidator = placeExistenceValidator;
     }
 
     @GetMapping
@@ -54,8 +68,35 @@ public class PlaceController {
                 placeManager.getLikeNameOrTags(name, page, count));
     }
 
+    @PutMapping("/media/{id}")
+    public PlaceResponse addMedia(@PathVariable String id,
+                                  @RequestBody LinkedMediaDto linkedMediaRequest) {
+        final Set<String> errors = linkedMediaValidator.validate(linkedMediaRequest);
+        errors.addAll(placeExistenceValidator.validate(id));
+        errors.addAll(mediaExistenceValidator.validate(linkedMediaRequest.getId()));
+        if (errors.isEmpty()) {
+            final List<PlaceDto> linkedMediaResultDtos =
+                    placeManager.linkMedia(id, linkedMediaRequest);
+            return new PlaceResponse(Status.OK, Collections.emptySet(), linkedMediaResultDtos);
+        }
+        return new PlaceResponse(Status.ERROR, errors, Collections.emptyList());
+    }
+
+    @DeleteMapping("/media/{id}")
+    public PlaceResponse deleteMedia(@PathVariable String id,
+                                     @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
+        final Set<String> errors = placeExistenceValidator.validate(id);
+        errors.addAll(mediaExistenceValidator.validate(unLinkeMediaRequestDto.getId()));
+        if (errors.isEmpty()) {
+            final List<PlaceDto> linkedMediaResultDtos =
+                    placeManager.unlinkMedia(id, unLinkeMediaRequestDto);
+            return new PlaceResponse(Status.OK, Collections.emptySet(), linkedMediaResultDtos);
+        }
+        return new PlaceResponse(Status.ERROR, errors, Collections.emptyList());
+    }
+
     @PutMapping
-    public PlaceResponse add(@RequestBody PlaceDto place) {
+    public PlaceResponse create(@RequestBody PlaceDto place) {
         Set<String> validationErrors = placeValidator.validate(place);
         if (!validationErrors.isEmpty()) {
             return new PlaceResponse(Status.ERROR, validationErrors, Collections.emptyList());

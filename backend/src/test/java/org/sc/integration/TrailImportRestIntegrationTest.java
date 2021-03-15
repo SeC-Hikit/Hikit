@@ -130,9 +130,9 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     }
 
     static TrailImportDto createTrailImport(PlaceController placeController) {
-        PlaceResponse firstPlace = placeController.add(START_CORRECT_PLACE_DTO);
-        PlaceResponse addedPlace = placeController.add(CORRECT_PLACE_DTO);
-        PlaceResponse lastPlace = placeController.add(END_CORRECT_PLACE_DTO);
+        PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
+        PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
+        PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);
         assertThat(firstPlace.getContent()).isNotEmpty();
         assertThat(addedPlace.getContent()).isNotEmpty();
         assertThat(lastPlace.getContent()).isNotEmpty();

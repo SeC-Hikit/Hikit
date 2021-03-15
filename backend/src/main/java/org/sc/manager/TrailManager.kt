@@ -12,6 +12,7 @@ import org.sc.data.mapper.TrailMapper
 import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.model.Coordinates
 import org.sc.data.model.Trail
+import org.sc.data.repository.PlaceDAO
 import org.sc.processor.DistanceProcessor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -22,6 +23,7 @@ class TrailManager @Autowired constructor(
     private val trailDAO: TrailDAO,
     private val maintenanceDAO: MaintenanceDAO,
     private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
+    private val placeDAO: PlaceDAO,
     private val gpxHelper: GpxManager,
     private val trailMapper: TrailMapper,
     private val trailPreviewMapper: TrailPreviewMapper,
@@ -36,9 +38,6 @@ class TrailManager @Autowired constructor(
 
     fun getById(id: String, isLight: Boolean): List<TrailDto> =
         trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
-
-    fun getByCode(code: String, isLight: Boolean): List<TrailDto> =
-        trailDAO.getTrailById(code, isLight).map { trailMapper.trailToTrailDto(it) }
 
     fun getByPlaceRefId(code: String, isLight: Boolean): List<TrailDto> =
         trailDAO.getTrailByPlaceId(code, isLight).map { trailMapper.trailToTrailDto(it) }
@@ -126,11 +125,17 @@ class TrailManager @Autowired constructor(
 
     fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, true).isNotEmpty()
 
-    fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> =
-        trailDAO.linkPlace(id, placeRefMapper.map(placeRef)).map { trailMapper.trailToTrailDto(it) }
+    fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
+        val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
+        placeDAO.addTrailIdToPlace(placeRef.placeId, id)
+        return linkedTrail.map { trailMapper.trailToTrailDto(it) }
+    }
 
-    fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> =
-        trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef)).map { trailMapper.trailToTrailDto(it) }
+    fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
+        val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
+        placeDAO.removeTrailFromPlace(placeRef.placeId, id)
+        return unLinkPlace.map { trailMapper.trailToTrailDto(it) }
+    }
 
     /**
      * Get the trail closest point to a given coordinate
@@ -153,3 +158,4 @@ class TrailManager @Autowired constructor(
     }
 
 }
+
