@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.AccessibilityUnresolvedResponse;
@@ -35,12 +36,14 @@ public class AccessibilityNotificationController {
         this.accessibilityValidator = accessibilityValidator;
     }
 
+    @Operation(summary = "Count all accessibility notifications in DB")
     @GetMapping("/count")
     public CountResponse getCount() {
         final long count = accessibilityNotManager.countAccessibilityNotification();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
+    @Operation(summary = "Retrieve solved notifications")
     @GetMapping("/solved")
     public AccessibilityResponse getSolved(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -50,6 +53,7 @@ public class AccessibilityNotificationController {
                 accessibilityNotManager.getSolved(page, count));
     }
 
+    @Operation(summary = "Retrieve solved notifications by trail ID")
     @GetMapping("/solved/{code}")
     public AccessibilityResponse getSolvedByTrailId(
             @PathVariable String code) {
@@ -58,6 +62,7 @@ public class AccessibilityNotificationController {
                 accessibilityNotManager.getResolvedById(code));
     }
 
+    @Operation(summary = "Retrieve unresolved notifications")
     @GetMapping("/unresolved")
     public AccessibilityUnresolvedResponse getNotSolved(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -67,6 +72,7 @@ public class AccessibilityNotificationController {
                 accessibilityNotManager.getUnresolved(page, count));
     }
 
+    @Operation(summary = "Retrieve unresolved notifications by trail ID")
     @GetMapping("/unresolved/{id}")
     public AccessibilityUnresolvedResponse getNotSolvedByTrailId(
             @PathVariable String id) {
@@ -74,6 +80,7 @@ public class AccessibilityNotificationController {
                 accessibilityNotManager.getUnresolvedById(id));
     }
 
+    @Operation(summary = "Resolve accessibility notification")
     @PostMapping("/resolve")
     public AccessibilityResponse resolveNotification(
             @RequestBody AccessibilityNotificationResolutionDto accessibilityRes) {
@@ -88,6 +95,7 @@ public class AccessibilityNotificationController {
         return new AccessibilityResponse(Status.OK, Collections.emptySet(), resolved);
     }
 
+    @Operation(summary = "Add accessibility notification")
     @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public AccessibilityUnresolvedResponse createAccessibilityNotification(
@@ -105,6 +113,7 @@ public class AccessibilityNotificationController {
         throw new IllegalStateException();
     }
 
+    @Operation(summary = "Remove accessibility notification")
     @DeleteMapping("/{id}")
     public AccessibilityResponse deleteAccessibilityNotification(
             @PathVariable String id) {
