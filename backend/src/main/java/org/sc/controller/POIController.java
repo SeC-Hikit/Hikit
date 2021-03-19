@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.PoiResponse;
@@ -47,13 +48,14 @@ public class POIController {
         this.mediaExistanceValidator = mediaExistanceValidator;
     }
 
-
+    @Operation(summary = "Count all POIs in DB")
     @GetMapping("/count")
     public CountResponse getCount() {
         final long count = poiManager.countPoi();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
+    @Operation(summary = "Retrieve POI")
     @GetMapping
     public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
@@ -62,6 +64,7 @@ public class POIController {
                 poiManager.getPoiPaginated(page, count));
     }
 
+    @Operation(summary = "Retrieve POI by ID")
     @GetMapping("/{id}")
     public PoiResponse get(@PathVariable String id) {
         return new PoiResponse(Status.OK,
@@ -69,6 +72,7 @@ public class POIController {
                 poiManager.getPoiByID(id));
     }
 
+    @Operation(summary = "Retrieve POI by trail code")
     @GetMapping("/code/{code}")
     public PoiResponse getByTrail(@PathVariable String code,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -78,6 +82,7 @@ public class POIController {
                 poiManager.getPoiByTrailId(code, page, count));
     }
 
+    @Operation(summary = "Retrieve POI by macro-type")
     @GetMapping("/type/{type}")
     public PoiResponse getByMacro(@PathVariable String type,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -87,6 +92,7 @@ public class POIController {
                 poiManager.getPoiByMacro(type, page, count));
     }
 
+    @Operation(summary = "Retrieve POI by name or tag")
     @GetMapping("/name/{name}")
     public PoiResponse getByNameOrTags(@PathVariable String name,
                                        @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -96,6 +102,7 @@ public class POIController {
                 poiManager.getPoiByName(name, page, count));
     }
 
+    @Operation(summary = "Update POI in DB (or create POI, if not present)")
     @PutMapping
     public PoiResponse upsertPoi(@RequestBody PoiDto poiDto) {
         final Set<String> errors = poiValidator.validate(poiDto);
@@ -106,6 +113,7 @@ public class POIController {
         return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Add media to POI")
     @PutMapping("/media/{id}")
     public PoiResponse addMediaToPoi(@PathVariable String id,
                                      @RequestBody LinkedMediaDto linkedMediaRequest) {
@@ -119,6 +127,7 @@ public class POIController {
         return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Remove media from POI")
     @DeleteMapping("/media/{id}")
     public PoiResponse removeMediaFromPoi(@PathVariable String id,
                                           @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
@@ -130,6 +139,7 @@ public class POIController {
         return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Delete POI")
     @DeleteMapping("/{id}")
     public PoiResponse deletePoi(@PathVariable String id) {
         List<PoiDto> deleted = poiManager.deleteById(id);

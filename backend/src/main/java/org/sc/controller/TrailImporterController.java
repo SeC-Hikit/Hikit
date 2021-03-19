@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
@@ -49,6 +50,7 @@ public class TrailImporterController {
         this.appProperties = appProperties;
     }
 
+    @Operation(summary = "Count imported GPX trail file")
     @GetMapping("/count")
     public CountResponse getCount() {
         final long count = trailImporterManager.countImport();
@@ -60,6 +62,7 @@ public class TrailImporterController {
         uploadDir = new File(appProperties.getTempStorage());
     }
 
+    @Operation(summary = "Read GPX trail file")
     @PostMapping(path = "/read",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -71,6 +74,7 @@ public class TrailImporterController {
         return gpxManager.getTrailPreparationFromGpx(tempFile);
     }
 
+    @Operation(summary = "Add GPX trail file")
     @PutMapping(path = "/save",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
