@@ -56,7 +56,7 @@ class TrailImporterManager @Autowired constructor(
             .maintainingSection(importingTrail.maintainingSection)
             .territorialDivision(importingTrail.territorialDivision)
             .geoLineString(GeoLineString(importingTrail.coordinates.map {
-                SimpleCoordinates(
+                Coordinates2D(
                     it.longitude,
                     it.latitude
                 )

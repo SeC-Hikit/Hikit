@@ -19,8 +19,10 @@ public class TrailLightMapper extends TrailMapper {
                             final TrailCoordinatesMapper trailCoordinatesMapper,
                             final GeoLineMapper geoLineMapper,
                             final StatsTrailMapper statsTrailMapper,
-                            final LinkedMediaMapper linkedMediaMapper) {
-        super(placeMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper);
+                            final LinkedMediaMapper linkedMediaMapper,
+                            final CycloMapper cycloMapper,
+                            final FileDetailsMapper fileDetailsMapper) {
+        super(placeMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper, cycloMapper, fileDetailsMapper);
     }
 
     @Override

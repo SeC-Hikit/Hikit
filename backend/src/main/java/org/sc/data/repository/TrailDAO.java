@@ -3,14 +3,11 @@ package org.sc.data.repository;
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.FindOneAndReplaceOptions;
-import com.mongodb.client.model.ReturnDocument;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.model.*;
@@ -32,7 +29,7 @@ import static org.sc.data.repository.MongoConstants.*;
 @Repository
 public class TrailDAO {
 
-    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Place.COORDINATES;
+    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Place.POINTS;
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
 
 
@@ -169,6 +166,9 @@ public class TrailDAO {
     private Bson getTrailPreviewProjection() {
         Bson project = project(fields(
                 include(Trail.CLASSIFICATION),
+                include(Trail.CYCLO),
+                include(Trail.STATUS),
+                include(Trail.FILE_DETAILS),
                 include(Trail.LAST_UPDATE_DATE),
                 include(Trail.CODE),
                 computed(Trail.START_POS,

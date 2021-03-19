@@ -14,5 +14,7 @@ public class TrailPreview {
     private TrailClassification classification;
     private PlaceRef startPos;
     private PlaceRef finalPos;
-    private Date date;
+    private FileDetails fileDetails;
+    private boolean bikeData;
+    private TrailStatus trailStatus;
 }

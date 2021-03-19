@@ -1,6 +1,9 @@
 package org.sc.configuration;
 
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Indexes;
 import org.apache.logging.log4j.Logger;
+import org.sc.data.model.Place;
 import org.sc.data.repository.TrailDatasetVersionDao;
 import org.sc.util.FileManagementUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ public class StartupChecker {
 
     private static final Logger LOGGER = getLogger(StartupChecker.class);
 
+    @Autowired
+    DataSource dataSource;
     @Autowired
     TrailDatasetVersionDao trailDatasetVersionDao;
     @Autowired
@@ -37,9 +42,20 @@ public class StartupChecker {
 
         try {
             trailDatasetVersionDao.getLast();
+
+            configureIndexes();
+
+
         } catch (Exception mongoSocketOpenException) {
             LOGGER.error("Could not establish a correct configuration. Is the database available and running?");
         }
+    }
+
+    private void configureIndexes() {
+        LOGGER.info("Checking DB indexes");
+        MongoDatabase db = dataSource.getDB();
+        String index = db.getCollection(Place.COLLECTION_NAME).createIndex(Indexes.geo2dsphere(Place.POINTS));
+        LOGGER.info("Index name" + index);
     }
 
     private void configureDir(final String path,

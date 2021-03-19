@@ -2,6 +2,7 @@ package org.sc.common.rest;
 
 import lombok.Data;
 import org.sc.data.model.TrailClassification;
+import org.sc.data.model.TrailStatus;
 
 import java.util.Date;
 import java.util.Objects;
@@ -12,5 +13,7 @@ public class TrailPreviewDto {
     private TrailClassification classification;
     private PlaceRefDto startPos;
     private PlaceRefDto finalPos;
-    private Date date;
+    private boolean bikeData;
+    private TrailStatus trailStatus;
+    private FileDetailsDto fileDetails;
 }

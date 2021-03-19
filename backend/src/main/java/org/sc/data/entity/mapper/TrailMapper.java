@@ -18,18 +18,25 @@ public class TrailMapper implements Mapper<Trail> {
     protected final GeoLineMapper geoLineMapper;
     protected final StatsTrailMapper statsTrailMapper;
     private final LinkedMediaMapper linkedMediaMapper;
+    private final CycloMapper cycloMapper;
+    private final FileDetailsMapper fileDetailsMapper;
+
 
     @Autowired
     public TrailMapper(final PlaceRefMapper placeMapper,
                        final TrailCoordinatesMapper trailCoordinatesMapper,
                        final GeoLineMapper geoLineMapper,
                        final StatsTrailMapper statsTrailMapper,
-                       final LinkedMediaMapper linkedMediaMapper) {
+                       final LinkedMediaMapper linkedMediaMapper,
+                       final CycloMapper cycloMapper,
+                       final FileDetailsMapper fileDetailsMapper) {
         this.placeMapper = placeMapper;
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.geoLineMapper = geoLineMapper;
         this.statsTrailMapper = statsTrailMapper;
         this.linkedMediaMapper = linkedMediaMapper;
+        this.cycloMapper = cycloMapper;
+        this.fileDetailsMapper = fileDetailsMapper;
     }
 
     @Override
@@ -52,6 +59,9 @@ public class TrailMapper implements Mapper<Trail> {
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
                 .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
+                .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)))
+                .status(getStatus(doc))
                 .build();
     }
 
@@ -76,7 +86,10 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.MEDIA, object.getMediaList().stream()
                         .map(linkedMediaMapper::mapToDocument)
                         .collect(toList()))
-                .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()));
+                .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()))
+                .append(Trail.CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
+                .append(Trail.FILE_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
+                .append(Trail.STATUS, object.getStatus());
     }
 
     protected GeoLineString getGeoLine(final Document doc) {
@@ -107,12 +120,6 @@ public class TrailMapper implements Mapper<Trail> {
         return list.stream().map(placeMapper::mapToObject).collect(toList());
     }
 
-    protected PlaceRef getPos(final Document doc,
-                           final String fieldName) {
-        final Document pos = doc.get(fieldName, Document.class);
-        return placeMapper.mapToObject(pos);
-    }
-
     protected Date getLastUpdateDate(Document doc) {
         return doc.getDate(Trail.LAST_UPDATE_DATE);
     }
@@ -124,6 +131,11 @@ public class TrailMapper implements Mapper<Trail> {
     protected TrailClassification getClassification(Document doc) {
         final String classification = doc.getString(Trail.CLASSIFICATION);
         return TrailClassification.valueOf(classification);
+    }
+
+    protected TrailStatus getStatus(Document doc) {
+        final String classification = doc.getString(Trail.STATUS);
+        return TrailStatus.valueOf(classification);
     }
 
 }

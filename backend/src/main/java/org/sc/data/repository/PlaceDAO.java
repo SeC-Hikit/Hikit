@@ -1,20 +1,20 @@
 package org.sc.data.repository;
 
-import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
-import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.sc.common.rest.PlaceDto;
+import org.sc.common.rest.TrailCoordinatesDto;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.mapper.CoordinatesMapper;
+import org.sc.data.entity.mapper.MultiPointCoordsMapper;
 import org.sc.data.entity.mapper.PlaceMapper;
 import org.sc.data.model.LinkedMedia;
+import org.sc.data.model.MultiPointCoords2D;
 import org.sc.data.model.Place;
-import org.sc.data.model.Trail;
+import org.sc.util.coordinates.CoordinatesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,19 +25,24 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static org.sc.data.repository.MongoConstants.ADD_TO_SET;
-import static org.sc.data.repository.MongoConstants.PULL;
+import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class PlaceDAO {
     private final MongoCollection<Document> collection;
     private final PlaceMapper placeMapper;
+    private final MultiPointCoordsMapper multiPointCoordsMapper;
+    private final CoordinatesMapper coordinatesMapper;
 
     @Autowired
     public PlaceDAO(final DataSource dataSource,
-                    final PlaceMapper placeMapper) {
+                    final PlaceMapper placeMapper,
+                    final MultiPointCoordsMapper multiPointCoordsMapper,
+                    final CoordinatesMapper coordinatesMapper) {
         this.collection = dataSource.getDB().getCollection(Place.COLLECTION_NAME);
         this.placeMapper = placeMapper;
+        this.multiPointCoordsMapper = multiPointCoordsMapper;
+        this.coordinatesMapper = coordinatesMapper;
     }
 
     @NotNull
@@ -58,18 +63,15 @@ public class PlaceDAO {
     }
 
     @NotNull
-    private Pattern getStartNameMatchPattern(String name) {
+    private Pattern getStartNameMatchPattern(final String name) {
         return Pattern.compile("" + name + ".*", Pattern.CASE_INSENSITIVE);
     }
 
-    private List<Place> toPlaceList(Iterable<Document> documents) {
+    private List<Place> toPlaceList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(placeMapper::mapToObject).collect(toList());
     }
 
-    public List<Place> create(Place place) {
-        if (place.getId() != null) {
-            throw new IllegalStateException();
-        }
+    public List<Place> create(final Place place) {
         final Document doc = placeMapper.mapToDocument(place);
         final String newObjectId =
                 new ObjectId().toHexString();
@@ -77,24 +79,33 @@ public class PlaceDAO {
         return Collections.singletonList(placeMapper.mapToObject(created));
     }
 
-    public List<Place> delete(String id) {
+    public List<Place> delete(final String id) {
         final List<Place> places = getById(id);
         collection.deleteOne(new Document(Place.ID, id));
         return places;
     }
 
     public void addTrailIdToPlace(final String id,
-                                  final String trailId) {
+                                  final String trailId, TrailCoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
                 new Document(ADD_TO_SET, new Document(Place.CROSSING,
-                        trailId)));
+                        trailId))
+                        .append(PUSH, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates))
+                        .append(PUSH, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
+                                CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
+                        ));
     }
 
     public void removeTrailFromPlace(final String id,
-                                     final String trailId) {
+                                     final String trailId, TrailCoordinatesDto trailCoordinates) {
+
         collection.updateOne(new Document(Place.ID, id),
                 new Document(PULL, new Document(Place.CROSSING,
-                        trailId)));
+                        trailId))
+                        .append(PULL, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates))
+                        .append(PULL, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
+                                CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
+                ));
     }
 
     public List<Place> update(final Place place) {
@@ -118,15 +129,17 @@ public class PlaceDAO {
         return created;
     }
 
-    public List<Place> addMediaToPlace(@NotNull String placeId, @NotNull LinkedMedia map) {
+    public List<Place> addMediaToPlace(final String placeId,
+                                       final LinkedMedia map) {
         collection.updateOne(new Document(Place.ID, placeId),
                 new Document(ADD_TO_SET,
                         new Document(Place.MEDIA_IDS,
-                        map.getId())));
+                                map.getId())));
         return getById(placeId);
     }
 
-    public List<Place> removeMediaFromPlace(@NotNull String placeId, @NotNull String id) {
+    public List<Place> removeMediaFromPlace(final String placeId,
+                                            final String id) {
         collection.updateOne(new Document(Place.ID, placeId),
                 new Document(PULL, new Document(Place.MEDIA_IDS,
                         id)));

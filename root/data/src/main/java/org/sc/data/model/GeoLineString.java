@@ -8,13 +8,13 @@ public class GeoLineString {
     public static String TYPE = "type";
     public static String COORDINATES = "coordinates";
 
-    private final List<SimpleCoordinates> coordinates;
+    private final List<Coordinates2D> coordinates;
 
-    public GeoLineString(List<SimpleCoordinates> coordinates) {
+    public GeoLineString(List<Coordinates2D> coordinates) {
         this.coordinates = coordinates;
     }
 
-    public List<SimpleCoordinates> getCoordinates() {
+    public List<Coordinates2D> getCoordinates() {
         return coordinates;
     }
 }

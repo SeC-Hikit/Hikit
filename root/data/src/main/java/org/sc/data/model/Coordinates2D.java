@@ -3,12 +3,12 @@ package org.sc.data.model;
 import java.util.Arrays;
 import java.util.List;
 
-public class SimpleCoordinates {
+public class Coordinates2D {
     private final Double latitude;
     private final Double longitude;
 
-    public SimpleCoordinates(final Double longitude,
-                             final Double latitude) {
+    public Coordinates2D(final Double longitude,
+                         final Double latitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

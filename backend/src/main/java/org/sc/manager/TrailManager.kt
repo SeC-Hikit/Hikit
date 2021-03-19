@@ -12,7 +12,6 @@ import org.sc.data.mapper.TrailMapper
 import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.model.Coordinates
 import org.sc.data.model.Trail
-import org.sc.data.model.TrailRaw
 import org.sc.data.repository.PlaceDAO
 import org.sc.processor.DistanceProcessor
 import org.springframework.beans.factory.annotation.Autowired
@@ -128,13 +127,13 @@ class TrailManager @Autowired constructor(
 
     fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.addTrailIdToPlace(placeRef.placeId, id)
+        placeDAO.addTrailIdToPlace(placeRef.placeId, id, placeRef.trailCoordinates)
         return linkedTrail.map { trailMapper.trailToTrailDto(it) }
     }
 
     fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.removeTrailFromPlace(placeRef.placeId, id)
+        placeDAO.removeTrailFromPlace(placeRef.placeId, id, placeRef.trailCoordinates)
         return unLinkPlace.map { trailMapper.trailToTrailDto(it) }
     }
 

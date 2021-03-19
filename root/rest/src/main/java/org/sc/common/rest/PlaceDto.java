@@ -2,7 +2,6 @@ package org.sc.common.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.sc.data.model.SimpleCoordinates;
 
 import java.util.List;
 

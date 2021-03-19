@@ -9,10 +9,16 @@ import org.springframework.stereotype.Component;
 public class TrailPreviewMapper implements Mapper<TrailPreview> {
 
     private final PlaceRefMapper placeMapper;
+    private final FileDetailsMapper fileDetailsMapper;
+    private final CycloMapper cycloMapper;
 
     @Autowired
-    public TrailPreviewMapper(final PlaceRefMapper placeMapper) {
+    public TrailPreviewMapper(final PlaceRefMapper placeMapper,
+                              final FileDetailsMapper fileDetailsMapper,
+                              final CycloMapper cycloMapper) {
         this.placeMapper = placeMapper;
+        this.fileDetailsMapper = fileDetailsMapper;
+        this.cycloMapper = cycloMapper;
     }
 
     @Override
@@ -21,11 +27,14 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
                 getClassification(doc),
                 getPos(doc, Trail.START_POS),
                 getPos(doc, Trail.FINAL_POS),
-                doc.getDate(Trail.LAST_UPDATE_DATE));
+                fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)),
+                cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)).getCycloClassification()
+                        != CycloClassification.UNCLASSIFIED,
+                getStatus(doc));
     }
 
     @Override
-    public Document mapToDocument(TrailPreview object) {
+    public Document mapToDocument(final TrailPreview object) {
         throw new IllegalStateException();
     }
 
@@ -33,6 +42,11 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
                             final String fieldName) {
         final Document pos = doc.get(fieldName, Document.class);
         return placeMapper.mapToObject(pos);
+    }
+
+    private TrailStatus getStatus(Document doc) {
+        final String classification = doc.getString(Trail.STATUS);
+        return TrailStatus.valueOf(classification);
     }
 
     private TrailClassification getClassification(Document doc) {
