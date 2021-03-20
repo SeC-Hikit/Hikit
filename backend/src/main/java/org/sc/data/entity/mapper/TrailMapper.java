@@ -68,7 +68,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.FINAL_POS, positionMapper.mapToDocument(object.getFinalPos()))
                 .append(Trail.LOCATIONS, object.getLocations().stream()
                         .map(positionMapper::mapToDocument).collect(toList()))
-                .append(Trail.CLASSIFICATION, object.getClassification().toString())
+                .append(Trail.CLASSIFICATION, object.getClassification() != null ? object.getClassification().toString() : null)
                 .append(Trail.COUNTRY, object.getCountry())
                 .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
                 .append(Trail.LAST_UPDATE_DATE, new Date())
@@ -125,7 +125,7 @@ public class TrailMapper implements Mapper<Trail> {
 
     protected TrailClassification getClassification(Document doc) {
         final String classification = doc.getString(Trail.CLASSIFICATION);
-        return TrailClassification.valueOf(classification);
+        return classification != null ? TrailClassification.valueOf(classification) : null;
     }
 
 }
