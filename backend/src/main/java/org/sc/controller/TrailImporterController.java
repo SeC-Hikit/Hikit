@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.configuration.AppProperties;
@@ -55,6 +56,7 @@ public class TrailImporterController {
         uploadDir = new File(appProperties.getTempStorage());
     }
 
+    @Operation(summary = "Read GPX trail file")
     @PostMapping(path = "/read",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

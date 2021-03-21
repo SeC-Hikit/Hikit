@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailPreviewDto;
 import org.sc.common.rest.TrailRawDto;
@@ -34,6 +35,7 @@ public class TrailPreviewController {
         this.controllerPagination = controllerPagination;
     }
 
+    @Operation(summary = "Retrieve all preview")
     @GetMapping
     public TrailPreviewResponse getTrailPreviews(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
@@ -48,6 +50,7 @@ public class TrailPreviewController {
                 trailManager.countRawAndTrail(), skip, limit);
     }
 
+    @Operation(summary = "Retrieve preview by ID")
     @GetMapping("/{id}")
     public TrailPreviewResponse getPreviewById(@PathVariable String id) {
         return constructResponse(emptySet(), trailManager.getPreviewById(id),

@@ -1,5 +1,7 @@
 package org.sc.controller;
 
+import org.sc.common.rest.LinkedMediaDto;
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.data.validator.*;
@@ -7,11 +9,10 @@ import org.sc.manager.PlaceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
+import static java.util.Collections.*;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.*;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
@@ -45,6 +46,7 @@ public class PlaceController {
         this.pointGeolocationValidatorDto = pointGeolocationValidatorDto;
     }
 
+    @Operation(summary = "Retrieve place")
     @GetMapping
     public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                              @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
@@ -52,6 +54,7 @@ public class PlaceController {
                 placeManager.getPaginated(skip, limit), placeManager.count(), skip, limit);
     }
 
+    @Operation(summary = "Retrieve place by ID")
     @GetMapping("/{id}")
     public PlaceResponse get(@PathVariable String id) {
         return constructResponse(emptySet(),
@@ -60,6 +63,7 @@ public class PlaceController {
                 Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Retrieve place by alternative names or tags")
     @GetMapping("/name/{name}")
     public PlaceResponse getLikeNameOrTags(@PathVariable String name,
                                            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
@@ -87,6 +91,7 @@ public class PlaceController {
     }
 
 
+    @Operation(summary = "Add media to place")
     @PutMapping("/media/{id}")
     public PlaceResponse addMedia(@PathVariable String id,
                                   @RequestBody LinkedMediaDto linkedMediaRequest) {
@@ -105,6 +110,7 @@ public class PlaceController {
                 placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Delete media from place")
     @DeleteMapping("/media/{id}")
     public PlaceResponse deleteMedia(@PathVariable String id,
                                      @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
@@ -122,6 +128,7 @@ public class PlaceController {
                 placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Add place")
     @PutMapping
     public PlaceResponse create(@RequestBody PlaceDto place) {
         Set<String> errors = placeValidator.validate(place);
@@ -136,6 +143,7 @@ public class PlaceController {
                 placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Delete place")
     @DeleteMapping("/{id}")
     public PlaceResponse delete(@PathVariable String id) {
         final List<PlaceDto> content = placeManager.deleteById(id);
@@ -143,6 +151,7 @@ public class PlaceController {
                 content, placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Update place")
     @PostMapping
     public PlaceResponse update(@RequestBody PlaceDto place) {
         Set<String> errors = placeValidator.validate(place);
