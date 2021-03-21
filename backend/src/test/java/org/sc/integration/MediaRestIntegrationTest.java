@@ -1,6 +1,7 @@
 package org.sc.integration;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.sc.integration.ImportTrailIT.CORRECT_PLACE_DTO;
 import static org.sc.integration.PoiRestIntegrationTest.*;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")

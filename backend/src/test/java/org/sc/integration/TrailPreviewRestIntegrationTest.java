@@ -1,9 +1,6 @@
 package org.sc.integration;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.TrailImportDto;
 import org.sc.common.rest.TrailPreviewDto;
@@ -26,6 +23,7 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sc.integration.TrailImportRestIntegrationTest.*;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
