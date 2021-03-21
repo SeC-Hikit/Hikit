@@ -1,11 +1,9 @@
 package org.sc.controller;
 
-import org.sc.common.rest.CountDto;
-import org.sc.common.rest.MaintenanceCreationDto;
-import org.sc.common.rest.MaintenanceDto;
-import org.sc.common.rest.Status;
+import org.sc.common.rest.*;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.MaintenanceResponse;
+import org.sc.common.rest.response.TrailResponse;
 import org.sc.data.validator.MaintenanceValidator;
 import org.sc.manager.MaintenanceManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,54 +30,53 @@ public class MaintenanceController {
             .getLogger(MaintenanceController.class.getName());
 
     private final MaintenanceValidator maintenanceValidator;
+    private final ControllerPagination controllerPagination;
     private final MaintenanceManager maintenanceManager;
 
     @Autowired
     public MaintenanceController(final MaintenanceManager maintenanceManager,
-                                 final MaintenanceValidator maintenanceValidator) {
+                                 final MaintenanceValidator maintenanceValidator,
+                                 final ControllerPagination controllerPagination) {
         this.maintenanceManager = maintenanceManager;
         this.maintenanceValidator = maintenanceValidator;
-    }
-
-    @GetMapping("/count")
-    public CountResponse getCount() {
-        final long count = maintenanceManager.countMaintenance();
-        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+        this.controllerPagination = controllerPagination;
     }
 
     @GetMapping("/future")
     public MaintenanceResponse getFutureMaintenance(
-            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new MaintenanceResponse(Status.OK, emptySet(), maintenanceManager.getFuture(page, count));
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), maintenanceManager.getFuture(skip, limit),
+                maintenanceManager.countFutureMaintenance(), skip, limit);
     }
 
     @GetMapping("/past")
     public MaintenanceResponse getPastMaintenance(
-            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        List<MaintenanceDto> past = maintenanceManager.getPast(page, count);
-        return new MaintenanceResponse(Status.OK, emptySet(), past);
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), maintenanceManager.getPast(skip, limit),
+                maintenanceManager.countFutureMaintenance(), skip, limit);
     }
 
     @GetMapping("/past/{id}")
     public MaintenanceResponse getPastMaintenanceById(
             @PathVariable String id,
-            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        List<MaintenanceDto> past = maintenanceManager.getPastMaintenanceForTrailId(id, page, count);
-        return new MaintenanceResponse(Status.OK, emptySet(), past);
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), maintenanceManager.getPastMaintenanceForTrailId(id, skip, limit),
+                Constants.ONE, skip, limit);
     }
 
     @PutMapping
     public MaintenanceResponse create(
             @RequestBody MaintenanceCreationDto request) {
         final Set<String> errors = maintenanceValidator.validate(request);
-        if(errors.isEmpty()) {
-            List<MaintenanceDto> maintenanceDtos = maintenanceManager.upsert(request);
-            return new MaintenanceResponse(Status.OK, emptySet(), maintenanceDtos);
+        if (errors.isEmpty()) {
+            return constructResponse(emptySet(), maintenanceManager.upsert(request),
+                    Constants.ONE, Constants.ZERO, Constants.ONE);
         }
-        return new MaintenanceResponse(Status.OK, errors, emptyList());
+        return constructResponse(errors, emptyList(),
+                Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 
     @DeleteMapping("/{id}")
@@ -87,12 +84,11 @@ public class MaintenanceController {
             @PathVariable String id) {
         List<MaintenanceDto> deleted = maintenanceManager.delete(id);
         if (deleted.isEmpty()) {
-            LOGGER.warning(format("Could not delete maintenance with id '%s'", id));
-            return new MaintenanceResponse(Status.ERROR,
-                    new HashSet<>(singletonList(
-                            format("No maintenance was found with id '%s'", id))), deleted);
+            return constructResponse(Collections.singleton("No maintenance was found with id '%s'"),
+                    deleted, Constants.ZERO, Constants.ZERO, Constants.ONE);
         }
-        return new MaintenanceResponse(Status.OK, emptySet(), deleted);
+        return constructResponse(emptySet(),
+                deleted, Constants.ONE, Constants.ZERO, Constants.ONE);
     }
 
     @GetMapping("/past/count")
@@ -105,5 +101,25 @@ public class MaintenanceController {
     public CountResponse getCountFuture() {
         final long count = maintenanceManager.countFutureMaintenance();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+    }
+
+    @GetMapping("/count")
+    public CountResponse getCount() {
+        final long count = maintenanceManager.countMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+    }
+
+    private MaintenanceResponse constructResponse(Set<String> errors,
+                                                  List<MaintenanceDto> dtos,
+                                                  long totalCount,
+                                                  int skip,
+                                                  int limit) {
+        if (!errors.isEmpty()) {
+            return new MaintenanceResponse(Status.ERROR, errors, dtos, 1L,
+                    Constants.ONE, limit, totalCount);
+        }
+        return new MaintenanceResponse(Status.OK, errors, dtos,
+                controllerPagination.getCurrentPage(skip, limit),
+                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
     }
 }

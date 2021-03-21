@@ -80,14 +80,14 @@ public class PlaceIntegrationTest extends ImportTrailIT {
 
         // Import trail
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        TrailResponse importedResponse = importerController.importTrail(trailImportDto);
+        TrailResponse importedResponse = trailController.importTrail(trailImportDto);
         String trailId = importedResponse.getContent().get(0).getId();
 
         TrailResponse addPlaceToTrailResponse = trailController.addPlaceToTrail(trailId,
                 new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId));
 
         assertThat(addPlaceToTrailResponse.getStatus()).isEqualTo(Status.OK);
-        TrailResponse trailResponse = trailController.getByPlaceId(placeId, false);
+        TrailResponse trailResponse = trailController.getByPlaceId(placeId, false, 0, 10);
 
         assertThat(trailResponse.getContent().isEmpty()).isEqualTo(false);
 
@@ -98,7 +98,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(true);
 
         // Check has been removed from trails too
-        trailResponse = trailController.getByPlaceId(placeId, false);
+        trailResponse = trailController.getByPlaceId(placeId, false, 0, 10);
         assertThat(trailResponse.getContent().isEmpty()).isEqualTo(true);
     }
 

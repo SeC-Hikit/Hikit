@@ -1,9 +1,6 @@
 package org.sc.controller;
 
-import org.sc.common.rest.LinkedMediaDto;
-import org.sc.common.rest.PlaceDto;
-import org.sc.common.rest.Status;
-import org.sc.common.rest.UnLinkeMediaRequestDto;
+import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.data.validator.LinkedMediaValidator;
 import org.sc.data.validator.MediaExistenceValidator;
@@ -30,42 +27,45 @@ public class PlaceController {
     private final LinkedMediaValidator linkedMediaValidator;
     private final MediaExistenceValidator mediaExistenceValidator;
     private final PlaceExistenceValidator placeExistenceValidator;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public PlaceController(PlaceValidator placeValidator,
                            PlaceManager placeManager,
                            LinkedMediaValidator linkedMediaValidator,
                            MediaExistenceValidator mediaExistenceValidator,
-                           PlaceExistenceValidator placeExistenceValidator) {
+                           PlaceExistenceValidator placeExistenceValidator,
+                           ControllerPagination controllerPagination) {
         this.placeValidator = placeValidator;
         this.placeManager = placeManager;
         this.linkedMediaValidator = linkedMediaValidator;
         this.mediaExistenceValidator = mediaExistenceValidator;
         this.placeExistenceValidator = placeExistenceValidator;
+        this.controllerPagination = controllerPagination;
     }
 
     @GetMapping
-    public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new PlaceResponse(Status.OK,
-                Collections.emptySet(),
-                placeManager.getPaginated(page, count));
+    public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(Collections.emptySet(),
+                placeManager.getPaginated(skip, limit), placeManager.count(), skip, limit);
     }
 
     @GetMapping("/{id}")
     public PlaceResponse get(@PathVariable String id) {
-        return new PlaceResponse(Status.OK,
-                Collections.emptySet(),
-                placeManager.getById(id));
+        return constructResponse(Collections.emptySet(),
+                placeManager.getById(id),
+                placeManager.count(),
+                Constants.ZERO, Constants.ONE);
     }
 
     @GetMapping("/name/{name}")
     public PlaceResponse getLikeNameOrTags(@PathVariable String name,
-                                           @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new PlaceResponse(Status.OK,
-                Collections.emptySet(),
-                placeManager.getLikeNameOrTags(name, page, count));
+                                           @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(Collections.emptySet(),
+                placeManager.getLikeNameOrTags(name, skip, limit),
+                placeManager.count(), skip, limit);
     }
 
     @PutMapping("/media/{id}")
@@ -77,9 +77,13 @@ public class PlaceController {
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
                     placeManager.linkMedia(id, linkedMediaRequest);
-            return new PlaceResponse(Status.OK, Collections.emptySet(), linkedMediaResultDtos);
+            return constructResponse(Collections.emptySet(),
+                    linkedMediaResultDtos,
+                    placeManager.count(), Constants.ZERO, Constants.ONE);
         }
-        return new PlaceResponse(Status.ERROR, errors, Collections.emptyList());
+        return constructResponse(errors,
+                Collections.emptyList(),
+                placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @DeleteMapping("/media/{id}")
@@ -90,33 +94,61 @@ public class PlaceController {
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
                     placeManager.unlinkMedia(id, unLinkeMediaRequestDto);
-            return new PlaceResponse(Status.OK, Collections.emptySet(), linkedMediaResultDtos);
+            return constructResponse(Collections.emptySet(),
+                    linkedMediaResultDtos,
+                    placeManager.count(), Constants.ZERO, Constants.ONE);
         }
-        return new PlaceResponse(Status.ERROR, errors, Collections.emptyList());
+        return constructResponse(errors,
+                Collections.emptyList(),
+                placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @PutMapping
     public PlaceResponse create(@RequestBody PlaceDto place) {
-        Set<String> validationErrors = placeValidator.validate(place);
-        if (!validationErrors.isEmpty()) {
-            return new PlaceResponse(Status.ERROR, validationErrors, Collections.emptyList());
+        Set<String> errors = placeValidator.validate(place);
+        if (!errors.isEmpty()) {
+            return constructResponse(errors,
+                    Collections.emptyList(),
+                    placeManager.count(), Constants.ZERO, Constants.ONE);
         }
         List<PlaceDto> placeDtoList = placeManager.create(place);
-        return new PlaceResponse(Status.OK, Collections.emptySet(), placeDtoList);
+        return constructResponse(Collections.emptySet(),
+                placeDtoList,
+                placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @DeleteMapping("/{id}")
     public PlaceResponse delete(@PathVariable String id) {
-        return new PlaceResponse(Status.OK, Collections.emptySet(), placeManager.deleteById(id));
+        final List<PlaceDto> content = placeManager.deleteById(id);
+        return constructResponse(Collections.emptySet(),
+                content, placeManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @PostMapping
     public PlaceResponse update(@RequestBody PlaceDto place) {
-        Set<String> validationErrors = placeValidator.validate(place);
-        if (!validationErrors.isEmpty()) {
-            return new PlaceResponse(Status.ERROR, validationErrors, Collections.emptyList());
+        Set<String> errors = placeValidator.validate(place);
+        if (!errors.isEmpty()) {
+            return constructResponse(errors,
+                    Collections.emptyList(),
+                    placeManager.count(), Constants.ZERO, Constants.ONE);
         }
-        List<PlaceDto> placeDtoList = placeManager.update(place);
-        return new PlaceResponse(Status.OK, Collections.emptySet(), placeDtoList);
+        final List<PlaceDto> placeDtoList = placeManager.update(place);
+        return constructResponse(Collections.emptySet(),
+                placeDtoList, placeManager.count(), Constants.ZERO, Constants.ONE);
     }
+
+    private PlaceResponse constructResponse(Set<String> errors,
+                                            List<PlaceDto> dtos,
+                                            long totalCount,
+                                            int skip,
+                                            int limit) {
+        if (!errors.isEmpty()) {
+            return new PlaceResponse(Status.ERROR, errors, dtos, 1L,
+                    Constants.ONE, limit, totalCount);
+        }
+        return new PlaceResponse(Status.OK, errors, dtos,
+                controllerPagination.getCurrentPage(skip, limit),
+                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
+    }
+
 }

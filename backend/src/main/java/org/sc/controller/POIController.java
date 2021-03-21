@@ -11,13 +11,13 @@ import org.sc.manager.PoiManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static java.util.Collections.*;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
@@ -33,77 +33,76 @@ public class POIController {
     private final PoiExistenceValidator poiExistenceValidator;
     private final LinkedMediaValidator linkedMediaValidator;
     private final MediaExistenceValidator mediaExistanceValidator;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public POIController(final PoiManager poiManager,
                          final PoiValidator poiValidator,
                          final PoiExistenceValidator poiExistenceValidator,
                          final LinkedMediaValidator linkedMediaValidator,
-                         final MediaExistenceValidator mediaExistanceValidator) {
+                         final MediaExistenceValidator mediaExistanceValidator,
+                         final ControllerPagination controllerPagination) {
         this.poiManager = poiManager;
         this.poiValidator = poiValidator;
         this.poiExistenceValidator = poiExistenceValidator;
         this.linkedMediaValidator = linkedMediaValidator;
         this.mediaExistanceValidator = mediaExistanceValidator;
+        this.controllerPagination = controllerPagination;
     }
 
 
     @GetMapping("/count")
     public CountResponse getCount() {
-        final long count = poiManager.countPoi();
-        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+        final long count = poiManager.count();
+        return new CountResponse(Status.OK, emptySet(), new CountDto(count));
     }
 
     @GetMapping
-    public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new PoiResponse(Status.OK,
-                Collections.emptySet(),
-                poiManager.getPoiPaginated(page, count));
+    public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), poiManager.getPoiPaginated(skip, limit),
+                poiManager.count(), skip, limit);
     }
 
     @GetMapping("/{id}")
     public PoiResponse get(@PathVariable String id) {
-        return new PoiResponse(Status.OK,
-                Collections.emptySet(),
-                poiManager.getPoiByID(id));
+        return constructResponse(emptySet(), poiManager.getPoiByID(id),
+                poiManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @GetMapping("/code/{code}")
     public PoiResponse getByTrail(@PathVariable String code,
-                                  @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new PoiResponse(Status.OK,
-                Collections.emptySet(),
-                poiManager.getPoiByTrailId(code, page, count));
+                                  @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), poiManager.getPoiByTrailId(code, skip, limit),
+                poiManager.count(), skip, limit);
     }
 
     @GetMapping("/type/{type}")
     public PoiResponse getByMacro(@PathVariable String type,
-                                  @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new PoiResponse(Status.OK,
-                Collections.emptySet(),
-                poiManager.getPoiByMacro(type, page, count));
+                                  @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), poiManager.getPoiByMacro(type, skip, limit),
+                poiManager.count(), skip, limit);
     }
 
     @GetMapping("/name/{name}")
     public PoiResponse getByNameOrTags(@PathVariable String name,
-                                       @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-                                       @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new PoiResponse(Status.OK,
-                Collections.emptySet(),
-                poiManager.getPoiByName(name, page, count));
+                                       @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                       @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), poiManager.getPoiByName(name, skip, limit),
+                poiManager.count(), skip, limit);
     }
 
     @PutMapping
     public PoiResponse upsertPoi(@RequestBody PoiDto poiDto) {
         final Set<String> errors = poiValidator.validate(poiDto);
         if (errors.isEmpty()) {
-            final List<PoiDto> poiDtos = poiManager.upsertPoi(poiDto);
-            return new PoiResponse(Status.OK, errors, poiDtos);
+            return constructResponse(emptySet(), poiManager.upsertPoi(poiDto),
+                    poiManager.count(), Constants.ZERO, Constants.ONE);
         }
-        return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
+        return constructResponse(errors, emptyList(),
+                poiManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @PutMapping("/media/{id}")
@@ -114,9 +113,11 @@ public class POIController {
         if (errors.isEmpty()) {
             final List<PoiDto> poiDtos =
                     poiManager.linkMedia(id, linkedMediaRequest);
-            return new PoiResponse(Status.OK, Collections.emptySet(), poiDtos);
+            return constructResponse(emptySet(), poiDtos,
+                    poiManager.count(), Constants.ZERO, Constants.ONE);
         }
-        return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
+        return constructResponse(errors, emptyList(),
+                poiManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @DeleteMapping("/media/{id}")
@@ -125,21 +126,32 @@ public class POIController {
         final Set<String> errors = poiExistenceValidator.validate(id);
         errors.addAll(mediaExistanceValidator.validate(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
-            return new PoiResponse(Status.OK, errors, poiManager.unlinkMedia(id, unLinkeMediaRequestDto));
+            return constructResponse(emptySet(), poiManager.unlinkMedia(id, unLinkeMediaRequestDto),
+                    poiManager.count(), Constants.ZERO, Constants.ONE);
         }
-        return new PoiResponse(Status.ERROR, errors, Collections.emptyList());
+        return constructResponse(errors, emptyList(),
+                poiManager.count(), Constants.ZERO, Constants.ONE);
     }
 
     @DeleteMapping("/{id}")
     public PoiResponse deletePoi(@PathVariable String id) {
         List<PoiDto> deleted = poiManager.deleteById(id);
-        if (deleted.isEmpty()) {
-            LOGGER.warning(format("Could not delete POI with id '%s'", id));
-            return new PoiResponse(Status.ERROR,
-                    new HashSet<>(Collections.singletonList(
-                            format("No POI was found with id '%s'", id))), Collections.emptyList());
+        return constructResponse(emptySet(), deleted,
+                poiManager.count(), Constants.ZERO, Constants.ONE);
+    }
+
+    private PoiResponse constructResponse(Set<String> errors,
+                                          List<PoiDto> dtos,
+                                          long totalCount,
+                                          int skip,
+                                          int limit) {
+        if (!errors.isEmpty()) {
+            return new PoiResponse(Status.ERROR, errors, dtos, 1L,
+                    Constants.ONE, limit, totalCount);
         }
-        return new PoiResponse(Status.OK, Collections.emptySet(), deleted);
+        return new PoiResponse(Status.OK, errors, dtos,
+                controllerPagination.getCurrentPage(skip, limit),
+                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
     }
 
 

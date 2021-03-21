@@ -10,6 +10,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 public class TrailPreview {
+    private String id;
     private String code;
     private TrailClassification classification;
     private PlaceRef startPos;

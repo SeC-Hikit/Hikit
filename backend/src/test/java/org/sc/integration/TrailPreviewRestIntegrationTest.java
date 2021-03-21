@@ -11,6 +11,7 @@ import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.PlaceController;
+import org.sc.controller.TrailController;
 import org.sc.controller.TrailImporterController;
 import org.sc.controller.TrailPreviewController;
 import org.sc.data.model.Trail;
@@ -20,14 +21,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sc.integration.TrailImportRestIntegrationTest.*;
-import static org.sc.integration.TrailImportRestIntegrationTest.END_EXPECTED_COORDINATE;
-import static org.sc.integration.TrailImportRestIntegrationTest.INTERMEDIATE_EXPECTED_COORDINATE;
-import static org.sc.integration.TrailImportRestIntegrationTest.START_EXPECTED_COORDINATE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -57,6 +54,7 @@ public class TrailPreviewRestIntegrationTest {
     @Autowired TrailImporterController importController;
     @Autowired TrailPreviewController controller;
     @Autowired PlaceController placeController;
+    @Autowired TrailController trailController;
     private TrailResponse trailResponse;
     private String trailId;
 
@@ -64,7 +62,7 @@ public class TrailPreviewRestIntegrationTest {
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        trailResponse = importController.importTrail(trailImportDto);
+        trailResponse = trailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }
 
@@ -86,7 +84,7 @@ public class TrailPreviewRestIntegrationTest {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailPreviewResponse response = controller.getAllPreview(0, 1);
+        TrailPreviewResponse response = controller.getTrailPreviews(0, 1);
         assertThat(response.getContent().size()).isEqualTo(1);
         TrailPreviewDto firstResult = response.getContent().get(0);
         assertAll(firstResult);

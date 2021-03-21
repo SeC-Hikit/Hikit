@@ -30,6 +30,10 @@ public class TrailRawDAO {
         this.trailRawMapper = placeMapper;
     }
 
+    public List<TrailRaw> get(final int skip, final int limit) {
+        return toTrailRawList(collection.find(new Document()).skip(skip).limit(limit));
+    }
+
     public List<TrailRaw> getById(final String id) {
         return toTrailRawList(collection.find(new Document(TrailRaw.ID, id)));
     }
@@ -44,6 +48,10 @@ public class TrailRawDAO {
             throw new IllegalStateException();
         }
         return Collections.singletonList(trailRawMapper.mapToObject(upserted));
+    }
+
+    public long count() {
+        return collection.countDocuments();
     }
 
     private List<TrailRaw> toTrailRawList(Iterable<Document> documents) {

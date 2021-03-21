@@ -7,8 +7,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class TrailRaw {
 
     public static String COLLECTION_NAME = "core.Raw";

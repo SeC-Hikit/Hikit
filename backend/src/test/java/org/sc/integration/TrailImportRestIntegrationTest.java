@@ -80,7 +80,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        trailResponse = importController.importTrail(trailImportDto);
+        trailResponse = trailController.importTrail(trailImportDto);
     }
 
     @Test

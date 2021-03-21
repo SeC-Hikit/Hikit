@@ -84,11 +84,11 @@ public class TrailDAO {
         return toTrailsList(aggregate);
     }
 
-    public List<Trail> getTrails(boolean isLight, int page, int count) {
+    public List<Trail> getTrails(boolean isLight, int skip, int limit) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document()).skip(page).limit(count));
+            return toTrailsLightList(collection.find(new Document()).skip(skip).limit(limit));
         }
-        return toTrailsList(collection.find(new Document()).skip(page).limit(count));
+        return toTrailsList(collection.find(new Document()).skip(skip).limit(limit));
     }
 
     public List<Trail> getTrailById(String id, boolean isLight) {
@@ -98,9 +98,10 @@ public class TrailDAO {
         return toTrailsList(collection.find(new Document(Trail.ID, id)));
     }
 
-    public List<Trail> getTrailByPlaceId(String id, boolean isLight) {
+    public List<Trail> getTrailByPlaceId(String id, boolean isLight,
+                                         int page, int limit) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)));
+            return toTrailsLightList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)).skip(page).limit(limit));
         }
         return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)));
     }

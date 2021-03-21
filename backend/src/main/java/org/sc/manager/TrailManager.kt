@@ -26,7 +26,6 @@ class TrailManager @Autowired constructor(
     private val placeDAO: PlaceDAO,
     private val trailFileHelper: TrailFileManager,
     private val trailMapper: TrailMapper,
-    private val trailPreviewMapper: TrailPreviewMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
     private val placeRefMapper: PlaceRefMapper
 ) {
@@ -39,8 +38,8 @@ class TrailManager @Autowired constructor(
     fun getById(id: String, isLight: Boolean): List<TrailDto> =
         trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
 
-    fun getByPlaceRefId(code: String, isLight: Boolean): List<TrailDto> =
-        trailDAO.getTrailByPlaceId(code, isLight).map { trailMapper.trailToTrailDto(it) }
+    fun getByPlaceRefId(code: String, isLight: Boolean, page: Int, limit: Int): List<TrailDto> =
+        trailDAO.getTrailByPlaceId(code, isLight, page, limit).map { trailMapper.trailToTrailDto(it) }
 
     fun delete(id: String, isPurged: Boolean): List<TrailDto> {
         if (isPurged) {
@@ -50,12 +49,6 @@ class TrailManager @Autowired constructor(
         }
         return trailDAO.delete(id).map { trailMapper.trailToTrailDto(it) }
     }
-
-    fun getPreviews(page: Int, count: Int): List<TrailPreviewDto> =
-        trailDAO.getTrailPreviews(page, count).map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
-
-    fun previewById(id: String): List<TrailPreviewDto> = trailDAO.trailPreviewById(id)
-        .map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
 
     fun save(trail: Trail): List<TrailDto> {
         trailFileHelper.writeTrailToOfficialGpx(trail)
@@ -151,7 +144,7 @@ class TrailManager @Autowired constructor(
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
         if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
 
-    fun countTrail(): Long = trailDAO.countTrail()
+    fun count(): Long = trailDAO.countTrail()
 
     fun removePlaceRefFromTrails(placeId: String) {
         trailDAO.unlinkPlaceFromAllTrails(placeId)

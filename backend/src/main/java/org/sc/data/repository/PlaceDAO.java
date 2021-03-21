@@ -145,4 +145,8 @@ public class PlaceDAO {
                         id)));
         return getById(placeId);
     }
+
+    public long count() {
+        return collection.countDocuments();
+    }
 }

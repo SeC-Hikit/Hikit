@@ -46,7 +46,7 @@ class TrailImporterManager @Autowired constructor(
             .officialEta(importingTrail.officialEta)
             .code(importingTrail.code)
             .variant(importingTrail.isVariant)
-            .locations(importingTrail.locations.map { placeMapper.map(it) })
+            .locations(getConsistentLocations(importingTrail))
             .classification(importingTrail.classification)
             .country(importingTrail.country)
             .statsTrailMetadata(statsTrailMetadata)
@@ -74,11 +74,17 @@ class TrailImporterManager @Autowired constructor(
             .build()
 
         val savedTrailDao = trailsManager.save(trail)
+
         trailDatasetVersionDao.increaseVersion()
 
         return savedTrailDao
     }
 
-    fun countImport(): Long = trailDatasetVersionDao.countImport()
+    fun countTrailRaw() = trailRawDao.count()
 
+    private fun getConsistentLocations(importingTrail: TrailImportDto) =
+        sortLocationsByTrailCoordinates(importingTrail.locations.map { placeMapper.map(it) })
+
+    private fun sortLocationsByTrailCoordinates(locations: List<PlaceRef>): List<PlaceRef> =
+        locations.sortedBy { it.trailCoordinates.distanceFromTrailStart }
 }

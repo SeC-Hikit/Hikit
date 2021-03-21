@@ -3,7 +3,6 @@ package org.sc.manager
 import org.sc.common.rest.AccessibilityNotificationCreationDto
 import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityNotificationResolutionDto
-import org.sc.common.rest.AccessibilityUnresolvedDto
 import org.sc.data.mapper.AccessibilityNotificationMapper
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,23 +14,23 @@ class AccessibilityNotificationManager @Autowired constructor(
     private val accessibilityMapper: AccessibilityNotificationMapper,
 ) {
 
-    fun getSolved(page: Int, count: Int): List<AccessibilityNotificationDto> {
-        val solved = accessibilityDAO.getSolved(page, count)
+    fun getSolved(skip: Int, limit: Int): List<AccessibilityNotificationDto> {
+        val solved = accessibilityDAO.getSolved(skip, limit)
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getResolvedById(code: String): List<AccessibilityNotificationDto> {
-        val solved = accessibilityDAO.getResolvedById(code)
+    fun getResolvedById(code: String, skip: Int, limit: Int): List<AccessibilityNotificationDto> {
+        val solved = accessibilityDAO.getResolvedByTrailId(code, skip, limit)
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getUnresolved(page: Int, count: Int): List<AccessibilityUnresolvedDto> {
-        val unresolved = accessibilityDAO.getUnresolved(page, count)
+    fun getUnresolved(skip: Int, limit: Int): List<AccessibilityNotificationDto> {
+        val unresolved = accessibilityDAO.getUnresolved(skip, limit)
         return unresolved.map { accessibilityMapper.map(it) }
     }
 
-    fun getUnresolvedById(code: String): List<AccessibilityUnresolvedDto> {
-        val unresolved = accessibilityDAO.getUnresolvedById(code)
+    fun getUnresolvedById(code: String, skip: Int, limit: Int): List<AccessibilityNotificationDto> {
+        val unresolved = accessibilityDAO.getUnresolvedByTrailId(code, skip, limit)
         return unresolved.map { accessibilityMapper.map(it) }
     }
 
@@ -43,10 +42,14 @@ class AccessibilityNotificationManager @Autowired constructor(
         accessibilityDAO.delete(objectId).map { accessibilityMapper.map(it) }
 
 
-    fun upsert(accessibilityNotificationCreation: AccessibilityNotificationCreationDto): List<AccessibilityUnresolvedDto> =
+    fun upsert(accessibilityNotificationCreation: AccessibilityNotificationCreationDto): List<AccessibilityNotificationDto> =
         accessibilityDAO.insert(accessibilityNotificationCreation)
             .map { accessibilityMapper.map(it) }
 
-    fun countAccessibilityNotification(): Long = accessibilityDAO.countAccessibility()
+    fun count(): Long = accessibilityDAO.countAccessibility()
+    fun countSolved(): Long = accessibilityDAO.countSolved()
+    fun countNotSolved(): Long = accessibilityDAO.countNotSolved()
+    fun countSolvedForTrailId(trailId: String): Long = accessibilityDAO.countSolvedForTrailId(trailId)
+    fun countNotSolvedForTrailId(trailId: String): Long = accessibilityDAO.countNotSolvedForTrailId(trailId)
 
 }
