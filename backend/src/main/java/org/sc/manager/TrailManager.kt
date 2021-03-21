@@ -24,9 +24,8 @@ class TrailManager @Autowired constructor(
     private val maintenanceDAO: MaintenanceDAO,
     private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
     private val placeDAO: PlaceDAO,
-    private val gpxHelper: GpxManager,
+    private val trailFileHelper: TrailFileManager,
     private val trailMapper: TrailMapper,
-    private val trailPreviewMapper: TrailPreviewMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
     private val placeRefMapper: PlaceRefMapper
 ) {
@@ -39,8 +38,8 @@ class TrailManager @Autowired constructor(
     fun getById(id: String, isLight: Boolean): List<TrailDto> =
         trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
 
-    fun getByPlaceRefId(code: String, isLight: Boolean): List<TrailDto> =
-        trailDAO.getTrailByPlaceId(code, isLight).map { trailMapper.trailToTrailDto(it) }
+    fun getByPlaceRefId(code: String, isLight: Boolean, page: Int, limit: Int): List<TrailDto> =
+        trailDAO.getTrailByPlaceId(code, isLight, page, limit).map { trailMapper.trailToTrailDto(it) }
 
     fun delete(id: String, isPurged: Boolean): List<TrailDto> {
         if (isPurged) {
@@ -51,14 +50,8 @@ class TrailManager @Autowired constructor(
         return trailDAO.delete(id).map { trailMapper.trailToTrailDto(it) }
     }
 
-    fun getPreviews(page: Int, count: Int): List<TrailPreviewDto> =
-        trailDAO.getTrailPreviews(page, count).map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
-
-    fun previewById(id: String): List<TrailPreviewDto> = trailDAO.trailPreviewById(id)
-        .map { trailPreviewMapper.trailPreviewToTrailPreviewDto(it) }
-
     fun save(trail: Trail): List<TrailDto> {
-        gpxHelper.writeTrailToGpx(trail)
+        trailFileHelper.writeTrailToOfficialGpx(trail)
         return trailDAO.upsert(trail).map { trailMapper.trailToTrailDto(it) }
     }
 
@@ -127,13 +120,13 @@ class TrailManager @Autowired constructor(
 
     fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.addTrailIdToPlace(placeRef.placeId, id)
+        placeDAO.addTrailIdToPlace(placeRef.placeId, id, placeRef.trailCoordinates)
         return linkedTrail.map { trailMapper.trailToTrailDto(it) }
     }
 
     fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.removeTrailFromPlace(placeRef.placeId, id)
+        placeDAO.removeTrailFromPlace(placeRef.placeId, id, placeRef.trailCoordinates)
         return unLinkPlace.map { trailMapper.trailToTrailDto(it) }
     }
 
@@ -151,11 +144,10 @@ class TrailManager @Autowired constructor(
     private fun getMeters(unitOfMeasurement: UnitOfMeasurement, distance: Int) =
         if (unitOfMeasurement == UnitOfMeasurement.km) MetricConverter.toM(distance.toDouble()) else distance.toDouble()
 
-    fun countTrail(): Long = trailDAO.countTrail()
+    fun count(): Long = trailDAO.countTrail()
 
     fun removePlaceRefFromTrails(placeId: String) {
         trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
-
 }
 

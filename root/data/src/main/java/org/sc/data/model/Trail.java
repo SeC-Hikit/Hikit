@@ -26,14 +26,18 @@ public class Trail {
     public static final String COUNTRY = "country";
     public static final String STATS_METADATA = "statsMetadata";
     public static final String COORDINATES = "coordinates";
-    public static final String CREATED_ON_DATE = "lastUpdate";
-    public static final String LAST_UPDATE_DATE = "lastUpdate";
     public static final String SECTION_CARED_BY = "maintainingSection";
     public static final String TERRITORIAL_CARED_BY = "territorialDivision";
     public static final String LOCATIONS = "locations";
     public static final String GEO_LINE = "geoLine";
-    
+
     public static final String MEDIA = "media";
+    public static final String STATUS = "status";
+    public static final String FILE_DETAILS = "fileDetails";
+    public static final String CYCLO = "cyclo";
+
+    public static final String CREATED_ON_DATE = "lastUpdate";
+    public static final String LAST_UPDATE_DATE = "lastUpdate";
 
     private String id;
     private String name;
@@ -41,6 +45,8 @@ public class Trail {
     private String code;
     private boolean variant;
     private int officialEta;
+    private PlaceRef startLocation;
+    private PlaceRef endLocation;
     private List<PlaceRef> locations;
     private List<TrailCoordinates> coordinates;
     private TrailClassification classification;
@@ -52,19 +58,8 @@ public class Trail {
     private StatsTrailMetadata statsTrailMetadata;
     private GeoLineString geoLineString;
     private List<LinkedMedia> mediaList;
-
-    // TODO:
-    // status: solo_file, draft, public
-    // file: { uploadedOn: , uploadedBy: , fileName: }
-    // lastModified: { user: , date: }
-    // bike:
-    //    Difficolta' prevalente (TC, TC+, MC, MC+, BC, BC+, OC, OC+, non percorribile in bici)
-    //    Official ETA (tempo di percorrenza)
-    //    Percorribilità in bici da A a B : yes/no
-    //    Indicazione per pezzi di portage: 15 / 20 / >30 min
-    //    Percorribilità in bici da B a A -> (si/no)
-    //    Indicazione per pezzi di portage: 15 / 20 / >30 min
-    //            Note
-
+    private TrailStatus status;
+    private FileDetails fileDetails;
+    private CycloDetails cycloDetails;
 }
 

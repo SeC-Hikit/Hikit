@@ -73,6 +73,8 @@ class MediaManager @Autowired constructor(
         return mediaDAO.deleteById(id).map { mediaMapper.mediaToDto(it) }
     }
 
+    fun count(): Long = mediaDAO.count()
+
     private fun hasFileBeenSaved(saveFile: Long) = saveFile != 0L
 
     private fun saveFile(tempFile: Path, fileName: String) =

@@ -20,6 +20,7 @@ public class Place {
     public static final String DESCRIPTION = "description";
     public static final String TAGS = "tags";
     public static final String MEDIA_IDS = "mediaIds";
+    public static final String POINTS = "points";
     public static final String COORDINATES = "coordinates";
     public static final String CROSSING = "crossingIds";
 
@@ -28,6 +29,7 @@ public class Place {
     private String description;
     private List<String> tags;
     private List<String> mediaIds;
+    private MultiPointCoords2D points;
     private List<CoordinatesWithAltitude> coordinates;
     private List<String> crossingTrailIds;
 }

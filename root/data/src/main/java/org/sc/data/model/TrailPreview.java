@@ -10,9 +10,12 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 public class TrailPreview {
+    private String id;
     private String code;
     private TrailClassification classification;
     private PlaceRef startPos;
     private PlaceRef finalPos;
-    private Date date;
+    private FileDetails fileDetails;
+    private boolean bikeData;
+    private TrailStatus trailStatus;
 }

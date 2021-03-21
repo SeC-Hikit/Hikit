@@ -35,6 +35,7 @@ public class ImportTrailIT {
 
     public static final CoordinatesDto START_COORDINATES_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
     public static final CoordinatesDto INTERMEDIATE_COORDINATES_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
+    public static final CoordinatesDto INTERMEDIATE_COORDINATES_DTO_2 = new CoordinatesDto(44.436087, 11.315623, 230.0);
     public static final CoordinatesDto END_COORDINATES_DTO = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
 
     public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
@@ -61,18 +62,14 @@ public class ImportTrailIT {
             TAGS, Collections.emptyList(),
             Collections.singletonList(INTERMEDIATE_COORDINATES_DTO), Collections.emptyList());
 
+    public static PlaceDto ANOTHER_CORRECT_PLACE_DTO = new PlaceDto(null, PLACE_NAME, PLACE_EXPECTED_DESCRIPTION,
+            TAGS, Collections.emptyList(),
+            Collections.singletonList(INTERMEDIATE_COORDINATES_DTO_2), Collections.emptyList());
+
+
     public static PlaceDto END_CORRECT_PLACE_DTO = new PlaceDto(null, "Another magical place", PLACE_EXPECTED_DESCRIPTION,
             TAGS, Collections.emptyList(),
             Collections.singletonList(END_COORDINATES_DTO), Collections.emptyList());
 
-
-    public static void clearCollections(DataSource dataSource) {
-        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Media.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Maintenance.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, AccessibilityNotification.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Place.COLLECTION_NAME);
-    }
 
 }

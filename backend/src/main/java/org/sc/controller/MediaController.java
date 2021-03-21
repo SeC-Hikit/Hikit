@@ -31,6 +31,7 @@ public class MediaController {
 
     public final static String PREFIX = "/media";
     public static final String EMPTY_ID_ERROR = "Empty Id";
+    public static final String FILE_IS_EMPTY_ERROR = "File is empty";
 
     public File uploadDir;
 
@@ -38,16 +39,19 @@ public class MediaController {
     private final FileNameValidator fileNameValidator;
     private final MediaManager mediaManager;
     private final AppProperties appProperties;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public MediaController(final MediaFileValidator mediaFileValidator,
                            final FileNameValidator fileNameValidator,
                            final MediaManager mediaManager,
-                           final AppProperties appProperties) {
+                           final AppProperties appProperties,
+                           final ControllerPagination controllerPagination) {
         this.mediaFileValidator = mediaFileValidator;
         this.fileNameValidator = fileNameValidator;
         this.mediaManager = mediaManager;
         this.appProperties = appProperties;
+        this.controllerPagination = controllerPagination;
     }
 
     @PostConstruct
@@ -59,9 +63,10 @@ public class MediaController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public MediaResponse upload(@RequestAttribute("file") MultipartFile file) throws IOException {
-        if(file == null || file.getOriginalFilename() == null) {
-            return new MediaResponse(Status.ERROR, Collections.singleton("File is empty"),
-                    Collections.emptyList());
+        if (file == null || file.getOriginalFilename() == null) {
+            return constructResponse(Collections.singleton(FILE_IS_EMPTY_ERROR),
+                    Collections.emptyList(), mediaManager.count(),
+                    Constants.ZERO, Constants.ONE);
         }
         final String originalFileName = file.getOriginalFilename();
         final String extension = mediaManager.getExtensionFromName(originalFileName);
@@ -75,29 +80,51 @@ public class MediaController {
 
         if (validationErrors.isEmpty()) {
             final List<MediaDto> saveResult = mediaManager.save(originalFileName, tempFile);
-            return new MediaResponse(Status.OK, Collections.emptySet(), saveResult);
+            return constructResponse(Collections.emptySet(), saveResult, mediaManager.count(),
+                    Constants.ZERO, Constants.ONE);
         }
-        return new MediaResponse(Status.ERROR, validationErrors, Collections.emptyList());
+        return constructResponse(validationErrors, Collections.emptyList(), mediaManager.count(),
+                Constants.ZERO, Constants.ONE);
     }
 
     @Operation(summary = "Retrieve media")
     @GetMapping("/{id}")
     public MediaResponse getById(@PathVariable String id) {
-        if(StringUtils.isEmpty(id)){
-            return new MediaResponse(Status.ERROR, Collections.singleton(EMPTY_ID_ERROR), Collections.emptyList());
+        if (StringUtils.isEmpty(id)) {
+            return constructResponse(Collections.singleton(EMPTY_ID_ERROR),
+                    Collections.emptyList(), mediaManager.count(),
+                    Constants.ZERO, Constants.ONE);
         }
         List<MediaDto> medias = mediaManager.getById(id);
-        return new MediaResponse(Status.OK, Collections.emptySet(), medias);
+        return constructResponse(Collections.emptySet(), medias, mediaManager.count(),
+                Constants.ZERO, Constants.ONE);
     }
 
     @Operation(summary = "Remove media")
     @DeleteMapping("/{id}")
     public MediaResponse deleteById(@PathVariable String id) {
-        if(StringUtils.isEmpty(id)){
-            return new MediaResponse(Status.ERROR, Collections.singleton(EMPTY_ID_ERROR), Collections.emptyList());
+        if (StringUtils.isEmpty(id)) {
+            return constructResponse(Collections.singleton(EMPTY_ID_ERROR),
+                    Collections.emptyList(), mediaManager.count(),
+                    Constants.ZERO, Constants.ONE);
         }
         List<MediaDto> medias = mediaManager.deleteById(id);
-        return new MediaResponse(Status.OK, Collections.emptySet(), medias);
+        return constructResponse(Collections.emptySet(), medias, mediaManager.count(),
+                Constants.ZERO, Constants.ONE);
+    }
+
+    private MediaResponse constructResponse(Set<String> errors,
+                                            List<MediaDto> dtos,
+                                            long totalCount,
+                                            int skip,
+                                            int limit) {
+        if (!errors.isEmpty()) {
+            return new MediaResponse(Status.ERROR, errors, dtos, 1L,
+                    Constants.ONE, limit, totalCount);
+        }
+        return new MediaResponse(Status.OK, errors, dtos,
+                controllerPagination.getCurrentPage(skip, limit),
+                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
     }
 
 }

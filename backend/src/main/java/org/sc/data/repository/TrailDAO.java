@@ -3,14 +3,11 @@ package org.sc.data.repository;
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.FindOneAndReplaceOptions;
-import com.mongodb.client.model.ReturnDocument;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.model.*;
@@ -32,8 +29,9 @@ import static org.sc.data.repository.MongoConstants.*;
 @Repository
 public class TrailDAO {
 
-    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Place.COORDINATES;
+    private static final String RESOLVED_START_POS_COORDINATE = Trail.START_POS + "." + Place.POINTS;
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
+
 
     private final MongoCollection<Document> collection;
 
@@ -86,23 +84,24 @@ public class TrailDAO {
         return toTrailsList(aggregate);
     }
 
-    public List<Trail> getTrails(boolean isLight, int page, int count) {
+    public List<Trail> getTrails(boolean isLight, int skip, int limit) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document()).skip(page).limit(count));
+            return toTrailsLightList(collection.find(new Document()).skip(skip).limit(limit));
         }
-        return toTrailsList(collection.find(new Document()).skip(page).limit(count));
+        return toTrailsList(collection.find(new Document()).skip(skip).limit(limit));
     }
 
-    public List<Trail> getTrailById(String code, boolean isLight) {
+    public List<Trail> getTrailById(String id, boolean isLight) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document(Trail.ID, code)));
+            return toTrailsLightList(collection.find(new Document(Trail.ID, id)));
         }
-        return toTrailsList(collection.find(new Document(Trail.ID, code)));
+        return toTrailsList(collection.find(new Document(Trail.ID, id)));
     }
 
-    public List<Trail> getTrailByPlaceId(String id, boolean isLight) {
+    public List<Trail> getTrailByPlaceId(String id, boolean isLight,
+                                         int page, int limit) {
         if (isLight) {
-            return toTrailsLightList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)));
+            return toTrailsLightList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)).skip(page).limit(limit));
         }
         return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)));
     }
@@ -120,8 +119,7 @@ public class TrailDAO {
                 .append(Trail.ID, existingOrNewObjectId);
         final Document updateResult = collection.findOneAndReplace(
                 new Document(Trail.ID, existingOrNewObjectId),
-                trailDocument, new FindOneAndReplaceOptions().upsert(true)
-                        .returnDocument(ReturnDocument.AFTER));
+                trailDocument, UPSERT_OPTIONS);
         if (updateResult == null) {
             throw new IllegalStateException();
         }
@@ -166,22 +164,12 @@ public class TrailDAO {
         return getTrailById(id, true);
     }
 
-    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false)
-                .map(trailPreviewMapper::mapToObject).collect(toList());
-    }
-
-    private List<Trail> toTrailsLightList(Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
-    }
-
-    private List<Trail> toTrailsList(Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
-    }
-
     private Bson getTrailPreviewProjection() {
         return project(fields(
                 include(Trail.CLASSIFICATION),
+                include(Trail.CYCLO),
+                include(Trail.STATUS),
+                include(Trail.FILE_DETAILS),
                 include(Trail.LAST_UPDATE_DATE),
                 include(Trail.CODE),
                 computed(Trail.START_POS,
@@ -210,14 +198,25 @@ public class TrailDAO {
     public void unlinkPlaceFromAllTrails(String placeId) {
         Document update = new Document(PULL, new Document(Trail.LOCATIONS,
                 new Document(PlaceRef.PLACE_ID, placeId)));
-        BsonDocument bsonDocument = update.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
-        System.out.println(bsonDocument);
         collection.updateMany(new Document(),
                 update);
     }
 
     public long countTrail() {
         return collection.countDocuments();
+    }
+
+    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(trailPreviewMapper::mapToObject).collect(toList());
+    }
+
+    private List<Trail> toTrailsLightList(Iterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
+    }
+
+    private List<Trail> toTrailsList(Iterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
 
 }

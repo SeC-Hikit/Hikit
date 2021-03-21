@@ -17,12 +17,16 @@ class PlaceManager @Autowired constructor(
     private val linkedMediaMapper: LinkedMediaMapper
 ) {
 
-    fun getPaginated(page: Int, count: Int): List<PlaceDto> =
-        placeDao.get(page, count).map { placeMapper.map(it) }
+    fun getPaginated(skip: Int, limit: Int): List<PlaceDto> =
+        placeDao.get(skip, limit).map { placeMapper.map(it) }
 
 
-    fun getLikeNameOrTags(name: String, page: Int, count: Int): List<PlaceDto> =
-        placeDao.getLikeName(name, page, count).map { placeMapper.map(it) }
+    fun getLikeNameOrTags(name: String, skip: Int, limit: Int): List<PlaceDto> =
+        placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
+
+    fun getNearPoint(longitude: Double, latitude: Double, distance: Double,
+                     skip: Int, limit: Int): List<PlaceDto> =
+        placeDao.getNear(longitude, latitude, distance, skip, limit).map { placeMapper.map(it) }
 
     fun doesItExist(id: String) = getById(id).isNotEmpty()
 
@@ -50,5 +54,8 @@ class PlaceManager @Autowired constructor(
 
     fun unlinkMedia(placeId: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<PlaceDto> =
         placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
+
+    fun count(): Long = placeDao.count()
+
 
 }
