@@ -16,6 +16,7 @@ class ControllerPaginationTest {
 
     @Test
     fun `shall return correct page number`() {
+        assertEquals(1, ControllerPagination.getCurrentPage(0, 150))
         assertEquals(1, ControllerPagination.getCurrentPage(0, 5))
         assertEquals(2, ControllerPagination.getCurrentPage(11, 10))
         assertEquals(3, ControllerPagination.getCurrentPage(20, 10))

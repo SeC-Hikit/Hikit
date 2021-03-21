@@ -52,10 +52,10 @@ public class StartupChecker {
     }
 
     private void configureIndexes() {
-        LOGGER.info("Checking DB indexes");
+        LOGGER.info("Ensuring DB indexes");
         MongoDatabase db = dataSource.getDB();
         String index = db.getCollection(Place.COLLECTION_NAME).createIndex(Indexes.geo2dsphere(Place.POINTS));
-        LOGGER.info("Index name" + index);
+        LOGGER.info("Ensured index name " + index + " for collection: `" + Place.COLLECTION_NAME + "`");
     }
 
     private void configureDir(final String path,

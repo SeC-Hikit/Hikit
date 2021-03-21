@@ -9,12 +9,15 @@ object ControllerPagination {
     fun electPageSize(pageSize: Int) = if (pageSize <= 0) 1 else pageSize
 
     fun getTotalPages(totalCount: Long, pageSize: Int): Long {
-        val toLong = ceil(totalCount.toDouble() / electPageSize(pageSize)).toLong()
-        return if (toLong == 0L) 1 else toLong
+        val result = ceil(totalCount.toDouble() / electPageSize(pageSize)).toLong()
+        return electResult(result)
     }
 
     fun getCurrentPage(skip: Int = 0, pageSize: Int = 1) : Long {
-        return (skip / electPageSize(pageSize)).toLong()
+        val result = (skip / electPageSize(pageSize)).toLong() + 1
+        return electResult(result)
     }
+
+    private fun electResult(toLong: Long) = if (toLong == 0L) 1 else toLong
 
 }

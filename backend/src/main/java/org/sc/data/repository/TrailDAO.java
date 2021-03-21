@@ -165,7 +165,7 @@ public class TrailDAO {
     }
 
     private Bson getTrailPreviewProjection() {
-        Bson project = project(fields(
+        return project(fields(
                 include(Trail.CLASSIFICATION),
                 include(Trail.CYCLO),
                 include(Trail.STATUS),
@@ -179,10 +179,6 @@ public class TrailDAO {
                         new Document("$arrayElemAt",
                                 Arrays.asList(DOLLAR + Trail.LOCATIONS, -1)))
         ));
-        BsonDocument bsonDocument = project.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
-        System.out.println(bsonDocument);
-
-        return project;
     }
 
     public List<Trail> linkPlace(String id, PlaceRef placeRef) {

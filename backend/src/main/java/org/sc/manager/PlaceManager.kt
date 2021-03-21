@@ -24,6 +24,10 @@ class PlaceManager @Autowired constructor(
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int): List<PlaceDto> =
         placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
 
+    fun getNearPoint(longitude: Double, latitude: Double, distance: Double,
+                     skip: Int, limit: Int): List<PlaceDto> =
+        placeDao.getNear(longitude, latitude, distance, skip, limit).map { placeMapper.map(it) }
+
     fun doesItExist(id: String) = getById(id).isNotEmpty()
 
     fun getById(id: String): List<PlaceDto> =

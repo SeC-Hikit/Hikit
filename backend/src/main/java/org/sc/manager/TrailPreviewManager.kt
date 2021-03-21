@@ -4,8 +4,11 @@ import org.sc.common.rest.TrailPreviewDto
 import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.repository.TrailDAO
 import org.sc.data.repository.TrailRawDAO
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
-class TrailPreviewManager constructor(
+@Component
+class TrailPreviewManager @Autowired constructor(
     private val trailPreviewMapper: TrailPreviewMapper,
     private val trailDAO: TrailDAO,
     private val trailRawDAO: TrailRawDAO
@@ -25,5 +28,5 @@ class TrailPreviewManager constructor(
 
     fun countRawAndTrail(): Long = countPreview() + countRaw()
     fun countPreview(): Long = trailDAO.countTrail()
-    fun countRaw(): Long = trailRawDAO.count()
+    private fun countRaw(): Long = trailRawDAO.count()
 }

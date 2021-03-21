@@ -67,10 +67,6 @@ public class PlaceDAO {
         return Pattern.compile("" + name + ".*", Pattern.CASE_INSENSITIVE);
     }
 
-    private List<Place> toPlaceList(final Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(placeMapper::mapToObject).collect(toList());
-    }
-
     public List<Place> create(final Place place) {
         final Document doc = placeMapper.mapToDocument(place);
         final String newObjectId =
@@ -91,8 +87,8 @@ public class PlaceDAO {
                 new Document(ADD_TO_SET, new Document(Place.CROSSING,
                         trailId))
                         .append(PUSH, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates))
-                        .append(PUSH, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
-                                CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
+                                .append(PUSH, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
+                                        CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
                         ));
     }
 
@@ -103,9 +99,9 @@ public class PlaceDAO {
                 new Document(PULL, new Document(Place.CROSSING,
                         trailId))
                         .append(PULL, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates))
-                        .append(PULL, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
-                                CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
-                ));
+                                .append(PULL, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
+                                        CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
+                        ));
     }
 
     public List<Place> update(final Place place) {
@@ -146,7 +142,21 @@ public class PlaceDAO {
         return getById(placeId);
     }
 
+    public List<Place> getNear(double longitude, double latitude,
+                               double distance, int skip, int limit) {
+        return toPlaceList(collection.find(
+                        new Document(Place.POINTS,
+                                getPointNearSearchQuery(longitude, latitude, distance)))
+                        .skip(skip)
+                        .limit(limit)
+        );
+    }
+
     public long count() {
         return collection.countDocuments();
+    }
+
+    private List<Place> toPlaceList(final Iterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false).map(placeMapper::mapToObject).collect(toList());
     }
 }
