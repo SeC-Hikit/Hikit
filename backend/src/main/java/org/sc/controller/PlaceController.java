@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.LinkedMediaDto;
 import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.Status;
@@ -44,6 +45,7 @@ public class PlaceController {
         this.placeExistenceValidator = placeExistenceValidator;
     }
 
+    @Operation(summary = "Retrieve place")
     @GetMapping
     public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
                              @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
@@ -52,6 +54,7 @@ public class PlaceController {
                 placeManager.getPaginated(page, count));
     }
 
+    @Operation(summary = "Retrieve place by ID")
     @GetMapping("/{id}")
     public PlaceResponse get(@PathVariable String id) {
         return new PlaceResponse(Status.OK,
@@ -59,6 +62,7 @@ public class PlaceController {
                 placeManager.getById(id));
     }
 
+    @Operation(summary = "Retrieve place by alternative names or tags")
     @GetMapping("/name/{name}")
     public PlaceResponse getLikeNameOrTags(@PathVariable String name,
                                            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -68,6 +72,7 @@ public class PlaceController {
                 placeManager.getLikeNameOrTags(name, page, count));
     }
 
+    @Operation(summary = "Add media to place")
     @PutMapping("/media/{id}")
     public PlaceResponse addMedia(@PathVariable String id,
                                   @RequestBody LinkedMediaDto linkedMediaRequest) {
@@ -82,6 +87,7 @@ public class PlaceController {
         return new PlaceResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Delete media from place")
     @DeleteMapping("/media/{id}")
     public PlaceResponse deleteMedia(@PathVariable String id,
                                      @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
@@ -95,6 +101,7 @@ public class PlaceController {
         return new PlaceResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Add place")
     @PutMapping
     public PlaceResponse create(@RequestBody PlaceDto place) {
         Set<String> validationErrors = placeValidator.validate(place);
@@ -105,11 +112,13 @@ public class PlaceController {
         return new PlaceResponse(Status.OK, Collections.emptySet(), placeDtoList);
     }
 
+    @Operation(summary = "Delete place")
     @DeleteMapping("/{id}")
     public PlaceResponse delete(@PathVariable String id) {
         return new PlaceResponse(Status.OK, Collections.emptySet(), placeManager.deleteById(id));
     }
 
+    @Operation(summary = "Update place")
     @PostMapping
     public PlaceResponse update(@RequestBody PlaceDto place) {
         Set<String> validationErrors = placeValidator.validate(place);

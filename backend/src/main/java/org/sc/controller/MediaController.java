@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.sc.common.rest.MediaDto;
 import org.sc.common.rest.Status;
@@ -54,6 +55,7 @@ public class MediaController {
         uploadDir = new File(appProperties.getTempStorage());
     }
 
+    @Operation(summary = "Add media")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public MediaResponse upload(@RequestAttribute("file") MultipartFile file) throws IOException {
@@ -78,6 +80,7 @@ public class MediaController {
         return new MediaResponse(Status.ERROR, validationErrors, Collections.emptyList());
     }
 
+    @Operation(summary = "Retrieve media")
     @GetMapping("/{id}")
     public MediaResponse getById(@PathVariable String id) {
         if(StringUtils.isEmpty(id)){
@@ -87,6 +90,7 @@ public class MediaController {
         return new MediaResponse(Status.OK, Collections.emptySet(), medias);
     }
 
+    @Operation(summary = "Remove media")
     @DeleteMapping("/{id}")
     public MediaResponse deleteById(@PathVariable String id) {
         if(StringUtils.isEmpty(id)){

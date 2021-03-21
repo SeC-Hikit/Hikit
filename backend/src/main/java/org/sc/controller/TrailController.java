@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
@@ -45,12 +46,14 @@ public class TrailController {
         this.placeRefValidator = placeRefValidator;
     }
 
+    @Operation(summary = "Count all trails in DB")
     @GetMapping("/count")
     public CountResponse getCount() {
         final long count = trailManager.countTrail();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
+    @Operation(summary = "Retrieve trail")
     @GetMapping
     public TrailResponse get(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -59,18 +62,21 @@ public class TrailController {
         return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.get(light, page, count));
     }
 
+    @Operation(summary = "Retrieve trail by ID")
     @GetMapping("/{id}")
     public TrailResponse getById(@PathVariable String id,
                                  @RequestParam(required = false, defaultValue = "false") Boolean light) {
         return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getById(id, light));
     }
 
+    @Operation(summary = "Retrieve trail by place ID")
     @GetMapping("/place/{id}")
     public TrailResponse getByPlaceId(@PathVariable String id,
                                       @RequestParam(required = false, defaultValue = "false") Boolean light) {
         return new TrailResponse(Status.OK, Collections.emptySet(), trailManager.getByPlaceRefId(id, light));
     }
 
+    @Operation(summary = "Add place to trail")
     @PostMapping("/place/{id}")
     public TrailResponse addPlaceToTrail(@PathVariable String id,
                                          @RequestBody PlaceRefDto placeRefDto) {
@@ -84,6 +90,7 @@ public class TrailController {
         return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Remove place from trail")
     @DeleteMapping("/place/{id}")
     public TrailResponse removePlaceFromTrail(@PathVariable String id,
                                               @RequestBody PlaceRefDto placeRefDto) {
@@ -97,6 +104,7 @@ public class TrailController {
         return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Add media to trail")
     @PostMapping("/media/{id}")
     public TrailResponse addMediaToTrail(@PathVariable String id,
                                          @RequestBody LinkedMediaDto linkedMediaRequest) {
@@ -111,6 +119,7 @@ public class TrailController {
         return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Remove media from trail")
     @DeleteMapping("/media/{id}")
     public TrailResponse removeMediaFromTrail(@PathVariable String id,
                                               @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
@@ -124,6 +133,7 @@ public class TrailController {
         return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
     }
 
+    @Operation(summary = "Remove trail by ID")
     @DeleteMapping("/{id}")
     public TrailResponse deleteById(@PathVariable String id,
                                     @RequestParam(required = false, defaultValue = "false") boolean isPurged) {

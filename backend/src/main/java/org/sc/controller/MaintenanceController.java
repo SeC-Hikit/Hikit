@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.CountDto;
 import org.sc.common.rest.MaintenanceCreationDto;
 import org.sc.common.rest.MaintenanceDto;
@@ -41,19 +42,28 @@ public class MaintenanceController {
         this.maintenanceValidator = maintenanceValidator;
     }
 
+    @Operation(summary = "Count all maintenance in DB")
     @GetMapping("/count")
     public CountResponse getCount() {
         final long count = maintenanceManager.countMaintenance();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
-    @GetMapping("/future")
-    public MaintenanceResponse getFutureMaintenance(
-            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
-        return new MaintenanceResponse(Status.OK, emptySet(), maintenanceManager.getFuture(page, count));
+    @Operation(summary = "Count all past maintenance")
+    @GetMapping("/past/count")
+    public CountResponse getCountPast() {
+        final long count = maintenanceManager.countPastMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
+    @Operation(summary = "Count all future maintenance")
+    @GetMapping("/future/count")
+    public CountResponse getCountFuture() {
+        final long count = maintenanceManager.countFutureMaintenance();
+        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
+    }
+
+    @Operation(summary = "Retrieve all past maintenance")
     @GetMapping("/past")
     public MaintenanceResponse getPastMaintenance(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
@@ -62,6 +72,7 @@ public class MaintenanceController {
         return new MaintenanceResponse(Status.OK, emptySet(), past);
     }
 
+    @Operation(summary = "Retrieve past maintenance by trail ID")
     @GetMapping("/past/{id}")
     public MaintenanceResponse getPastMaintenanceById(
             @PathVariable String id,
@@ -71,6 +82,15 @@ public class MaintenanceController {
         return new MaintenanceResponse(Status.OK, emptySet(), past);
     }
 
+    @Operation(summary = "Retrieve all future maintenance")
+    @GetMapping("/future")
+    public MaintenanceResponse getFutureMaintenance(
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int page,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int count) {
+        return new MaintenanceResponse(Status.OK, emptySet(), maintenanceManager.getFuture(page, count));
+    }
+
+    @Operation(summary = "Create maintenance in DB")
     @PutMapping
     public MaintenanceResponse create(
             @RequestBody MaintenanceCreationDto request) {
@@ -82,6 +102,7 @@ public class MaintenanceController {
         return new MaintenanceResponse(Status.OK, errors, emptyList());
     }
 
+    @Operation(summary = "Delete maintenance in DB")
     @DeleteMapping("/{id}")
     public MaintenanceResponse deleteMaintenance(
             @PathVariable String id) {
@@ -95,15 +116,4 @@ public class MaintenanceController {
         return new MaintenanceResponse(Status.OK, emptySet(), deleted);
     }
 
-    @GetMapping("/past/count")
-    public CountResponse getCountPast() {
-        final long count = maintenanceManager.countPastMaintenance();
-        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
-    }
-
-    @GetMapping("/future/count")
-    public CountResponse getCountFuture() {
-        final long count = maintenanceManager.countFutureMaintenance();
-        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
-    }
 }

@@ -1,5 +1,6 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.data.TrailDatasetVersion;
 import org.sc.data.repository.TrailDatasetVersionDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class TrailDatasetController {
         this.trailDatasetVersionDao = trailDatasetVersionDao;
     }
 
+    @Operation(summary = "Retrieve trail dataset version")
     @GetMapping
     private TrailDatasetVersion getTrailDatasetV() {
         return trailDatasetVersionDao.getLast();
