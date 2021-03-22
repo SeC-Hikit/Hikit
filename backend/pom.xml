@@ -150,9 +150,9 @@
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
-                    <arg>
-                        -Amapstruct.defaultComponentModel=spring
-                    </arg>
+                        <arg>
+                            -Amapstruct.defaultComponentModel=spring
+                        </arg>
                     </compilerArgs>
                     <showWarnings>true</showWarnings>
                 </configuration>
@@ -200,6 +200,30 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>package</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>spring-boot</classifier>
+                                    <mainClass>
+                                        org.sc.Main
+                                    </mainClass>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>it</id>
             <build>
