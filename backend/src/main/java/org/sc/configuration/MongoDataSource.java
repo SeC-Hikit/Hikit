@@ -26,15 +26,15 @@ public class MongoDataSource implements DataSource {
 
     @Autowired
     public MongoDataSource(final AppProperties appProperties) {
-        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        MongoClientSettings.builder().codecRegistry(pojoCodecRegistry)
-                .applyConnectionString(
-                new ConnectionString(appProperties.getMongoDbUri()));
-        this.mongoClient = MongoClients.create();
         this.databaseName = appProperties.getDbName();
         LOGGER.info(format("Setting connection to DB '%s'. Connection String: '%s'",
                 databaseName, appProperties.getMongoDbUri()));
+        final CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        final MongoClientSettings mongoSettings = MongoClientSettings.builder().codecRegistry(pojoCodecRegistry)
+                .applyConnectionString(
+                        new ConnectionString(appProperties.getMongoDbUri())).build();
+        this.mongoClient = MongoClients.create(mongoSettings);
     }
 
     public MongoClient getClient() {
