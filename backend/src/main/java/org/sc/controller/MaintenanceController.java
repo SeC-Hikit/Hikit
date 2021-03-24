@@ -72,6 +72,7 @@ public class MaintenanceController {
                 Constants.ONE, skip, limit);
     }
 
+    @Operation(summary = "Create a new maintenance")
     @PutMapping
     public MaintenanceResponse create(
             @RequestBody MaintenanceCreationDto request) {
@@ -84,7 +85,7 @@ public class MaintenanceController {
                 Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 
-    @Operation(summary = "Delete maintenance in DB")
+    @Operation(summary = "Delete maintenance")
     @DeleteMapping("/{id}")
     public MaintenanceResponse deleteMaintenance(
             @PathVariable String id) {
@@ -97,21 +98,21 @@ public class MaintenanceController {
                 deleted, Constants.ONE, Constants.ZERO, Constants.ONE);
     }
 
-    @Operation(summary = "Count all past maintenance in DB")
+    @Operation(summary = "Count all past maintenance")
     @GetMapping("/past/count")
     public CountResponse getCountPast() {
         final long count = maintenanceManager.countPastMaintenance();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
-    @Operation(summary = "Count all future maintenance in DB")
+    @Operation(summary = "Count all future maintenance")
     @GetMapping("/future/count")
     public CountResponse getCountFuture() {
         final long count = maintenanceManager.countFutureMaintenance();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
-    @Operation(summary = "Count all maintenance in DB")
+    @Operation(summary = "Count all maintenance")
     @GetMapping("/count")
     public CountResponse getCount() {
         final long count = maintenanceManager.countMaintenance();

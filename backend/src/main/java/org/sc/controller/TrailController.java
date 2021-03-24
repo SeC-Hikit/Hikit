@@ -189,6 +189,7 @@ public class TrailController {
         }
     }
 
+    @Operation(summary = "Creates a new trail")
     @PutMapping(path = "/save",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -203,6 +204,7 @@ public class TrailController {
                 Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Update an existing trail without modifying its connections or relations")
     @PostMapping
     public TrailResponse update(@RequestBody TrailDto trailDto) {
         throw new NotImplementedException();

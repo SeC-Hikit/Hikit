@@ -109,7 +109,7 @@ class TrailFileManager @Autowired constructor(
     }
 
     fun getGPXFilesTempPathList(uploadedFiles: List<MultipartFile>): Map<String, Optional<Path>> {
-
+        // We shall not accept files missing the original file names as we may have issues with
         val findUploadedFilesWithMissingNames = findUploadedFilesWithMissingNames(uploadedFiles)
         if (findUploadedFilesWithMissingNames.isNotEmpty()) return emptyMap()
 

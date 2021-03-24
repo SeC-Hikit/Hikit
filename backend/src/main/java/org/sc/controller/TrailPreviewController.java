@@ -3,19 +3,15 @@ package org.sc.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailPreviewDto;
-import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailPreviewResponse;
-import org.sc.common.rest.response.TrailRawResponse;
-import org.sc.manager.TrailManager;
 import org.sc.manager.TrailPreviewManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.*;
+import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
@@ -35,19 +31,19 @@ public class TrailPreviewController {
         this.controllerPagination = controllerPagination;
     }
 
-    @Operation(summary = "Retrieve all preview")
+    @Operation(summary = "Retrieve trail previews, possibly including raw trails too")
     @GetMapping
     public TrailPreviewResponse getTrailPreviews(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        return constructResponse(emptySet(), trailManager.getPreviews(skip, limit),
-                trailManager.countPreview(), skip, limit);
-    }
-
-    @GetMapping("/all")
-    public TrailPreviewResponse getAdminPreviews(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        return constructResponse(emptySet(), trailManager.getPreviews(skip, limit),
-                trailManager.countRawAndTrail(), skip, limit);
+                                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                                                 @RequestParam(required = false, defaultValue = "false") boolean includeRaw
+                                                 ) {
+        if(!includeRaw) {
+            return constructResponse(emptySet(), trailManager.getPreviews(skip, limit),
+                    trailManager.countPreview(), skip, limit);
+        } else {
+            return constructResponse(emptySet(), trailManager.getRawPreviews(skip, limit),
+                    trailManager.countRawAndTrail(), skip, limit);
+        }
     }
 
     @Operation(summary = "Retrieve preview by ID")

@@ -57,22 +57,23 @@ public class TrailImporterController {
         uploadDir = new File(appProperties.getTempStorage());
     }
 
-    @Operation(summary = "Read GPX trail file")
-    @PostMapping(path = "/read",
+    @Operation(summary = "Read and import one GPX trail file")
+    @PostMapping(path = "/import",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailRawResponse readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
         return processUploadedFiles(Collections.singletonList(gpxFile));
     }
 
-    @PostMapping(path = "/read-bulk",
+    @Operation(summary = "Read and import multiple GPX trail files")
+    @PostMapping(path = "/import-bulk",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailRawResponse readBulkGpxFile(@RequestParam("files") MultipartFile[] files) throws IOException {
         return processUploadedFiles(Arrays.asList(files));
     }
 
-    private TrailRawResponse processUploadedFiles(@RequestParam("files") List<MultipartFile> files) {
+    private TrailRawResponse processUploadedFiles(final List<MultipartFile> files) {
         final Map<String, Optional<Path>> originalFileNamesToTempPaths
                 = trailFileManager.getGPXFilesTempPathList(files);
 
@@ -96,7 +97,7 @@ public class TrailImporterController {
                     return trailFileManager.getTrailRawModel(uniqueFileName, originalFilename, rawGpxPath);
                 }).collect(toList());
 
-        List<TrailRawDto> savedTrails = trailRawDtos.stream().map(
+        final List<TrailRawDto> savedTrails = trailRawDtos.stream().map(
                 trailImporterManager::saveRaw
         ).collect(toList());
 
