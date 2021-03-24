@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sc.integration.TrailImportRestIntegrationTest.*;
+import static org.sc.integration.TrailImportRestIntegrationTest.LOCATION_REFS;
 
 @Ignore
 @RunWith(SpringRunner.class)
@@ -82,7 +82,7 @@ public class TrailPreviewRestIntegrationTest {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailPreviewResponse response = controller.getTrailPreviews(0, 1);
+        TrailPreviewResponse response = controller.getTrailPreviews(0, 1, false);
         assertThat(response.getContent().size()).isEqualTo(1);
         TrailPreviewDto firstResult = response.getContent().get(0);
         assertAll(firstResult);
