@@ -3,7 +3,10 @@ package org.sc.manager
 import org.sc.common.rest.TrailDto
 import org.sc.common.rest.TrailImportDto
 import org.sc.common.rest.TrailRawDto
-import org.sc.data.mapper.*
+import org.sc.data.mapper.FileDetailsMapper
+import org.sc.data.mapper.PlaceRefMapper
+import org.sc.data.mapper.TrailCoordinatesMapper
+import org.sc.data.mapper.TrailRawMapper
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
@@ -24,8 +27,9 @@ class TrailImporterManager @Autowired constructor(
     private val trailRawDao: TrailRawDAO
 ) {
 
-    fun saveRaw(trailRaw: TrailRawDto): List<TrailRawDto> =
+    fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
         trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
+                .first()
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
         val statsTrailMetadata = StatsTrailMetadata(

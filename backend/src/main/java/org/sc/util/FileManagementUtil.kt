@@ -26,7 +26,6 @@ class FileManagementUtil @Autowired constructor(val appProperties: AppProperties
      * /trail/pdf <- contains .pdf
      * /raw <- contains the raw trails uploaded by management
      */
-
     fun getMediaStoragePath() = appProperties.storage + File.separator + MEDIA_FOLDER_NAME + File.separator
     fun getTrailStoragePath() = appProperties.storage + File.separator + TRAIL_FOLDER_NAME + File.separator
     fun getRawTrailStoragePath() = appProperties.storage + File.separator + RAW_TRAIL_FOLDER_NAME + File.separator
