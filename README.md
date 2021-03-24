@@ -11,6 +11,11 @@ It supports accessibility-notifications, maintenance planning, generic/specific 
 ### Build
 After cloning the repo, simply run `mvn install -f root/pom.xml`.
 
+### Deployment Build
+To incude all dependencies in a uber-jar, run `mvn install -P package`.
+
+### 
+
 ### Test
 There are two main types of tests written to address the S&C QA: unit tests and integration tests.
 The latter require the dependencies (see Run->Prerequisites) to be up and running as they test operations connecting to them.
