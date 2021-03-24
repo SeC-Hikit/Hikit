@@ -4,17 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
-import org.sc.configuration.AppProperties;
-import org.sc.data.validator.TrailImportValidator;
 import org.sc.manager.TrailFileManager;
 import org.sc.manager.TrailImporterManager;
+import org.sc.processor.GpxFileHandlerHelper;
+import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -30,43 +28,35 @@ public class TrailImporterController {
     public final static String PREFIX = "/import";
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
-    public File uploadDir;
-
     private final TrailFileManager trailFileManager;
     private final TrailImporterManager trailImporterManager;
-    private final TrailImportValidator trailValidator;
-    private final AppProperties appProperties;
     private final ControllerPagination controllerPagination;
+    private final FileProbeUtil fileProbeUtil;
+    private final GpxFileHandlerHelper gpxFileHandlerHelper;
+
 
     @Autowired
     public TrailImporterController(final TrailFileManager trailFileManager,
                                    final TrailImporterManager trailImporterManager,
-                                   final TrailImportValidator trailValidator,
-                                   final AppProperties appProperties,
-                                   final ControllerPagination controllerPagination) {
+                                   final ControllerPagination controllerPagination,
+                                   final FileProbeUtil fileProbeUtil,
+                                   final GpxFileHandlerHelper gpxFileHandlerHelper) {
         this.trailFileManager = trailFileManager;
         this.trailImporterManager = trailImporterManager;
-        this.trailValidator = trailValidator;
-        this.appProperties = appProperties;
         this.controllerPagination = controllerPagination;
-    }
-
-
-    @PostConstruct
-    public void init() {
-        uploadDir = new File(appProperties.getTempStorage());
+        this.fileProbeUtil = fileProbeUtil;
+        this.gpxFileHandlerHelper = gpxFileHandlerHelper;
     }
 
     @Operation(summary = "Read and import one GPX trail file")
-    @PostMapping(path = "/import",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailRawResponse readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
         return processUploadedFiles(Collections.singletonList(gpxFile));
     }
 
     @Operation(summary = "Read and import multiple GPX trail files")
-    @PostMapping(path = "/import-bulk",
+    @PostMapping(path = "/bulk",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailRawResponse readBulkGpxFile(@RequestParam("files") MultipartFile[] files) throws IOException {
@@ -84,17 +74,32 @@ public class TrailImporterController {
         }
 
         final Map<String, Path> originalFileNamesToExistingPaths = originalFileNamesToTempPaths
-                .entrySet().stream().filter(path ->
-                        path.getValue().isPresent()).collect(toMap(Map.Entry::getKey,
-                        path -> originalFileNamesToTempPaths.get(path).orElseThrow(IllegalStateException::new)));
+                .entrySet().stream()
+                .filter(path -> path.getValue().isPresent())
+                .collect(toMap(Map.Entry::getKey,
+                        path -> originalFileNamesToTempPaths
+                                .get(path.getKey())
+                                .orElseThrow(IllegalStateException::new)));
 
-        final List<TrailRawDto> trailRawDtos = originalFileNamesToExistingPaths
+        final Map<String, Path> gpxValidFiles = originalFileNamesToExistingPaths
+                .entrySet().stream()
+                .filter(nameToPath -> fileProbeUtil.getFileMimeType(nameToPath.getValue().toFile(),
+                        nameToPath.getKey()).equals("text/xml"))
+                // TODO: verify that this works
+                .filter(nameToPath -> gpxFileHandlerHelper.canRead(nameToPath.getValue()))
+                .collect(toMap(Map.Entry::getKey,
+                        path -> originalFileNamesToExistingPaths
+                                .get(path.getKey())));
+
+
+        final List<TrailRawDto> trailRawDtos = gpxValidFiles
                 .keySet()
                 .parallelStream()
                 .map(originalFilename -> {
                     final String uniqueFileName = trailFileManager.makeUniqueFileName(originalFilename);
                     final Path rawGpxPath = trailFileManager.saveRawGpx(uniqueFileName, originalFileNamesToExistingPaths.get(originalFilename));
-                    return trailFileManager.getTrailRawModel(uniqueFileName, originalFilename, rawGpxPath);
+                    return trailFileManager
+                            .getTrailRawModel(uniqueFileName, originalFilename, rawGpxPath);
                 }).collect(toList());
 
         final List<TrailRawDto> savedTrails = trailRawDtos.stream().map(

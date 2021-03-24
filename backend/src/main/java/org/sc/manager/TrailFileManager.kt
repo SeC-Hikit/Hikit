@@ -10,6 +10,7 @@ import org.sc.configuration.AppProperties.VERSION
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.model.Trail
 import org.sc.data.model.TrailCoordinates
+import org.sc.data.validator.FileNameValidator
 import org.sc.processor.GpxFileHandlerHelper
 import org.sc.processor.TrailsCalculator
 import org.sc.service.AltitudeServiceAdapter
@@ -33,6 +34,7 @@ class TrailFileManager @Autowired constructor(
     private val altitudeService: AltitudeServiceAdapter,
     private val trailCoordinatesMapper: TrailCoordinatesMapper,
     private val fileManagementUtil: FileManagementUtil,
+    private val fileNameValidator: FileNameValidator,
     private val appProps: AppProperties
 ) {
 
@@ -109,13 +111,17 @@ class TrailFileManager @Autowired constructor(
     }
 
     fun getGPXFilesTempPathList(uploadedFiles: List<MultipartFile>): Map<String, Optional<Path>> {
-        // We shall not accept files missing the original file names as we may have issues with
+        // We shall not accept files missing the original file names as we may have issues
         val findUploadedFilesWithMissingNames = findUploadedFilesWithMissingNames(uploadedFiles)
         if (findUploadedFilesWithMissingNames.isNotEmpty()) return emptyMap()
 
+
+        val skippedWrongNameFormats = uploadedFiles
+                .filter { fileNameValidator.validate(it.originalFilename).isEmpty() }
+
         val result: MutableMap<String, Optional<Path>> = HashMap()
 
-        uploadedFiles.forEach(Consumer { gpxFile: MultipartFile ->
+        skippedWrongNameFormats.forEach(Consumer { gpxFile: MultipartFile ->
             try {
                 val tempFile = Files
                         .createTempFile(uploadDir.toPath(), "", "")
