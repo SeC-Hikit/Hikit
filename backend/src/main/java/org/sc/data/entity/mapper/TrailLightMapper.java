@@ -15,12 +15,14 @@ public class TrailLightMapper extends TrailMapper {
 
     public static final IntPredicate IS_EVEN = i -> i % 2 == 0;
 
-    public TrailLightMapper(final PositionMapper positionMapper,
+    public TrailLightMapper(final PlaceRefMapper placeMapper,
                             final TrailCoordinatesMapper trailCoordinatesMapper,
                             final GeoLineMapper geoLineMapper,
                             final StatsTrailMapper statsTrailMapper,
-                            final LinkedMediaMapper linkedMediaMapper) {
-        super(positionMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper);
+                            final LinkedMediaMapper linkedMediaMapper,
+                            final CycloMapper cycloMapper,
+                            final FileDetailsMapper fileDetailsMapper) {
+        super(placeMapper, trailCoordinatesMapper, geoLineMapper, statsTrailMapper, linkedMediaMapper, cycloMapper, fileDetailsMapper);
     }
 
     @Override
@@ -32,8 +34,6 @@ public class TrailLightMapper extends TrailMapper {
                 .code(doc.getString(Trail.CODE))
                 .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
                 .variant(doc.getBoolean(Trail.VARIANT))
-                .startPos(getPos(doc, Trail.START_POS))
-                .finalPos(getPos(doc, Trail.FINAL_POS))
                 .locations(getLocations(doc))
                 .classification(getClassification(doc))
                 .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))

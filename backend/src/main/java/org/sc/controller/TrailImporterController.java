@@ -1,13 +1,15 @@
 package org.sc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
+import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.common.rest.assembler.TrailDTOAssembler;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.AppProperties;
-import org.sc.data.model.Trail;
 import org.sc.data.validator.TrailImportValidator;
 import org.sc.manager.GpxBulkManager;
+import org.sc.manager.TrailFileManager;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.GpxManager;
 import org.sc.manager.data.CreateGpxTrailsData;
@@ -27,7 +29,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
+import static java.util.Collections.*;
 
 @RestController
 @RequestMapping(TrailImporterController.PREFIX)
@@ -37,45 +39,59 @@ public class TrailImporterController {
 
     public File uploadDir;
 
-    private final GpxManager gpxManager;
+    private final TrailFileManager trailFileManager;
     private final TrailImporterManager trailImporterManager;
     private final TrailImportValidator trailValidator;
     private final AppProperties appProperties;
     private final GpxBulkManager gpxBulkManager;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
-    public TrailImporterController(final GpxManager gpxManager,
+    public TrailImporterController(final TrailFileManager trailFileManager
                                    final GpxBulkManager gpxBulkManager,
                                    final TrailImporterManager trailImporterManager,
                                    final TrailImportValidator trailValidator,
-                                   final AppProperties appProperties) {
-        this.gpxManager = gpxManager;
+                                   final AppProperties appProperties,
+                                   final ControllerPagination controllerPagination) {
+        this.trailFileManager = trailFileManager;
         this.trailImporterManager = trailImporterManager;
         this.trailValidator = trailValidator;
         this.appProperties = appProperties;
         this.gpxBulkManager = gpxBulkManager;
+        this.controllerPagination = controllerPagination;
     }
 
-    @GetMapping("/count")
-    public CountResponse getCount() {
-        final long count = trailImporterManager.countImport();
-        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
-    }
 
     @PostConstruct
     public void init() {
         uploadDir = new File(appProperties.getTempStorage());
     }
 
+    @Operation(summary = "Read GPX trail file")
     @PostMapping(path = "/read",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailPreparationModelDto readGpxFile(@RequestParam("file") MultipartFile gpxFile) throws IOException {
+    public TrailRawResponse readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
+        if (gpxFile == null || gpxFile.getOriginalFilename() == null) {
+            return constructResponse(singleton("File is empty"), emptyList(),
+                    trailImporterManager.countTrailRaw(),
+                    Constants.ZERO, Constants.ONE);
+        }
+
+        // TODO: add validation
+
         final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", "");
         try (final InputStream input = gpxFile.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        return gpxManager.getTrailPreparationFromGpx(tempFile);
+
+        final String originalFilename = gpxFile.getOriginalFilename();
+        final String uniqueFileName = trailFileManager.makeUniqueFileName(originalFilename);
+        final Path rawGpxPath = trailFileManager.saveRawGpx(uniqueFileName, tempFile);
+        final TrailRawDto trailPreparationFromGpx = trailFileManager.getTrailRawModel(uniqueFileName, originalFilename, rawGpxPath);
+        final List<TrailRawDto> importedRawTrail = trailImporterManager.saveRaw(trailPreparationFromGpx);
+        return constructResponse(emptySet(), importedRawTrail, trailImporterManager.countTrailRaw(),
+                Constants.ZERO, Constants.ONE);
     }
 
     @PostMapping(path = "/read-bulk",
@@ -121,7 +137,7 @@ public class TrailImporterController {
                     result.put(gpxFile.getOriginalFilename(), Optional.of(tempFile));
                 }
 
-            } catch(IOException e) {
+            } catch (IOException e) {
                 result.put(gpxFile.getName(), Optional.empty());
             }
         });
@@ -129,18 +145,17 @@ public class TrailImporterController {
         return result;
     }
 
-
-
-    @PutMapping(path = "/save",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailResponse importTrail(@RequestBody TrailImportDto request) {
-        final Set<String> errors = trailValidator.validate(request);
-        if (errors.isEmpty()) {
-            List<TrailDto> savedTrail = trailImporterManager.save(request);
-            return new TrailResponse(Status.OK, errors, savedTrail);
+    private TrailRawResponse constructResponse(Set<String> errors,
+                                               List<TrailRawDto> dtos,
+                                               long totalCount,
+                                               int skip,
+                                               int limit) {
+        if (!errors.isEmpty()) {
+            return new TrailRawResponse(Status.ERROR, errors, dtos, 1L,
+                    Constants.ONE, limit, totalCount);
         }
-        return new TrailResponse(Status.ERROR, errors, Collections.emptyList());
+        return new TrailRawResponse(Status.OK, errors, dtos,
+                controllerPagination.getCurrentPage(skip, limit),
+                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
     }
-
 }

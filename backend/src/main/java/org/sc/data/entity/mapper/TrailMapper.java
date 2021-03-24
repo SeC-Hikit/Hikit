@@ -13,23 +13,30 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class TrailMapper implements Mapper<Trail> {
 
-    protected final PositionMapper positionMapper;
+    protected final PlaceRefMapper placeMapper;
     protected final TrailCoordinatesMapper trailCoordinatesMapper;
     protected final GeoLineMapper geoLineMapper;
     protected final StatsTrailMapper statsTrailMapper;
     private final LinkedMediaMapper linkedMediaMapper;
+    private final CycloMapper cycloMapper;
+    private final FileDetailsMapper fileDetailsMapper;
+
 
     @Autowired
-    public TrailMapper(final PositionMapper positionMapper,
+    public TrailMapper(final PlaceRefMapper placeMapper,
                        final TrailCoordinatesMapper trailCoordinatesMapper,
                        final GeoLineMapper geoLineMapper,
                        final StatsTrailMapper statsTrailMapper,
-                       final LinkedMediaMapper linkedMediaMapper) {
-        this.positionMapper = positionMapper;
+                       final LinkedMediaMapper linkedMediaMapper,
+                       final CycloMapper cycloMapper,
+                       final FileDetailsMapper fileDetailsMapper) {
+        this.placeMapper = placeMapper;
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.geoLineMapper = geoLineMapper;
         this.statsTrailMapper = statsTrailMapper;
         this.linkedMediaMapper = linkedMediaMapper;
+        this.cycloMapper = cycloMapper;
+        this.fileDetailsMapper = fileDetailsMapper;
     }
 
     @Override
@@ -41,8 +48,6 @@ public class TrailMapper implements Mapper<Trail> {
                 .code(doc.getString(Trail.CODE))
                 .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
                 .variant(doc.getBoolean(Trail.VARIANT))
-                .startPos(getPos(doc, Trail.START_POS))
-                .finalPos(getPos(doc, Trail.FINAL_POS))
                 .locations(getLocations(doc))
                 .classification(getClassification(doc))
                 .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
@@ -54,6 +59,9 @@ public class TrailMapper implements Mapper<Trail> {
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
                 .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
+                .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)))
+                .status(getStatus(doc))
                 .build();
     }
 
@@ -64,11 +72,9 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.DESCRIPTION, object.getDescription())
                 .append(Trail.CODE, object.getCode())
                 .append(Trail.OFFICIAL_ETA, object.getOfficialEta())
-                .append(Trail.START_POS, positionMapper.mapToDocument(object.getStartPos()))
-                .append(Trail.FINAL_POS, positionMapper.mapToDocument(object.getFinalPos()))
                 .append(Trail.LOCATIONS, object.getLocations().stream()
-                        .map(positionMapper::mapToDocument).collect(toList()))
-                .append(Trail.CLASSIFICATION, object.getClassification() != null ? object.getClassification().toString() : null)
+                        .map(placeMapper::mapToDocument).collect(toList()))
+                .append(Trail.CLASSIFICATION, object.getClassification().toString())
                 .append(Trail.COUNTRY, object.getCountry())
                 .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
                 .append(Trail.LAST_UPDATE_DATE, new Date())
@@ -80,7 +86,10 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.MEDIA, object.getMediaList().stream()
                         .map(linkedMediaMapper::mapToDocument)
                         .collect(toList()))
-                .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()));
+                .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()))
+                .append(Trail.CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
+                .append(Trail.FILE_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
+                .append(Trail.STATUS, object.getStatus());
     }
 
     protected GeoLineString getGeoLine(final Document doc) {
@@ -91,7 +100,9 @@ public class TrailMapper implements Mapper<Trail> {
         return new StatsTrailMetadata(doc.getDouble(StatsTrailMetadata.TOTAL_RISE),
                 doc.getDouble(StatsTrailMetadata.TOTAL_FALL),
                 doc.getDouble(StatsTrailMetadata.ETA),
-                doc.getDouble(StatsTrailMetadata.LENGTH));
+                doc.getDouble(StatsTrailMetadata.LENGTH),
+                doc.getDouble(StatsTrailMetadata.HIGHEST_PLACE),
+                doc.getDouble(StatsTrailMetadata.LOWEST_PLACE));
     }
 
     protected List<LinkedMedia> getLinkedMediaMapper(Document doc) {
@@ -104,15 +115,9 @@ public class TrailMapper implements Mapper<Trail> {
         return list.stream().map(trailCoordinatesMapper::mapToObject).collect(toList());
     }
 
-    protected List<Position> getLocations(final Document doc) {
+    protected List<PlaceRef> getLocations(final Document doc) {
         List<Document> list = doc.getList(Trail.LOCATIONS, Document.class);
-        return list.stream().map(positionMapper::mapToObject).collect(toList());
-    }
-
-    protected Position getPos(final Document doc,
-                            final String fieldName) {
-        final Document pos = doc.get(fieldName, Document.class);
-        return positionMapper.mapToObject(pos);
+        return list.stream().map(placeMapper::mapToObject).collect(toList());
     }
 
     protected Date getLastUpdateDate(Document doc) {
@@ -125,7 +130,12 @@ public class TrailMapper implements Mapper<Trail> {
 
     protected TrailClassification getClassification(Document doc) {
         final String classification = doc.getString(Trail.CLASSIFICATION);
-        return classification != null ? TrailClassification.valueOf(classification) : null;
+        return TrailClassification.valueOf(classification);
+    }
+
+    protected TrailStatus getStatus(Document doc) {
+        final String classification = doc.getString(Trail.STATUS);
+        return TrailStatus.valueOf(classification);
     }
 
 }

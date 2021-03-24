@@ -9,14 +9,14 @@ import org.apache.logging.log4j.Logger;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import static java.lang.String.format;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
-@Component
+@Configuration
 public class MongoDataSource implements DataSource {
 
     private static final Logger LOGGER = getLogger(MongoDataSource.class);
@@ -26,15 +26,18 @@ public class MongoDataSource implements DataSource {
 
     @Autowired
     public MongoDataSource(final AppProperties appProperties) {
-        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        MongoClientSettings.builder().codecRegistry(pojoCodecRegistry)
-                .applyConnectionString(
-                new ConnectionString(appProperties.getMongoDbUri()));
-        this.mongoClient = MongoClients.create();
         this.databaseName = appProperties.getDbName();
         LOGGER.info(format("Setting connection to DB '%s'. Connection String: '%s'",
                 databaseName, appProperties.getMongoDbUri()));
+        final CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        final MongoClientSettings mongoSettings = MongoClientSettings.
+                builder()
+                .codecRegistry(pojoCodecRegistry)
+                .applyConnectionString(
+                        new ConnectionString(appProperties.getMongoDbUri()))
+                .build();
+        this.mongoClient = MongoClients.create(mongoSettings);
     }
 
     public MongoClient getClient() {

@@ -59,4 +59,8 @@ public class MediaDAO {
         collection.deleteOne(new Document(Media.OBJECT_ID, id));
         return byId;
     }
+
+    public long count(){
+        return collection.countDocuments();
+    }
 }

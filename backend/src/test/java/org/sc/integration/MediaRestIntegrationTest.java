@@ -1,17 +1,16 @@
 package org.sc.integration;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.MediaResponse;
+import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.controller.MediaController;
-import org.sc.controller.POIController;
-import org.sc.data.model.Media;
-import org.sc.data.model.Poi;
-import org.sc.data.model.Trail;
+import org.sc.configuration.DataSource;
+import org.sc.controller.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -25,26 +24,51 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.sc.integration.ImportTrailIT.CORRECT_PLACE_DTO;
 import static org.sc.integration.PoiRestIntegrationTest.*;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class MediaRestIntegrationTest extends TrailImportRestIntegrationTest {
+public class MediaRestIntegrationTest  {
 
     public static final String FILE_NAME = "sec_map.png";
 
+    @Autowired DataSource dataSource;
     @Autowired MediaController mediaController;
-
     @Autowired POIController poiController;
+    @Autowired PlaceController placeController;
+    @Autowired TrailImporterController importController;
+    @Autowired TrailController trailController;
 
+    public TrailImportDto expectedTrailDto;
+    private TrailResponse trailResponse;
+    private String trailId;
 
     @Before
     public void setUp(){
-        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Media.COLLECTION_NAME);
-        IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
-        importController.importTrail(EXPECTED_TRAIL_DTO);
+        IntegrationUtils.clearCollections(dataSource);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
+        trailResponse = trailController.importTrail(trailImportDto);
+        trailId = trailResponse.getContent().get(0).getId();
+    }
+
+
+    @Test
+    public void shallAddAndRemoveMediaFromPlace() throws IOException {
+        PlaceResponse placeResponse = placeController.create(CORRECT_PLACE_DTO);
+        String placeId = placeResponse.getContent().get(0).getId();
+        final String uploadId = createAndVerifyCreationById();
+
+        placeController.addMedia(placeId, new LinkedMediaDto(uploadId, "", Collections.emptyList()));
+        placeId = placeResponse.getContent().get(0).getId();
+
+        placeResponse = placeController.get(placeId);
+        assertThat(placeResponse.getContent().get(0).getMediaIds().contains(uploadId)).isTrue();
+        placeController.deleteMedia(placeId, new UnLinkeMediaRequestDto(uploadId));
+        placeResponse = placeController.get(placeId);
+        assertThat(placeResponse.getContent().get(0).getMediaIds().contains(uploadId)).isFalse();
     }
 
     @Test
@@ -83,7 +107,7 @@ public class MediaRestIntegrationTest extends TrailImportRestIntegrationTest {
         String aDescription = "A landscape";
         KeyValueDto savedKeyValue = new KeyValueDto("a", "b");
 
-        TrailResponse trailResponse = trailController.addMediaToTrail(EXPECTED_TRAIL_CODE, new LinkedMediaDto(mediaID, aDescription, Collections.singletonList(savedKeyValue)));
+        TrailResponse trailResponse = trailController.addMediaToTrail(trailId, new LinkedMediaDto(mediaID, aDescription, Collections.singletonList(savedKeyValue)));
 
         List<LinkedMediaDto> mediaListOfTrail = trailResponse.getContent().get(0).getMediaList();
         assertThat(mediaListOfTrail.size()).isEqualTo(1);
@@ -98,8 +122,8 @@ public class MediaRestIntegrationTest extends TrailImportRestIntegrationTest {
         String mediaID = createAndVerifyCreationById();
         String aDescription = "A landscape";
         KeyValueDto savedKeyValue = new KeyValueDto("a", "b");
-        TrailResponse trailResponse = trailController.addMediaToTrail(EXPECTED_TRAIL_CODE, new LinkedMediaDto(mediaID, aDescription, Collections.singletonList(savedKeyValue)));
-        TrailResponse trailWithRemovedMedia = trailController.removeMediaFromTrail(EXPECTED_TRAIL_CODE, new UnLinkeMediaRequestDto(mediaID));
+        TrailResponse trailResponse = trailController.addMediaToTrail(trailId, new LinkedMediaDto(mediaID, aDescription, Collections.singletonList(savedKeyValue)));
+        TrailResponse trailWithRemovedMedia = trailController.removeMediaFromTrail(trailId, new UnLinkeMediaRequestDto(mediaID));
         assertThat(trailResponse.getContent().get(0).getMediaList().size()).isEqualTo(1);
         assertThat(trailWithRemovedMedia.getContent().get(0).getMediaList().size()).isEqualTo(0);
     }

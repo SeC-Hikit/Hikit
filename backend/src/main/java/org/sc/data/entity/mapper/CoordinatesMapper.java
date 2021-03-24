@@ -16,9 +16,11 @@ public class CoordinatesMapper implements Mapper<Coordinates> {
 
     @Override
     public CoordinatesWithAltitude mapToObject(final Document document) {
-        final List<Double> list = document.getList(CoordinatesWithAltitude.COORDINATES, Double.class);
-        final Double altitude = document.getDouble(TrailCoordinates.ALTITUDE);
-        return new CoordinatesWithAltitude(list.get(TrailCoordinates.LAT_INDEX), list.get(TrailCoordinates.LONG_INDEX),
+        final List<Double> list = document.getList(Coordinates.COORDINATES, Double.class);
+        final Double altitude = document.getDouble(Coordinates.ALTITUDE);
+        return new CoordinatesWithAltitude(
+                list.get(CoordinatesWithAltitude.LAT_INDEX),
+                list.get(CoordinatesWithAltitude.LONG_INDEX),
                 altitude);
     }
 

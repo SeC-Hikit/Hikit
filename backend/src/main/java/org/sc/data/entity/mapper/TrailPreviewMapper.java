@@ -1,41 +1,54 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.data.model.TrailClassification;
-import org.sc.data.model.Position;
-import org.sc.data.model.Trail;
-import org.sc.data.model.TrailPreview;
+import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TrailPreviewMapper implements Mapper<TrailPreview> {
 
-    private final PositionMapper positionMapper;
+    private final PlaceRefMapper placeMapper;
+    private final FileDetailsMapper fileDetailsMapper;
+    private final CycloMapper cycloMapper;
 
     @Autowired
-    public TrailPreviewMapper(final PositionMapper positionMapper) {
-        this.positionMapper = positionMapper;
+    public TrailPreviewMapper(final PlaceRefMapper placeMapper,
+                              final FileDetailsMapper fileDetailsMapper,
+                              final CycloMapper cycloMapper) {
+        this.placeMapper = placeMapper;
+        this.fileDetailsMapper = fileDetailsMapper;
+        this.cycloMapper = cycloMapper;
     }
 
     @Override
     public TrailPreview mapToObject(Document doc) {
-        return new TrailPreview(doc.getString(Trail.CODE),
+        return new TrailPreview(
+                doc.getString(Trail.ID),
+                doc.getString(Trail.CODE),
                 getClassification(doc),
                 getPos(doc, Trail.START_POS),
                 getPos(doc, Trail.FINAL_POS),
-                doc.getDate(Trail.LAST_UPDATE_DATE));
+                fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)),
+                cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)).getCycloClassification()
+                        != CycloClassification.UNCLASSIFIED,
+                getStatus(doc));
     }
 
     @Override
-    public Document mapToDocument(TrailPreview object) {
+    public Document mapToDocument(final TrailPreview object) {
         throw new IllegalStateException();
     }
 
-    private Position getPos(final Document doc,
+    private PlaceRef getPos(final Document doc,
                             final String fieldName) {
         final Document pos = doc.get(fieldName, Document.class);
-        return positionMapper.mapToObject(pos);
+        return placeMapper.mapToObject(pos);
+    }
+
+    private TrailStatus getStatus(Document doc) {
+        final String classification = doc.getString(Trail.STATUS);
+        return TrailStatus.valueOf(classification);
     }
 
     private TrailClassification getClassification(Document doc) {

@@ -1,9 +1,6 @@
 package org.sc.integration;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.KeyValueDto;
@@ -26,6 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -54,7 +52,7 @@ public class PoiRestIntegrationTest {
 
     @Before
     public void setUp(){
-        IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
+        IntegrationUtils.clearCollections(dataSource);
         controller.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,

@@ -35,7 +35,7 @@ class PoiManager @Autowired constructor(
         return elements
     }
 
-    fun getPoiByTrailCode(code: String, page: Int, count: Int): List<PoiDto> {
+    fun getPoiByTrailId(code: String, page: Int, count: Int): List<PoiDto> {
         return poiDAO.getByCode(code, page, count).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
@@ -75,5 +75,5 @@ class PoiManager @Autowired constructor(
         return poiDAO.unlinkMediaId(id, unLinkeMediaRequestDto.id).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
-    fun countPoi(): Long = poiDAO.countPOI()
+    fun count(): Long = poiDAO.countPOI()
 }

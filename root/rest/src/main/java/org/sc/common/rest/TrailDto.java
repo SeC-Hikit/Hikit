@@ -1,7 +1,7 @@
 package org.sc.common.rest;
 
 import lombok.Data;
-import org.sc.data.model.TrailClassification;
+import org.sc.data.model.*;
 
 import java.util.Date;
 import java.util.List;
@@ -14,9 +14,9 @@ public class TrailDto {
     private String description;
     private boolean variant;
     private int officialEta;
-    private PositionDto startPos;
-    private PositionDto finalPos;
-    private List<PositionDto> locations;
+    private PlaceRefDto startLocation;
+    private PlaceRefDto endLocation;
+    private List<PlaceRefDto> locations;
     private TrailClassification classification;
     private String country;
     private StatsTrailMetadataDto statsTrailMetadata;
@@ -26,4 +26,7 @@ public class TrailDto {
     private Date createdOn;
     private String territorialDivision;
     private String maintainingSection;
+    private TrailStatus status;
+    private FileDetailsDto fileDetails;
+    private CycloDetailsDto cycloDetails;
 }

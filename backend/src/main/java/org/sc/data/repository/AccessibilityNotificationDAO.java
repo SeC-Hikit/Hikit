@@ -10,9 +10,7 @@ import org.sc.common.rest.AccessibilityNotificationCreationDto;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
-import org.sc.data.entity.mapper.AccessibilityNotificationUnresolvedMapper;
 import org.sc.data.model.AccessibilityNotification;
-import org.sc.data.model.AccessibilityUnresolved;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -31,57 +29,57 @@ public class AccessibilityNotificationDAO {
     private final MongoCollection<Document> collection;
 
     private final AccessibilityNotificationMapper mapper;
-    private final AccessibilityNotificationUnresolvedMapper unresolvedMapper;
 
     @Autowired
     public AccessibilityNotificationDAO(final DataSource dataSource,
-                                        final AccessibilityNotificationMapper mapper,
-                                        final AccessibilityNotificationUnresolvedMapper unresolvedMapper) {
+                                        final AccessibilityNotificationMapper mapper) {
         this.collection = dataSource.getDB().getCollection(AccessibilityNotification.COLLECTION_NAME);
         this.mapper = mapper;
-        this.unresolvedMapper = unresolvedMapper;
     }
 
-    public List<AccessibilityUnresolved> getUnresolved(final int from,
-                                                       final int to) {
-        return toUnresolvedNotificationList(collection.find(
-                new Document(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)))
-                .skip(from)
-                .limit(to));
-    }
-
-    public List<AccessibilityUnresolved> getUnresolvedByCode(final String code) {
-        return toUnresolvedNotificationList(collection.find(
-                new Document(AccessibilityNotification.TRAIL_CODE, code)
-                        .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false))));
-    }
-
-    public List<AccessibilityNotification> getResolvedByCode(final String code) {
+    public List<AccessibilityNotification> getUnresolved(final int skip,
+                                                         final int limit) {
         return toNotificationList(collection.find(
-                new Document(AccessibilityNotification.TRAIL_CODE, code)
-                        .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true))));
+                new Document(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)))
+                .skip(skip)
+                .limit(limit));
     }
 
-    public List<AccessibilityNotification> getSolved(final int from,
-                                                     final int to) {
+    public List<AccessibilityNotification> getUnresolvedByTrailId(final String id, final int skip, final int limit) {
+        return toNotificationList(collection.find(
+                new Document(AccessibilityNotification.TRAIL_ID, id)
+                        .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)))
+                .skip(skip).limit(limit));
+    }
+
+    public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit) {
+        return toNotificationList(collection.find(
+                new Document(AccessibilityNotification.TRAIL_ID, id)
+                        .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true)))
+                .skip(skip).limit(limit));
+    }
+
+    public List<AccessibilityNotification> getSolved(final int skip,
+                                                     final int limit) {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION,
-                new Document(EXISTS_PARAM, true))).skip(from).limit(to));
+                new Document(EXISTS_PARAM, true))).skip(skip).limit(limit));
     }
 
-    public List<AccessibilityUnresolved> insert(final AccessibilityNotificationCreationDto accessibilityNotification) {
+    public List<AccessibilityNotification> insert(final AccessibilityNotificationCreationDto accessibilityNotification) {
         final Document accessibilityNotificationDocument = mapper.mapCreationToDocument(accessibilityNotification);
         final Document addedResult = collection.findOneAndReplace(
                 new Document(), accessibilityNotificationDocument,
                 new FindOneAndReplaceOptions().upsert(true)
                         .returnDocument(ReturnDocument.AFTER));
         if (addedResult != null) {
-            return Collections.singletonList(unresolvedMapper.mapToObject(addedResult));
+            return Collections.singletonList(mapper.mapToObject(addedResult));
         }
         throw new IllegalStateException();
     }
 
     public List<AccessibilityNotification> resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
-        collection.updateOne(new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(accessibilityNotificationResolutionDto.getId())),
+        collection.updateOne(
+                new Document(AccessibilityNotification.ID, new ObjectId(accessibilityNotificationResolutionDto.getId())),
                 new Document("$set", new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolutionDto.getResolution())
                         .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolutionDto.getResolutionDate())));
         return getById(accessibilityNotificationResolutionDto.getId());
@@ -89,34 +87,40 @@ public class AccessibilityNotificationDAO {
 
     public List<AccessibilityNotification> delete(final String objectId) {
         final List<AccessibilityNotification> accessibilityNotification = getById(objectId);
-        collection.deleteOne(new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(objectId)));
-        return accessibilityNotification;
-    }
-
-    public AccessibilityNotification deleteByCode(final String code) {
-        final AccessibilityNotification accessibilityNotification = getByCode(code);
-        collection.deleteOne(new Document(AccessibilityNotification.TRAIL_CODE, code));
+        collection.deleteOne(new Document(AccessibilityNotification.ID, new ObjectId(objectId)));
         return accessibilityNotification;
     }
 
     private List<AccessibilityNotification> getById(final String objectId) {
         return new ArrayList<>(toNotificationList(collection.find(
-                new Document(AccessibilityNotification.OBJECT_ID, new ObjectId(objectId)))));
-    }
-
-    private AccessibilityNotification getByCode(final String code) {
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.TRAIL_CODE, code))).stream().findFirst().orElse(null);
+                new Document(AccessibilityNotification.ID, new ObjectId(objectId)))));
     }
 
     private List<AccessibilityNotification> toNotificationList(FindIterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(mapper::mapToObject).collect(toList());
     }
 
-    private List<AccessibilityUnresolved> toUnresolvedNotificationList(FindIterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(unresolvedMapper::mapToObject).collect(toList());
-    }
-
     public long countAccessibility() {
         return collection.countDocuments();
+    }
+
+    public long countSolved() {
+        return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION,
+                new Document(EXISTS_PARAM, true)));
+    }
+
+    public long countNotSolved() {
+        return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION,
+                new Document(EXISTS_PARAM, false)));
+    }
+
+    public long countSolvedForTrailId(final String trailId) {
+        return collection.countDocuments(new Document(AccessibilityNotification.TRAIL_ID, trailId)
+                .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true)));
+    }
+
+    public long countNotSolvedForTrailId(final String trailId) {
+        return collection.countDocuments(new Document(AccessibilityNotification.TRAIL_ID, trailId)
+                .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)));
     }
 }
