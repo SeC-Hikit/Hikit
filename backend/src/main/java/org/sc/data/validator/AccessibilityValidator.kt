@@ -15,7 +15,7 @@ class AccessibilityValidator : Validator<AccessibilityNotificationCreationDto> {
 
     override fun validate(request: AccessibilityNotificationCreationDto): Set<String> {
         val errors = mutableSetOf<String>()
-        if (isEmpty(request.code)) {
+        if (isEmpty(request.trailId)) {
             errors.add(String.format(noParamSpecifiedError, "Code"))
         }
         if(isEmpty(request.description)) {

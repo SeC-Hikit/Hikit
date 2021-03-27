@@ -21,7 +21,7 @@ public class MaintenanceMapper implements Mapper<Maintenance> {
     @Override
     public Document mapToDocument(Maintenance object) {
         return new Document(Maintenance.DATE, object.getDate())
-                .append(Maintenance.TRAIL_ID, object.getCode())
+                .append(Maintenance.TRAIL_ID, object.getTrailId())
                 .append(Maintenance.CONTACT, object.getContact())
                 .append(Maintenance.DESCRIPTION, object.getDescription())
                 .append(Maintenance.MEETING_PLACE, object.getMeetingPlace());

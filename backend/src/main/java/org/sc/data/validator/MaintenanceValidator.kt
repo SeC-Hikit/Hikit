@@ -18,7 +18,7 @@ class MaintenanceValidator : Validator<MaintenanceCreationDto> {
         if (isEmpty(request.contact)) {
             errors.add(String.format(emptyFieldError, "Contact"))
         }
-        if (isEmpty(request.code)) {
+        if (isEmpty(request.trailId)) {
             errors.add(String.format(emptyFieldError, "Code"))
         }
         if (isEmpty(request.meetingPlace)) {

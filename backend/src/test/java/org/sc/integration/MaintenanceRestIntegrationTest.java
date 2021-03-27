@@ -80,14 +80,14 @@ public class MaintenanceRestIntegrationTest {
     public void getPast_shouldFindOne() {
         MaintenanceResponse response = maintenanceController.getPastMaintenance(0, 2);
         assertThat(response.getContent().size()).isEqualTo(1);
-        assertThat(response.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+        assertThat(response.getContent().get(0).getTrailId()).isEqualTo(EXPECTED_TRAIL_CODE);
     }
 
     @Test
     public void getFuture_shouldFindOne() {
         MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2);
         assertThat(response.getContent().size()).isEqualTo(1);
-        assertThat(response.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE_FUTURE);
+        assertThat(response.getContent().get(0).getTrailId()).isEqualTo(EXPECTED_TRAIL_CODE_FUTURE);
     }
 
     @Test

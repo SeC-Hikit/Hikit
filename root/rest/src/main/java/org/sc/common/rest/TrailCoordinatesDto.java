@@ -4,6 +4,7 @@ import org.sc.data.model.Coordinates;
 
 import java.util.Objects;
 
+
 public class TrailCoordinatesDto implements Coordinates {
     private int distanceFromTrailStart;
     private double latitude;

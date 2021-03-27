@@ -23,7 +23,7 @@ public class AccessibilityNotification {
 
     private final String _id;
     private String description;
-    private String code;
+    private String trailId;
     private Date reportDate;
     private Date resolutionDate;
     private boolean minor;

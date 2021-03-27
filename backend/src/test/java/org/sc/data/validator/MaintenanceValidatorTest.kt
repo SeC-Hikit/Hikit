@@ -18,7 +18,7 @@ class MaintenanceValidatorTest {
         val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns "La via"
-        every { requestMock.code } returns "100BO"
+        every { requestMock.trailId } returns "100BO"
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() + 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
@@ -35,7 +35,7 @@ class MaintenanceValidatorTest {
         val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns ""
-        every { requestMock.code } returns "100BO"
+        every { requestMock.trailId } returns "100BO"
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() + 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
@@ -53,7 +53,7 @@ class MaintenanceValidatorTest {
         val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns ""
-        every { requestMock.code } returns ""
+        every { requestMock.trailId } returns ""
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() + 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
@@ -72,7 +72,7 @@ class MaintenanceValidatorTest {
         val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns "a place"
-        every { requestMock.code } returns "100bo"
+        every { requestMock.trailId } returns "100bo"
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() - 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
@@ -90,7 +90,7 @@ class MaintenanceValidatorTest {
         val requestMock = mockkClass(MaintenanceCreationDto::class)
 
         every { requestMock.meetingPlace } returns "a place"
-        every { requestMock.code } returns "100bo"
+        every { requestMock.trailId } returns "100bo"
         every { requestMock.description } returns ""
         every { requestMock.date } returns Date(System.currentTimeMillis() - 1000 * 60 * 24)
         every { requestMock.contact } returns ""

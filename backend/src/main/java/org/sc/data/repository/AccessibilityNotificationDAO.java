@@ -20,11 +20,10 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.sc.data.repository.MongoConstants.EXISTS_PARAM;
 
 @Repository
 public class AccessibilityNotificationDAO {
-
-    public static final String EXISTS_PARAM = "$exists";
 
     private final MongoCollection<Document> collection;
 

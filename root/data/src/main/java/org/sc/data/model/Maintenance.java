@@ -1,7 +1,14 @@
 package org.sc.data.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 public class Maintenance {
 
     public static final String COLLECTION_NAME = "core.Maintenance";
@@ -15,73 +22,8 @@ public class Maintenance {
 
     private String _id;
     private Date date;
-    private String code;
+    private String trailId;
     private String meetingPlace;
     private String description;
     private String contact;
-
-    public Maintenance() {
-    }
-
-    public Maintenance(String id,
-                       Date date,
-                       String code,
-                       String meetingPlace,
-                       String description,
-                       String contact) {
-        _id = id;
-        this.date = date;
-        this.code = code;
-        this.meetingPlace = meetingPlace;
-        this.description = description;
-        this.contact = contact;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getMeetingPlace() {
-        return meetingPlace;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public void setMeetingPlace(String meetingPlace) {
-        this.meetingPlace = meetingPlace;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
 }

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 public class MongoConstants {
+    public static final String EXISTS_PARAM = "$exists";
     public static final String DOLLAR = "$";
     public static final String DOT = ".";
     public static final String OR = "$or";

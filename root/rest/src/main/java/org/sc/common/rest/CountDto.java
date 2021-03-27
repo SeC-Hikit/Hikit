@@ -1,18 +1,10 @@
 package org.sc.common.rest;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class CountDto {
-
     private long count;
-
-    public CountDto(long count) {
-        this.count = count;
-    }
-
-    public long getCount() {
-        return count;
-    }
-
-    public void setCount(long count) {
-        this.count = count;
-    }
 }

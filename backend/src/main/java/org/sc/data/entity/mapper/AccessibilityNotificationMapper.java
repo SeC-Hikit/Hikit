@@ -7,6 +7,8 @@ import org.sc.data.model.CoordinatesWithAltitude;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class AccessibilityNotificationMapper implements Mapper<AccessibilityNotification> {
 
@@ -19,20 +21,23 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
 
     @Override
     public AccessibilityNotification mapToObject(Document document) {
+        final String nullableResolution = document.getString(AccessibilityNotification.RESOLUTION);
+        final Date nullableResolutionDate = document.getDate(AccessibilityNotification.RESOLUTION_DATE);
+        final Date reportedDate = document.getDate(AccessibilityNotification.REPORT_DATE);
         return new AccessibilityNotification(
                 document.getObjectId(AccessibilityNotification.ID).toHexString(),
                 document.getString(AccessibilityNotification.DESCRIPTION),
                 document.getString(AccessibilityNotification.TRAIL_ID),
-                document.getDate(AccessibilityNotification.REPORT_DATE),
-                document.getDate(AccessibilityNotification.RESOLUTION_DATE),
+                reportedDate,
+                nullableResolutionDate == null ? reportedDate : nullableResolutionDate,
                 document.getBoolean(AccessibilityNotification.IS_MINOR),
                 mapToCoordinates(document),
-                document.getString(AccessibilityNotification.RESOLUTION));
+                nullableResolution == null ? "" : nullableResolution);
     }
 
     @Override
     public Document mapToDocument(AccessibilityNotification accessibilityNotification) {
-        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getCode())
+        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getTrailId())
                 .append(AccessibilityNotification.ID, accessibilityNotification.get_id())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
@@ -44,7 +49,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
     }
 
     public Document mapCreationToDocument(AccessibilityNotificationCreationDto accessibilityNotification) {
-        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getCode())
+        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getTrailId())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
                 .append(AccessibilityNotification.IS_MINOR, accessibilityNotification.isMinor())

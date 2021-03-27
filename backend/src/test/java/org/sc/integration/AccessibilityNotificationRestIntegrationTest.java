@@ -67,7 +67,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         AccessibilityResponse response = accessibilityNotificationController.getNotSolvedByTrailId(id, 0, 1);
         assertThat(response.getContent().size()).isEqualTo(1);
         AccessibilityNotificationDto firstOccurence = response.getContent().get(0);
-        assertThat(firstOccurence.getCode()).isEqualTo(id);
+        assertThat(firstOccurence.getTrailId()).isEqualTo(id);
         assertThat(firstOccurence.getCoordinates()).isEqualTo(EXPECTED_COORDINATES);
         assertThat(firstOccurence.getDescription()).isEqualTo(EXPECTED_DESCRIPTION);
         assertThat(firstOccurence.getReportDate()).isEqualToIgnoringMinutes(new Date());
@@ -86,7 +86,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         assertThat(resolvedResponse.getContent().size()).isEqualTo(1);
         AccessibilityNotificationDto firstSolvedOccurence = resolvedResponse.getContent().get(0);
 
-        assertThat(firstSolvedOccurence.getCode()).isEqualTo(id);
+        assertThat(firstSolvedOccurence.getTrailId()).isEqualTo(id);
         assertThat(firstSolvedOccurence.getCoordinates()).isEqualTo(EXPECTED_COORDINATES);
         assertThat(firstSolvedOccurence.getDescription()).isEqualTo(EXPECTED_DESCRIPTION);
         assertThat(firstSolvedOccurence.getReportDate()).isEqualToIgnoringMinutes(expectedResolutionDate);
@@ -99,7 +99,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         assertThat(accessibilityResponse.getContent().size()).isEqualTo(1);
         AccessibilityNotificationDto resolved = resolvedResponse.getContent().get(0);
 
-        assertThat(resolved.getCode()).isEqualTo(id);
+        assertThat(resolved.getTrailId()).isEqualTo(id);
         assertThat(resolved.getCoordinates()).isEqualTo(EXPECTED_COORDINATES);
         assertThat(resolved.getDescription()).isEqualTo(EXPECTED_DESCRIPTION);
         assertThat(resolved.getReportDate()).isEqualToIgnoringMinutes(expectedResolutionDate);
