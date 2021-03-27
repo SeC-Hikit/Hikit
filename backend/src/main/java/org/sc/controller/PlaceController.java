@@ -1,6 +1,5 @@
 package org.sc.controller;
 
-import org.sc.common.rest.LinkedMediaDto;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
@@ -9,10 +8,11 @@ import org.sc.manager.PlaceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import static java.util.Collections.*;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
@@ -73,6 +73,7 @@ public class PlaceController {
                 placeManager.count(), skip, limit);
     }
 
+    @Operation(summary = "Geo-locate places based on their location and a given radius range")
     @PostMapping("/geolocate")
     public PlaceResponse geolocatePlace(@RequestBody PointGeolocationDto pointGeolocationDto,
                                         @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
