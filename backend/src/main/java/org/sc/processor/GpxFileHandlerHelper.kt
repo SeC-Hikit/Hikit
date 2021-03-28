@@ -20,8 +20,8 @@ class GpxFileHandlerHelper {
 
     fun canRead(path: Path?): Boolean {
         return try {
-            val readFromFile = readFromFile(path)
-            readFromFile.version.isNotBlank()
+            readFromFile(path)
+            true
         } catch (e : Exception) {
             false
         }

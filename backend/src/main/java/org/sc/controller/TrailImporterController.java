@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
@@ -51,7 +52,7 @@ public class TrailImporterController {
     @Operation(summary = "Read and import one GPX trail file")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailRawResponse readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) throws IOException {
+    public TrailRawResponse readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) {
         return processUploadedFiles(Collections.singletonList(gpxFile));
     }
 
@@ -59,7 +60,7 @@ public class TrailImporterController {
     @PostMapping(path = "/bulk",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailRawResponse readBulkGpxFile(@RequestParam("files") MultipartFile[] files) throws IOException {
+    public TrailRawResponse readBulkGpxFile(@RequestParam("files") MultipartFile[] files) {
         return processUploadedFiles(Arrays.asList(files));
     }
 
@@ -84,7 +85,7 @@ public class TrailImporterController {
         final Map<String, Path> gpxValidFiles = originalFileNamesToExistingPaths
                 .entrySet().stream()
                 .filter(nameToPath -> fileProbeUtil.getFileMimeType(nameToPath.getValue().toFile(),
-                        nameToPath.getKey()).equals("text/xml"))
+                        nameToPath.getKey()).equals("application/xml"))
                 // TODO: verify that this works
                 .filter(nameToPath -> gpxFileHandlerHelper.canRead(nameToPath.getValue()))
                 .collect(toMap(Map.Entry::getKey,
@@ -107,8 +108,21 @@ public class TrailImporterController {
         ).collect(toList());
 
         final int size = savedTrails.size();
+
+
+        if(size != originalFileNamesToExistingPaths.size()) {
+            final Set<String> notProcessedFiles = findNotProcessedFiles(originalFileNamesToExistingPaths.keySet(),
+                    savedTrails.stream().map(a -> a.getFileDetails().getOriginalFilename()).collect(Collectors.toSet()));
+            return constructResponse(notProcessedFiles, savedTrails, size,
+                    Constants.ZERO, size);
+        }
+
         return constructResponse(emptySet(), savedTrails, size,
                 Constants.ZERO, size);
+    }
+
+    private Set<String> findNotProcessedFiles(Set<String> initialFilenames, Set<String> savedFilenames) {
+        return initialFilenames.stream().filter(a-> !savedFilenames.contains(a)).collect(Collectors.toSet());
     }
 
     private TrailRawResponse constructResponse(Set<String> errors,
