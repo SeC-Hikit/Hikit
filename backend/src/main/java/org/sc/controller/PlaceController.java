@@ -73,7 +73,7 @@ public class PlaceController {
                 placeManager.count(), skip, limit);
     }
 
-    @Operation(summary = "Geo-locate places based on their location and a given radius range")
+    @Operation(summary = "Geo-locate places based on their location and a given radius range, specified in meters")
     @PostMapping("/geolocate")
     public PlaceResponse geolocatePlace(@RequestBody PointGeolocationDto pointGeolocationDto,
                                         @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,

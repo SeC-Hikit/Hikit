@@ -5,9 +5,9 @@ import io.mockk.mockkClass
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.sc.common.rest.CoordinatesDto
-import org.sc.processor.TrailsCalculator
+import org.sc.processor.TrailsStatsCalculator
 
-class TrailsCalculatorTest {
+class TrailsStatsCalculatorTest {
 
     @Test
     fun `calculate time distance between four points on same elevation`(){
@@ -32,7 +32,7 @@ class TrailsCalculatorTest {
         every { mockPoint4.latitude } returns 44.49298
         every { mockPoint4.longitude } returns 11.30439
 
-        TrailsCalculator()
+        TrailsStatsCalculator()
                 .calculateEta(listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4))
     }
 
@@ -45,7 +45,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns 0.0
 
         assertEquals(0.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotRise(listOf(mockPoint1, mockPoint2)), 0.0
         )
     }
@@ -59,7 +59,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns -1.0
 
         assertEquals(0.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotRise(listOf(mockPoint1, mockPoint2)), 0.0
         )
     }
@@ -73,7 +73,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns 10.0
 
         assertEquals(10.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotRise(listOf(mockPoint1, mockPoint2)), 0.0
         )
     }
@@ -89,7 +89,7 @@ class TrailsCalculatorTest {
         every { mockPoint3.altitude } returns 22.0
 
         assertEquals(22.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotRise(
                                 listOf(mockPoint1, mockPoint2, mockPoint3)), 0.0
         )
@@ -109,7 +109,7 @@ class TrailsCalculatorTest {
         every { mockPoint4.altitude } returns 10.0
 
         assertEquals(15.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotRise(
                                 listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4)), 0.0
         )
@@ -133,7 +133,7 @@ class TrailsCalculatorTest {
         every { mockPoint6.altitude } returns -120.0
 
         assertEquals(120.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotRise(
                                 listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4, mockPoint5, mockPoint6)), 0.0
         )
@@ -149,7 +149,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns 0.0
 
         assertEquals(0.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotFall(listOf(mockPoint1, mockPoint2)), 0.0
         )
     }
@@ -163,7 +163,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns 1.0
 
         assertEquals(0.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotFall(listOf(mockPoint1, mockPoint2)), 0.0
         )
     }
@@ -177,7 +177,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.altitude } returns -10.0
 
         assertEquals(10.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotFall(listOf(mockPoint1, mockPoint2)), 0.0
         )
     }
@@ -193,7 +193,7 @@ class TrailsCalculatorTest {
         every { mockPoint3.altitude } returns -22.0
 
         assertEquals(22.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotFall(
                                 listOf(mockPoint1, mockPoint2, mockPoint3)), 0.0
         )
@@ -213,7 +213,7 @@ class TrailsCalculatorTest {
         every { mockPoint4.altitude } returns -10.0
 
         assertEquals(15.0,
-                TrailsCalculator()
+                TrailsStatsCalculator()
                         .calculateTotFall(
                                 listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4)), 0.0
         )
@@ -234,7 +234,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.longitude } returns 11.318903
 
         assertEquals(0,
-                TrailsCalculator().calculateLengthFromTo(
+                TrailsStatsCalculator().calculateLengthFromTo(
                         listOf(mockPoint1, mockPoint2), mockPoint1))
     }
 
@@ -254,7 +254,7 @@ class TrailsCalculatorTest {
         every { mockPoint2.longitude } returns 11.318903
 
         assertEquals(495,
-                TrailsCalculator().calculateLengthFromTo(
+                TrailsStatsCalculator().calculateLengthFromTo(
                                 listOf(mockPoint1, mockPoint2), mockPoint2))
     }
 
@@ -278,7 +278,7 @@ class TrailsCalculatorTest {
         every { mockPoint3.longitude } returns 11.313611
 
         assertEquals(926,
-                TrailsCalculator().calculateLengthFromTo(
+                TrailsStatsCalculator().calculateLengthFromTo(
                         listOf(mockPoint1, mockPoint2, mockPoint3), mockPoint3))
     }
 

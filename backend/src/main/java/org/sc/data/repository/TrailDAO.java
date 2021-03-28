@@ -1,15 +1,14 @@
 package org.sc.data.repository;
 
-import com.mongodb.MongoClient;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
-import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
+import org.sc.data.geo.CoordinatesSquare;
 import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -126,13 +125,13 @@ public class TrailDAO {
         return Collections.singletonList(trailMapper.mapToObject(updateResult));
     }
 
-    public List<TrailPreview> getTrailPreviews(final int page, final int count) {
+    public List<TrailPreview> getTrailPreviews(final int skip, final int limit) {
         final Bson project = getTrailPreviewProjection();
 
-        final Bson limit = Aggregates.limit(count);
-        final Bson skip = Aggregates.skip(page);
+        final Bson aLimit = Aggregates.limit(limit);
+        final Bson aSkip = Aggregates.skip(skip);
 
-        return toTrailsPreviewList(collection.aggregate(Arrays.asList(project, limit, skip)));
+        return toTrailsPreviewList(collection.aggregate(Arrays.asList(project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> trailPreviewById(final String id) {
@@ -181,6 +180,18 @@ public class TrailDAO {
         ));
     }
 
+    public List<Trail> findTrailInOuterGeoSquare(
+            CoordinatesSquare outerGeoSquare,
+            final int skip, final int limit) {
+        FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
+                new Document($_GEO_WITHIN, new Document(
+                        $_BOX,
+                        Arrays.asList(outerGeoSquare.getBottomLeft().getAsList(),
+                                outerGeoSquare.getTopRight().getAsList())
+                )))).skip(skip).limit(limit);
+        return toTrailsList(foundTrails);
+    }
+
     public List<Trail> linkPlace(String id, PlaceRef placeRef) {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document(ADD_TO_SET, new Document(Trail.LOCATIONS,
@@ -218,5 +229,4 @@ public class TrailDAO {
     private List<Trail> toTrailsList(Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
-
 }

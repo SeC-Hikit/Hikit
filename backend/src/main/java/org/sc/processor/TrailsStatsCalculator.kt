@@ -7,7 +7,7 @@ import kotlin.math.exp
 import kotlin.math.roundToInt
 
 @Component
-class TrailsCalculator {
+class TrailsStatsCalculator {
 
     companion object {
         private const val AVERAGE_SPEED_ON_FLAT_TERRAIN = 3.5

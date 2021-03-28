@@ -1,19 +1,23 @@
 package org.sc.manager
 
 import org.sc.common.rest.*
+import org.sc.common.rest.geo.GeoMultilineDto
 import org.sc.processor.MetricConverter
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.data.TrailDistance
+import org.sc.data.entity.mapper.TrailPointIntersection
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceRefMapper
 import org.sc.data.mapper.TrailMapper
-import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.model.Coordinates
+import org.sc.data.model.CoordinatesWithAltitude
 import org.sc.data.model.Trail
 import org.sc.data.repository.PlaceDAO
 import org.sc.processor.DistanceProcessor
+import org.sc.processor.GeoCalculator
+import org.sc.service.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.logging.Logger
@@ -27,7 +31,8 @@ class TrailManager @Autowired constructor(
     private val trailFileHelper: TrailFileManager,
     private val trailMapper: TrailMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
-    private val placeRefMapper: PlaceRefMapper
+    private val placeRefMapper: PlaceRefMapper,
+    private val altitudeService: AltitudeServiceAdapter
 ) {
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
@@ -65,31 +70,6 @@ class TrailManager @Autowired constructor(
         val unlinkedTrail = trailDAO.unlinkMedia(id, unLinkeMediaRequestDto.id)
         return unlinkedTrail.map { trailMapper.trailToTrailDto(it) }
     }
-
-//    fun getByGeo(
-//        coords: CoordinatesDto, distance: Int, unitOfMeasurement: UnitOfMeasurement,
-//        isAnyPoint: Boolean, limit: Int
-//    ): List<TrailDistance> {
-////        val meters = getMeters(unitOfMeasurement, distance)
-////        return if (!isAnyPoint) {
-////
-////            val trailsByStartPosMetricDistance = trailDAO.getTrailsByStartPosMetricDistance(
-////                coords.longitude,
-////                coords.latitude,
-////                meters, limit
-////            )
-////            val trailsDto = trailsByStartPosMetricDistance.map { trailMapper.trailToTrailDto(it) }
-////
-////            trailsDto.map {
-////                TrailDistance(
-////                    DistanceProcessor.distanceBetweenPoints(coords, it.startPos.coordinates).roundToInt(),
-////                    it.startPos.coordinates, it
-////                )
-////            }
-////        } else {
-////            getTrailDistancesWithinRangeAtPoint(coords, distance, unitOfMeasurement, limit)
-////        }
-//    }
 
     fun getTrailDistancesWithinRangeAtPoint(
         coordinates: CoordinatesDto,
@@ -148,6 +128,28 @@ class TrailManager @Autowired constructor(
 
     fun removePlaceRefFromTrails(placeId: String) {
         trailDAO.unlinkPlaceFromAllTrails(placeId)
+    }
+
+    fun findIntersection(geoMultilineDto: GeoMultilineDto, skip: Int, limit: Int): List<TrailPointIntersection> {
+        val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoMultilineDto.coordinates)
+        val trailsWithinGeoSquare = trailDAO.findTrailInOuterGeoSquare(outerGeoSquare, skip, limit)
+
+        return trailsWithinGeoSquare.filter {
+            GeoCalculator.areGeometriesIntersecting(
+                geoMultilineDto.coordinates, it.geoLineString
+            )
+        }
+            .map {
+                val pointIntersection = GeoCalculator.getIntersectionPointBetweenTrails(
+                    geoMultilineDto.coordinates, it.geoLineString
+                )
+                TrailPointIntersection(
+                    CoordinatesWithAltitude(
+                        pointIntersection.latitude, pointIntersection.longitude,
+                        altitudeService.getAltitudeByLongLat(pointIntersection.latitude, pointIntersection.longitude)
+                    ), it
+                )
+            }
     }
 }
 
