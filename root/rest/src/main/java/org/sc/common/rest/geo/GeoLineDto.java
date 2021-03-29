@@ -6,6 +6,6 @@ import org.sc.data.model.Coordinates2D;
 import java.util.List;
 
 @Data
-public class GeoMultilineDto {
+public class GeoLineDto {
     private List<Coordinates2D> coordinates;
 }

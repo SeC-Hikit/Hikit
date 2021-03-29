@@ -6,7 +6,7 @@ import kotlin.math.ceil
 @Component
 object ControllerPagination {
 
-    fun electPageSize(pageSize: Int) = if (pageSize <= 0) 1 else pageSize
+    private fun electPageSize(pageSize: Int) = if (pageSize <= 0) 1 else pageSize
 
     fun getTotalPages(totalCount: Long, pageSize: Int): Long {
         val result = ceil(totalCount.toDouble() / electPageSize(pageSize)).toLong()

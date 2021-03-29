@@ -14,7 +14,6 @@ import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Collections;
 import java.util.List;
@@ -207,7 +206,7 @@ public class TrailController {
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
     @PostMapping
     public TrailResponse update(@RequestBody TrailDto trailDto) {
-        throw new NotImplementedException();
+        return null;
     }
 
     private TrailResponse constructTrailResponse(Set<String> errors,

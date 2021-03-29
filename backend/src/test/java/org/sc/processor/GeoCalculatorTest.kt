@@ -1,9 +1,11 @@
 package org.sc.processor
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.sc.data.geo.CoordinatesSquare
 import org.sc.data.model.Coordinates2D
+import org.sc.data.model.GeoLineString
 
 class GeoCalculatorTest {
     @Test
@@ -48,6 +50,66 @@ class GeoCalculatorTest {
             GeoCalculator.getOuterSquareForCoordinates(listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4))
         val resultingPolygon = CoordinatesSquare(mockPoint1, mockPoint2, mockPoint3, mockPoint4)
         assertEquals(resultingPolygon, actual)
+    }
+
+
+    @Test
+    fun `find intersection between segments in contact`() {
+        val subjectSegment = listOf(
+            Coordinates2D(0.0, 0.0), Coordinates2D(5.0, 5.0),
+            Coordinates2D(10.0, 10.0), Coordinates2D(15.0, 15.0)
+        )
+
+        val targetSegment = GeoLineString(listOf(
+            Coordinates2D(5.0, 5.0), Coordinates2D(5.0, 3.0),
+            Coordinates2D(5.0, 2.0), Coordinates2D(5.0, 0.0)
+        ))
+
+        val actual =
+            GeoCalculator.getIntersectionPointsBetweenSegments(subjectSegment, targetSegment)
+
+        assertEquals(Coordinates2D(5.0, 5.0), actual.first())
+    }
+
+    @Test
+    fun `find intersection between lines`() {
+        val subjectSegment = listOf(
+            Coordinates2D(0.0, 0.0),
+            Coordinates2D(10.0, 10.0),
+            Coordinates2D(15.0, 15.0)
+        )
+
+        val targetSegment = GeoLineString(listOf(
+            Coordinates2D(0.0, 10.0),
+            Coordinates2D(10.0, 0.0),
+            Coordinates2D(10.0, -5.0),
+            Coordinates2D(11.0, -6.0)
+        ))
+
+        val actual =
+            GeoCalculator.getIntersectionPointsBetweenSegments(subjectSegment, targetSegment)
+
+        assertEquals(Coordinates2D(5.0, 5.0), actual.first())
+    }
+
+    @Test
+    fun `should not find intersection between lines when they are parallel`() {
+        val subjectSegment = listOf(
+            Coordinates2D(0.0, 0.0),
+            Coordinates2D(10.0, 10.0),
+            Coordinates2D(15.0, 15.0)
+        )
+
+        val targetSegment = GeoLineString(listOf(
+            Coordinates2D(  1.0, 0.0),
+            Coordinates2D(7.0, 5.0),
+            Coordinates2D(12.0, 7.0),
+        ))
+
+        val actual =
+            GeoCalculator.getIntersectionPointsBetweenSegments(subjectSegment, targetSegment)
+
+        assertTrue(actual.isEmpty())
     }
 
 }

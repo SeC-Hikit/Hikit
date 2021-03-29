@@ -1,17 +1,19 @@
 package org.sc.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.geo.GeoMultilineDto;
+import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailIntersectionDto;
+import org.sc.common.rest.geo.GeoLineDto;
 import org.sc.common.rest.response.TrailIntersectionResponse;
-import org.sc.common.rest.response.TrailResponse;
+import org.sc.data.validator.GeoLineValidator;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
@@ -21,24 +23,45 @@ import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 public class GeoController {
 
     private final TrailManager trailManager;
+    private final ControllerPagination controllerPagination;
+    private final GeoLineValidator geoLineValidator;
 
     @Autowired
-    public GeoController(TrailManager trailManager) {
+    public GeoController(final TrailManager trailManager,
+                         final GeoLineValidator geoLineValidator,
+                         final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
+        this.controllerPagination = controllerPagination;
+        this.geoLineValidator = geoLineValidator;
     }
 
-    public final static String PREFIX = "/geo";
+    public final static String PREFIX = "/geo-trail";
 
-    @Operation(summary = "Find all existing trail intersections for a given GEO-JSON multi-line")
+    @Operation(summary = "Find all existing trail intersections for a given multi-coordinate line")
     @PostMapping("/intersect")
-    public TrailIntersectionResponse findTrailIntersection(@RequestBody GeoMultilineDto geoMultilineDto,
+    public TrailIntersectionResponse findTrailIntersection(@RequestBody GeoLineDto geoLineDto,
                                                            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        // TODO: add validation
+        final Set<String> validate = geoLineValidator.validate(geoLineDto);
 
-        trailManager.findIntersection(geoMultilineDto, skip, limit);
+        if (!validate.isEmpty()) return constructTrailResponse(validate, emptyList(), 0, skip, limit);
 
-        // TODO
-        throw new NotImplementedException();
+        final List<TrailIntersectionDto> intersections =
+                trailManager.findIntersection(geoLineDto, skip, limit);
+        return constructTrailResponse(emptySet(), intersections, intersections.size(), skip, limit);
+    }
+
+    private TrailIntersectionResponse constructTrailResponse(final Set<String> errors,
+                                                             final List<TrailIntersectionDto> dtos,
+                                                             final long totalCount,
+                                                             final int skip,
+                                                             final int limit) {
+        if (!errors.isEmpty()) {
+            return new TrailIntersectionResponse(Status.ERROR, errors, dtos, 1L,
+                    Constants.ONE, limit, totalCount);
+        }
+        return new TrailIntersectionResponse(Status.OK, errors, dtos,
+                controllerPagination.getCurrentPage(skip, limit),
+                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
     }
 }
