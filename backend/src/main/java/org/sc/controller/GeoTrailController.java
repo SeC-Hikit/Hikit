@@ -19,23 +19,24 @@ import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
 @RestController
-@RequestMapping(GeoController.PREFIX)
-public class GeoController {
+@RequestMapping(GeoTrailController.PREFIX)
+public class GeoTrailController {
+
+    public final static String PREFIX = "/geo-trail";
 
     private final TrailManager trailManager;
     private final ControllerPagination controllerPagination;
     private final GeoLineValidator geoLineValidator;
 
+
     @Autowired
-    public GeoController(final TrailManager trailManager,
-                         final GeoLineValidator geoLineValidator,
-                         final ControllerPagination controllerPagination) {
+    public GeoTrailController(final TrailManager trailManager,
+                              final GeoLineValidator geoLineValidator,
+                              final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
         this.controllerPagination = controllerPagination;
         this.geoLineValidator = geoLineValidator;
     }
-
-    public final static String PREFIX = "/geo-trail";
 
     @Operation(summary = "Find all existing trail intersections for a given multi-coordinate line")
     @PostMapping("/intersect")
