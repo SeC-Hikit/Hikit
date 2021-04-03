@@ -5,7 +5,7 @@ import org.sc.data.mapper.*
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
-import org.sc.processor.TrailsCalculator
+import org.sc.processor.TrailsStatsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -13,7 +13,7 @@ import java.util.*
 @Component
 class TrailImporterManager @Autowired constructor(
     private val trailsManager: TrailManager,
-    private val trailsCalculator: TrailsCalculator,
+    private val trailsStatsCalculator: TrailsStatsCalculator,
     private val trailDatasetVersionDao: TrailDatasetVersionDao,
     private val placeMapper: PlaceRefMapper,
     private val trailCoordinatesMapper: TrailCoordinatesMapper,
@@ -29,12 +29,12 @@ class TrailImporterManager @Autowired constructor(
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
         val statsTrailMetadata = StatsTrailMetadata(
-            trailsCalculator.calculateTotRise(importingTrail.coordinates),
-            trailsCalculator.calculateTotFall(importingTrail.coordinates),
-            trailsCalculator.calculateEta(importingTrail.coordinates),
-            trailsCalculator.calculateTrailLength(importingTrail.coordinates),
-            trailsCalculator.calculateHighestPlace(importingTrail.coordinates),
-            trailsCalculator.calculateLowestPlace(importingTrail.coordinates)
+            trailsStatsCalculator.calculateTotRise(importingTrail.coordinates),
+            trailsStatsCalculator.calculateTotFall(importingTrail.coordinates),
+            trailsStatsCalculator.calculateEta(importingTrail.coordinates),
+            trailsStatsCalculator.calculateTrailLength(importingTrail.coordinates),
+            trailsStatsCalculator.calculateHighestPlace(importingTrail.coordinates),
+            trailsStatsCalculator.calculateLowestPlace(importingTrail.coordinates)
         )
 
         val createdOn = Date()

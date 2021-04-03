@@ -65,7 +65,7 @@ class TrailsImporterValidatorTest {
 
         val requestMock = mockkClass(TrailImportDto::class)
 
-        every { requestMock.name } returns ""
+        every { requestMock.name } returns null
         every { requestMock.code } returns "100BO"
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
@@ -95,7 +95,7 @@ class TrailsImporterValidatorTest {
 
         val requestMock = mockkClass(TrailImportDto::class)
 
-        every { requestMock.name } returns ""
+        every { requestMock.name } returns null
         every { requestMock.code } returns ""
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
@@ -128,7 +128,7 @@ class TrailsImporterValidatorTest {
 
         val requestMock = mockkClass(TrailImportDto::class)
 
-        every { requestMock.name } returns ""
+        every { requestMock.name } returns null
         every { requestMock.code } returns ""
         every { requestMock.description } returns "A description"
         every { requestMock.classification } returns TrailClassification.E
