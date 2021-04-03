@@ -8,7 +8,7 @@ import org.sc.data.model.Trail;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface TrailMapper {
-    TrailDto trailToTrailDto(Trail trail);
+    TrailDto map(Trail trail);
     @Mapping(target = "geoLineString", ignore = true)
-    Trail trailDtoToTrail(TrailDto trail);
+    Trail map(TrailDto trail);
 }

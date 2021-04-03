@@ -1,6 +1,7 @@
 package org.sc.data.validator
 
 import org.apache.commons.lang3.StringUtils.isEmpty
+import org.sc.common.rest.TrailDto
 import org.sc.common.rest.TrailImportDto
 import org.sc.data.validator.ValidatorUtils.Companion.emptyFieldError
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,9 +9,9 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class TrailImportValidator @Autowired constructor (
+class TrailUpdateValidator @Autowired constructor (
     private val coordsValidatorTrail: TrailCoordinatesValidator,
-    private val placeRefValidator: PlaceRefValidator): Validator<TrailImportDto> {
+    private val placeRefValidator: PlaceRefValidator): Validator<TrailDto> {
 
     companion object {
         private const val minGeoPoints = 3
@@ -19,7 +20,7 @@ class TrailImportValidator @Autowired constructor (
         const val dateInFutureError = "The provided date is in the future"
     }
 
-    override fun validate(request: TrailImportDto): Set<String> {
+    override fun validate(request: TrailDto): Set<String> {
         val errors = mutableSetOf<String>()
         if (request.name == null) {
             errors.add(String.format(emptyFieldError, "Name"))

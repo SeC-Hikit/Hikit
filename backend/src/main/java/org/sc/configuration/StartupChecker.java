@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
 import org.apache.logging.log4j.Logger;
 import org.sc.data.model.Place;
+import org.sc.data.model.Trail;
 import org.sc.data.repository.TrailDatasetVersionDao;
 import org.sc.util.FileManagementUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static org.apache.logging.log4j.LogManager.getLogger;
 
@@ -52,10 +54,21 @@ public class StartupChecker {
     }
 
     private void configureIndexes() {
-        LOGGER.info("Ensuring DB indexes");
+        LOGGER.info("Ensuring DB indexes existence");
+
         MongoDatabase db = dataSource.getDB();
-        String index = db.getCollection(Place.COLLECTION_NAME).createIndex(Indexes.geo2dsphere(Place.POINTS));
-        LOGGER.info("Ensured index name " + index + " for collection: `" + Place.COLLECTION_NAME + "`");
+        final String pointGeoIndex = db.getCollection(Place.COLLECTION_NAME)
+                .createIndex(Indexes.geo2dsphere(Place.POINTS));
+        final String trailGeoIndex = db.getCollection(Trail.COLLECTION_NAME)
+                .createIndex(Indexes.geo2dsphere(Trail.GEO_LINE));
+
+        Arrays.asList(
+                Arrays.asList(pointGeoIndex, Place.POINTS),
+                Arrays.asList(trailGeoIndex, Trail.GEO_LINE))
+                .forEach(
+                        (indexArr) -> LOGGER.info("Ensured pointGeoIndex name " + indexArr.get(0) +
+                                " for collection: `" + indexArr.get(1) + "`")
+        );
     }
 
     private void configureDir(final String path,

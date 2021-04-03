@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.PoiResponse;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.data.validator.LinkedMediaValidator;
 import org.sc.data.validator.MediaExistenceValidator;
 import org.sc.data.validator.poi.PoiExistenceValidator;
@@ -30,24 +31,15 @@ public class POIController {
     private final static Logger LOGGER = Logger.getLogger(POIController.class.getName());
 
     private final PoiManager poiManager;
-    private final PoiValidator poiValidator;
-    private final PoiExistenceValidator poiExistenceValidator;
-    private final LinkedMediaValidator linkedMediaValidator;
-    private final MediaExistenceValidator mediaExistanceValidator;
+    private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
 
     @Autowired
     public POIController(final PoiManager poiManager,
-                         final PoiValidator poiValidator,
-                         final PoiExistenceValidator poiExistenceValidator,
-                         final LinkedMediaValidator linkedMediaValidator,
-                         final MediaExistenceValidator mediaExistanceValidator,
+                         final GeneralValidator generalValidator,
                          final ControllerPagination controllerPagination) {
         this.poiManager = poiManager;
-        this.poiValidator = poiValidator;
-        this.poiExistenceValidator = poiExistenceValidator;
-        this.linkedMediaValidator = linkedMediaValidator;
-        this.mediaExistanceValidator = mediaExistanceValidator;
+        this.generalValidator = generalValidator;
         this.controllerPagination = controllerPagination;
     }
 
@@ -103,7 +95,7 @@ public class POIController {
     @Operation(summary = "Update POI in DB (or create POI, if not present)")
     @PutMapping
     public PoiResponse upsertPoi(@RequestBody PoiDto poiDto) {
-        final Set<String> errors = poiValidator.validate(poiDto);
+        final Set<String> errors = generalValidator.validate(poiDto);
         if (errors.isEmpty()) {
             return constructResponse(emptySet(), poiManager.upsertPoi(poiDto),
                     poiManager.count(), Constants.ZERO, Constants.ONE);
@@ -116,8 +108,8 @@ public class POIController {
     @PutMapping("/media/{id}")
     public PoiResponse addMediaToPoi(@PathVariable String id,
                                      @RequestBody LinkedMediaDto linkedMediaRequest) {
-        final Set<String> errors = poiExistenceValidator.validate(id);
-        errors.addAll(linkedMediaValidator.validate(linkedMediaRequest));
+        final Set<String> errors = generalValidator.validatePoiExistence(id);
+        errors.addAll(generalValidator.validate(linkedMediaRequest));
         if (errors.isEmpty()) {
             final List<PoiDto> poiDtos =
                     poiManager.linkMedia(id, linkedMediaRequest);
@@ -132,8 +124,8 @@ public class POIController {
     @DeleteMapping("/media/{id}")
     public PoiResponse removeMediaFromPoi(@PathVariable String id,
                                           @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
-        final Set<String> errors = poiExistenceValidator.validate(id);
-        errors.addAll(mediaExistanceValidator.validate(unLinkeMediaRequestDto.getId()));
+        final Set<String> errors = generalValidator.validatePoiExistence(id);
+        errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
             return constructResponse(emptySet(), poiManager.unlinkMedia(id, unLinkeMediaRequestDto),
                     poiManager.count(), Constants.ZERO, Constants.ONE);

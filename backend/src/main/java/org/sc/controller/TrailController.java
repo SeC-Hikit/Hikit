@@ -4,17 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.data.validator.LinkedMediaValidator;
-import org.sc.data.validator.MediaExistenceValidator;
-import org.sc.data.validator.PlaceRefValidator;
-import org.sc.data.validator.TrailImportValidator;
+import org.sc.data.validator.*;
 import org.sc.data.validator.trail.TrailExistenceValidator;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,31 +29,19 @@ public class TrailController {
     public final static String PREFIX = "/trail";
 
     private final TrailManager trailManager;
-    private final TrailExistenceValidator trailExistenceValidator;
-    private final LinkedMediaValidator linkedMediaValidator;
-    private final MediaExistenceValidator mediaExistanceValidator;
-    private final PlaceRefValidator placeRefValidator;
+    private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
     private final TrailImporterManager trailImporterManager;
-    private final TrailImportValidator trailValidator;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
-                           final LinkedMediaValidator linkedMediaValidator,
-                           final TrailExistenceValidator trailExistenceValidator,
-                           final MediaExistenceValidator mediaExistanceValidator,
-                           final PlaceRefValidator placeRefValidator,
+                           final GeneralValidator generalValidator,
                            final ControllerPagination controllerPagination,
-                           final TrailImporterManager trailImporterManager,
-                           final TrailImportValidator trailValidator) {
+                           final TrailImporterManager trailImporterManager) {
         this.trailManager = trailManager;
-        this.linkedMediaValidator = linkedMediaValidator;
-        this.trailExistenceValidator = trailExistenceValidator;
-        this.mediaExistanceValidator = mediaExistanceValidator;
-        this.placeRefValidator = placeRefValidator;
+        this.generalValidator = generalValidator;
         this.controllerPagination = controllerPagination;
         this.trailImporterManager = trailImporterManager;
-        this.trailValidator = trailValidator;
     }
 
     @Operation(summary = "Count all trails in DB")
@@ -102,8 +86,8 @@ public class TrailController {
     @PostMapping("/place/{id}")
     public TrailResponse addPlaceToTrail(@PathVariable String id,
                                          @RequestBody PlaceRefDto placeRefDto) {
-        Set<String> errors = trailExistenceValidator.validate(id);
-        errors.addAll(placeRefValidator.validate(placeRefDto));
+        Set<String> errors = generalValidator.validateTrailExistence(id);
+        errors.addAll(generalValidator.validate(placeRefDto));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedPlaceResultDtos =
                     trailManager.linkPlace(id, placeRefDto);
@@ -121,8 +105,8 @@ public class TrailController {
     @DeleteMapping("/place/{id}")
     public TrailResponse removePlaceFromTrail(@PathVariable String id,
                                               @RequestBody PlaceRefDto placeRefDto) {
-        Set<String> errors = trailExistenceValidator.validate(id);
-        errors.addAll(placeRefValidator.validate(placeRefDto));
+        Set<String> errors = generalValidator.validateTrailExistence(id);
+        errors.addAll(generalValidator.validate(placeRefDto));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedPlaceResultDtos =
                     trailManager.unlinkPlace(id, placeRefDto);
@@ -139,9 +123,9 @@ public class TrailController {
     @PostMapping("/media/{id}")
     public TrailResponse addMediaToTrail(@PathVariable String id,
                                          @RequestBody LinkedMediaDto linkedMediaRequest) {
-        final Set<String> errors = linkedMediaValidator.validate(linkedMediaRequest);
-        errors.addAll(trailExistenceValidator.validate(id));
-        errors.addAll(mediaExistanceValidator.validate(linkedMediaRequest.getId()));
+        final Set<String> errors = generalValidator.validate(linkedMediaRequest);
+        errors.addAll(generalValidator.validateTrailExistence(id));
+        errors.addAll(generalValidator.validateMediaExistence(linkedMediaRequest.getId()));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedMediaResultDtos =
                     trailManager.linkMedia(id, linkedMediaRequest);
@@ -158,8 +142,8 @@ public class TrailController {
     @DeleteMapping("/media/{id}")
     public TrailResponse removeMediaFromTrail(@PathVariable String id,
                                               @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
-        final Set<String> errors = trailExistenceValidator.validate(id);
-        errors.addAll(mediaExistanceValidator.validate(unLinkeMediaRequestDto.getId()));
+        final Set<String> errors = generalValidator.validateTrailExistence(id);
+        errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedMediaResultDtos =
                     trailManager.unlinkMedia(id, unLinkeMediaRequestDto);
@@ -194,7 +178,7 @@ public class TrailController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailResponse importTrail(@RequestBody TrailImportDto request) {
-        final Set<String> errors = trailValidator.validate(request);
+        final Set<String> errors = generalValidator.validate(request);
         if (errors.isEmpty()) {
             List<TrailDto> savedTrail = trailImporterManager.save(request);
             return constructTrailResponse(emptySet(), savedTrail, trailManager.count(),
@@ -206,8 +190,18 @@ public class TrailController {
 
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
     @PostMapping
-    public TrailResponse update(@RequestBody TrailDto trailDto) {
-        throw new NotImplementedException();
+    public TrailResponse updateTrail(@RequestBody TrailDto trailDto) {
+
+        final Set<String> errors = generalValidator.validate(trailDto);
+
+        if (errors.isEmpty()) {
+            List<TrailDto> updatedTrail = trailImporterManager.updateTrail(trailDto);
+            return constructTrailResponse(emptySet(), updatedTrail,
+                    updatedTrail.size(), Constants.ZERO, Constants.ONE);
+        }
+
+        return constructTrailResponse(errors, emptyList(),
+                Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 
     private TrailResponse constructTrailResponse(Set<String> errors,

@@ -7,6 +7,7 @@ import org.sc.common.rest.Status;
 import org.sc.common.rest.response.MediaResponse;
 import org.sc.configuration.AppProperties;
 import org.sc.data.validator.FileNameValidator;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.data.validator.MediaFileValidator;
 import org.sc.manager.MediaManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,20 +36,17 @@ public class MediaController {
 
     public File uploadDir;
 
-    private final MediaFileValidator mediaFileValidator;
-    private final FileNameValidator fileNameValidator;
+    private final GeneralValidator generalValidator;
     private final MediaManager mediaManager;
     private final AppProperties appProperties;
     private final ControllerPagination controllerPagination;
 
     @Autowired
-    public MediaController(final MediaFileValidator mediaFileValidator,
-                           final FileNameValidator fileNameValidator,
+    public MediaController(final GeneralValidator generalValidator,
                            final MediaManager mediaManager,
                            final AppProperties appProperties,
                            final ControllerPagination controllerPagination) {
-        this.mediaFileValidator = mediaFileValidator;
-        this.fileNameValidator = fileNameValidator;
+        this.generalValidator = generalValidator;
         this.mediaManager = mediaManager;
         this.appProperties = appProperties;
         this.controllerPagination = controllerPagination;
@@ -72,11 +70,11 @@ public class MediaController {
         final String extension = mediaManager.getExtensionFromName(originalFileName);
         final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", extension);
         final Set<String> validationErrors =
-                fileNameValidator.validate(originalFileName);
+                generalValidator.validateFileName(originalFileName);
         try (final InputStream input = file.getInputStream()) {
             Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        validationErrors.addAll(mediaFileValidator.validate(tempFile.toFile()));
+        validationErrors.addAll(generalValidator.validate(tempFile.toFile()));
 
         if (validationErrors.isEmpty()) {
             final List<MediaDto> saveResult = mediaManager.save(originalFileName, tempFile);
