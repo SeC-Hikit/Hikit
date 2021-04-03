@@ -1,12 +1,7 @@
 package org.sc.manager
 
-import org.sc.common.rest.TrailDto
-import org.sc.common.rest.TrailImportDto
-import org.sc.common.rest.TrailRawDto
-import org.sc.data.mapper.FileDetailsMapper
-import org.sc.data.mapper.PlaceRefMapper
-import org.sc.data.mapper.TrailCoordinatesMapper
-import org.sc.data.mapper.TrailRawMapper
+import org.sc.common.rest.*
+import org.sc.data.mapper.*
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
@@ -24,7 +19,8 @@ class TrailImporterManager @Autowired constructor(
     private val trailCoordinatesMapper: TrailCoordinatesMapper,
     private val trailRawMapper: TrailRawMapper,
     private val fileDetailsMapper: FileDetailsMapper,
-    private val trailRawDao: TrailRawDAO
+    private val trailRawDao: TrailRawDAO,
+    private val trailMapper: TrailMapper
 ) {
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
@@ -82,6 +78,43 @@ class TrailImporterManager @Autowired constructor(
         trailDatasetVersionDao.increaseVersion()
 
         return savedTrailDao
+    }
+
+    fun updateTrail(trailDto: TrailDto) : List<TrailDto> {
+
+        val trailToUpdate = trailsManager.getById(trailDto.id, false).first()
+
+        val removedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
+        val addedPlacesOnTrail = trailDto.locations.filterNot { trailToUpdate.locations.contains(it) }
+
+        removedPlacesOnTrail.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
+        addedPlacesOnTrail.forEach { trailsManager.linkPlace(trailDto.id, it) }
+
+        val removedMediaOnTrail = trailToUpdate.mediaList.filterNot { trailDto.mediaList.contains(it) }
+        val addedMediaOnTrail = trailDto.mediaList.filterNot { trailToUpdate.mediaList.contains(it) }
+
+        removedMediaOnTrail.forEach {
+            trailsManager.unlinkMedia(trailDto.id, UnLinkeMediaRequestDto(it.id))
+        }
+        addedMediaOnTrail.forEach {
+            trailsManager.linkMedia(trailDto.id, LinkedMediaDto(it.id, it.description, it.keyVal))
+        }
+
+        trailToUpdate.name = trailDto.name
+        trailToUpdate.description = trailDto.description
+        trailToUpdate.officialEta = trailDto.officialEta
+        trailToUpdate.code = trailDto.code
+        trailToUpdate.isVariant = trailDto.isVariant
+        trailToUpdate.locations = trailDto.locations
+        trailToUpdate.classification = trailDto.classification
+        trailToUpdate.country = trailDto.country
+        trailToUpdate.lastUpdate = Date()
+        trailToUpdate.maintainingSection = trailDto.maintainingSection
+        trailToUpdate.territorialDivision = trailDto.territorialDivision
+        trailToUpdate.cycloDetails = trailDto.cycloDetails
+        trailToUpdate.status = trailDto.status
+
+        return trailsManager.save(trailMapper.map(trailToUpdate))
     }
 
     fun countTrailRaw() = trailRawDao.count()

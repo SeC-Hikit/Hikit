@@ -21,29 +21,17 @@ import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 public class PlaceController {
     public final static String PREFIX = "/place";
 
-    private final PlaceValidator placeValidator;
     private final PlaceManager placeManager;
-    private final LinkedMediaValidator linkedMediaValidator;
-    private final MediaExistenceValidator mediaExistenceValidator;
-    private final PlaceExistenceValidator placeExistenceValidator;
     private final ControllerPagination controllerPagination;
-    private final PointGeolocationValidatorDto pointGeolocationValidatorDto;
+    private final GeneralValidator generalValidator;
 
     @Autowired
-    public PlaceController(PlaceValidator placeValidator,
-                           PlaceManager placeManager,
-                           LinkedMediaValidator linkedMediaValidator,
-                           MediaExistenceValidator mediaExistenceValidator,
-                           PlaceExistenceValidator placeExistenceValidator,
+    public PlaceController(PlaceManager placeManager,
                            ControllerPagination controllerPagination,
-                           PointGeolocationValidatorDto pointGeolocationValidatorDto) {
-        this.placeValidator = placeValidator;
+                           GeneralValidator generalValidator) {
         this.placeManager = placeManager;
-        this.linkedMediaValidator = linkedMediaValidator;
-        this.mediaExistenceValidator = mediaExistenceValidator;
-        this.placeExistenceValidator = placeExistenceValidator;
         this.controllerPagination = controllerPagination;
-        this.pointGeolocationValidatorDto = pointGeolocationValidatorDto;
+        this.generalValidator = generalValidator;
     }
 
     @Operation(summary = "Retrieve place")
@@ -78,7 +66,7 @@ public class PlaceController {
     public PlaceResponse geolocatePlace(@RequestBody PointGeolocationDto pointGeolocationDto,
                                         @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                         @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        final Set<String> errors = pointGeolocationValidatorDto.validate(pointGeolocationDto);
+        final Set<String> errors = generalValidator.validate(pointGeolocationDto);
         if (errors.isEmpty()) {
             final CoordinatesDto coordinatesDto = pointGeolocationDto.getCoordinatesDto();
             final List<PlaceDto> results = placeManager.getNearPoint(
@@ -96,9 +84,9 @@ public class PlaceController {
     @PutMapping("/media/{id}")
     public PlaceResponse addMedia(@PathVariable String id,
                                   @RequestBody LinkedMediaDto linkedMediaRequest) {
-        final Set<String> errors = linkedMediaValidator.validate(linkedMediaRequest);
-        errors.addAll(placeExistenceValidator.validate(id));
-        errors.addAll(mediaExistenceValidator.validate(linkedMediaRequest.getId()));
+        final Set<String> errors = generalValidator.validate(linkedMediaRequest);
+        errors.addAll(generalValidator.validatePlaceExistence(id));
+        errors.addAll(generalValidator.validateMediaExistence(linkedMediaRequest.getId()));
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
                     placeManager.linkMedia(id, linkedMediaRequest);
@@ -115,8 +103,8 @@ public class PlaceController {
     @DeleteMapping("/media/{id}")
     public PlaceResponse deleteMedia(@PathVariable String id,
                                      @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
-        final Set<String> errors = placeExistenceValidator.validate(id);
-        errors.addAll(mediaExistenceValidator.validate(unLinkeMediaRequestDto.getId()));
+        final Set<String> errors = generalValidator.validatePlaceExistence(id);
+        errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
                     placeManager.unlinkMedia(id, unLinkeMediaRequestDto);
@@ -132,7 +120,7 @@ public class PlaceController {
     @Operation(summary = "Add place")
     @PutMapping
     public PlaceResponse create(@RequestBody PlaceDto place) {
-        Set<String> errors = placeValidator.validate(place);
+        Set<String> errors = generalValidator.validate(place);
         if (!errors.isEmpty()) {
             return constructResponse(errors,
                     emptyList(),
@@ -155,7 +143,7 @@ public class PlaceController {
     @Operation(summary = "Update place")
     @PostMapping
     public PlaceResponse update(@RequestBody PlaceDto place) {
-        Set<String> errors = placeValidator.validate(place);
+        Set<String> errors = generalValidator.validate(place);
         if (!errors.isEmpty()) {
             return constructResponse(errors,
                     emptyList(),

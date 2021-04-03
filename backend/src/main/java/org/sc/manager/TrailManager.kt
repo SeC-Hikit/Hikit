@@ -9,6 +9,7 @@ import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceRefMapper
 import org.sc.data.mapper.TrailIntersectionMapper
 import org.sc.data.mapper.TrailMapper
+import org.sc.data.model.Coordinates
 import org.sc.data.model.CoordinatesWithAltitude
 import org.sc.data.model.Trail
 import org.sc.data.model.TrailIntersection
@@ -36,13 +37,13 @@ class TrailManager @Autowired constructor(
     private val logger = Logger.getLogger(TrailManager::class.java.name)
 
     fun get(isLight: Boolean, page: Int, count: Int): List<TrailDto> = trailDAO.getTrails(isLight, page, count)
-        .map { trailMapper.trailToTrailDto(it) }
+        .map { trailMapper.map(it) }
 
     fun getById(id: String, isLight: Boolean): List<TrailDto> =
-        trailDAO.getTrailById(id, isLight).map { trailMapper.trailToTrailDto(it) }
+        trailDAO.getTrailById(id, isLight).map { trailMapper.map(it) }
 
     fun getByPlaceRefId(code: String, isLight: Boolean, page: Int, limit: Int): List<TrailDto> =
-        trailDAO.getTrailByPlaceId(code, isLight, page, limit).map { trailMapper.trailToTrailDto(it) }
+        trailDAO.getTrailByPlaceId(code, isLight, page, limit).map { trailMapper.map(it) }
 
     fun delete(id: String, isPurged: Boolean): List<TrailDto> {
         if (isPurged) {
@@ -50,23 +51,24 @@ class TrailManager @Autowired constructor(
             val deletedAccessibilityNotification = accessibilityNotificationDAO.delete(id)
             logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, deleted notifications: $deletedAccessibilityNotification")
         }
-        return trailDAO.delete(id).map { trailMapper.trailToTrailDto(it) }
+        return trailDAO.delete(id).map { trailMapper.map(it) }
     }
 
     fun save(trail: Trail): List<TrailDto> {
+        // TODO #60 create a PDF and KML document too
         trailFileHelper.writeTrailToOfficialGpx(trail)
-        return trailDAO.upsert(trail).map { trailMapper.trailToTrailDto(it) }
+        return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }
 
     fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto): List<TrailDto> {
         val linkMedia = linkedMediaMapper.map(linkedMediaRequest)
         val result = trailDAO.linkMedia(id, linkMedia)
-        return result.map { trailMapper.trailToTrailDto(it) }
+        return result.map { trailMapper.map(it) }
     }
 
     fun unlinkMedia(id: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<TrailDto> {
         val unlinkedTrail = trailDAO.unlinkMedia(id, unLinkeMediaRequestDto.id)
-        return unlinkedTrail.map { trailMapper.trailToTrailDto(it) }
+        return unlinkedTrail.map { trailMapper.map(it) }
     }
 
     fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, true).isNotEmpty()
@@ -74,13 +76,13 @@ class TrailManager @Autowired constructor(
     fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
         placeDAO.addTrailIdToPlace(placeRef.placeId, id, placeRef.trailCoordinates)
-        return linkedTrail.map { trailMapper.trailToTrailDto(it) }
+        return linkedTrail.map { trailMapper.map(it) }
     }
 
     fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
         placeDAO.removeTrailFromPlace(placeRef.placeId, id, placeRef.trailCoordinates)
-        return unLinkPlace.map { trailMapper.trailToTrailDto(it) }
+        return unLinkPlace.map { trailMapper.map(it) }
     }
 
     fun count(): Long = trailDAO.countTrail()

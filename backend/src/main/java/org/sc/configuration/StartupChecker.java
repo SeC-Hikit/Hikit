@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static org.apache.logging.log4j.LogManager.getLogger;
 
@@ -53,13 +54,21 @@ public class StartupChecker {
     }
 
     private void configureIndexes() {
-        LOGGER.info("Ensuring DB indexes");
+        LOGGER.info("Ensuring DB indexes existence");
+
         MongoDatabase db = dataSource.getDB();
-        String index = db.getCollection(Place.COLLECTION_NAME)
+        final String pointGeoIndex = db.getCollection(Place.COLLECTION_NAME)
                 .createIndex(Indexes.geo2dsphere(Place.POINTS));
-        String geoIndexMultiLineTrail = db.getCollection(Trail.COLLECTION_NAME)
+        final String trailGeoIndex = db.getCollection(Trail.COLLECTION_NAME)
                 .createIndex(Indexes.geo2dsphere(Trail.GEO_LINE));
-        LOGGER.info("Ensured index name " + index + " for collection: `" + Place.COLLECTION_NAME + "`");
+
+        Arrays.asList(
+                Arrays.asList(pointGeoIndex, Place.POINTS),
+                Arrays.asList(trailGeoIndex, Trail.GEO_LINE))
+                .forEach(
+                        (indexArr) -> LOGGER.info("Ensured pointGeoIndex name " + indexArr.get(0) +
+                                " for collection: `" + indexArr.get(1) + "`")
+        );
     }
 
     private void configureDir(final String path,

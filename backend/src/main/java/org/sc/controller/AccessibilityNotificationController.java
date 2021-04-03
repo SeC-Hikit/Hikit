@@ -1,11 +1,10 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.CountResponse;
-import org.sc.data.validator.AccessibilityValidator;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.AccessibilityNotificationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,16 +24,16 @@ public class AccessibilityNotificationController {
 
     public final static String PREFIX = "/accessibility";
 
-    private final AccessibilityValidator accessibilityValidator;
+    private final GeneralValidator generalValidator;
     private final AccessibilityNotificationManager accessibilityNotManager;
     private final ControllerPagination controllerPagination;
 
     @Autowired
     public AccessibilityNotificationController(final AccessibilityNotificationManager accessibilityNotificationManager,
-                                               final AccessibilityValidator accessibilityValidator,
+                                               final GeneralValidator generalValidator,
                                                final ControllerPagination controllerPagination) {
         this.accessibilityNotManager = accessibilityNotificationManager;
-        this.accessibilityValidator = accessibilityValidator;
+        this.generalValidator = generalValidator;
         this.controllerPagination = controllerPagination;
     }
 
@@ -108,7 +107,7 @@ public class AccessibilityNotificationController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public AccessibilityResponse createAccessibilityNotification(
             @RequestBody AccessibilityNotificationCreationDto accessibilityNotificationCreation) {
-        final Set<String> errors = accessibilityValidator.validate(accessibilityNotificationCreation);
+        final Set<String> errors = generalValidator.validate(accessibilityNotificationCreation);
         if (!errors.isEmpty()) {
             return constructResponse(errors, emptyList(), accessibilityNotManager.count(),
                     Constants.ZERO, Constants.ONE);

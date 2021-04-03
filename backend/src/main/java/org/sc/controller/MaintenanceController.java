@@ -7,6 +7,7 @@ import org.sc.common.rest.MaintenanceDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.MaintenanceResponse;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.data.validator.MaintenanceValidator;
 import org.sc.manager.MaintenanceManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +32,16 @@ public class MaintenanceController {
     private final static Logger LOGGER = Logger
             .getLogger(MaintenanceController.class.getName());
 
-    private final MaintenanceValidator maintenanceValidator;
+    private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
     private final MaintenanceManager maintenanceManager;
 
     @Autowired
     public MaintenanceController(final MaintenanceManager maintenanceManager,
-                                 final MaintenanceValidator maintenanceValidator,
+                                 final GeneralValidator generalValidator,
                                  final ControllerPagination controllerPagination) {
         this.maintenanceManager = maintenanceManager;
-        this.maintenanceValidator = maintenanceValidator;
+        this.generalValidator = generalValidator;
         this.controllerPagination = controllerPagination;
     }
 
@@ -76,7 +77,7 @@ public class MaintenanceController {
     @PutMapping
     public MaintenanceResponse create(
             @RequestBody MaintenanceCreationDto request) {
-        final Set<String> errors = maintenanceValidator.validate(request);
+        final Set<String> errors = generalValidator.validate(request);
         if (errors.isEmpty()) {
             return constructResponse(emptySet(), maintenanceManager.upsert(request),
                     Constants.ONE, Constants.ZERO, Constants.ONE);
