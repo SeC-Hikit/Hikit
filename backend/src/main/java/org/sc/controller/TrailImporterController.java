@@ -51,7 +51,7 @@ public class TrailImporterController {
     @Operation(summary = "Read and import one GPX trail file")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailRawResponse readGpxFile(@RequestAttribute("file") MultipartFile gpxFile) {
+    public TrailRawResponse readGpxFile(@RequestParam("file") MultipartFile gpxFile) {
         return processUploadedFiles(Collections.singletonList(gpxFile));
     }
 
