@@ -34,7 +34,7 @@ public class PlaceController {
         this.generalValidator = generalValidator;
     }
 
-    @Operation(summary = "Retrieve place")
+    @Operation(summary = "Retrieve places")
     @GetMapping
     public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                              @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
@@ -100,7 +100,7 @@ public class PlaceController {
     }
 
     @Operation(summary = "Delete media from place")
-    @DeleteMapping("/media/{id}")
+    @PostMapping("/media/{id}")
     public PlaceResponse deleteMedia(@PathVariable String id,
                                      @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
         final Set<String> errors = generalValidator.validatePlaceExistence(id);
