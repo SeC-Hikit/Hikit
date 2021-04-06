@@ -3,7 +3,6 @@ package org.sc.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.LOCAL_IP_ADDRESS
-import org.sc.data.model.Coordinates2D
 import org.sc.service.response.AltitudeApiRequestPoint
 import org.sc.service.response.AltitudeApiResponse
 import org.sc.service.response.AltitudeServiceRequest
@@ -18,8 +17,8 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
-val ALTITUDE_CALL_RETRIES = 3
-val ALTITUDE_CALL_CHUNK_SIZE = 100
+const val ALTITUDE_CALL_RETRIES = 3
+const val ALTITUDE_CALL_CHUNK_SIZE = 500
 
 @Service
 class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties,
@@ -44,10 +43,10 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
         for(chunk in coordinatesChunks) {
 
-           val coordinateAltituideList = callAltitudeWithExponentialBackoff(chunk, ALTITUDE_CALL_RETRIES)
+           val coordinateAltitudeList = callAltitudeWithExponentialBackoff(chunk, ALTITUDE_CALL_RETRIES)
 
-            if(chunk.size == coordinateAltituideList.size) {
-                result.addAll(coordinateAltituideList)
+            if(chunk.size == coordinateAltitudeList.size) {
+                result.addAll(coordinateAltitudeList)
             } else {
                 //in case of error the result contains the same number of elements of the input
                 result.addAll(MutableList(coordinates.size) { 0.0 })
@@ -61,12 +60,12 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
         val postData: ByteArray = buildAltitudeRequest(coordinates)
 
-        var retryCounter : Int = 1
+        var retryCounter = 1
         while(retryCounter <= retry) {
 
             try {
                 val connection = buildAltitudeRequestConnection(postData.size)
-                val outputStream: DataOutputStream = DataOutputStream(connection.outputStream)
+                val outputStream = DataOutputStream(connection.outputStream)
 
                 outputStream.write(postData)
                 outputStream.flush()
