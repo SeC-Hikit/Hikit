@@ -205,7 +205,7 @@ public class TrailController {
                 Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 
-    @Operation(summary = "Add geo-located trails (within a defined polygon)")
+    @Operation(summary = "Add geo-located trails within a defined polygon")
     @PostMapping
     public TrailResponse geoLocateTrail(@RequestBody SquareDto squareDto) {
 
