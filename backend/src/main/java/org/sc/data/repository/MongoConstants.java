@@ -27,6 +27,7 @@ public class MongoConstants {
     public static final String $_MIN_DISTANCE_FILTER = "$minDistance";
     public static final String $_GEO_NEAR_OPERATOR = "$geoNear";
     public static final String $_GEO_WITHIN = "$geoWithin";
+    public static final String $_GEO_INTERSECT = "$geoIntersects";
     public static final String $_BOX = "$box";
     public static final String DISTANCE_FIELD = "distanceField";
     public static final String KEY_FIELD = "key";
