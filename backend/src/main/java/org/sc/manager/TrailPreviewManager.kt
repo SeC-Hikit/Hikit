@@ -17,16 +17,12 @@ class TrailPreviewManager @Autowired constructor(
     fun getPreviews(skip: Int, limit: Int): List<TrailPreviewDto> =
         trailDAO.getTrailPreviews(skip, limit).map { trailPreviewMapper.map(it) }
 
-    fun getRawPreviews(skip: Int, limit: Int): List<TrailPreviewDto> {
-        val trailPreviews = trailDAO.getTrailPreviews(skip, limit).map { trailPreviewMapper.map(it) }
-        val trailPreviewRaws = trailRawDAO.get(skip, limit).map { trailPreviewMapper.map(it) }
-        return trailPreviews.union(trailPreviewRaws).toList()
-    }
+    fun getRawPreviews(skip: Int, limit: Int): List<TrailPreviewDto> =
+        trailRawDAO.get(skip, limit).map { trailPreviewMapper.map(it) }
 
     fun getPreviewById(id: String): List<TrailPreviewDto> = trailDAO.trailPreviewById(id)
         .map { trailPreviewMapper.map(it) }
 
-    fun countRawAndTrail(): Long = countPreview() + countRaw()
     fun countPreview(): Long = trailDAO.countTrail()
-    private fun countRaw(): Long = trailRawDAO.count()
+    fun countRaw(): Long = trailRawDAO.count()
 }

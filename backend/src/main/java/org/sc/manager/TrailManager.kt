@@ -11,9 +11,7 @@ import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceRefMapper
 import org.sc.data.mapper.TrailIntersectionMapper
 import org.sc.data.mapper.TrailMapper
-import org.sc.data.model.CoordinatesWithAltitude
-import org.sc.data.model.Trail
-import org.sc.data.model.TrailIntersection
+import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
 import org.sc.processor.GeoCalculator
 import org.sc.service.AltitudeServiceAdapter
@@ -107,17 +105,29 @@ class TrailManager @Autowired constructor(
             GeoCalculator.areSegmentsIntersecting(
                 geoLineDto.coordinates, it.geoLineString
             )
-        }.map {
-            val coordinatesForTrail = GeoCalculator.getIntersectionPointsBetweenSegments(
-                geoLineDto.coordinates, it.geoLineString
-            ).map { coord ->
-                CoordinatesWithAltitude(
-                    coord.latitude, coord.longitude,
-                    altitudeService.getAltitudeByLongLat(coord.latitude, coord.longitude)
-                )
-            }
-            trailIntersectionMapper.map(TrailIntersection(it, coordinatesForTrail))
+        }.map { trail ->
+            getTrailIntersection(geoLineDto.coordinates, trail)
         }
+    }
+
+    private fun getTrailIntersection(coordinates : List<Coordinates2D>, trail: Trail): TrailIntersectionDto {
+
+        val coordinates2D = GeoCalculator.getIntersectionPointsBetweenSegments(
+            coordinates, trail.geoLineString
+        )
+
+        val altitudeResultOrderedList = altitudeService.getAltituteByLongLat(coordinates2D.map { coord -> Pair(coord.latitude, coord.longitude) })
+
+        val coordinatesForTrail = mutableListOf<Coordinates>()
+
+        coordinates2D.forEachIndexed { index, coord ->
+            coordinatesForTrail.add(CoordinatesWithAltitude(
+                coord.latitude, coord.longitude,
+                altitudeResultOrderedList[index]
+            ))
+        }
+
+        return trailIntersectionMapper.map(TrailIntersection(trail, coordinatesForTrail))
     }
 }
 

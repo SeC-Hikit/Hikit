@@ -31,19 +31,21 @@ public class TrailPreviewController {
         this.controllerPagination = controllerPagination;
     }
 
-    @Operation(summary = "Retrieve trail previews, possibly including raw trails too")
+    @Operation(summary = "Retrieve trail previews")
     @GetMapping
     public TrailPreviewResponse getTrailPreviews(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-                                                 @RequestParam(required = false, defaultValue = "false") boolean includeRaw
-                                                 ) {
-        if(!includeRaw) {
-            return constructResponse(emptySet(), trailManager.getPreviews(skip, limit),
-                    trailManager.countPreview(), skip, limit);
-        } else {
-            return constructResponse(emptySet(), trailManager.getRawPreviews(skip, limit),
-                    trailManager.countRawAndTrail(), skip, limit);
-        }
+                                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), trailManager.getPreviews(skip, limit),
+                trailManager.countPreview(), skip, limit);
+    }
+
+    @Operation(summary = "Retrieve RAW trail previews")
+    @GetMapping("/raw")
+    public TrailPreviewResponse getRawTrailPreviews(
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        return constructResponse(emptySet(), trailManager.getRawPreviews(skip, limit),
+                trailManager.countRaw(), skip, limit);
     }
 
     @Operation(summary = "Retrieve preview by ID")

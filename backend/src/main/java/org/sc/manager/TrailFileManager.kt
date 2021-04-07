@@ -8,6 +8,8 @@ import org.sc.common.rest.TrailRawDto
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
 import org.sc.data.mapper.TrailCoordinatesMapper
+import org.sc.data.model.Coordinates
+import org.sc.data.model.CoordinatesWithAltitude
 import org.sc.data.model.Trail
 import org.sc.data.model.TrailCoordinates
 import org.sc.data.validator.FileNameValidator
@@ -66,11 +68,15 @@ class TrailFileManager @Autowired constructor(
         val track = gpx.tracks.first()
         val segment = track.segments.first()
 
-        val coordinatesWithAltitude: List<CoordinatesDto> = segment.points.map { point ->
-            CoordinatesDto(
-                point.longitude.toDegrees(), point.latitude.toDegrees(),
-                altitudeService.getAltitudeByLongLat(point.latitude.toDegrees(), point.longitude.toDegrees())
-            )
+        val altitudeResultOrderedList = altitudeService.getAltituteByLongLat(segment.points.map { coord -> Pair(coord.latitude.toDegrees(), coord.longitude.toDegrees()) })
+
+        val coordinatesWithAltitude = mutableListOf<Coordinates>()
+
+        segment.points.forEachIndexed { index, coord ->
+            coordinatesWithAltitude.add(
+                CoordinatesDto(coord.longitude.toDegrees(), coord.latitude.toDegrees(),
+                altitudeResultOrderedList[index]
+            ))
         }
 
         val trailCoordinates = coordinatesWithAltitude.map {
