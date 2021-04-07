@@ -2,6 +2,7 @@ package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
+import org.sc.common.rest.geo.SquareDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.data.validator.*;
@@ -204,6 +205,22 @@ public class TrailController {
                 Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Add geo-located trails within a defined polygon")
+    @PostMapping
+    public TrailResponse geoLocateTrail(@RequestBody SquareDto squareDto) {
+
+        final Set<String> errors = generalValidator.validate(squareDto);
+
+        if (errors.isEmpty()) {
+            List<TrailDto> updatedTrail = trailManager.findTrailsWithinRectangle(squareDto);
+            return constructTrailResponse(emptySet(), updatedTrail,
+                    updatedTrail.size(), Constants.ZERO, Constants.ONE);
+        }
+
+        return constructTrailResponse(errors, emptyList(),
+                Constants.ZERO, Constants.ZERO, Constants.ONE);
+    }
+
     private TrailResponse constructTrailResponse(Set<String> errors,
                                                  List<TrailDto> trailDtos,
                                                  long totalCount,
@@ -217,4 +234,6 @@ public class TrailController {
                 controllerPagination.getCurrentPage(skip, limit),
                 controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
     }
+
+
 }

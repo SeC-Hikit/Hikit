@@ -180,7 +180,22 @@ public class TrailDAO {
         ));
     }
 
-    public List<Trail> findTrailInOuterGeoSquare(
+    public List<Trail> findTrailWithinGeoSquare(
+            CoordinatesSquare geoSquare,
+            final int skip, final int limit) {
+        FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
+                new Document($_GEO_INTERSECT, new Document(
+                        $_GEOMETRY,new Document("type", "Polygon").append("coordinates",
+                        Arrays.asList(
+                                geoSquare.getBottomLeft().getAsList(),
+                                geoSquare.getTopLeft().getAsList(),
+                                geoSquare.getTopRight().getAsList(),
+                                geoSquare.getBottomRight().getAsList()))
+                )))).skip(skip).limit(limit);
+        return toTrailsList(foundTrails);
+    }
+
+    public List<Trail> findTrailPerfectlyContainedInGeoSquare(
             CoordinatesSquare outerGeoSquare,
             final int skip, final int limit) {
         FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,

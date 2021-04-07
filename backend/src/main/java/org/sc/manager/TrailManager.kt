@@ -2,6 +2,8 @@ package org.sc.manager
 
 import org.sc.common.rest.*
 import org.sc.common.rest.geo.GeoLineDto
+import org.sc.common.rest.geo.SquareDto
+import org.sc.data.geo.CoordinatesSquare
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
@@ -88,9 +90,16 @@ class TrailManager @Autowired constructor(
         trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
 
+    fun findTrailsWithinRectangle(squareDto: SquareDto): List<TrailDto>{
+        val trails = trailDAO.findTrailWithinGeoSquare(
+                CoordinatesSquare(squareDto.bottomLeft,squareDto.topLeft,
+                        squareDto.topRight,squareDto.bottomRight),0,100)
+        return trails.map { trailMapper.map(it) }
+    }
+
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
         val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates)
-        val foundTrailsWithinGeoSquare = trailDAO.findTrailInOuterGeoSquare(outerGeoSquare, skip, limit)
+        val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit)
 
         return foundTrailsWithinGeoSquare.filter {
             GeoCalculator.areSegmentsIntersecting(
