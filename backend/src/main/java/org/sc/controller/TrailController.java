@@ -205,7 +205,7 @@ public class TrailController {
     }
 
     @Operation(summary = "Add geo-located trails within a defined polygon")
-    @PostMapping
+    @PostMapping("/geolocate")
     public TrailResponse geoLocateTrail(@RequestBody SquareDto squareDto) {
 
         final Set<String> errors = generalValidator.validate(squareDto);
