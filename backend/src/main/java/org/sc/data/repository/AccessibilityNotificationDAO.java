@@ -64,6 +64,17 @@ public class AccessibilityNotificationDAO {
                 new Document(EXISTS_PARAM, true))).skip(skip).limit(limit));
     }
 
+    public List<AccessibilityNotification> getByTrailId(final String trailId) {
+        return new ArrayList<>(toNotificationList(collection.find(
+                new Document(AccessibilityNotification.TRAIL_ID, new ObjectId(trailId)))));
+    }
+
+    public List<AccessibilityNotification> deleteByTrailId(final String trailId) {
+        List<AccessibilityNotification> byTrailId = getByTrailId(trailId);
+        collection.deleteMany(new Document(AccessibilityNotification.TRAIL_ID, new ObjectId(trailId)));
+        return byTrailId;
+    }
+
     public List<AccessibilityNotification> insert(final AccessibilityNotificationCreationDto accessibilityNotification) {
         final Document accessibilityNotificationDocument = mapper.mapCreationToDocument(accessibilityNotification);
         final Document addedResult = collection.findOneAndReplace(

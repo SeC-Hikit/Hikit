@@ -78,7 +78,7 @@ public class MaintenanceDAO {
         return Collections.singletonList(byId);
     }
 
-    public List<Maintenance> deleteByCode(final String trailId) {
+    public List<Maintenance> deleteByTrailId(final String trailId) {
         final Maintenance byId = getByTrailId(trailId);
         collection.deleteOne(new Document(Maintenance.TRAIL_ID, trailId));
         return Collections.singletonList(byId);

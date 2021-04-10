@@ -14,6 +14,7 @@ import org.sc.data.entity.mapper.PlaceMapper;
 import org.sc.data.model.LinkedMedia;
 import org.sc.data.model.MultiPointCoords2D;
 import org.sc.data.model.Place;
+import org.sc.data.model.TrailCoordinates;
 import org.sc.util.coordinates.CoordinatesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -93,8 +94,8 @@ public class PlaceDAO {
     }
 
     public void removeTrailFromPlace(final String id,
-                                     final String trailId, TrailCoordinatesDto trailCoordinates) {
-
+                                     final String trailId,
+                                     final TrailCoordinates trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
                 new Document(PULL, new Document(Place.CROSSING,
                         trailId))

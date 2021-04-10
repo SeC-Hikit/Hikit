@@ -101,7 +101,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Test
     public void delete() {
         String importedTrailId = trailResponse.getContent().get(0).getId();
-        TrailResponse deletedById = trailController.deleteById(importedTrailId, false);
+        TrailResponse deletedById = trailController.deleteById(importedTrailId);
         assertThat(deletedById.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
         TrailResponse getTrail = trailController.getById(importedTrailId, false);
         Assert.assertTrue(getTrail.getContent().isEmpty());

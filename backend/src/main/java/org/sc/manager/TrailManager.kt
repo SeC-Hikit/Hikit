@@ -4,13 +4,10 @@ import org.sc.common.rest.*
 import org.sc.common.rest.geo.GeoLineDto
 import org.sc.common.rest.geo.SquareDto
 import org.sc.data.geo.CoordinatesSquare
+import org.sc.data.mapper.*
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.TrailDAO
-import org.sc.data.mapper.LinkedMediaMapper
-import org.sc.data.mapper.PlaceRefMapper
-import org.sc.data.mapper.TrailIntersectionMapper
-import org.sc.data.mapper.TrailMapper
 import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
 import org.sc.processor.GeoCalculator
@@ -29,6 +26,7 @@ class TrailManager @Autowired constructor(
     private val trailMapper: TrailMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
     private val placeRefMapper: PlaceRefMapper,
+    private val trailCoordinatesMapper: TrailCoordinatesMapper,
     private val trailIntersectionMapper: TrailIntersectionMapper,
     private val altitudeService: AltitudeServiceAdapter
 ) {
@@ -44,13 +42,18 @@ class TrailManager @Autowired constructor(
     fun getByPlaceRefId(code: String, isLight: Boolean, page: Int, limit: Int): List<TrailDto> =
         trailDAO.getTrailByPlaceId(code, isLight, page, limit).map { trailMapper.map(it) }
 
-    fun delete(id: String, isPurged: Boolean): List<TrailDto> {
-        if (isPurged) {
-            val deletedMaintenance = maintenanceDAO.deleteByCode(id)
-            val deletedAccessibilityNotification = accessibilityNotificationDAO.delete(id)
-            logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, deleted notifications: $deletedAccessibilityNotification")
+    fun delete(id: String): List<TrailDto> {
+        val deletedMaintenance = maintenanceDAO.deleteByTrailId(id)
+        val deletedAccessibilityNotification = accessibilityNotificationDAO.deleteByTrailId(id)
+        val deletedTrailInMem = trailDAO.delete(id)
+        deletedTrailInMem.forEach { trail ->
+            trail.locations.forEach {
+                placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.trailCoordinates)
+            }
         }
-        return trailDAO.delete(id).map { trailMapper.map(it) }
+        logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, " +
+                "deleted notifications: $deletedAccessibilityNotification" + ",")
+        return deletedTrailInMem.map { trailMapper.map(it) }
     }
 
     fun save(trail: Trail): List<TrailDto> {
@@ -80,7 +83,10 @@ class TrailManager @Autowired constructor(
 
     fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.removeTrailFromPlace(placeRef.placeId, id, placeRef.trailCoordinates)
+        placeDAO.removeTrailFromPlace(
+            placeRef.placeId, id,
+            trailCoordinatesMapper.map(placeRef.trailCoordinates)
+        )
         return unLinkPlace.map { trailMapper.map(it) }
     }
 
@@ -90,10 +96,13 @@ class TrailManager @Autowired constructor(
         trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
 
-    fun findTrailsWithinRectangle(squareDto: SquareDto): List<TrailDto>{
+    fun findTrailsWithinRectangle(squareDto: SquareDto): List<TrailDto> {
         val trails = trailDAO.findTrailWithinGeoSquare(
-                CoordinatesSquare(squareDto.bottomLeft,squareDto.topLeft,
-                        squareDto.topRight,squareDto.bottomRight),0,100)
+            CoordinatesSquare(
+                squareDto.bottomLeft, squareDto.topLeft,
+                squareDto.topRight, squareDto.bottomRight
+            ), 0, 100
+        )
         return trails.map { trailMapper.map(it) }
     }
 
@@ -110,21 +119,24 @@ class TrailManager @Autowired constructor(
         }
     }
 
-    private fun getTrailIntersection(coordinates : List<Coordinates2D>, trail: Trail): TrailIntersectionDto {
+    private fun getTrailIntersection(coordinates: List<Coordinates2D>, trail: Trail): TrailIntersectionDto {
 
         val coordinates2D = GeoCalculator.getIntersectionPointsBetweenSegments(
             coordinates, trail.geoLineString
         )
 
-        val altitudeResultOrderedList = altitudeService.getAltituteByLongLat(coordinates2D.map { coord -> Pair(coord.latitude, coord.longitude) })
+        val altitudeResultOrderedList =
+            altitudeService.getAltituteByLongLat(coordinates2D.map { coord -> Pair(coord.latitude, coord.longitude) })
 
         val coordinatesForTrail = mutableListOf<Coordinates>()
 
         coordinates2D.forEachIndexed { index, coord ->
-            coordinatesForTrail.add(CoordinatesWithAltitude(
-                coord.latitude, coord.longitude,
-                altitudeResultOrderedList[index]
-            ))
+            coordinatesForTrail.add(
+                CoordinatesWithAltitude(
+                    coord.latitude, coord.longitude,
+                    altitudeResultOrderedList[index]
+                )
+            )
         }
 
         return trailIntersectionMapper.map(TrailIntersection(trail, coordinatesForTrail))
