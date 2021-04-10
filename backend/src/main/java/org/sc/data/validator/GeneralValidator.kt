@@ -1,7 +1,7 @@
 package org.sc.data.validator
 
 import org.sc.common.rest.*
-import org.sc.common.rest.geo.SquareDto
+import org.sc.common.rest.geo.RectangleDto
 import org.sc.data.validator.poi.PoiExistenceValidator
 import org.sc.data.validator.poi.PoiValidator
 import org.sc.data.validator.trail.TrailExistenceValidator
@@ -29,7 +29,7 @@ class GeneralValidator @Autowired constructor(
     private val trailExistenceValidator: TrailExistenceValidator,
     private val poiExistenceValidator: PoiExistenceValidator,
     private val poiValidator: PoiValidator,
-    private val squareValidator: SquareValidator
+    private val rectangleValidator: RectangleValidator
 
 ) {
     fun validate(acd: AccessibilityNotificationCreationDto): Set<String> = accessibilityValidator.validate(acd)
@@ -52,5 +52,5 @@ class GeneralValidator @Autowired constructor(
     fun validateMediaExistence(id: String): Set<String> = mediaExistenceValidator.validate(id)
     fun validateTrailExistence(id: String): Set<String> = trailExistenceValidator.validate(id)
     fun validatePoiExistence(id: String): Set<String> = poiExistenceValidator.validate(id)
-    fun validate(squareDto: SquareDto): Set<String> = squareValidator.validate(squareDto)
+    fun validate(rectangleDto: RectangleDto): Set<String> = rectangleValidator.validate(rectangleDto)
 }

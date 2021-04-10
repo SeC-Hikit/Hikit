@@ -2,11 +2,10 @@ package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
-import org.sc.common.rest.geo.SquareDto;
+import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.data.validator.*;
-import org.sc.data.validator.trail.TrailExistenceValidator;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,14 +204,14 @@ public class TrailController {
                 Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 
-    @Operation(summary = "Add geo-located trails within a defined polygon")
+    @Operation(summary = "Add geo-located trails within a defined rectangle")
     @PostMapping
-    public TrailResponse geoLocateTrail(@RequestBody SquareDto squareDto) {
+    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto) {
 
-        final Set<String> errors = generalValidator.validate(squareDto);
+        final Set<String> errors = generalValidator.validate(rectangleDto);
 
         if (errors.isEmpty()) {
-            List<TrailDto> updatedTrail = trailManager.findTrailsWithinRectangle(squareDto);
+            List<TrailDto> updatedTrail = trailManager.findTrailsWithinRectangle(rectangleDto);
             return constructTrailResponse(emptySet(), updatedTrail,
                     updatedTrail.size(), Constants.ZERO, Constants.ONE);
         }

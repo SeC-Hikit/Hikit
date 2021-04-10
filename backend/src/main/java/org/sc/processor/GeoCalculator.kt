@@ -2,7 +2,7 @@ package org.sc.processor
 
 import com.vividsolutions.jts.geom.Coordinate
 import com.vividsolutions.jts.geom.GeometryFactory
-import org.sc.data.geo.CoordinatesSquare
+import org.sc.data.geo.CoordinatesRectangle
 import org.sc.data.model.Coordinates2D
 import org.sc.data.model.GeoLineString
 
@@ -10,12 +10,12 @@ object GeoCalculator {
 
     private val geometryFactory = GeometryFactory()
 
-    fun getOuterSquareForCoordinates(coordinates2D: List<Coordinates2D>): CoordinatesSquare {
+    fun getOuterSquareForCoordinates(coordinates2D: List<Coordinates2D>): CoordinatesRectangle {
         val topLeft = Coordinates2D(coordinates2D.minOf { it.longitude }, coordinates2D.maxOf { it.latitude })
         val topRight = Coordinates2D(coordinates2D.maxOf { it.longitude }, coordinates2D.maxOf { it.latitude })
         val bottomLeft = Coordinates2D(coordinates2D.minOf { it.longitude }, coordinates2D.minOf { it.latitude })
         val bottomRight = Coordinates2D(coordinates2D.maxOf { it.longitude }, coordinates2D.minOf { it.latitude })
-        return CoordinatesSquare(topLeft, topRight, bottomLeft, bottomRight)
+        return CoordinatesRectangle(topLeft, topRight, bottomLeft, bottomRight)
     }
 
     fun areSegmentsIntersecting(subjectSegment: List<Coordinates2D>, foundSegment: GeoLineString): Boolean {
