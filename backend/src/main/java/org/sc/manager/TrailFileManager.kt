@@ -145,6 +145,10 @@ class TrailFileManager @Autowired constructor(
         return result
     }
 
+    public fun deleteRawTrail(filename: String) {
+       Files.delete(File(makePathToSavedFile(filename)).toPath())
+    }
+
     private fun findUploadedFilesWithMissingNames(uploadedFiles: List<MultipartFile>)
             : List<MultipartFile> = uploadedFiles.filter { it.originalFilename == null }
 

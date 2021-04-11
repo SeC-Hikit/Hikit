@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component
 @Component
 class TrailRawManager @Autowired constructor(
     private val trailRawDAO: TrailRawDAO,
-    private val trailRawMapper: TrailRawMapper
+    private val trailRawMapper: TrailRawMapper,
+    private val fileManager: TrailFileManager
 ) {
     fun get(skip: Int, limit: Int): List<TrailRawDto> =
         trailRawDAO.get(skip, limit).map { trailRawMapper.map(it) }
@@ -17,8 +18,11 @@ class TrailRawManager @Autowired constructor(
     fun getById(id: String): List<TrailRawDto> =
         trailRawDAO.getById(id).map { trailRawMapper.map(it) }
 
-    fun deleteById(id: String): List<TrailRawDto> =
-        trailRawDAO.deleteById(id).map { trailRawMapper.map(it) }
+    fun deleteById(id: String): List<TrailRawDto>  {
+        val map = trailRawDAO.deleteById(id).map { trailRawMapper.map(it) }
+        map.forEach{fileManager.deleteRawTrail(it.fileDetails.filename)}
+        return map;
+    }
 
     fun count(): Long =
         trailRawDAO.count()
