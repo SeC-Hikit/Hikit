@@ -40,6 +40,12 @@ public class TrailRawDAO {
         return toTrailRawList(collection.find(new Document(TrailRaw.ID, id)));
     }
 
+    public List<TrailRaw> deleteById(final String id) {
+        List<TrailRaw> byIdInMemory = getById(id);
+        collection.deleteOne(new Document(TrailRaw.ID, id));
+        return byIdInMemory;
+    }
+
     public List<TrailRaw> createRawTrail(final TrailRaw rawTrail) {
         final Document trailRawDoc = trailRawMapper.mapToDocument(rawTrail);
         final String objectId = new ObjectId().toHexString();

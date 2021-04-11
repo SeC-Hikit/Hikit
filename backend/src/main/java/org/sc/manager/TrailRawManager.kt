@@ -17,6 +17,9 @@ class TrailRawManager @Autowired constructor(
     fun getById(id: String): List<TrailRawDto> =
         trailRawDAO.getById(id).map { trailRawMapper.map(it) }
 
+    fun deleteById(id: String): List<TrailRawDto> =
+        trailRawDAO.deleteById(id).map { trailRawMapper.map(it) }
+
     fun count(): Long =
         trailRawDAO.count()
 }

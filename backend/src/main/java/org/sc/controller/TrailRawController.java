@@ -49,6 +49,15 @@ public class TrailRawController {
                 Constants.ZERO, Constants.ONE);
     }
 
+    @Operation(summary = "Delete a single raw trail")
+    @DeleteMapping("/{id}")
+    public TrailRawResponse deleteById(final @PathVariable String id) {
+        return constructResponse(Collections.emptySet(),
+                trailRawManager.deleteById(id),
+                trailRawManager.count(),
+                Constants.ZERO, Constants.ONE);
+    }
+
     private TrailRawResponse constructResponse(final Set<String> errors,
                                                final List<TrailRawDto> dtos,
                                                final long totalCount,
