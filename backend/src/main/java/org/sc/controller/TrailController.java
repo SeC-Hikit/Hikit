@@ -2,11 +2,10 @@ package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
-import org.sc.common.rest.geo.SquareDto;
+import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.data.validator.*;
-import org.sc.data.validator.trail.TrailExistenceValidator;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +158,8 @@ public class TrailController {
 
     @Operation(summary = "Remove trail by ID")
     @DeleteMapping("/{id}")
-    public TrailResponse deleteById(@PathVariable String id) {
+    public TrailResponse deleteById(@PathVariable String id,
+                                    @RequestParam(required = false, defaultValue = "false") boolean isPurged) {
         final List<TrailDto> deleted = trailManager.delete(id);
         if (!deleted.isEmpty()) {
             return constructTrailResponse(Collections.emptySet(), deleted,
@@ -206,9 +206,9 @@ public class TrailController {
 
     @Operation(summary = "Find geo-located trails within a defined polygon")
     @PostMapping("/geolocate")
-    public TrailResponse geoLocateTrail(@RequestBody SquareDto squareDto) {
+    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto) {
 
-        final Set<String> errors = generalValidator.validate(squareDto);
+        final Set<String> errors = generalValidator.validate(rectangleDto);
 
         if (errors.isEmpty()) {
             final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(squareDto);

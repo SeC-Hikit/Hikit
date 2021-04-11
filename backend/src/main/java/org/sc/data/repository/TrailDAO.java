@@ -8,7 +8,7 @@ import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
-import org.sc.data.geo.CoordinatesSquare;
+import org.sc.data.geo.CoordinatesRectangle;
 import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -181,7 +181,7 @@ public class TrailDAO {
     }
 
     public List<Trail> findTrailWithinGeoSquare(
-            CoordinatesSquare geoSquare,
+            CoordinatesRectangle geoSquare,
             final int skip, final int limit) {
         FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
                 new Document($_GEO_INTERSECT, new Document(
@@ -196,7 +196,7 @@ public class TrailDAO {
     }
 
     public List<Trail> findTrailPerfectlyContainedInGeoSquare(
-            CoordinatesSquare outerGeoSquare,
+            CoordinatesRectangle outerGeoSquare,
             final int skip, final int limit) {
         FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
                 new Document($_GEO_WITHIN, new Document(

@@ -3,7 +3,7 @@ package org.sc.processor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.sc.data.geo.CoordinatesSquare
+import org.sc.data.geo.CoordinatesRectangle
 import org.sc.data.model.Coordinates2D
 import org.sc.data.model.GeoLineString
 
@@ -29,7 +29,7 @@ class GeoCalculatorTest {
         println(Coordinates2D(minLatitude, minLongitude))
         println(actual.bottomLeft)
         assertEquals(
-            CoordinatesSquare(
+            CoordinatesRectangle(
                 Coordinates2D(minLongitude, maxLatitude),
                 Coordinates2D(maxLongitude, maxLatitude),
                 Coordinates2D(minLongitude, minLatitude),
@@ -48,7 +48,7 @@ class GeoCalculatorTest {
 
         val actual =
             GeoCalculator.getOuterSquareForCoordinates(listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4))
-        val resultingPolygon = CoordinatesSquare(mockPoint1, mockPoint2, mockPoint3, mockPoint4)
+        val resultingPolygon = CoordinatesRectangle(mockPoint1, mockPoint2, mockPoint3, mockPoint4)
         assertEquals(resultingPolygon, actual)
     }
 
