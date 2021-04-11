@@ -158,8 +158,7 @@ public class TrailController {
 
     @Operation(summary = "Remove trail by ID")
     @DeleteMapping("/{id}")
-    public TrailResponse deleteById(@PathVariable String id,
-                                    @RequestParam(required = false, defaultValue = "false") boolean isPurged) {
+    public TrailResponse deleteById(@PathVariable String id) {
         final List<TrailDto> deleted = trailManager.delete(id);
         if (!deleted.isEmpty()) {
             return constructTrailResponse(Collections.emptySet(), deleted,
@@ -211,7 +210,7 @@ public class TrailController {
         final Set<String> errors = generalValidator.validate(rectangleDto);
 
         if (errors.isEmpty()) {
-            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(squareDto);
+            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto);
             return constructTrailResponse(emptySet(), foundTrails,
                     foundTrails.size(), Constants.ZERO, Constants.ONE);
         }
