@@ -204,16 +204,16 @@ public class TrailController {
                 Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 
-    @Operation(summary = "Add geo-located trails within a defined polygon")
+    @Operation(summary = "Find geo-located trails within a defined polygon")
     @PostMapping("/geolocate")
     public TrailResponse geoLocateTrail(@RequestBody SquareDto squareDto) {
 
         final Set<String> errors = generalValidator.validate(squareDto);
 
         if (errors.isEmpty()) {
-            List<TrailDto> updatedTrail = trailManager.findTrailsWithinRectangle(squareDto);
-            return constructTrailResponse(emptySet(), updatedTrail,
-                    updatedTrail.size(), Constants.ZERO, Constants.ONE);
+            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(squareDto);
+            return constructTrailResponse(emptySet(), foundTrails,
+                    foundTrails.size(), Constants.ZERO, Constants.ONE);
         }
 
         return constructTrailResponse(errors, emptyList(),
