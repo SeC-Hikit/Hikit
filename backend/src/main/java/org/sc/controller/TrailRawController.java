@@ -33,7 +33,8 @@ public class TrailRawController {
     @GetMapping
     public TrailRawResponse get(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit
+    ) {
         return constructResponse(Collections.emptySet(),
                 trailRawManager.get(skip, limit),
                 trailRawManager.count(), skip, limit);

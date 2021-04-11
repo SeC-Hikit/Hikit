@@ -5,6 +5,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.TrailRawMapper;
+import org.sc.data.model.FileDetails;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailRaw;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,8 @@ public class TrailRawDAO {
     }
 
     public List<TrailRaw> get(final int skip, final int limit) {
-        return toTrailRawList(collection.find(new Document()).skip(skip).limit(limit));
+        return toTrailRawList(collection.find(new Document()).skip(skip).limit(limit).sort(
+                new Document(TrailRaw.FILE_DETAILS + "." + FileDetails.UPLOADED_ON, -1)));
     }
 
     public List<TrailRaw> getById(final String id) {
