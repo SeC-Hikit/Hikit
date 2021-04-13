@@ -5,8 +5,8 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.data.validator.*;
-import org.sc.manager.TrailImporterManager;
+import org.sc.data.validator.GeneralValidator;
+import org.sc.manager.TrailManagementManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -31,17 +31,17 @@ public class TrailController {
     private final TrailManager trailManager;
     private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
-    private final TrailImporterManager trailImporterManager;
+    private final TrailManagementManager trailManagementManager;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
                            final GeneralValidator generalValidator,
                            final ControllerPagination controllerPagination,
-                           final TrailImporterManager trailImporterManager) {
+                           final TrailManagementManager trailManagementManager) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.controllerPagination = controllerPagination;
-        this.trailImporterManager = trailImporterManager;
+        this.trailManagementManager = trailManagementManager;
     }
 
     @Operation(summary = "Count all trails in DB")
@@ -179,7 +179,7 @@ public class TrailController {
     public TrailResponse importTrail(@RequestBody TrailImportDto request) {
         final Set<String> errors = generalValidator.validate(request);
         if (errors.isEmpty()) {
-            List<TrailDto> savedTrail = trailImporterManager.save(request);
+            List<TrailDto> savedTrail = trailManagementManager.save(request);
             return constructTrailResponse(emptySet(), savedTrail, trailManager.count(),
                     Constants.ZERO, Constants.ONE);
         }
@@ -194,7 +194,7 @@ public class TrailController {
         final Set<String> errors = generalValidator.validate(trailDto);
 
         if (errors.isEmpty()) {
-            List<TrailDto> updatedTrail = trailImporterManager.updateTrail(trailDto);
+            List<TrailDto> updatedTrail = trailManagementManager.updateTrail(trailDto);
             return constructTrailResponse(emptySet(), updatedTrail,
                     updatedTrail.size(), Constants.ZERO, Constants.ONE);
         }

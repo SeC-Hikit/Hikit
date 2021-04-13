@@ -5,12 +5,15 @@ import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.manager.TrailFileManager;
-import org.sc.manager.TrailImporterManager;
+import org.sc.manager.TrailManagementManager;
 import org.sc.processor.GpxFileHandlerHelper;
 import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -29,7 +32,7 @@ public class TrailImporterController {
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
     private final TrailFileManager trailFileManager;
-    private final TrailImporterManager trailImporterManager;
+    private final TrailManagementManager trailManagementManager;
     private final ControllerPagination controllerPagination;
     private final FileProbeUtil fileProbeUtil;
     private final GpxFileHandlerHelper gpxFileHandlerHelper;
@@ -37,12 +40,12 @@ public class TrailImporterController {
 
     @Autowired
     public TrailImporterController(final TrailFileManager trailFileManager,
-                                   final TrailImporterManager trailImporterManager,
+                                   final TrailManagementManager trailManagementManager,
                                    final ControllerPagination controllerPagination,
                                    final FileProbeUtil fileProbeUtil,
                                    final GpxFileHandlerHelper gpxFileHandlerHelper) {
         this.trailFileManager = trailFileManager;
-        this.trailImporterManager = trailImporterManager;
+        this.trailManagementManager = trailManagementManager;
         this.controllerPagination = controllerPagination;
         this.fileProbeUtil = fileProbeUtil;
         this.gpxFileHandlerHelper = gpxFileHandlerHelper;
@@ -69,7 +72,7 @@ public class TrailImporterController {
 
         if (originalFileNamesToTempPaths.isEmpty()) {
             return constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
-                    trailImporterManager.countTrailRaw(),
+                    trailManagementManager.countTrailRaw(),
                     Constants.ZERO, Constants.ONE);
         }
 
@@ -103,7 +106,7 @@ public class TrailImporterController {
                 }).collect(toList());
 
         final List<TrailRawDto> savedTrails = trailRawDtos.stream().map(
-                trailImporterManager::saveRaw
+                trailManagementManager::saveRaw
         ).collect(toList());
 
         final int size = savedTrails.size();

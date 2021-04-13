@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class TrailImporterManager @Autowired constructor(
+class TrailManagementManager @Autowired constructor(
     private val trailsManager: TrailManager,
     private val trailsStatsCalculator: TrailsStatsCalculator,
     private val trailDatasetVersionDao: TrailDatasetVersionDao,
@@ -20,7 +20,8 @@ class TrailImporterManager @Autowired constructor(
     private val trailRawMapper: TrailRawMapper,
     private val fileDetailsMapper: FileDetailsMapper,
     private val trailRawDao: TrailRawDAO,
-    private val trailMapper: TrailMapper
+    private val trailMapper: TrailMapper,
+    private val placeManager: PlaceManager
 ) {
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
@@ -80,44 +81,77 @@ class TrailImporterManager @Autowired constructor(
         return savedTrailDao
     }
 
-    fun updateTrail(trailDto: TrailDto) : List<TrailDto> {
+    fun updateTrail(requestedTrail: TrailDto) : List<TrailDto> {
 
-        val trailToUpdate = trailsManager.getById(trailDto.id, false).first()
+        val savedTrail = trailsManager.getById(requestedTrail.id, false).first()
 
-        val removedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
-        val addedPlacesOnTrail = trailDto.locations.filterNot { trailToUpdate.locations.contains(it) }
+        val removedPlacesOnTrail = savedTrail.locations.filterNot { requestedTrail.locations.contains(it) }
+        val addedPlacesOnTrail = requestedTrail.locations.filterNot { savedTrail.locations.contains(it) }
 
-        removedPlacesOnTrail.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
-        addedPlacesOnTrail.forEach { trailsManager.linkPlace(trailDto.id, it) }
+        removedPlacesOnTrail.forEach { trailsManager.unlinkPlace(requestedTrail.id, it) }
+        addedPlacesOnTrail.forEach { trailsManager.linkPlace(requestedTrail.id, it) }
 
-        val removedMediaOnTrail = trailToUpdate.mediaList.filterNot { trailDto.mediaList.contains(it) }
-        val addedMediaOnTrail = trailDto.mediaList.filterNot { trailToUpdate.mediaList.contains(it) }
+        val removedMediaOnTrail = savedTrail.mediaList.filterNot { requestedTrail.mediaList.contains(it) }
+        val addedMediaOnTrail = requestedTrail.mediaList.filterNot { savedTrail.mediaList.contains(it) }
 
         removedMediaOnTrail.forEach {
-            trailsManager.unlinkMedia(trailDto.id, UnLinkeMediaRequestDto(it.id))
+            trailsManager.unlinkMedia(requestedTrail.id, UnLinkeMediaRequestDto(it.id))
         }
         addedMediaOnTrail.forEach {
-            trailsManager.linkMedia(trailDto.id, LinkedMediaDto(it.id, it.description, it.keyVal))
+            trailsManager.linkMedia(requestedTrail.id, LinkedMediaDto(it.id, it.description, it.keyVal))
         }
 
-        trailToUpdate.name = trailDto.name
-        trailToUpdate.description = trailDto.description
-        trailToUpdate.officialEta = trailDto.officialEta
-        trailToUpdate.code = trailDto.code
-        trailToUpdate.isVariant = trailDto.isVariant
-        trailToUpdate.locations = trailDto.locations
-        trailToUpdate.classification = trailDto.classification
-        trailToUpdate.country = trailDto.country
-        trailToUpdate.lastUpdate = Date()
-        trailToUpdate.maintainingSection = trailDto.maintainingSection
-        trailToUpdate.territorialDivision = trailDto.territorialDivision
-        trailToUpdate.cycloDetails = trailDto.cycloDetails
-        trailToUpdate.status = trailDto.status
+        // If the state has been changed, then reflect that on
+        // the places connected with it.
+        if(savedTrail.status != requestedTrail.status) {
+            toggleDraftPublicState(savedTrail, requestedTrail);
+        }
 
-        return trailsManager.save(trailMapper.map(trailToUpdate))
+        savedTrail.name = requestedTrail.name
+        savedTrail.description = requestedTrail.description
+        savedTrail.officialEta = requestedTrail.officialEta
+        savedTrail.code = requestedTrail.code
+        savedTrail.isVariant = requestedTrail.isVariant
+        savedTrail.locations = requestedTrail.locations
+        savedTrail.classification = requestedTrail.classification
+        savedTrail.country = requestedTrail.country
+        savedTrail.lastUpdate = Date()
+        savedTrail.maintainingSection = requestedTrail.maintainingSection
+        savedTrail.territorialDivision = requestedTrail.territorialDivision
+        savedTrail.cycloDetails = requestedTrail.cycloDetails
+        savedTrail.status = requestedTrail.status
+
+        return trailsManager.save(trailMapper.map(savedTrail))
     }
 
     fun countTrailRaw() = trailRawDao.count()
+
+    private fun toggleDraftPublicState(oldTrailFromDb: TrailDto,
+                                       requestedTrail: TrailDto) {
+        if(requestedTrail.status == TrailStatus.DRAFT) {
+            // For each place, unlink the trail
+            unlinkTrailFromAllPlaces(trailMapper.map(oldTrailFromDb))
+        } else {
+           linkTrailToAllAssignedPlaces(requestedTrail)
+        }
+        // For each place in trail, link that back again
+    }
+
+    private fun linkTrailToAllAssignedPlaces(requestedTrail: TrailDto) {
+        requestedTrail.locations.forEach {
+            placeManager.linkTrailToPlace(it.placeId,
+            requestedTrail.id,
+            it.trailCoordinates)
+        }
+    }
+
+    private fun unlinkTrailFromAllPlaces(oldTrailFromDb: Trail) {
+        oldTrailFromDb.locations.forEach {
+            placeManager.removeTrailFromPlaces(it.placeId,
+                    oldTrailFromDb.id,
+                    it.trailCoordinates)
+        }
+    }
 
     private fun getConsistentLocations(importingTrail: TrailImportDto) =
         sortLocationsByTrailCoordinates(importingTrail.locations.map { placeMapper.map(it) })

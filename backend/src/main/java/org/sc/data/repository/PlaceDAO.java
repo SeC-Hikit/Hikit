@@ -83,7 +83,8 @@ public class PlaceDAO {
     }
 
     public void addTrailIdToPlace(final String id,
-                                  final String trailId, TrailCoordinatesDto trailCoordinates) {
+                                  final String trailId,
+                                  final TrailCoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
                 new Document(ADD_TO_SET, new Document(Place.CROSSING,
                         trailId))
