@@ -38,6 +38,7 @@ public class MongoConstants {
 
     public static final String GEO_TYPE = "type";
     public static final String GEO_POINT = "Point";
+    public static final String GEO_POLYGON = "Polygon";
     public static final String GEO_COORDINATES = "coordinates";
 
     public static final FindOneAndReplaceOptions UPSERT_OPTIONS = new FindOneAndReplaceOptions().upsert(true)
