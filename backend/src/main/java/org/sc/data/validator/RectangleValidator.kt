@@ -20,8 +20,7 @@ class RectangleValidator constructor(private val coordinatesValidator: Coordinat
             errors.add(diagonalLengthError)
         }
 
-        val errorsOnCoordinates = listOf(request.bottomLeft, request.topLeft,
-                request.topRight, request.bottomRight).flatMap {
+        val errorsOnCoordinates = listOf(request.bottomLeft, request.topRight).flatMap {
             coordinatesValidator
                     .validate(CoordinatesDto(it.latitude, it.longitude))
         }

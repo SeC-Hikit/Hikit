@@ -98,8 +98,7 @@ class TrailManager @Autowired constructor(
 
     fun findTrailsWithinRectangle(rectangleDto: RectangleDto): List<TrailDto>{
         val trails = trailDAO.findTrailWithinGeoSquare(
-                CoordinatesRectangle(rectangleDto.bottomLeft,rectangleDto.topLeft,
-                        rectangleDto.topRight,rectangleDto.bottomRight),0,100)
+                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight),0,100)
         return trails.map { trailMapper.map(it) }
     }
 

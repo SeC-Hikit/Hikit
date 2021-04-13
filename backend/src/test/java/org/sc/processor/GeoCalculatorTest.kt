@@ -30,10 +30,7 @@ class GeoCalculatorTest {
         println(actual.bottomLeft)
         assertEquals(
             CoordinatesRectangle(
-                Coordinates2D(minLongitude, maxLatitude),
-                Coordinates2D(maxLongitude, maxLatitude),
-                Coordinates2D(minLongitude, minLatitude),
-                Coordinates2D(maxLongitude, minLatitude)
+                    Coordinates2D(minLongitude, minLatitude),Coordinates2D(maxLongitude, maxLatitude)
             ), actual
         )
     }
@@ -48,7 +45,7 @@ class GeoCalculatorTest {
 
         val actual =
             GeoCalculator.getOuterSquareForCoordinates(listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4))
-        val resultingPolygon = CoordinatesRectangle(mockPoint1, mockPoint2, mockPoint3, mockPoint4)
+        val resultingPolygon = CoordinatesRectangle(mockPoint3,mockPoint2)
         assertEquals(resultingPolygon, actual)
     }
 
