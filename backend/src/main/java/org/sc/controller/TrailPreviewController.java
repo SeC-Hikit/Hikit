@@ -1,13 +1,17 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.Status;
-import org.sc.common.rest.TrailPreviewDto;
+import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailPreviewResponse;
+import org.sc.data.model.PlaceRef;
+import org.sc.data.model.TrailClassification;
+import org.sc.data.model.TrailStatus;
 import org.sc.manager.TrailPreviewManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -35,8 +39,22 @@ public class TrailPreviewController {
     @GetMapping
     public TrailPreviewResponse getTrailPreviews(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        return constructResponse(emptySet(), trailManager.getPreviews(skip, limit),
-                trailManager.countPreview(), skip, limit);
+
+        List<TrailPreviewDto> trailPreviewDtos = new ArrayList<>();
+
+        for (int i = 0; i < 25; i++) {
+            trailPreviewDtos.add(        new TrailPreviewDto("abc", "def", TrailClassification.E, new PlaceRefDto("trailId",
+                    new TrailCoordinatesDto(0L, 0L, 0L, 0), "placeId"),
+                    new PlaceRefDto("trailId",
+                            new TrailCoordinatesDto(0L, 0L, 0L, 5000), "placeId"),
+                    true, TrailStatus.DRAFT, new FileDetailsDto(new Date(), "Surprise!", "a FileNAme", "Original Filename")));
+        }
+
+        return constructResponse(emptySet(), trailPreviewDtos,
+                25, skip, limit);
+
+//        return constructResponse(emptySet(), trailManager.getPreviews(skip, limit),
+//                trailManager.countPreview(), skip, limit);
     }
 
     @Operation(summary = "Retrieve RAW trail previews")

@@ -114,6 +114,7 @@ class TrailImporterManager @Autowired constructor(
         trailToUpdate.cycloDetails = trailDto.cycloDetails
         trailToUpdate.status = trailDto.status
 
+
         return trailsManager.save(trailMapper.map(trailToUpdate))
     }
 
