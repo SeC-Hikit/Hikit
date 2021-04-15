@@ -1,0 +1,18 @@
+version: '3.0'
+services:
+  mongo:
+    image: "mongo:4.4.5-bionic"
+    ports:
+      - "27017:27017"
+    restart: always
+  open_altitude:
+    image: "openelevation/open-elevation"
+    ports:
+      - "8080:8080"
+    volumes:
+    - "./data:/code/data"
+#  sec_backend:
+#    image: "sec/backend-1.0-snapshot"
+#    ports:
+#      - "8990:8990"
+#    restart: always

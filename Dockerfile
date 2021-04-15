@@ -1,6 +1,12 @@
 FROM openjdk:8u201-jdk-alpine3.9
+
+WORKDIR ./home
+
 COPY ./backend/target/backend-1.0-SNAPSHOT.jar .
-COPY ./backend/src/main/resources/application.properties .
-CMD ["java", "-jar", "backend-1.0-SNAPSHOT.jar", "--spring.config.location", "file:/"]
+COPY ./docker/application.properties .
+
+RUN mkdir -p ./deployment ./tmp ./logs
+
+CMD ["java", "-jar", "./backend-1.0-SNAPSHOT.jar", "--spring.config.location=file:///home/application.properties"]
 
 EXPOSE 8990
