@@ -37,17 +37,17 @@ class RectangleValidatorTest {
         }
 
         @Test
-    fun `validation should fail on huge rectangle`() {
+    fun `validation should fail from La Spezia to Venezia rectangle`() {
         every { coordsValidatorMock.validate(any())} returns emptySet()
 
         val rectangleValidator = RectangleValidator(coordsValidatorMock)
         val requestMock = mockkClass(RectangleDto::class)
 
-        every { requestMock.bottomLeft.latitude} returns 44.127180
-        every { requestMock.bottomLeft.longitude} returns 10.815780
+        every { requestMock.bottomLeft.latitude} returns 44.065485
+        every { requestMock.bottomLeft.longitude} returns 9.816693
 
-        every { requestMock.topRight.latitude} returns 45.052620
-        every { requestMock.topRight.longitude} returns 11.619787
+        every { requestMock.topRight.latitude} returns 45.469377
+        every { requestMock.topRight.longitude} returns 12.317288
 
         val validateResult = rectangleValidator.validate(requestMock)
         assertTrue(validateResult.contains(RectangleValidator.diagonalLengthError))

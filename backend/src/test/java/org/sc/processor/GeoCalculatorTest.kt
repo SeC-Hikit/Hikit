@@ -26,8 +26,6 @@ class GeoCalculatorTest {
 
         val actual =
             GeoCalculator.getOuterSquareForCoordinates(listOf(mockPoint1, mockPoint2, mockPoint3, mockPoint4))
-        println(Coordinates2D(minLatitude, minLongitude))
-        println(actual.bottomLeft)
         assertEquals(
             CoordinatesRectangle(
                     Coordinates2D(minLongitude, minLatitude),Coordinates2D(maxLongitude, maxLatitude)
