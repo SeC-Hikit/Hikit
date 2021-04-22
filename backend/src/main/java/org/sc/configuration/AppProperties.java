@@ -20,6 +20,7 @@ public class AppProperties {
     private final String dbName;
     private final String mailFrom;
     private final int resourcesCachePeriod;
+    private final boolean enabledSecurity;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
@@ -29,7 +30,8 @@ public class AppProperties {
                          final @Value("${db.uri}") String mongoDbUri,
                          final @Value("${db.name}") String dbName,
                          final @Value("${spring.mail.from}") String mailFrom,
-                         final @Value("${resources.cache.period.seconds:3600}") int resourcesCachePeriod) {
+                         final @Value("${resources.cache.period.seconds:3600}") int resourcesCachePeriod,
+                         final @Value("${security.enabled:true}") boolean enabledSecurity) {
         this.port = port;
         this.trailStorage = storage;
         this.tempStorage = tempStorage;
@@ -38,6 +40,7 @@ public class AppProperties {
         this.dbName = dbName;
         this.mailFrom = mailFrom;
         this.resourcesCachePeriod = resourcesCachePeriod;
+        this.enabledSecurity = enabledSecurity;
     }
 
     public String getPort() {
@@ -70,5 +73,9 @@ public class AppProperties {
 
     public int getResourcesCachePeriod() {
         return resourcesCachePeriod;
+    }
+
+    public boolean getEnabledSecurity() {
+        return enabledSecurity;
     }
 }
