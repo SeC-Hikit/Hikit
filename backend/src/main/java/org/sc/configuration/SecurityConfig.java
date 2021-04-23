@@ -8,6 +8,8 @@ import org.keycloak.adapters.spi.HttpFacade;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.keycloak.adapters.springsecurity.management.HttpSessionManager;
+import org.sc.configuration.auth.AuthenticationFacade;
+import org.sc.configuration.auth.AuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +31,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     public static final String ALL_ALLOWED_WILDCARD = "/*";
     public static final String AUTHENTICATION_IS_DISABLED_MESSAGE = "Authentication is disabled";
+
     @Autowired
     AppProperties appProperties;
 
@@ -49,6 +52,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Override
     protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
         return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
+    }
+
+    @Bean
+    protected AuthenticationProvider authenticationProvider(){
+        return new AuthenticationFacade();
     }
 
     @Bean

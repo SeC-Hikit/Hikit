@@ -1,10 +1,16 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.representations.IDToken;
 import org.sc.common.rest.*;
 import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
+import org.sc.configuration.auth.AuthFacade;
+import org.sc.configuration.auth.AuthenticationProvider;
+import org.sc.configuration.auth.UserAttribute;
 import org.sc.data.validator.*;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
@@ -12,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -32,21 +40,25 @@ public class TrailController {
     private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
     private final TrailImporterManager trailImporterManager;
+    private final AuthFacade authenticationProvider;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
                            final GeneralValidator generalValidator,
                            final ControllerPagination controllerPagination,
-                           final TrailImporterManager trailImporterManager) {
+                           final TrailImporterManager trailImporterManager,
+                           final AuthFacade authFacade) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.controllerPagination = controllerPagination;
         this.trailImporterManager = trailImporterManager;
+        this.authenticationProvider = authFacade;
     }
 
     @Operation(summary = "Count all trails in DB")
     @GetMapping("/count")
     public CountResponse getCount() {
+        String attribute = authenticationProvider.getNotAuthHelper().getAttribute(UserAttribute.section);
         final long count = trailManager.count();
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
