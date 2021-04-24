@@ -21,6 +21,7 @@ public class AppProperties {
     private final String mailFrom;
     private final int resourcesCachePeriod;
     private final boolean enabledSecurity;
+    private final String securityDisabledUserRoles;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
@@ -31,7 +32,9 @@ public class AppProperties {
                          final @Value("${db.name}") String dbName,
                          final @Value("${spring.mail.from}") String mailFrom,
                          final @Value("${resources.cache.period.seconds:3600}") int resourcesCachePeriod,
-                         final @Value("${security.enabled:true}") boolean enabledSecurity) {
+                         final @Value("${security.enabled:true}") boolean enabledSecurity,
+                         final @Value("${security.disabled.user-roles}") String secDisabledUserRoles
+    ) {
         this.port = port;
         this.trailStorage = storage;
         this.tempStorage = tempStorage;
@@ -41,6 +44,7 @@ public class AppProperties {
         this.mailFrom = mailFrom;
         this.resourcesCachePeriod = resourcesCachePeriod;
         this.enabledSecurity = enabledSecurity;
+        this.securityDisabledUserRoles = secDisabledUserRoles;
     }
 
     public String getPort() {
@@ -75,7 +79,11 @@ public class AppProperties {
         return resourcesCachePeriod;
     }
 
-    public boolean getEnabledSecurity() {
+    public boolean getIsSecurityEnabled() {
         return enabledSecurity;
+    }
+
+    public String getSecurityDisabledUserRoles() {
+        return securityDisabledUserRoles;
     }
 }

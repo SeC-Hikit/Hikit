@@ -1,13 +1,12 @@
-package org.sc.controller;
+package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
-import org.sc.common.rest.geo.RectangleDto;
-import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.auth.AuthFacade;
-import org.sc.configuration.auth.UserAttribute;
-import org.sc.data.validator.*;
+import org.sc.controller.ControllerPagination;
+import org.sc.controller.TrailController;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,70 +20,19 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
-import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
-import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.controller.admin.Constants.PREFIX_TRAIL;
 
 @RestController
-@RequestMapping(TrailController.PREFIX)
-public class TrailController {
-
-    public final static String PREFIX = "/trail";
-
-    protected final TrailManager trailManager;
-    protected final GeneralValidator generalValidator;
-    protected final ControllerPagination controllerPagination;
-    protected final TrailImporterManager trailImporterManager;
-    protected final AuthFacade authenticationProvider;
+@RequestMapping(PREFIX_TRAIL)
+public class AdminTrailController extends TrailController {
 
     @Autowired
-    public TrailController(final TrailManager trailManager,
-                           final GeneralValidator generalValidator,
-                           final ControllerPagination controllerPagination,
-                           final TrailImporterManager trailImporterManager,
-                           final AuthFacade authFacade) {
-        this.trailManager = trailManager;
-        this.generalValidator = generalValidator;
-        this.controllerPagination = controllerPagination;
-        this.trailImporterManager = trailImporterManager;
-        this.authenticationProvider = authFacade;
-    }
-
-    @Operation(summary = "Count all trails in DB")
-    @GetMapping("/count")
-    public CountResponse getCount() {
-        final long count = trailManager.count();
-        return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
-    }
-
-    @Operation(summary = "Retrieve trail")
-    @GetMapping
-    public TrailResponse get(
-            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-            @RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return constructTrailResponse(Collections.emptySet(), trailManager.get(light, skip, limit),
-                trailManager.count(), skip, limit);
-    }
-
-    @Operation(summary = "Retrieve trail by ID")
-    @GetMapping("/{id}")
-    public TrailResponse getById(@PathVariable String id,
-                                 @RequestParam(required = false, defaultValue = "false") Boolean light) {
-        return constructTrailResponse(Collections.emptySet(), trailManager.getById(id, light),
-                trailManager.count(),
-                Constants.ONE, Constants.ONE);
-    }
-
-    @Operation(summary = "Retrieve trail by place ID")
-    @GetMapping("/place/{id}")
-    public TrailResponse getByPlaceId(@PathVariable String id,
-                                      @RequestParam(required = false, defaultValue = "false") Boolean light,
-                                      @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                      @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        List<TrailDto> byPlaceRefId = trailManager.getByPlaceRefId(id, light, skip, limit);
-        return constructTrailResponse(Collections.emptySet(), byPlaceRefId,
-                trailManager.count(),
-                skip, limit);
+    public AdminTrailController(final TrailManager trailManager,
+                                final GeneralValidator generalValidator,
+                                final ControllerPagination controllerPagination,
+                                final TrailImporterManager trailImporterManager,
+                                final AuthFacade authFacade) {
+        super(trailManager, generalValidator, controllerPagination, trailImporterManager, authFacade );
     }
 
     @Operation(summary = "Add place to trail")
@@ -98,12 +46,12 @@ public class TrailController {
                     trailManager.linkPlace(id, placeRefDto);
             return constructTrailResponse(errors, linkedPlaceResultDtos,
                     trailManager.count(),
-                    Constants.ONE, Constants.ONE);
+                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
         return constructTrailResponse(errors,
                 Collections.emptyList(),
                 trailManager.count(),
-                Constants.ONE, Constants.ONE);
+                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
 
     @Operation(summary = "Remove place from trail")
@@ -117,11 +65,11 @@ public class TrailController {
                     trailManager.unlinkPlace(id, placeRefDto);
             return constructTrailResponse(errors, linkedPlaceResultDtos,
                     trailManager.count(),
-                    Constants.ONE, Constants.ONE);
+                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
         return constructTrailResponse(errors, Collections.emptyList(),
                 trailManager.count(),
-                Constants.ONE, Constants.ONE);
+                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
 
     @Operation(summary = "Add media to trail")
@@ -136,11 +84,11 @@ public class TrailController {
                     trailManager.linkMedia(id, linkedMediaRequest);
             return constructTrailResponse(errors, linkedMediaResultDtos,
                     trailManager.count(),
-                    Constants.ONE, Constants.ONE);
+                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
         return constructTrailResponse(errors, Collections.emptyList(),
                 trailManager.count(),
-                Constants.ONE, Constants.ONE);
+                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
 
     @Operation(summary = "Remove media from trail")
@@ -154,11 +102,11 @@ public class TrailController {
                     trailManager.unlinkMedia(id, unLinkeMediaRequestDto);
             return constructTrailResponse(errors, linkedMediaResultDtos,
                     trailManager.count(),
-                    Constants.ONE, Constants.ONE);
+                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
         return constructTrailResponse(errors, Collections.emptyList(),
                 trailManager.count(),
-                Constants.ONE, Constants.ONE);
+                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
 
     @Operation(summary = "Remove trail by ID")
@@ -168,12 +116,12 @@ public class TrailController {
         if (!deleted.isEmpty()) {
             return constructTrailResponse(Collections.emptySet(), deleted,
                     trailManager.count(),
-                    Constants.ONE, Constants.ONE);
+                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         } else {
             return constructTrailResponse(Collections.singleton(
                     format("No trail deleted with id '%s'", id)), deleted,
-                    trailManager.count(), Constants.ONE,
-                    Constants.ONE);
+                    trailManager.count(), org.sc.controller.Constants.ONE,
+                    org.sc.controller.Constants.ONE);
         }
     }
 
@@ -186,10 +134,10 @@ public class TrailController {
         if (errors.isEmpty()) {
             List<TrailDto> savedTrail = trailImporterManager.save(request);
             return constructTrailResponse(emptySet(), savedTrail, trailManager.count(),
-                    Constants.ZERO, Constants.ONE);
+                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
         return constructTrailResponse(errors, emptyList(), trailManager.count(),
-                Constants.ZERO, Constants.ONE);
+                org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }
 
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
@@ -201,41 +149,11 @@ public class TrailController {
         if (errors.isEmpty()) {
             List<TrailDto> updatedTrail = trailImporterManager.updateTrail(trailDto);
             return constructTrailResponse(emptySet(), updatedTrail,
-                    updatedTrail.size(), Constants.ZERO, Constants.ONE);
+                    updatedTrail.size(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
 
         return constructTrailResponse(errors, emptyList(),
-                Constants.ZERO, Constants.ZERO, Constants.ONE);
-    }
-
-    @Operation(summary = "Find geo-located trails within a defined polygon")
-    @PostMapping("/geolocate")
-    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto) {
-
-        final Set<String> errors = generalValidator.validate(rectangleDto);
-
-        if (errors.isEmpty()) {
-            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto);
-            return constructTrailResponse(emptySet(), foundTrails,
-                    foundTrails.size(), Constants.ZERO, Constants.ONE);
-        }
-
-        return constructTrailResponse(errors, emptyList(),
-                Constants.ZERO, Constants.ZERO, Constants.ONE);
-    }
-
-    protected TrailResponse constructTrailResponse(Set<String> errors,
-                                                 List<TrailDto> trailDtos,
-                                                 long totalCount,
-                                                 int skip,
-                                                 int limit) {
-        if (!errors.isEmpty()) {
-            return new TrailResponse(Status.ERROR, errors, trailDtos, 1L,
-                    Constants.ONE, limit, totalCount);
-        }
-        return new TrailResponse(Status.OK, errors, trailDtos,
-                controllerPagination.getCurrentPage(skip, limit),
-                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
+                org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }
 
 

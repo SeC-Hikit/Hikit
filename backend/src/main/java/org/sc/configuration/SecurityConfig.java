@@ -70,7 +70,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
 
-        if (!appProperties.getEnabledSecurity()) {
+        if (!appProperties.getIsSecurityEnabled()) {
             LOGGER.warn(AUTHENTICATION_IS_DISABLED_MESSAGE);
             http.authorizeRequests().antMatchers(ALL_ALLOWED_WILDCARD).permitAll();
         } else {

@@ -4,10 +4,8 @@ import org.apache.logging.log4j.Logger;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.IDToken;
-import org.sc.configuration.StartupChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -17,15 +15,25 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 @Service
 @Qualifier(KeycloakAuthAttributeHelper.KEYCLOAK_BEAN)
 public class KeycloakAuthAttributeHelper implements AuthHelper {
+    private static final Logger LOGGER = getLogger(KeycloakAuthAttributeHelper.class);
 
     public static final String KEYCLOAK_BEAN = "KEYCLOAK_BEAN";
-    private static final Logger LOGGER = getLogger(StartupChecker.class);
 
     private final AuthenticationProvider authProvider;
 
     @Autowired
     public KeycloakAuthAttributeHelper(final AuthenticationProvider authenticationProvider) {
         this.authProvider = authenticationProvider;
+    }
+
+    public String getUsername(){
+        final Object principal = authProvider.getAuth().getPrincipal();
+        if(principal instanceof KeycloakPrincipal) {
+            final KeycloakPrincipal<KeycloakSecurityContext> kp =
+                    (KeycloakPrincipal<KeycloakSecurityContext>) principal;
+            return kp.getKeycloakSecurityContext().getIdToken().getPreferredUsername();
+        }
+        throw new IllegalStateException();
     }
 
     public String getAttribute(UserAttribute userAttribute) {
