@@ -11,6 +11,10 @@ import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.*;
+import org.sc.controller.admin.AdminMediaController;
+import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
+import org.sc.controller.admin.TrailImporterController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -36,11 +40,14 @@ public class MediaRestIntegrationTest  {
     public static final String FILE_NAME = "sec_map.png";
 
     @Autowired DataSource dataSource;
+    @Autowired AdminMediaController adminMediaController;
     @Autowired MediaController mediaController;
     @Autowired POIController poiController;
     @Autowired PlaceController placeController;
-    @Autowired TrailImporterController importController;
-    @Autowired TrailController trailController;
+    @Autowired AdminPlaceController adminPlaceController;
+    @Autowired
+    TrailImporterController importController;
+    @Autowired AdminTrailController trailController;
 
     public TrailImportDto expectedTrailDto;
     private TrailResponse trailResponse;
@@ -49,7 +56,7 @@ public class MediaRestIntegrationTest  {
     @Before
     public void setUp(){
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(adminPlaceController);
         trailResponse = trailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }
@@ -57,16 +64,16 @@ public class MediaRestIntegrationTest  {
 
     @Test
     public void shallAddAndRemoveMediaFromPlace() throws IOException {
-        PlaceResponse placeResponse = placeController.create(CORRECT_PLACE_DTO);
+        PlaceResponse placeResponse = adminPlaceController.create(CORRECT_PLACE_DTO);
         String placeId = placeResponse.getContent().get(0).getId();
         final String uploadId = createAndVerifyCreationById();
 
-        placeController.addMedia(placeId, new LinkedMediaDto(uploadId, "", Collections.emptyList()));
+        adminPlaceController.addMedia(placeId, new LinkedMediaDto(uploadId, "", Collections.emptyList()));
         placeId = placeResponse.getContent().get(0).getId();
 
         placeResponse = placeController.get(placeId);
         assertThat(placeResponse.getContent().get(0).getMediaIds().contains(uploadId)).isTrue();
-        placeController.deleteMedia(placeId, new UnLinkeMediaRequestDto(uploadId));
+        adminPlaceController.deleteMedia(placeId, new UnLinkeMediaRequestDto(uploadId));
         placeResponse = placeController.get(placeId);
         assertThat(placeResponse.getContent().get(0).getMediaIds().contains(uploadId)).isFalse();
     }
@@ -94,7 +101,7 @@ public class MediaRestIntegrationTest  {
     @Test
     public void shallCreateOneAndDeleteItWithoutFindingItBack() throws IOException {
         final String uploadId = createAndVerifyCreationById();
-        MediaResponse deleteResponse = mediaController.deleteById(uploadId);
+        MediaResponse deleteResponse = adminMediaController.deleteById(uploadId);
         assertThat(deleteResponse.getStatus()).isEqualTo(Status.OK);
         MediaResponse newCallWithNoResult = mediaController.getById(uploadId);
         assertThat(newCallWithNoResult.getContent().size()).isEqualTo(0);
@@ -169,7 +176,7 @@ public class MediaRestIntegrationTest  {
     }
 
     private MediaResponse uploadValidMedia() throws IOException {
-        return mediaController.upload(
+        return adminMediaController.upload(
                 new MockMultipartFile("file", FILE_NAME, "multipart/form-data",
                         getClass().getClassLoader().getResourceAsStream("media" + File.separator + FILE_NAME)
                 )

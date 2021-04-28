@@ -6,9 +6,9 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
-import org.sc.controller.PlaceController;
-import org.sc.controller.TrailController;
-import org.sc.controller.TrailImporterController;
+import org.sc.controller.admin.TrailImporterController;
+import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +68,9 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Autowired
     TrailImporterController importController;
     @Autowired
-    PlaceController placeController;
+    AdminPlaceController placeController;
     @Autowired
-    TrailController trailController;
+    AdminTrailController trailController;
 
     private TrailResponse trailResponse;
 
@@ -127,7 +127,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     }
 
-    static TrailImportDto createTrailImport(PlaceController placeController) {
+    static TrailImportDto createTrailImport(AdminPlaceController placeController) {
         PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);
@@ -139,7 +139,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
                 lastPlace.getContent().get(0).getId());
     }
 
-    static TrailImportDto createTrailImportForMorePoints(PlaceController placeController) {
+    static TrailImportDto createTrailImportForMorePoints(AdminPlaceController placeController) {
         PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);

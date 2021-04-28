@@ -7,9 +7,11 @@ import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.AccessibilityNotificationController;
-import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
-import org.sc.controller.TrailImporterController;
+import org.sc.controller.admin.AdminAccessibilityIssueController;
+import org.sc.controller.admin.AdminTrailController;
+import org.sc.controller.admin.TrailImporterController;
+import org.sc.controller.admin.AdminPlaceController;
 import org.sc.data.model.AccessibilityNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,13 +42,16 @@ public class AccessibilityNotificationRestIntegrationTest {
     private AccessibilityNotificationController accessibilityNotificationController;
 
     @Autowired
-    private PlaceController placeController;
+    private AdminAccessibilityIssueController adminAccessibilityIssueController;
+
+    @Autowired
+    private AdminPlaceController placeController;
 
     @Autowired
     private TrailImporterController importController;
 
     @Autowired
-    private TrailController trailController;
+    private AdminTrailController trailController;
 
     private TrailResponse trailResponse;
     private String id;
@@ -57,7 +62,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
         trailResponse = trailController.importTrail(trailImportDto);
         id = trailResponse.getContent().get(0).getId();
-        accessibilityNotificationController.createAccessibilityNotification(
+        adminAccessibilityIssueController.createAccessibilityNotification(
                 new AccessibilityNotificationCreationDto(id, EXPECTED_DESCRIPTION,
                         new Date(), true, EXPECTED_COORDINATES));
     }
@@ -80,7 +85,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         AccessibilityNotificationDto firstOccurence = response.getContent().get(0);
 
         Date expectedResolutionDate = new Date();
-        AccessibilityResponse resolvedResponse = accessibilityNotificationController.resolveNotification(
+        AccessibilityResponse resolvedResponse = adminAccessibilityIssueController.resolveNotification(
                 new AccessibilityNotificationResolutionDto(firstOccurence.getId(), ANY_SOLVED_DESC, expectedResolutionDate)
         );
         assertThat(resolvedResponse.getContent().size()).isEqualTo(1);
@@ -112,7 +117,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         assertThat(response.getContent().size()).isEqualTo(1);
         AccessibilityNotificationDto firstOccurence = response.getContent().get(0);
 
-        AccessibilityResponse deleteResponse = accessibilityNotificationController.deleteAccessibilityNotification(firstOccurence.getId());
+        AccessibilityResponse deleteResponse = adminAccessibilityIssueController.deleteAccessibilityNotification(firstOccurence.getId());
         assertThat(deleteResponse.getContent().get(0).getId()).isEqualTo(firstOccurence.getId());
 
         AccessibilityResponse emptyResponse = accessibilityNotificationController.getNotSolvedByTrailId(id, 0, 1);

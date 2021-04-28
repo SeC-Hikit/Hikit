@@ -7,10 +7,10 @@ import org.sc.common.rest.TrailPreviewDto;
 import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
-import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
-import org.sc.controller.TrailImporterController;
+import org.sc.controller.admin.TrailImporterController;
 import org.sc.controller.TrailPreviewController;
+import org.sc.controller.admin.AdminPlaceController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class TrailPreviewRestIntegrationTest {
 
     @Autowired TrailImporterController importController;
     @Autowired TrailPreviewController controller;
-    @Autowired PlaceController placeController;
+    @Autowired AdminPlaceController placeController;
     @Autowired TrailController trailController;
     private TrailResponse trailResponse;
     private String trailId;

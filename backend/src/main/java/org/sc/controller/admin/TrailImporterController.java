@@ -1,9 +1,12 @@
-package org.sc.controller;
+package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
+import org.sc.controller.Constants;
+import org.sc.controller.ControllerPagination;
+import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.manager.TrailFileManager;
 import org.sc.manager.TrailImporterManager;
 import org.sc.processor.GpxFileHandlerHelper;
@@ -20,17 +23,17 @@ import java.util.stream.Collectors;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.sc.controller.admin.Constants.PREFIX_IMPORT;
 
 @RestController
-@RequestMapping(TrailImporterController.PREFIX)
+@RequestMapping(PREFIX_IMPORT)
 public class TrailImporterController {
 
-    public final static String PREFIX = "/import";
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
     private final TrailFileManager trailFileManager;
     private final TrailImporterManager trailImporterManager;
-    private final ControllerPagination controllerPagination;
+    private final TrailRawResponseHelper trailRawResponseHelper;
     private final FileProbeUtil fileProbeUtil;
     private final GpxFileHandlerHelper gpxFileHandlerHelper;
 
@@ -38,12 +41,12 @@ public class TrailImporterController {
     @Autowired
     public TrailImporterController(final TrailFileManager trailFileManager,
                                    final TrailImporterManager trailImporterManager,
-                                   final ControllerPagination controllerPagination,
+                                   final TrailRawResponseHelper trailRawResponseHelper,
                                    final FileProbeUtil fileProbeUtil,
                                    final GpxFileHandlerHelper gpxFileHandlerHelper) {
         this.trailFileManager = trailFileManager;
         this.trailImporterManager = trailImporterManager;
-        this.controllerPagination = controllerPagination;
+        this.trailRawResponseHelper = trailRawResponseHelper;
         this.fileProbeUtil = fileProbeUtil;
         this.gpxFileHandlerHelper = gpxFileHandlerHelper;
     }
@@ -68,9 +71,9 @@ public class TrailImporterController {
                 = trailFileManager.getGPXFilesTempPathList(files);
 
         if (originalFileNamesToTempPaths.isEmpty()) {
-            return constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
+            return trailRawResponseHelper.constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
                     trailImporterManager.countTrailRaw(),
-                    Constants.ZERO, Constants.ONE);
+                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
 
         final Map<String, Path> originalFileNamesToExistingPaths = originalFileNamesToTempPaths
@@ -85,7 +88,6 @@ public class TrailImporterController {
                 .entrySet().stream()
                 .filter(nameToPath -> fileProbeUtil.getFileMimeType(nameToPath.getValue().toFile(),
                         nameToPath.getKey()).equals("application/xml"))
-                // TODO: verify that this works
                 .filter(nameToPath -> gpxFileHandlerHelper.canRead(nameToPath.getValue()))
                 .collect(toMap(Map.Entry::getKey,
                         path -> originalFileNamesToExistingPaths
@@ -109,32 +111,19 @@ public class TrailImporterController {
         final int size = savedTrails.size();
 
 
-        if(size != originalFileNamesToExistingPaths.size()) {
+        if (size != originalFileNamesToExistingPaths.size()) {
             final Set<String> notProcessedFiles = findNotProcessedFiles(originalFileNamesToExistingPaths.keySet(),
                     savedTrails.stream().map(a -> a.getFileDetails().getOriginalFilename()).collect(Collectors.toSet()));
-            return constructResponse(notProcessedFiles, savedTrails, size,
-                    Constants.ZERO, size);
+            return trailRawResponseHelper.constructResponse(notProcessedFiles, savedTrails, size,
+                    org.sc.controller.Constants.ZERO, size);
         }
 
-        return constructResponse(emptySet(), savedTrails, size,
-                Constants.ZERO, size);
+        return trailRawResponseHelper.constructResponse(emptySet(), savedTrails, size,
+                org.sc.controller.Constants.ZERO, size);
     }
 
     private Set<String> findNotProcessedFiles(Set<String> initialFilenames, Set<String> savedFilenames) {
-        return initialFilenames.stream().filter(a-> !savedFilenames.contains(a)).collect(Collectors.toSet());
+        return initialFilenames.stream().filter(a -> !savedFilenames.contains(a)).collect(Collectors.toSet());
     }
 
-    private TrailRawResponse constructResponse(Set<String> errors,
-                                               List<TrailRawDto> dtos,
-                                               long totalCount,
-                                               int skip,
-                                               int limit) {
-        if (!errors.isEmpty()) {
-            return new TrailRawResponse(Status.ERROR, errors, dtos, 1L,
-                    Constants.ONE, limit, totalCount);
-        }
-        return new TrailRawResponse(Status.OK, errors, dtos,
-                controllerPagination.getCurrentPage(skip, limit),
-                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
-    }
 }

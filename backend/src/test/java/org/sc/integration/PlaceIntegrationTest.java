@@ -8,9 +8,9 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
-import org.sc.controller.PlaceController;
-import org.sc.controller.TrailController;
-import org.sc.controller.TrailImporterController;
+import org.sc.controller.admin.TrailImporterController;
+import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,8 +33,8 @@ public class PlaceIntegrationTest extends ImportTrailIT {
     @Autowired
     private DataSource dataSource;
 
-    @Autowired private PlaceController placeController;
-    @Autowired private TrailController trailController;
+    @Autowired private AdminPlaceController placeController;
+    @Autowired private AdminTrailController trailController;
     @Autowired private TrailImporterController importerController;
 
     private PlaceResponse addedPlace;
