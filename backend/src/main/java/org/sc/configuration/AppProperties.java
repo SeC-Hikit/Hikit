@@ -22,6 +22,9 @@ public class AppProperties {
     private final int resourcesCachePeriod;
     private final boolean enabledSecurity;
     private final String securityDisabledUserRoles;
+    private final String instanceId;
+    private final String instanceName;
+    private final String instanceHostname;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
@@ -33,7 +36,10 @@ public class AppProperties {
                          final @Value("${spring.mail.from}") String mailFrom,
                          final @Value("${resources.cache.period.seconds:3600}") int resourcesCachePeriod,
                          final @Value("${security.enabled:true}") boolean enabledSecurity,
-                         final @Value("${security.disabled.user-roles}") String secDisabledUserRoles
+                         final @Value("${security.disabled.user-roles}") String secDisabledUserRoles,
+                         final @Value("${instance.id}") String instanceId,
+                         final @Value("${instance.name}") String instanceName,
+                         final @Value("${instance.hostname:127.0.0.1}") String instanceHostname
     ) {
         this.port = port;
         this.trailStorage = storage;
@@ -45,6 +51,9 @@ public class AppProperties {
         this.resourcesCachePeriod = resourcesCachePeriod;
         this.enabledSecurity = enabledSecurity;
         this.securityDisabledUserRoles = secDisabledUserRoles;
+        this.instanceId = instanceId;
+        this.instanceName = instanceName;
+        this.instanceHostname = instanceHostname;
     }
 
     public String getPort() {
@@ -85,5 +94,17 @@ public class AppProperties {
 
     public String getSecurityDisabledUserRoles() {
         return securityDisabledUserRoles;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    public String getInstanceHostname() {
+        return instanceHostname;
     }
 }

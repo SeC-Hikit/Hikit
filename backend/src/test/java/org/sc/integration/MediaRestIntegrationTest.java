@@ -11,10 +11,7 @@ import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.*;
-import org.sc.controller.admin.AdminMediaController;
-import org.sc.controller.admin.AdminPlaceController;
-import org.sc.controller.admin.AdminTrailController;
-import org.sc.controller.admin.TrailImporterController;
+import org.sc.controller.admin.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -43,6 +40,7 @@ public class MediaRestIntegrationTest  {
     @Autowired AdminMediaController adminMediaController;
     @Autowired MediaController mediaController;
     @Autowired POIController poiController;
+    @Autowired AdminPoiController adminPoiController;
     @Autowired PlaceController placeController;
     @Autowired AdminPlaceController adminPlaceController;
     @Autowired
@@ -140,7 +138,7 @@ public class MediaRestIntegrationTest  {
         String mediaID = createAndVerifyCreationById();
         String aDescription = "A landscape";
         KeyValueDto savedKeyValue = new KeyValueDto("a", "b");
-        poiController.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
+        adminPoiController.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
@@ -148,7 +146,7 @@ public class MediaRestIntegrationTest  {
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
 
         List<KeyValueDto> expectedKeyVal = Collections.singletonList(savedKeyValue);
-        poiController.addMediaToPoi(EXPECTED_ID, new LinkedMediaDto(mediaID, aDescription, expectedKeyVal));
+        adminPoiController.addMediaToPoi(EXPECTED_ID, new LinkedMediaDto(mediaID, aDescription, expectedKeyVal));
         PoiResponse poiResponse = poiController.get(EXPECTED_ID);
 
         LinkedMediaDto linkedMediaDtoInRetrievedPoi = poiResponse.getContent().get(0).getMediaList().get(0);
@@ -156,7 +154,7 @@ public class MediaRestIntegrationTest  {
         assertThat(linkedMediaDtoInRetrievedPoi.getKeyVal()).isEqualTo(expectedKeyVal);
         assertThat(linkedMediaDtoInRetrievedPoi.getDescription()).isEqualTo(aDescription);
 
-        PoiResponse poiResponseAfterRemoval = poiController.removeMediaFromPoi(EXPECTED_ID, new UnLinkeMediaRequestDto(mediaID));
+        PoiResponse poiResponseAfterRemoval = adminPoiController.removeMediaFromPoi(EXPECTED_ID, new UnLinkeMediaRequestDto(mediaID));
         PoiResponse laterReadResponse = poiController.get(EXPECTED_ID);
 
         List<LinkedMediaDto> poiResponseAfterRemovalMediaList = poiResponseAfterRemoval.getContent().get(0).getMediaList();

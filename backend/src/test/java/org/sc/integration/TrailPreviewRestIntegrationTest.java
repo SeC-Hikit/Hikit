@@ -8,6 +8,7 @@ import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
+import org.sc.controller.admin.AdminTrailController;
 import org.sc.controller.admin.TrailImporterController;
 import org.sc.controller.TrailPreviewController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -53,6 +54,7 @@ public class TrailPreviewRestIntegrationTest {
     @Autowired TrailPreviewController controller;
     @Autowired AdminPlaceController placeController;
     @Autowired TrailController trailController;
+    @Autowired AdminTrailController adminTrailController;
     private TrailResponse trailResponse;
     private String trailId;
 
@@ -60,7 +62,7 @@ public class TrailPreviewRestIntegrationTest {
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        trailResponse = trailController.importTrail(trailImportDto);
+        trailResponse = adminTrailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }
 

@@ -5,10 +5,12 @@ import org.sc.common.rest.Status;
 import org.sc.common.rest.response.MaintenanceResponse;
 import org.sc.controller.Constants;
 import org.sc.controller.ControllerPagination;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class MaintenanceResponseHelper {
     final ControllerPagination controllerPagination;
 

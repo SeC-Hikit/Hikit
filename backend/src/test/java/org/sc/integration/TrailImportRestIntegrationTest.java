@@ -6,6 +6,7 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
+import org.sc.controller.TrailController;
 import org.sc.controller.admin.TrailImporterController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
@@ -69,8 +70,8 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     TrailImporterController importController;
     @Autowired
     AdminPlaceController placeController;
-    @Autowired
-    AdminTrailController trailController;
+    @Autowired AdminTrailController adminTrailController;
+    @Autowired TrailController trailController;
 
     private TrailResponse trailResponse;
 
@@ -78,7 +79,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        trailResponse = trailController.importTrail(trailImportDto);
+        trailResponse = adminTrailController.importTrail(trailImportDto);
     }
 
     @Test
@@ -101,7 +102,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Test
     public void delete() {
         String importedTrailId = trailResponse.getContent().get(0).getId();
-        TrailResponse deletedById = trailController.deleteById(importedTrailId);
+        TrailResponse deletedById = adminTrailController.deleteById(importedTrailId);
         assertThat(deletedById.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
         TrailResponse getTrail = trailController.getById(importedTrailId, false);
         Assert.assertTrue(getTrail.getContent().isEmpty());
@@ -109,7 +110,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void contextLoads() {
-        assertThat(trailController).isNotNull();
+        assertThat(adminTrailController).isNotNull();
     }
 
     @After

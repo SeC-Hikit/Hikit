@@ -9,6 +9,7 @@ import org.sc.common.rest.PoiDto;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.POIController;
+import org.sc.controller.admin.AdminPoiController;
 import org.sc.data.model.Poi;
 import org.sc.data.model.PoiMacroType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +49,14 @@ public class PoiRestIntegrationTest {
     private DataSource dataSource;
 
     @Autowired
-    private POIController controller;
+    private AdminPoiController adminPoiController;
+    @Autowired
+    private POIController poiController;
 
     @Before
     public void setUp(){
         IntegrationUtils.clearCollections(dataSource);
-        controller.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
+        adminPoiController.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
@@ -63,7 +66,7 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getById_shouldFindOne(){
-        PoiResponse getPoi = controller.get(EXPECTED_ID);
+        PoiResponse getPoi = poiController.get(EXPECTED_ID);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
@@ -71,7 +74,7 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getAllPaged_shouldFindOne(){
-        PoiResponse getPoi = controller.get(0, 1);
+        PoiResponse getPoi = poiController.get(0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
@@ -79,7 +82,7 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getByMacro_shouldFindOne(){
-        PoiResponse getPoi = controller.getByMacro(EXPECTED_MACRO_TYPE.toString(), 0, 1);
+        PoiResponse getPoi = poiController.getByMacro(EXPECTED_MACRO_TYPE.toString(), 0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
@@ -87,7 +90,7 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getTrailByTrailId_shouldFindOne(){
-        PoiResponse getPoi = controller.getByTrail("123BO", 0, 1);
+        PoiResponse getPoi = poiController.getByTrail("123BO", 0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
@@ -95,7 +98,7 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getTrailLikeName_shouldFind(){
-        PoiResponse getPoi = controller.getByNameOrTags("poiType", 0, 1);
+        PoiResponse getPoi = poiController.getByNameOrTags("poiType", 0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
@@ -103,13 +106,13 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getTrailByNonExistingTrailId_shouldNotFindAny(){
-        PoiResponse getPoi = controller.getByTrail("100BO_NOT_EXISTING", 0, 1);
+        PoiResponse getPoi = poiController.getByTrail("100BO_NOT_EXISTING", 0, 1);
         Assert.assertTrue(getPoi.getContent().isEmpty());
     }
 
     @Test
     public void getTrailByNonExistingMacro_shouldNotFindAny(){
-        PoiResponse getPoi = controller.getByMacro(PoiMacroType.CULTURAL.toString(), 0, 1);
+        PoiResponse getPoi = poiController.getByMacro(PoiMacroType.CULTURAL.toString(), 0, 1);
         Assert.assertTrue(getPoi.getContent().isEmpty());
     }
 
@@ -118,14 +121,14 @@ public class PoiRestIntegrationTest {
         String anyOtherName = "ANY_OTHER_NAME";
         String anyOtherId = "ANY_OTHER_ID";
 
-        controller.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
 
-        PoiResponse getPoi = controller.get( 0, 3);
+        PoiResponse getPoi = poiController.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
@@ -141,28 +144,28 @@ public class PoiRestIntegrationTest {
 
         List<KeyValueDto> expectedKeyVals = Arrays.asList(EXPECTED_KEYVAL, anyOtherKeyVal);
 
-        controller.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals));
 
-        PoiResponse getPoi = controller.get( 0, 3);
+        PoiResponse getPoi = poiController.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
         assertThat(secondElement.getKeyVal().get(0)).isEqualTo(EXPECTED_KEYVAL);
         assertThat(secondElement.getKeyVal().get(1)).isEqualTo(anyOtherKeyVal);
 
-        controller.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
 
-        PoiResponse getAgainPoi = controller.get( 0, 3);
+        PoiResponse getAgainPoi = poiController.get( 0, 3);
 
         PoiDto actual = getAgainPoi.getContent()
                 .stream()
@@ -184,14 +187,14 @@ public class PoiRestIntegrationTest {
 
         List<KeyValueDto> expectedKeyVals = Arrays.asList(EXPECTED_KEYVAL, anyOtherKeyVal);
 
-        controller.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals));
 
-        PoiResponse getPoi = controller.get( 0, 3);
+        PoiResponse getPoi = poiController.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
@@ -201,17 +204,17 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void delete() {
-        PoiResponse getPoi = controller.get(EXPECTED_ID);
+        PoiResponse getPoi = poiController.get(EXPECTED_ID);
         assertThat(getPoi.getContent().get(0).getId()).isEqualTo(EXPECTED_ID);
 
-        controller.deletePoi(EXPECTED_ID);
-        PoiResponse poiResponse = controller.get(EXPECTED_ID);
+        adminPoiController.deletePoi(EXPECTED_ID);
+        PoiResponse poiResponse = poiController.get(EXPECTED_ID);
         assertThat(poiResponse.getContent().size()).isEqualTo(0);
     }
 
     @Test
     public void contextLoads(){
-        assertThat(controller).isNotNull();
+        assertThat(adminPoiController).isNotNull();
     }
 
     @After
