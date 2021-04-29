@@ -27,7 +27,7 @@ import static org.sc.controller.admin.Constants.PREFIX_IMPORT;
 
 @RestController
 @RequestMapping(PREFIX_IMPORT)
-public class TrailImporterController {
+public class AdminTrailImporterController {
 
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
@@ -39,11 +39,11 @@ public class TrailImporterController {
 
 
     @Autowired
-    public TrailImporterController(final TrailFileManager trailFileManager,
-                                   final TrailImporterManager trailImporterManager,
-                                   final TrailRawResponseHelper trailRawResponseHelper,
-                                   final FileProbeUtil fileProbeUtil,
-                                   final GpxFileHandlerHelper gpxFileHandlerHelper) {
+    public AdminTrailImporterController(final TrailFileManager trailFileManager,
+                                        final TrailImporterManager trailImporterManager,
+                                        final TrailRawResponseHelper trailRawResponseHelper,
+                                        final FileProbeUtil fileProbeUtil,
+                                        final GpxFileHandlerHelper gpxFileHandlerHelper) {
         this.trailFileManager = trailFileManager;
         this.trailImporterManager = trailImporterManager;
         this.trailRawResponseHelper = trailRawResponseHelper;

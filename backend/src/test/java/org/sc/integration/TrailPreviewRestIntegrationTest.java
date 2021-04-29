@@ -9,7 +9,7 @@ import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.admin.AdminTrailController;
-import org.sc.controller.admin.TrailImporterController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.TrailPreviewController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.data.model.Trail;
@@ -50,7 +50,8 @@ public class TrailPreviewRestIntegrationTest {
     @Autowired
     private DataSource dataSource;
 
-    @Autowired TrailImporterController importController;
+    @Autowired
+    AdminTrailImporterController importController;
     @Autowired TrailPreviewController controller;
     @Autowired AdminPlaceController placeController;
     @Autowired TrailController trailController;

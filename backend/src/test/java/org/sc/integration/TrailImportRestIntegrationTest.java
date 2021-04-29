@@ -7,7 +7,7 @@ import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
-import org.sc.controller.admin.TrailImporterController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.Trail;
@@ -67,7 +67,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     DataSource dataSource;
 
     @Autowired
-    TrailImporterController importController;
+    AdminTrailImporterController importController;
     @Autowired
     AdminPlaceController placeController;
     @Autowired AdminTrailController adminTrailController;

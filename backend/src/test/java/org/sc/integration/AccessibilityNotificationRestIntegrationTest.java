@@ -7,10 +7,9 @@ import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.AccessibilityNotificationController;
-import org.sc.controller.TrailController;
 import org.sc.controller.admin.AdminAccessibilityIssueController;
 import org.sc.controller.admin.AdminTrailController;
-import org.sc.controller.admin.TrailImporterController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.data.model.AccessibilityNotification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class AccessibilityNotificationRestIntegrationTest {
     private AdminPlaceController placeController;
 
     @Autowired
-    private TrailImporterController importController;
+    private AdminTrailImporterController importController;
 
     @Autowired
     private AdminTrailController trailController;
