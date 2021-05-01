@@ -54,7 +54,7 @@ class RectangleValidatorTest {
     }
 
     @Test
-    fun `validation should pass on rectangle view with diagonal length shorter than 50 km (Bologna to Sasso Marconi)`() {
+    fun `validation shall pass on rectangle view with diagonal length shorter than 50 km (Bologna to Sasso Marconi)`() {
         every { coordsValidatorMock.validate(any())} returns emptySet()
 
         val rectangleValidator = RectangleValidator(coordsValidatorMock)
@@ -67,6 +67,6 @@ class RectangleValidatorTest {
         every { requestMock.topRight.longitude} returns 11.342616
 
         val validateResult = rectangleValidator.validate(requestMock)
-        assertTrue(validateResult.contains(RectangleValidator.diagonalLengthError))
+        assertTrue(validateResult.isEmpty())
     }
 }
