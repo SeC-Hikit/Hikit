@@ -1,6 +1,8 @@
 package org.sc.data.repository;
 
-import com.mongodb.client.*;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -181,17 +183,22 @@ public class TrailDAO {
     }
 
     public List<Trail> findTrailWithinGeoSquare(
-            CoordinatesRectangle geoSquare,
+            final CoordinatesRectangle geoSquare,
             final int skip, final int limit) {
+        final List<Double> resolvedTopLeftVertex = Arrays.asList(geoSquare.getBottomLeft().getLongitude(),
+                geoSquare.getTopRight().getLatitude());
+        final List<Double> resolvedBottomRightVertex = Arrays.asList(geoSquare.getTopRight().getLongitude(),
+                geoSquare.getBottomLeft().getLatitude());
         FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
                 new Document($_GEO_INTERSECT, new Document(
-                        $_GEOMETRY,new Document("type", "Polygon").append("coordinates",
-                        Arrays.asList(
-                                geoSquare.getBottomLeft().getAsList(),
-                                geoSquare.getTopLeft().getAsList(),
-                                geoSquare.getTopRight().getAsList(),
-                                geoSquare.getBottomRight().getAsList()))
-                )))).skip(skip).limit(limit);
+                        $_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
+                        .append(GEO_COORDINATES,
+                                Arrays.asList(
+                                        geoSquare.getBottomLeft().getAsList(),
+                                        resolvedTopLeftVertex,
+                                        geoSquare.getTopRight().getAsList(),
+                                        resolvedBottomRightVertex)
+                        ))))).skip(skip).limit(limit);
         return toTrailsList(foundTrails);
     }
 
