@@ -4,15 +4,7 @@ import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Test
-import org.sc.common.rest.CoordinatesDto
-import org.sc.common.rest.KeyValueDto
-import org.sc.common.rest.MaintenanceCreationDto
-import org.sc.common.rest.PoiDto
 import org.sc.common.rest.geo.RectangleDto
-import org.sc.data.model.PoiMacroType
-import java.lang.String.format
-import org.sc.data.validator.poi.PoiValidator
-import java.util.*
 
 class RectangleValidatorTest {
 
