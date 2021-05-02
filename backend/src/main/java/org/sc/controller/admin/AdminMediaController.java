@@ -90,7 +90,7 @@ public class AdminMediaController {
     @Operation(summary = "Remove media")
     @DeleteMapping("/{id}")
     public MediaResponse deleteById(@PathVariable String id) {
-        if (StringUtils.isEmpty(id)) {
+        if (!generalValidator.validateDeleteMedia(id).isEmpty()) {
             return mediaResponseHelper
                     .constructResponse(Collections.singleton(EMPTY_ID_ERROR),
                             Collections.emptyList(), mediaManager.count(),

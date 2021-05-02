@@ -2,6 +2,7 @@ package org.sc.data.validator
 
 import org.sc.common.rest.*
 import org.sc.common.rest.geo.RectangleDto
+import org.sc.data.validator.auth.AuthRealmValidator
 import org.sc.data.validator.poi.PoiExistenceValidator
 import org.sc.data.validator.poi.PoiValidator
 import org.sc.data.validator.trail.TrailExistenceValidator
@@ -29,8 +30,7 @@ class GeneralValidator @Autowired constructor(
     private val trailExistenceValidator: TrailExistenceValidator,
     private val poiExistenceValidator: PoiExistenceValidator,
     private val poiValidator: PoiValidator,
-    private val rectangleValidator: RectangleValidator
-
+    private val rectangleValidator: RectangleValidator,
 ) {
     fun validate(acd: AccessibilityNotificationCreationDto): Set<String> = accessibilityValidator.validate(acd)
     fun validate(cor: CoordinatesDto): Set<String> = coordinatesValidator.validate(cor)
@@ -47,6 +47,9 @@ class GeneralValidator @Autowired constructor(
     fun validate(poi: PoiDto): Set<String> = poiValidator.validate(poi)
 
     fun validateFileName(fn: String): Set<String> = fileNameValidator.validate(fn)
+
+    fun validateDeleteAcc(id: String): Set<String> = accessibilityValidator.validateDeleteRequest(id)
+    fun validateDeleteMedia(id: String): Set<String> = mediaExistenceValidator.validateDeleteRequest(id)
 
     fun validatePlaceExistence(id: String): Set<String> = placeExistenceValidator.validate(id)
     fun validateMediaExistence(id: String): Set<String> = mediaExistenceValidator.validate(id)

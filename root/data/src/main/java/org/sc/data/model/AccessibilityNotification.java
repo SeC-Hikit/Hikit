@@ -20,6 +20,7 @@ public class AccessibilityNotification {
     public final static String IS_MINOR = "isMinor";
     public final static String RESOLUTION = "resolution";
     public final static String COORDINATES = "coordinates";
+    public final static String RECORD_DETAILS = "recordDetails";
 
     private final String _id;
     private String description;
@@ -29,4 +30,5 @@ public class AccessibilityNotification {
     private boolean minor;
     private CoordinatesWithAltitude coordinates;
     private String resolution;
+    private RecordDetails recordDetails;
 }

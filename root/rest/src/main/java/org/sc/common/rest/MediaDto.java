@@ -16,4 +16,5 @@ public class MediaDto {
     private String fileUrl;
     private String mime;
     private long fileSize;
+    private FileDetailsDto fileDetails;
 }

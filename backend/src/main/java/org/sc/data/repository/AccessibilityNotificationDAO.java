@@ -101,7 +101,7 @@ public class AccessibilityNotificationDAO {
         return accessibilityNotification;
     }
 
-    private List<AccessibilityNotification> getById(final String objectId) {
+    public List<AccessibilityNotification> getById(final String objectId) {
         return new ArrayList<>(toNotificationList(collection.find(
                 new Document(AccessibilityNotification.ID, new ObjectId(objectId)))));
     }

@@ -33,7 +33,12 @@ class TrailManager @Autowired constructor(
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
 
-    fun get(isLight: Boolean, page: Int, count: Int): List<TrailDto> = trailDAO.getTrails(isLight, page, count)
+    fun get(
+        isLight: Boolean,
+        page: Int,
+        count: Int,
+        realm: String
+    ): List<TrailDto> = trailDAO.getTrails(isLight, page, count, realm)
         .map { trailMapper.map(it) }
 
     fun getById(id: String, isLight: Boolean): List<TrailDto> =

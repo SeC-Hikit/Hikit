@@ -13,10 +13,13 @@ import java.util.Date;
 public class AccessibilityNotificationMapper implements Mapper<AccessibilityNotification> {
 
     final CoordinatesMapper coordinatesMapper;
+    private final RecordDetailsMapper recordDetailsMapper;
 
     @Autowired
-    public AccessibilityNotificationMapper(final CoordinatesMapper coordinatesMapper) {
+    public AccessibilityNotificationMapper(final CoordinatesMapper coordinatesMapper,
+                                           final RecordDetailsMapper recordDetailsMapper) {
         this.coordinatesMapper = coordinatesMapper;
+        this.recordDetailsMapper = recordDetailsMapper;
     }
 
     @Override
@@ -32,7 +35,9 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
                 nullableResolutionDate == null ? reportedDate : nullableResolutionDate,
                 document.getBoolean(AccessibilityNotification.IS_MINOR),
                 mapToCoordinates(document),
-                nullableResolution == null ? "" : nullableResolution);
+                nullableResolution == null ? "" : nullableResolution,
+                recordDetailsMapper.mapToObject(document.get(AccessibilityNotification.RECORD_DETAILS, Document.class))
+        );
     }
 
     @Override
@@ -45,7 +50,9 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
                 .append(AccessibilityNotification.IS_MINOR, accessibilityNotification.isMinor())
                 .append(AccessibilityNotification.COORDINATES,
                         coordinatesMapper.mapToDocument(accessibilityNotification.getCoordinates()))
-                .append(AccessibilityNotification.RESOLUTION, accessibilityNotification.getResolution());
+                .append(AccessibilityNotification.RESOLUTION, accessibilityNotification.getResolution())
+                .append(AccessibilityNotification.RECORD_DETAILS,
+                        recordDetailsMapper.mapToDocument(accessibilityNotification.getRecordDetails()));
     }
 
     public Document mapCreationToDocument(AccessibilityNotificationCreationDto accessibilityNotification) {
@@ -57,7 +64,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
                         coordinatesMapper.mapToDocument(accessibilityNotification.getCoordinates()));
     }
 
-    private CoordinatesWithAltitude mapToCoordinates(final Document doc){
+    private CoordinatesWithAltitude mapToCoordinates(final Document doc) {
         final Document document = doc.get(AccessibilityNotification.COORDINATES, Document.class);
         return coordinatesMapper.mapToObject(document);
     }

@@ -36,6 +36,7 @@ public class TrailPreviewRestIntegrationTest {
     public static final String EXPECTED_COUNTRY = "Italy";
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
     public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
+    public static final String ANY_REALM = "S&C";
 
 
 //    public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(TrailImportRestIntegrationTest.EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
@@ -85,7 +86,7 @@ public class TrailPreviewRestIntegrationTest {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailPreviewResponse response = controller.getTrailPreviews(0, 1);
+        TrailPreviewResponse response = controller.getTrailPreviews(0, 1, ANY_REALM);
         assertThat(response.getContent().size()).isEqualTo(1);
         TrailPreviewDto firstResult = response.getContent().get(0);
         assertAll(firstResult);

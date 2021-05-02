@@ -72,6 +72,12 @@ public class AdminAccessibilityIssueController {
     @DeleteMapping("/{id}")
     public AccessibilityResponse deleteAccessibilityNotification(
             @PathVariable String id) {
+        Set<String> errors = generalValidator.validateDeleteAcc(id);
+        if(!errors.isEmpty()) {
+            return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), accessibilityNotManager.count(),
+                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+        }
+
         final List<AccessibilityNotificationDto> isDeleted =
                 accessibilityNotManager.delete(id);
         return accessibilityIssueResponseHelper

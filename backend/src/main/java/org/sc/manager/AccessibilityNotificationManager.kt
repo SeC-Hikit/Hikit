@@ -4,6 +4,7 @@ import org.sc.common.rest.AccessibilityNotificationCreationDto
 import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityNotificationResolutionDto
 import org.sc.data.mapper.AccessibilityNotificationMapper
+import org.sc.data.model.AccessibilityNotification
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,6 +14,9 @@ class AccessibilityNotificationManager @Autowired constructor(
     private val accessibilityDAO: AccessibilityNotificationDAO,
     private val accessibilityMapper: AccessibilityNotificationMapper,
 ) {
+
+    fun byId(id: String): List<AccessibilityNotificationDto> =
+        accessibilityDAO.getById(id).map { accessibilityMapper.map(it) };
 
     fun getSolved(skip: Int, limit: Int): List<AccessibilityNotificationDto> {
         val solved = accessibilityDAO.getSolved(skip, limit)

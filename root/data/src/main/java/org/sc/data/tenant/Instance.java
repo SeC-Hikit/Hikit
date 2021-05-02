@@ -13,11 +13,13 @@ public class Instance {
     public static String INSTANCE_ID = "instanceId";
     public static String NAME = "name";
     public static String HOSTNAME = "hostname";
+    public static String PORT = "port";
     public static String BOOT_TIME = "bootTime";
 
     private String id;
     private String instanceId;
     private String nameId;
+    private String port;
     private String hostname;
     private String bootTime;
 }

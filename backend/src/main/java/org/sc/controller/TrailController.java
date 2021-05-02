@@ -54,9 +54,10 @@ public class TrailController {
     public TrailResponse get(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-            @RequestParam(required = false, defaultValue = "false") Boolean light) {
+            @RequestParam(required = false, defaultValue = "false") Boolean light,
+            @RequestParam(required = false, defaultValue = "*") String realm) {
         return trailResponseHelper
-                .constructResponse(Collections.emptySet(), trailManager.get(light, skip, limit),
+                .constructResponse(Collections.emptySet(), trailManager.get(light, skip, limit, realm),
                         trailManager.count(), skip, limit);
     }
 

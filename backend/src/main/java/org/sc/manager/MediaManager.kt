@@ -50,7 +50,7 @@ class MediaManager @Autowired constructor(
                     Files.size(tempFile)
                 )
             )
-            return mediaDAO.getById(save.first()._id).map { mediaMapper.mediaToDto(it) }
+            return mediaDAO.getById(save.first().id).map { mediaMapper.mediaToDto(it) }
         }
         return emptyList()
     }

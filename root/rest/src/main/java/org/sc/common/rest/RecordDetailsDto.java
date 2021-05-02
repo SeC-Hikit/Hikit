@@ -9,11 +9,9 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FileDetailsDto {
+public class RecordDetailsDto {
     private Date uploadedOn;
     private String uploadedBy;
     private String onInstance;
     private String realm;
-    private String filename;
-    private String originalFilename;
 }

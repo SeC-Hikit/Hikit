@@ -47,7 +47,8 @@ public class StartupChecker {
 
         instanceRegister.register(appProperties.getInstanceId(),
                 appProperties.getInstanceName(),
-                appProperties.getInstanceHostname());
+                appProperties.getInstanceHostname(),
+                appProperties.getPort());
 
         try {
             trailDatasetVersionDao.getLast();

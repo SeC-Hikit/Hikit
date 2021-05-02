@@ -22,11 +22,13 @@ public class InstanceRegister {
 
     public void register(final String id,
                          final String name,
-                         final String hostname) {
+                         final String hostname,
+                         final String port) {
         collection.updateOne(new Document(Instance.ID, id),
                 new Document("$set",
                         new Document(Instance.NAME, name)
                                 .append(Instance.HOSTNAME, hostname)
+                                .append(Instance.PORT, port)
                                 .append(Instance.BOOT_TIME, new Date())),
                 new UpdateOptions().upsert(true));
     }

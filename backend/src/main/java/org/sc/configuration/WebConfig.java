@@ -23,7 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
     private final AppProperties appProperties;
 
     @Autowired
-    public WebConfig(final FileManagementUtil fileManagementUtil, AppProperties appProperties) {
+    public WebConfig(final FileManagementUtil fileManagementUtil,
+                     final AppProperties appProperties) {
         this.fileManagementUtil = fileManagementUtil;
         this.appProperties = appProperties;
     }
