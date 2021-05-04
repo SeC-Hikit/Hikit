@@ -14,8 +14,8 @@ public interface PoiMapper {
     @Mapping(source = "_id", target = "id")
     PoiDto poiToPoiDto(Poi poi);
 
-    @Mapping(source = "id", target = "_id")
-    Poi poiDtoToPoi(PoiDto poi);
+    @Mapping(source = "id", target = "id")
+    Poi map(PoiDto poi);
 
     KeyValueDto keyValueToDto(KeyVal keyVal);
 

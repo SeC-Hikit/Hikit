@@ -8,6 +8,7 @@ import org.sc.data.mapper.PoiMapper
 import org.sc.data.repository.PoiDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class PoiManager @Autowired constructor(
@@ -59,9 +60,15 @@ class PoiManager @Autowired constructor(
         return poiByID
     }
 
-    fun upsertPoi(poiDto: PoiDto): List<PoiDto> {
-        val fromDto = poiDtoMapper.poiDtoToPoi(poiDto)
+    fun create(poiDto: PoiDto): List<PoiDto> {
+        val fromDto = poiDtoMapper.map(poiDto)
         poiDAO.upsert(fromDto)
+        return listOf(poiDto)
+    }
+
+    fun update(poiDto: PoiDto): List<PoiDto> {
+        val fromDto = poiDtoMapper.map(poiDto)
+        poiDAO.update(fromDto)
         return listOf(poiDto)
     }
 

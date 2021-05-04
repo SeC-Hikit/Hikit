@@ -23,8 +23,9 @@ public class Poi {
     public static final String LAST_UPDATE_ON = "lastUpdateOn";
     public static final String EXTERNAL_RESOURCES = "externalResources";
     public static final String KEY_VAL = "kvps";
+    public static final String RECORD_DETAILS = "recordDetails";
 
-    private String _id;
+    private String id;
     private String name;
     private String description;
     private List<String> tags;
@@ -37,5 +38,6 @@ public class Poi {
     private Date lastUpdatedOn;
     private List<String> externalResources;
     private List<KeyVal> keyVal;
+    private RecordDetails recordDetails;
 
 }

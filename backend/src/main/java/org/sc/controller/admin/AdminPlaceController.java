@@ -42,8 +42,8 @@ public class AdminPlaceController {
     public PlaceResponse addMedia(@PathVariable String id,
                                   @RequestBody LinkedMediaDto linkedMediaRequest) {
         final Set<String> errors = generalValidator.validate(linkedMediaRequest);
-        errors.addAll(generalValidator.validatePlaceExistence(id));
         errors.addAll(generalValidator.validateMediaExistence(linkedMediaRequest.getId()));
+        errors.addAll(generalValidator.validatePlace(id));
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
                     placeManager.linkMedia(id, linkedMediaRequest);
@@ -60,7 +60,7 @@ public class AdminPlaceController {
     @PostMapping("/media/{id}")
     public PlaceResponse deleteMedia(@PathVariable String id,
                                      @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
-        final Set<String> errors = generalValidator.validatePlaceExistence(id);
+        final Set<String> errors = generalValidator.validatePlace(id);
         errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
@@ -92,6 +92,12 @@ public class AdminPlaceController {
     @Operation(summary = "Delete place")
     @DeleteMapping("/{id}")
     public PlaceResponse delete(@PathVariable String id) {
+        final Set<String> errors = generalValidator.validatePlace(id);
+        if (!errors.isEmpty()) {
+            return placeResponseHelper.constructResponse(errors,
+                    emptyList(),
+                    placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+        }
         final List<PlaceDto> content = placeManager.deleteById(id);
         return placeResponseHelper.constructResponse(emptySet(),
                 content, placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
@@ -101,6 +107,7 @@ public class AdminPlaceController {
     @PostMapping
     public PlaceResponse update(@RequestBody PlaceDto place) {
         Set<String> errors = generalValidator.validate(place);
+        errors.addAll(generalValidator.validatePlace(place.getId()));
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),

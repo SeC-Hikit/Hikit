@@ -90,11 +90,23 @@ public class PoiDAO {
         return toPoisList(aggregate);
     }
 
-    public List<Poi> upsert(final Poi poiRequest) {
-        // TODO: shall upsert and update the date
+    public List<Poi> update(final Poi poiRequest) {
+        final String existingId = poiRequest.getId();
         final Document poiDoc = mapper.mapToDocument(poiRequest);
-        final String existingOrNewObjectId = poiRequest.get_id() == null ?
-                new ObjectId().toHexString() : poiRequest.get_id();
+        final Document updateResult = collection.findOneAndReplace(
+                new Document(Poi.OBJECT_ID, existingId),
+                poiDoc, new FindOneAndReplaceOptions().upsert(true)
+                        .returnDocument(ReturnDocument.AFTER));
+        if (updateResult != null) {
+            return Collections.singletonList(mapper.mapToObject(updateResult));
+        }
+        throw new IllegalStateException();
+    }
+
+    public List<Poi> upsert(final Poi poiRequest) {
+        final Document poiDoc = mapper.mapToDocument(poiRequest);
+        final String existingOrNewObjectId = poiRequest.getId() == null ?
+                new ObjectId().toHexString() : poiRequest.getId();
         final Document updateResult = collection.findOneAndReplace(
                 new Document(Poi.OBJECT_ID, existingOrNewObjectId),
                 poiDoc, new FindOneAndReplaceOptions().upsert(true)

@@ -56,7 +56,7 @@ public class PoiRestIntegrationTest {
     @Before
     public void setUp(){
         IntegrationUtils.clearCollections(dataSource);
-        adminPoiController.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
+        adminPoiController.create(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
@@ -121,7 +121,7 @@ public class PoiRestIntegrationTest {
         String anyOtherName = "ANY_OTHER_NAME";
         String anyOtherId = "ANY_OTHER_ID";
 
-        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
@@ -144,7 +144,7 @@ public class PoiRestIntegrationTest {
 
         List<KeyValueDto> expectedKeyVals = Arrays.asList(EXPECTED_KEYVAL, anyOtherKeyVal);
 
-        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
@@ -158,7 +158,7 @@ public class PoiRestIntegrationTest {
         assertThat(secondElement.getKeyVal().get(0)).isEqualTo(EXPECTED_KEYVAL);
         assertThat(secondElement.getKeyVal().get(1)).isEqualTo(anyOtherKeyVal);
 
-        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
@@ -187,7 +187,7 @@ public class PoiRestIntegrationTest {
 
         List<KeyValueDto> expectedKeyVals = Arrays.asList(EXPECTED_KEYVAL, anyOtherKeyVal);
 
-        adminPoiController.upsertPoi(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
+        adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,

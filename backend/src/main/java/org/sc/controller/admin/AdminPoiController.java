@@ -36,12 +36,25 @@ public class AdminPoiController {
         this.poiResponseHelper = poiResponseHelper;
     }
 
-    @Operation(summary = "Update POI in DB (or create POI, if not present)")
+    @Operation(summary = "Create a POI")
     @PutMapping
-    public PoiResponse upsertPoi(@RequestBody PoiDto poiDto) {
+    public PoiResponse create(@RequestBody PoiDto poiDto) {
         final Set<String> errors = generalValidator.validate(poiDto);
         if (errors.isEmpty()) {
-            return poiResponseHelper.constructResponse(emptySet(), poiManager.upsertPoi(poiDto),
+            return poiResponseHelper.constructResponse(emptySet(), poiManager.create(poiDto),
+                    poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+        }
+        return poiResponseHelper.constructResponse(errors, emptyList(),
+                poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+    }
+
+    @Operation(summary = "Update a POI")
+    @PostMapping
+    public PoiResponse update(@RequestBody PoiDto poiDto) {
+        final Set<String> errors = generalValidator.validate(poiDto);
+        errors.addAll(generalValidator.validatePoi(poiDto.getId()));
+        if (errors.isEmpty()) {
+            return poiResponseHelper.constructResponse(emptySet(), poiManager.create(poiDto),
                     poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),
@@ -54,6 +67,7 @@ public class AdminPoiController {
                                      @RequestBody LinkedMediaDto linkedMediaRequest) {
         final Set<String> errors = generalValidator.validatePoiExistence(id);
         errors.addAll(generalValidator.validate(linkedMediaRequest));
+        errors.addAll(generalValidator.validatePoi(id));
         if (errors.isEmpty()) {
             final List<PoiDto> poiDtos =
                     poiManager.linkMedia(id, linkedMediaRequest);
@@ -70,6 +84,7 @@ public class AdminPoiController {
                                           @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
         final Set<String> errors = generalValidator.validatePoiExistence(id);
         errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
+        errors.addAll(generalValidator.validatePoi(id));
         if (errors.isEmpty()) {
             return poiResponseHelper.constructResponse(emptySet(), poiManager.unlinkMedia(id, unLinkeMediaRequestDto),
                     poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
@@ -81,8 +96,13 @@ public class AdminPoiController {
     @Operation(summary = "Delete POI")
     @DeleteMapping("/{id}")
     public PoiResponse deletePoi(@PathVariable String id) {
-        List<PoiDto> deleted = poiManager.deleteById(id);
-        return poiResponseHelper.constructResponse(emptySet(), deleted,
-                poiManager.count(), org.sc.controller.Constants.ZERO, Constants.ONE);
+        final Set<String> errors = generalValidator.validatePoi(id);
+        if(errors.isEmpty()) {
+            final List<PoiDto> deleted = poiManager.deleteById(id);
+            return poiResponseHelper.constructResponse(emptySet(), deleted,
+                    poiManager.count(), org.sc.controller.Constants.ZERO, Constants.ONE);
+        }
+        return poiResponseHelper.constructResponse(errors, emptyList(),
+                poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }
 }

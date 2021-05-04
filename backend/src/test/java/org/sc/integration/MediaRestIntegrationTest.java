@@ -138,7 +138,7 @@ public class MediaRestIntegrationTest  {
         String mediaID = createAndVerifyCreationById();
         String aDescription = "A landscape";
         KeyValueDto savedKeyValue = new KeyValueDto("a", "b");
-        adminPoiController.upsertPoi(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
+        adminPoiController.create(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
