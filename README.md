@@ -30,7 +30,7 @@ To get these up and running in the least time possible, use the included `docker
 ```
 cd docker
 sh rset_download.sh
-docker compose-up
+docker-compose up
 ```
 Mind that the above set-up is for *test/dev only* as all services are exposed in the network and they do not
 use authentication.
