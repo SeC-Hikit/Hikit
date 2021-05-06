@@ -2,7 +2,6 @@ package org.sc.data.validator
 
 import org.sc.common.rest.*
 import org.sc.common.rest.geo.RectangleDto
-import org.sc.data.validator.auth.AuthRealmValidator
 import org.sc.data.validator.poi.PoiExistenceValidator
 import org.sc.data.validator.poi.PoiValidator
 import org.sc.data.validator.trail.TrailExistenceValidator
@@ -48,13 +47,13 @@ class GeneralValidator @Autowired constructor(
 
     fun validateFileName(fn: String): Set<String> = fileNameValidator.validate(fn)
 
-    fun validateDeleteAcc(id: String): Set<String> = accessibilityValidator.validateDeleteRequest(id)
-    fun validateDeleteMedia(id: String): Set<String> = mediaExistenceValidator.validateDeleteRequest(id)
-    fun validatePlace(id: String): Set<String> = placeExistenceValidator.validatePlace(id)
-    fun validatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
+    fun validateUpdateAcc(id: String): Set<String> = accessibilityValidator.validateDeleteRequest(id)
+    fun validateUpdateMedia(id: String): Set<String> = mediaExistenceValidator.validateDeleteRequest(id)
+    fun validateUpdatePlace(id: String): Set<String> = placeExistenceValidator.validatePlace(id)
+    fun validateUpdatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
+    fun validateUpdateTrail(id: String): Set<String> = trailExistenceValidator.validateExistenceAndRealm(id)
 
     fun validateMediaExistence(id: String): Set<String> = mediaExistenceValidator.validate(id)
-    fun validateTrailExistence(id: String): Set<String> = trailExistenceValidator.validate(id)
     fun validatePoiExistence(id: String): Set<String> = poiExistenceValidator.validate(id)
     fun validate(rectangleDto: RectangleDto): Set<String> = rectangleValidator.validate(rectangleDto)
 }

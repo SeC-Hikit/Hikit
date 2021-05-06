@@ -43,7 +43,7 @@ public class AdminPlaceController {
                                   @RequestBody LinkedMediaDto linkedMediaRequest) {
         final Set<String> errors = generalValidator.validate(linkedMediaRequest);
         errors.addAll(generalValidator.validateMediaExistence(linkedMediaRequest.getId()));
-        errors.addAll(generalValidator.validatePlace(id));
+        errors.addAll(generalValidator.validateUpdatePlace(id));
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
                     placeManager.linkMedia(id, linkedMediaRequest);
@@ -60,7 +60,7 @@ public class AdminPlaceController {
     @PostMapping("/media/{id}")
     public PlaceResponse deleteMedia(@PathVariable String id,
                                      @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
-        final Set<String> errors = generalValidator.validatePlace(id);
+        final Set<String> errors = generalValidator.validateUpdatePlace(id);
         errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
             final List<PlaceDto> linkedMediaResultDtos =
@@ -92,7 +92,7 @@ public class AdminPlaceController {
     @Operation(summary = "Delete place")
     @DeleteMapping("/{id}")
     public PlaceResponse delete(@PathVariable String id) {
-        final Set<String> errors = generalValidator.validatePlace(id);
+        final Set<String> errors = generalValidator.validateUpdatePlace(id);
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),
@@ -107,7 +107,7 @@ public class AdminPlaceController {
     @PostMapping
     public PlaceResponse update(@RequestBody PlaceDto place) {
         Set<String> errors = generalValidator.validate(place);
-        errors.addAll(generalValidator.validatePlace(place.getId()));
+        errors.addAll(generalValidator.validateUpdatePlace(place.getId()));
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),

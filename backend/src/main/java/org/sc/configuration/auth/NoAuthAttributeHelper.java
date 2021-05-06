@@ -1,6 +1,5 @@
 package org.sc.configuration.auth;
 
-import org.apache.logging.log4j.Logger;
 import org.sc.configuration.AppProperties;
 import org.sc.data.auth.UserToAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Service
 @Qualifier(NoAuthAttributeHelper.NO_AUTH_BEAN)
@@ -29,10 +26,12 @@ public class NoAuthAttributeHelper implements AuthHelper {
     public static final int ELEM_ONE = 1;
 
     final UserToAttributes userToAttributes;
+    private final AppProperties appProperties;
 
     @Autowired
     public NoAuthAttributeHelper(final AppProperties appProperties) {
         userToAttributes = constructUserToAttributes(appProperties);
+        this.appProperties = appProperties;
     }
 
     @Override
@@ -40,11 +39,21 @@ public class NoAuthAttributeHelper implements AuthHelper {
         return userToAttributes.getUsername();
     }
 
-    public String getAttribute(UserAttribute userAttribute) {
+    public String getAttribute(final UserAttribute userAttribute) {
         return userToAttributes.getAttributes().getOrDefault(userAttribute.name(), "");
     }
 
-    private UserToAttributes constructUserToAttributes(AppProperties appProperties) {
+    @Override
+    public String getInstance() {
+        return appProperties.getInstanceId();
+    }
+
+    @Override
+    public String getRealm() {
+        return getAttribute(UserAttribute.realm);
+    }
+
+    private UserToAttributes constructUserToAttributes(final AppProperties appProperties) {
         final String securityDisabledUserRoles = appProperties.getSecurityDisabledUserRoles();
         final String[] userAndRoles = securityDisabledUserRoles.split(USER_DIVIDER);
         final List<String> collect = Arrays.stream(userAndRoles)

@@ -52,7 +52,7 @@ public class AdminPoiController {
     @PostMapping
     public PoiResponse update(@RequestBody PoiDto poiDto) {
         final Set<String> errors = generalValidator.validate(poiDto);
-        errors.addAll(generalValidator.validatePoi(poiDto.getId()));
+        errors.addAll(generalValidator.validateUpdatePoi(poiDto.getId()));
         if (errors.isEmpty()) {
             return poiResponseHelper.constructResponse(emptySet(), poiManager.create(poiDto),
                     poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
@@ -67,7 +67,7 @@ public class AdminPoiController {
                                      @RequestBody LinkedMediaDto linkedMediaRequest) {
         final Set<String> errors = generalValidator.validatePoiExistence(id);
         errors.addAll(generalValidator.validate(linkedMediaRequest));
-        errors.addAll(generalValidator.validatePoi(id));
+        errors.addAll(generalValidator.validateUpdatePoi(id));
         if (errors.isEmpty()) {
             final List<PoiDto> poiDtos =
                     poiManager.linkMedia(id, linkedMediaRequest);
@@ -84,7 +84,7 @@ public class AdminPoiController {
                                           @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
         final Set<String> errors = generalValidator.validatePoiExistence(id);
         errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
-        errors.addAll(generalValidator.validatePoi(id));
+        errors.addAll(generalValidator.validateUpdatePoi(id));
         if (errors.isEmpty()) {
             return poiResponseHelper.constructResponse(emptySet(), poiManager.unlinkMedia(id, unLinkeMediaRequestDto),
                     poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
@@ -96,7 +96,7 @@ public class AdminPoiController {
     @Operation(summary = "Delete POI")
     @DeleteMapping("/{id}")
     public PoiResponse deletePoi(@PathVariable String id) {
-        final Set<String> errors = generalValidator.validatePoi(id);
+        final Set<String> errors = generalValidator.validateUpdatePoi(id);
         if(errors.isEmpty()) {
             final List<PoiDto> deleted = poiManager.deleteById(id);
             return poiResponseHelper.constructResponse(emptySet(), deleted,

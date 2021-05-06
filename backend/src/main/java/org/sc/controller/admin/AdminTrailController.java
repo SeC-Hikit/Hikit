@@ -12,11 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.sc.controller.admin.Constants.PREFIX_TRAIL;
@@ -48,7 +46,7 @@ public class AdminTrailController {
     @PostMapping("/place/{id}")
     public TrailResponse addPlaceToTrail(@PathVariable String id,
                                          @RequestBody PlaceRefDto placeRefDto) {
-        Set<String> errors = generalValidator.validateTrailExistence(id);
+        Set<String> errors = generalValidator.validateUpdateTrail(id);
         errors.addAll(generalValidator.validate(placeRefDto));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedPlaceResultDtos =
@@ -58,7 +56,7 @@ public class AdminTrailController {
                     org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
         return trailResponseHelper.constructResponse(errors,
-                Collections.emptyList(),
+                emptyList(),
                 trailManager.count(),
                 org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
@@ -67,7 +65,7 @@ public class AdminTrailController {
     @DeleteMapping("/place/{id}")
     public TrailResponse removePlaceFromTrail(@PathVariable String id,
                                               @RequestBody PlaceRefDto placeRefDto) {
-        Set<String> errors = generalValidator.validateTrailExistence(id);
+        Set<String> errors = generalValidator.validateUpdateTrail(id);
         errors.addAll(generalValidator.validate(placeRefDto));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedPlaceResultDtos =
@@ -76,7 +74,7 @@ public class AdminTrailController {
                     trailManager.count(),
                     org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
-        return trailResponseHelper.constructResponse(errors, Collections.emptyList(),
+        return trailResponseHelper.constructResponse(errors, emptyList(),
                 trailManager.count(),
                 org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
@@ -86,7 +84,7 @@ public class AdminTrailController {
     public TrailResponse addMediaToTrail(@PathVariable String id,
                                          @RequestBody LinkedMediaDto linkedMediaRequest) {
         final Set<String> errors = generalValidator.validate(linkedMediaRequest);
-        errors.addAll(generalValidator.validateTrailExistence(id));
+        errors.addAll(generalValidator.validateUpdateTrail(id));
         errors.addAll(generalValidator.validateMediaExistence(linkedMediaRequest.getId()));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedMediaResultDtos =
@@ -95,7 +93,7 @@ public class AdminTrailController {
                     trailManager.count(),
                     org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
-        return trailResponseHelper.constructResponse(errors, Collections.emptyList(),
+        return trailResponseHelper.constructResponse(errors, emptyList(),
                 trailManager.count(),
                 org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
@@ -104,7 +102,7 @@ public class AdminTrailController {
     @DeleteMapping("/media/{id}")
     public TrailResponse removeMediaFromTrail(@PathVariable String id,
                                               @RequestBody UnLinkeMediaRequestDto unLinkeMediaRequestDto) {
-        final Set<String> errors = generalValidator.validateTrailExistence(id);
+        final Set<String> errors = generalValidator.validateUpdateTrail(id);
         errors.addAll(generalValidator.validateMediaExistence(unLinkeMediaRequestDto.getId()));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedMediaResultDtos =
@@ -113,7 +111,7 @@ public class AdminTrailController {
                     trailManager.count(),
                     org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
         }
-        return trailResponseHelper.constructResponse(errors, Collections.emptyList(),
+        return trailResponseHelper.constructResponse(errors, emptyList(),
                 trailManager.count(),
                 org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
@@ -121,17 +119,16 @@ public class AdminTrailController {
     @Operation(summary = "Remove trail by ID")
     @DeleteMapping("/{id}")
     public TrailResponse deleteById(@PathVariable String id) {
-        final List<TrailDto> deleted = trailManager.delete(id);
-        if (!deleted.isEmpty()) {
-            return trailResponseHelper.constructResponse(Collections.emptySet(), deleted,
+        final Set<String> errors = generalValidator.validateUpdateTrail(id);
+        if (errors.isEmpty()) {
+            final List<TrailDto> deleted = trailManager.delete(id);
+            return trailResponseHelper.constructResponse(emptySet(), deleted,
                     trailManager.count(),
                     org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
-        } else {
-            return trailResponseHelper.constructResponse(Collections.singleton(
-                    format("No trail deleted with id '%s'", id)), deleted,
-                    trailManager.count(), org.sc.controller.Constants.ONE,
-                    org.sc.controller.Constants.ONE);
         }
+        return trailResponseHelper.constructResponse(emptySet(), emptyList(),
+                trailManager.count(),
+                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
     }
 
     @Operation(summary = "Creates a new trail")
@@ -152,8 +149,8 @@ public class AdminTrailController {
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
     @PostMapping
     public TrailResponse updateTrail(@RequestBody TrailDto trailDto) {
-
         final Set<String> errors = generalValidator.validate(trailDto);
+        errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
 
         if (errors.isEmpty()) {
             List<TrailDto> updatedTrail = trailImporterManager.updateTrail(trailDto);
@@ -164,7 +161,6 @@ public class AdminTrailController {
         return trailResponseHelper.constructResponse(errors, emptyList(),
                 org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }
-
 
 
 }

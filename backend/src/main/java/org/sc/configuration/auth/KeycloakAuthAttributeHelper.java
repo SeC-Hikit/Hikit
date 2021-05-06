@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.IDToken;
+import org.sc.configuration.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,13 @@ public class KeycloakAuthAttributeHelper implements AuthHelper {
     public static final String KEYCLOAK_BEAN = "KEYCLOAK_BEAN";
 
     private final AuthenticationProvider authProvider;
+    private final AppProperties appProperties;
 
     @Autowired
-    public KeycloakAuthAttributeHelper(final AuthenticationProvider authenticationProvider) {
+    public KeycloakAuthAttributeHelper(final AuthenticationProvider authenticationProvider,
+                                       final AppProperties appProperties) {
         this.authProvider = authenticationProvider;
+        this.appProperties = appProperties;
     }
 
     public String getUsername(){
@@ -54,4 +58,15 @@ public class KeycloakAuthAttributeHelper implements AuthHelper {
         }
         throw new IllegalStateException();
     }
+
+    @Override
+    public String getInstance() {
+        return appProperties.getInstanceId();
+    }
+
+    @Override
+    public String getRealm() {
+        return getAttribute(UserAttribute.realm);
+    }
+
 }

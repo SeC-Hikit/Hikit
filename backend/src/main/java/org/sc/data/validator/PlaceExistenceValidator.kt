@@ -19,7 +19,10 @@ class PlaceExistenceValidator @Autowired constructor(
 
     fun validatePlace(id: String): Set<String> {
         val errors = mutableSetOf<String>()
-        errors.addAll(this.validate(id))
+        errors.addAll(validate(id))
+        if (errors.isNotEmpty()) {
+            return errors
+        }
         if (!realmValidator
                 .isAdminSameRealmAsResource(
                     placeManager

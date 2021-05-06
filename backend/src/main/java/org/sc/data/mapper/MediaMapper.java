@@ -8,6 +8,6 @@ import org.sc.data.model.Media;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface MediaMapper {
-    @Mapping(source = Media.OBJECT_ID, target = "id")
+    @Mapping(source = "id", target = "id")
     MediaDto mediaToDto(Media trail);
 }

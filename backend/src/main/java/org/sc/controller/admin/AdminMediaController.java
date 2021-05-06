@@ -1,7 +1,6 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.commons.lang3.StringUtils;
 import org.sc.common.rest.MediaDto;
 import org.sc.common.rest.response.MediaResponse;
 import org.sc.configuration.AppProperties;
@@ -90,7 +89,7 @@ public class AdminMediaController {
     @Operation(summary = "Remove media")
     @DeleteMapping("/{id}")
     public MediaResponse deleteById(@PathVariable String id) {
-        if (!generalValidator.validateDeleteMedia(id).isEmpty()) {
+        if (!generalValidator.validateUpdateMedia(id).isEmpty()) {
             return mediaResponseHelper
                     .constructResponse(Collections.singleton(EMPTY_ID_ERROR),
                             Collections.emptyList(), mediaManager.count(),
