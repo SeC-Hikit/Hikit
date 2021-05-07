@@ -3,18 +3,22 @@ package org.sc.manager
 import org.sc.common.rest.LinkedMediaDto
 import org.sc.common.rest.PlaceDto
 import org.sc.common.rest.UnLinkeMediaRequestDto
+import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceMapper
+import org.sc.data.model.RecordDetails
 import org.sc.data.repository.PlaceDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class PlaceManager @Autowired constructor(
     private val placeDao: PlaceDAO,
     private val placeMapper: PlaceMapper,
     private val trailManager: TrailManager,
-    private val linkedMediaMapper: LinkedMediaMapper
+    private val linkedMediaMapper: LinkedMediaMapper,
+    private val authFacade: AuthFacade
 ) {
 
     fun getPaginated(skip: Int, limit: Int): List<PlaceDto> =
@@ -35,7 +39,12 @@ class PlaceManager @Autowired constructor(
 
 
     fun create(place: PlaceDto): List<PlaceDto> {
-        return placeDao.create(placeMapper.map(place)).map { placeMapper.map(it) }
+        val mapCreation = placeMapper.mapCreation(place)
+        mapCreation.recordDetails = RecordDetails(Date(),
+                authFacade.authHelper.username,
+                authFacade.authHelper.instance,
+                authFacade.authHelper.realm)
+        return placeDao.create(mapCreation).map { placeMapper.map(it) }
     }
 
     fun deleteById(placeId: String): List<PlaceDto> {

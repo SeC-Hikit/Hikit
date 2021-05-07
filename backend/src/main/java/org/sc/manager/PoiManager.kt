@@ -3,8 +3,10 @@ package org.sc.manager
 import org.sc.common.rest.LinkedMediaDto
 import org.sc.common.rest.PoiDto
 import org.sc.common.rest.UnLinkeMediaRequestDto
+import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PoiMapper
+import org.sc.data.model.RecordDetails
 import org.sc.data.repository.PoiDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -14,7 +16,8 @@ import java.util.*
 class PoiManager @Autowired constructor(
     private val poiDtoMapper: PoiMapper,
     private val poiDAO: PoiDAO,
-    private val linkedMediaMapper: LinkedMediaMapper)
+    private val linkedMediaMapper: LinkedMediaMapper,
+    private val authFacade: AuthFacade)
 {
 
     fun getPoiPaginated(page: Int, count: Int): List<PoiDto> {
@@ -62,6 +65,11 @@ class PoiManager @Autowired constructor(
 
     fun create(poiDto: PoiDto): List<PoiDto> {
         val fromDto = poiDtoMapper.map(poiDto)
+        val authHelper = authFacade.authHelper
+        fromDto.recordDetails = RecordDetails(Date(),
+                authHelper.username,
+                authHelper.instance,
+                authHelper.realm)
         poiDAO.upsert(fromDto)
         return listOf(poiDto)
     }

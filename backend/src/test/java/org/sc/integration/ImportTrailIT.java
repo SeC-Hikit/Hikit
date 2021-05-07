@@ -4,9 +4,10 @@ import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.PlaceRefDto;
 import org.sc.common.rest.TrailCoordinatesDto;
-import org.sc.configuration.DataSource;
-import org.sc.data.model.*;
+import org.sc.data.model.TrailClassification;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -16,6 +17,9 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 public class ImportTrailIT {
+
+//    private static final String USER_ADMIN = "Luke";
+//    private static final String USER_ADMIN = "Luke";
 
     private static final String EXPECTED_PLACE_ID = "ANY_P1";
     private static final String EXPECTED_PLACE_ID2 = "ANY_P2";
@@ -32,6 +36,11 @@ public class ImportTrailIT {
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
     public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
 
+    public static final Date A_DATE = Date.from(Instant.now().minus(1, ChronoUnit.DAYS));
+
+//    public static final RecordDetailsDto ANY_RECORD_DETAILS_DTO = new RecordDetailsDto(A_DATE, );
+//    public static final FileDetailsDto ANY_FILE_DETAILS_DTO = new FileDetailsDto(A_DATE, );
+
 
     public static final CoordinatesDto START_COORDINATES_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
     public static final CoordinatesDto INTERMEDIATE_COORDINATES_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
@@ -45,8 +54,8 @@ public class ImportTrailIT {
     public static final PlaceRefDto START_REF_COORDINATE = new PlaceRefDto(EXPECTED_NAME, START_EXPECTED_COORDINATE, EXPECTED_PLACE_ID);
     public static final PlaceRefDto END_REF_COORDINATE = new PlaceRefDto(EXPECTED_NAME_2, END_EXPECTED_COORDINATE, EXPECTED_PLACE_ID2);
 
-    public static final PlaceDto EXPECTED_START_POS = new PlaceDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_TAGS, emptyList(), singletonList(START_COORDINATES_DTO), emptyList());
-    public static final PlaceDto EXPECTED_FINAL_POS = new PlaceDto(EXPECTED_ID2, EXPECTED_NAME_2, EXPECTED_DESCRIPTION, EXPECTED_TAGS_2, emptyList(), singletonList(END_COORDINATES_DTO), emptyList());
+    public static final PlaceDto EXPECTED_START_POS = new PlaceDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_TAGS, emptyList(), singletonList(START_COORDINATES_DTO), emptyList(), ANY_RECORD_DETAILS_DTO);
+    public static final PlaceDto EXPECTED_FINAL_POS = new PlaceDto(EXPECTED_ID2, EXPECTED_NAME_2, EXPECTED_DESCRIPTION, EXPECTED_TAGS_2, emptyList(), singletonList(END_COORDINATES_DTO), emptyList(), ANY_RECORD_DETAILS_DTO);
 
 
     public static final String PLACE_EXPECTED_DESCRIPTION = "<p>ANY_DESCRIPTION</p>";

@@ -2,6 +2,7 @@ package org.sc.manager
 
 import org.sc.common.rest.MaintenanceCreationDto
 import org.sc.common.rest.MaintenanceDto
+import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.MaintenanceMapper
 import org.sc.data.repository.MaintenanceDAO
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +11,8 @@ import org.springframework.stereotype.Component
 @Component
 class MaintenanceManager @Autowired constructor(
     private val maintenanceDao: MaintenanceDAO,
-    private val maintenanceMapper: MaintenanceMapper
+    private val maintenanceMapper: MaintenanceMapper,
+    private val authFacade: AuthFacade
 ) {
 
     fun getFuture(page: Int, count: Int): List<MaintenanceDto> =
@@ -25,7 +27,6 @@ class MaintenanceManager @Autowired constructor(
 
     fun upsert(request: MaintenanceCreationDto): List<MaintenanceDto> =
         maintenanceDao.upsert( maintenanceMapper.map(request) ).map { maintenanceMapper.map(it) }
-
 
     fun delete(id: String): List<MaintenanceDto> =
       maintenanceDao.delete(id).map { maintenanceMapper.map(it) }

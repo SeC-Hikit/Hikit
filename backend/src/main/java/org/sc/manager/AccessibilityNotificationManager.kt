@@ -3,8 +3,8 @@ package org.sc.manager
 import org.sc.common.rest.AccessibilityNotificationCreationDto
 import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityNotificationResolutionDto
+import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.AccessibilityNotificationMapper
-import org.sc.data.model.AccessibilityNotification
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component
 class AccessibilityNotificationManager @Autowired constructor(
     private val accessibilityDAO: AccessibilityNotificationDAO,
     private val accessibilityMapper: AccessibilityNotificationMapper,
+    private val authFacade: AuthFacade
 ) {
 
     fun byId(id: String): List<AccessibilityNotificationDto> =

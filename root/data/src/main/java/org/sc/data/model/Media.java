@@ -26,7 +26,7 @@ public class Media {
     private String fileName;
     private String fileUrl;
     private String mime;
-    private long fileSize;
+    private Long fileSize;
     private FileDetails fileDetails;
 
 }

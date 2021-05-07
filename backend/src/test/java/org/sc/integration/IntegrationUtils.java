@@ -6,6 +6,7 @@ import org.sc.configuration.DataSource;
 import org.sc.data.model.*;
 
 public class IntegrationUtils {
+
     static void emptyCollection(final DataSource dataSource,
                                 final String collectionName){
         MongoCollection<Document> collection =
