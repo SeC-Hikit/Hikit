@@ -19,11 +19,13 @@ public class Maintenance {
     public static final String DESCRIPTION = "description";
     public static final String CONTACT = "contact";
     public static final String MEETING_PLACE = "meetingPlace";
+    public static final String RECORD_DETAILS = "recordDetails";
 
-    private String _id;
+    private String id;
     private Date date;
     private String trailId;
     private String meetingPlace;
     private String description;
     private String contact;
+    private RecordDetails recordDetails;
 }

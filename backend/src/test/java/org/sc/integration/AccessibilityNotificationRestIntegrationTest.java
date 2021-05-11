@@ -32,7 +32,7 @@ public class AccessibilityNotificationRestIntegrationTest {
     public static final CoordinatesDto EXPECTED_COORDINATES = new CoordinatesDto(44.436084, 11.315620, 250.0);
     public static final String ANY_SOLVED_DESC = "ANY_SOLVED_DESC";
 
-    AccessibilityNotificationCreationDto expectedCreationDto;
+    AccessibilityNotificationDto expectedCreationDto;
 
     @Autowired
     private DataSource dataSource;
@@ -61,9 +61,9 @@ public class AccessibilityNotificationRestIntegrationTest {
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
         trailResponse = trailController.importTrail(trailImportDto);
         id = trailResponse.getContent().get(0).getId();
-        adminAccessibilityIssueController.createAccessibilityNotification(
-                new AccessibilityNotificationCreationDto(id, EXPECTED_DESCRIPTION,
-                        new Date(), true, EXPECTED_COORDINATES));
+        adminAccessibilityIssueController.create(
+                new AccessibilityNotificationDto(null, EXPECTED_DESCRIPTION, id,
+                        new Date(), null, true, null, EXPECTED_COORDINATES, null));
     }
 
     @Test

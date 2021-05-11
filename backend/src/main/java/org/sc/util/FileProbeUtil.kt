@@ -8,6 +8,10 @@ import java.io.File
 @Component
 class FileProbeUtil {
 
+    companion object {
+        const val GPX_MIME_TYPE = "application/xml"
+    }
+
     private val tika = Tika()
 
     fun isFileNameInCorrectFormat(fileName : String) : Boolean = StringUtils.countMatches(fileName, ".") > 0

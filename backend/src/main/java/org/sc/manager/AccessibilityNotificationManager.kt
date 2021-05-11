@@ -1,13 +1,14 @@
 package org.sc.manager
 
-import org.sc.common.rest.AccessibilityNotificationCreationDto
 import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityNotificationResolutionDto
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.AccessibilityNotificationMapper
+import org.sc.data.model.RecordDetails
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class AccessibilityNotificationManager @Autowired constructor(
@@ -47,9 +48,16 @@ class AccessibilityNotificationManager @Autowired constructor(
         accessibilityDAO.delete(objectId).map { accessibilityMapper.map(it) }
 
 
-    fun upsert(accessibilityNotificationCreation: AccessibilityNotificationCreationDto): List<AccessibilityNotificationDto> =
-        accessibilityDAO.insert(accessibilityNotificationCreation)
+    fun create(accessibilityNotificationCreation: AccessibilityNotificationDto): List<AccessibilityNotificationDto> {
+        val mapped = accessibilityMapper.map(accessibilityNotificationCreation)
+        val authHelper = authFacade.authHelper
+        mapped.recordDetails = RecordDetails(Date(),
+            authHelper.username,
+            authHelper.instance,
+            authHelper.realm)
+        return accessibilityDAO.insert(mapped)
             .map { accessibilityMapper.map(it) }
+    }
 
     fun count(): Long = accessibilityDAO.countAccessibility()
     fun countSolved(): Long = accessibilityDAO.countSolved()

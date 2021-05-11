@@ -38,7 +38,7 @@ public class AppProperties {
                          final @Value("${security.enabled:true}") boolean enabledSecurity,
                          final @Value("${security.disabled.user-roles}") String secDisabledUserRoles,
                          final @Value("${instance.id}") String instanceId,
-                         final @Value("${instance.name}") String instanceName,
+                         final @Value("${instance.realm}") String instanceName,
                          final @Value("${instance.hostname:127.0.0.1}") String instanceHostname
     ) {
         this.port = port;

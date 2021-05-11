@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static org.sc.controller.Constants.*;
 import static org.sc.controller.admin.Constants.PREFIX_PLACE;
 
 @RestController
@@ -49,11 +50,11 @@ public class AdminPlaceController {
                     placeManager.linkMedia(id, linkedMediaRequest);
             return placeResponseHelper.constructResponse(emptySet(),
                     linkedMediaResultDtos,
-                    placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    placeManager.count(), ZERO, ONE);
         }
         return placeResponseHelper.constructResponse(errors,
                 emptyList(),
-                placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                placeManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Delete media from place")
@@ -67,11 +68,11 @@ public class AdminPlaceController {
                     placeManager.unlinkMedia(id, unLinkeMediaRequestDto);
             return placeResponseHelper.constructResponse(emptySet(),
                     linkedMediaResultDtos,
-                    placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    placeManager.count(), ZERO, ONE);
         }
         return placeResponseHelper.constructResponse(errors,
                 emptyList(),
-                placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                placeManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Add place")
@@ -81,12 +82,12 @@ public class AdminPlaceController {
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),
-                    placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    placeManager.count(), ZERO, ONE);
         }
         List<PlaceDto> placeDtoList = placeManager.create(place);
         return placeResponseHelper.constructResponse(emptySet(),
                 placeDtoList,
-                placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                placeManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Delete place")
@@ -96,11 +97,11 @@ public class AdminPlaceController {
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),
-                    placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    placeManager.count(), ZERO, ONE);
         }
         final List<PlaceDto> content = placeManager.deleteById(id);
         return placeResponseHelper.constructResponse(emptySet(),
-                content, placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                content, placeManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Update place")
@@ -111,11 +112,11 @@ public class AdminPlaceController {
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),
-                    placeManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    placeManager.count(), ZERO, ONE);
         }
         final List<PlaceDto> placeDtoList = placeManager.update(place);
         return placeResponseHelper.constructResponse(emptySet(),
-                placeDtoList, placeManager.count(), org.sc.controller.Constants.ZERO, Constants.ONE);
+                placeDtoList, placeManager.count(), ZERO, ONE);
     }
 
 

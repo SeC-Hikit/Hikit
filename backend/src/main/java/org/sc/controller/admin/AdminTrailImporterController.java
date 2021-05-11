@@ -23,7 +23,9 @@ import java.util.stream.Collectors;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.sc.controller.Constants.*;
 import static org.sc.controller.admin.Constants.PREFIX_IMPORT;
+import static org.sc.util.FileProbeUtil.GPX_MIME_TYPE;
 
 @RestController
 @RequestMapping(PREFIX_IMPORT)
@@ -73,7 +75,7 @@ public class AdminTrailImporterController {
         if (originalFileNamesToTempPaths.isEmpty()) {
             return trailRawResponseHelper.constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
                     trailImporterManager.countTrailRaw(),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
 
         final Map<String, Path> originalFileNamesToExistingPaths = originalFileNamesToTempPaths
@@ -87,7 +89,7 @@ public class AdminTrailImporterController {
         final Map<String, Path> gpxValidFiles = originalFileNamesToExistingPaths
                 .entrySet().stream()
                 .filter(nameToPath -> fileProbeUtil.getFileMimeType(nameToPath.getValue().toFile(),
-                        nameToPath.getKey()).equals("application/xml"))
+                        nameToPath.getKey()).equals(GPX_MIME_TYPE))
                 .filter(nameToPath -> gpxFileHandlerHelper.canRead(nameToPath.getValue()))
                 .collect(toMap(Map.Entry::getKey,
                         path -> originalFileNamesToExistingPaths
@@ -115,11 +117,11 @@ public class AdminTrailImporterController {
             final Set<String> notProcessedFiles = findNotProcessedFiles(originalFileNamesToExistingPaths.keySet(),
                     savedTrails.stream().map(a -> a.getFileDetails().getOriginalFilename()).collect(Collectors.toSet()));
             return trailRawResponseHelper.constructResponse(notProcessedFiles, savedTrails, size,
-                    org.sc.controller.Constants.ZERO, size);
+                    ZERO, size);
         }
 
         return trailRawResponseHelper.constructResponse(emptySet(), savedTrails, size,
-                org.sc.controller.Constants.ZERO, size);
+                ZERO, size);
     }
 
     private Set<String> findNotProcessedFiles(Set<String> initialFilenames, Set<String> savedFilenames) {

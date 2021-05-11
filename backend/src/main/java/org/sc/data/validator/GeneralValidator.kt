@@ -31,11 +31,11 @@ class GeneralValidator @Autowired constructor(
     private val poiValidator: PoiValidator,
     private val rectangleValidator: RectangleValidator,
 ) {
-    fun validate(acd: AccessibilityNotificationCreationDto): Set<String> = accessibilityValidator.validate(acd)
+    fun validate(acd: AccessibilityNotificationDto): Set<String> = accessibilityValidator.validate(acd)
     fun validate(cor: CoordinatesDto): Set<String> = coordinatesValidator.validate(cor)
     fun validate(kv: KeyValueDto): Set<String> = keyValValidator.validate(kv)
     fun validate(lm: LinkedMediaDto): Set<String> = linkedMediaValidator.validate(lm)
-    fun validate(md: MaintenanceCreationDto): Set<String> = maintenanceValidator.validate(md)
+    fun validate(md: MaintenanceDto): Set<String> = maintenanceValidator.validate(md)
     fun validate(fl: File): Set<String> = mediaFileValidator.validate(fl)
     fun validate(pld: PlaceRefDto): Set<String> = placeRefValidator.validate(pld)
     fun validate(pd: PlaceDto): Set<String> = placeValidator.validate(pd)
@@ -52,6 +52,7 @@ class GeneralValidator @Autowired constructor(
     fun validateUpdatePlace(id: String): Set<String> = placeExistenceValidator.validatePlace(id)
     fun validateUpdatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
     fun validateUpdateTrail(id: String): Set<String> = trailExistenceValidator.validateExistenceAndRealm(id)
+    fun validateUpdateMaintenance(id: String): Set<String> = maintenanceValidator.validateExistenceAndRealm(id)
 
     fun validateMediaExistence(id: String): Set<String> = mediaExistenceValidator.validate(id)
     fun validatePoiExistence(id: String): Set<String> = poiExistenceValidator.validate(id)

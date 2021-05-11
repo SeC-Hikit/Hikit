@@ -58,6 +58,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
             singletonList(new PlaceRefDto(EXPECTED_NAME,
                     INTERMEDIATE_EXPECTED_COORDINATE, EXPECTED_PLACE_ID_INTERMEDIATE));
+    public static final String REALM = "S&C";
 
     public static List<PlaceRefDto> LOCATION_REFS;
 
@@ -93,7 +94,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailResponse getTrail = trailController.get(0, 0, false);
+        TrailResponse getTrail = trailController.get(0, 0, false, REALM);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);

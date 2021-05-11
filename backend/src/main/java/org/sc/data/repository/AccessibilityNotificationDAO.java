@@ -6,7 +6,6 @@ import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.common.rest.AccessibilityNotificationCreationDto;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
@@ -75,8 +74,8 @@ public class AccessibilityNotificationDAO {
         return byTrailId;
     }
 
-    public List<AccessibilityNotification> insert(final AccessibilityNotificationCreationDto accessibilityNotification) {
-        final Document accessibilityNotificationDocument = mapper.mapCreationToDocument(accessibilityNotification);
+    public List<AccessibilityNotification> insert(final AccessibilityNotification accessibilityNotification) {
+        final Document accessibilityNotificationDocument = mapper.mapToDocument(accessibilityNotification);
         final Document addedResult = collection.findOneAndReplace(
                 new Document(), accessibilityNotificationDocument,
                 new FindOneAndReplaceOptions().upsert(true)

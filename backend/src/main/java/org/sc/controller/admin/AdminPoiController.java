@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static org.sc.controller.Constants.*;
 import static org.sc.controller.admin.Constants.PREFIX_POI;
 
 @RestController
@@ -42,10 +43,10 @@ public class AdminPoiController {
         final Set<String> errors = generalValidator.validate(poiDto);
         if (errors.isEmpty()) {
             return poiResponseHelper.constructResponse(emptySet(), poiManager.create(poiDto),
-                    poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    poiManager.count(), ZERO, ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),
-                poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                poiManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Update a POI")
@@ -55,10 +56,10 @@ public class AdminPoiController {
         errors.addAll(generalValidator.validateUpdatePoi(poiDto.getId()));
         if (errors.isEmpty()) {
             return poiResponseHelper.constructResponse(emptySet(), poiManager.create(poiDto),
-                    poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    poiManager.count(), ZERO, ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),
-                poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                poiManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Add media to POI")
@@ -72,10 +73,10 @@ public class AdminPoiController {
             final List<PoiDto> poiDtos =
                     poiManager.linkMedia(id, linkedMediaRequest);
             return poiResponseHelper.constructResponse(emptySet(), poiDtos,
-                    poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    poiManager.count(), ZERO, ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),
-                poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                poiManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Remove media from POI")
@@ -87,10 +88,10 @@ public class AdminPoiController {
         errors.addAll(generalValidator.validateUpdatePoi(id));
         if (errors.isEmpty()) {
             return poiResponseHelper.constructResponse(emptySet(), poiManager.unlinkMedia(id, unLinkeMediaRequestDto),
-                    poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    poiManager.count(), ZERO, ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),
-                poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                poiManager.count(), ZERO, ONE);
     }
 
     @Operation(summary = "Delete POI")
@@ -100,9 +101,9 @@ public class AdminPoiController {
         if(errors.isEmpty()) {
             final List<PoiDto> deleted = poiManager.deleteById(id);
             return poiResponseHelper.constructResponse(emptySet(), deleted,
-                    poiManager.count(), org.sc.controller.Constants.ZERO, Constants.ONE);
+                    poiManager.count(), ZERO, ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),
-                poiManager.count(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                poiManager.count(), ZERO, ONE);
     }
 }

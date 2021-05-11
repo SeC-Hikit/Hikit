@@ -1,8 +1,7 @@
 package org.sc.data.validator
 
 import org.apache.commons.lang3.StringUtils.isEmpty
-import org.sc.common.rest.AccessibilityNotificationCreationDto
-import org.sc.data.repository.AccessibilityNotificationDAO
+import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.data.validator.auth.AuthRealmValidator
 import org.sc.manager.AccessibilityNotificationManager
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,14 +12,14 @@ import java.util.*
 class AccessibilityValidator @Autowired constructor(
     private val authRealmValidator: AuthRealmValidator,
     private val accessibilityNotificationManager: AccessibilityNotificationManager
-) : Validator<AccessibilityNotificationCreationDto> {
+) : Validator<AccessibilityNotificationDto> {
 
     companion object {
         const val noParamSpecifiedError = "Empty field '%s'"
         const val dateInFutureError = "Date field with value '%s' is in the future"
     }
 
-    override fun validate(request: AccessibilityNotificationCreationDto): Set<String> {
+    override fun validate(request: AccessibilityNotificationDto): Set<String> {
         val errors = mutableSetOf<String>()
 
         if (isEmpty(request.trailId)) {

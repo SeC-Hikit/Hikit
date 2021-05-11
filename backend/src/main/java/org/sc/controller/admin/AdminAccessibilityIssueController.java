@@ -2,7 +2,6 @@ package org.sc.controller.admin;
 
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.AccessibilityNotificationCreationDto;
 import org.sc.common.rest.AccessibilityNotificationDto;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.common.rest.response.AccessibilityResponse;
@@ -55,15 +54,15 @@ public class AdminAccessibilityIssueController {
     @Operation(summary = "Add accessibility notification")
     @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public AccessibilityResponse createAccessibilityNotification(
-            @RequestBody AccessibilityNotificationCreationDto accessibilityNotificationCreation) {
+    public AccessibilityResponse create(
+            @RequestBody AccessibilityNotificationDto accessibilityNotificationCreation) {
         final Set<String> errors = generalValidator.validate(accessibilityNotificationCreation);
         if (!errors.isEmpty()) {
             return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), accessibilityNotManager.count(),
                     org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
         return accessibilityIssueResponseHelper
-                .constructResponse(errors, accessibilityNotManager.upsert(accessibilityNotificationCreation),
+                .constructResponse(errors, accessibilityNotManager.create(accessibilityNotificationCreation),
                         accessibilityNotManager.count(),
                         org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }

@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static org.sc.controller.Constants.*;
 import static org.sc.controller.admin.Constants.PREFIX_TRAIL;
 
 @RestController
@@ -26,20 +27,17 @@ public class AdminTrailController {
     private final TrailManager trailManager;
     private final GeneralValidator generalValidator;
     private final TrailImporterManager trailImporterManager;
-    private final AuthFacade authFacade;
     private final TrailResponseHelper trailResponseHelper;
 
     @Autowired
     public AdminTrailController(final TrailManager trailManager,
                                 final GeneralValidator generalValidator,
                                 final TrailResponseHelper trailResponseHelper,
-                                final TrailImporterManager trailImporterManager,
-                                final AuthFacade authFacade) {
+                                final TrailImporterManager trailImporterManager) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
         this.trailImporterManager = trailImporterManager;
-        this.authFacade = authFacade;
     }
 
     @Operation(summary = "Add place to trail")
@@ -53,12 +51,12 @@ public class AdminTrailController {
                     trailManager.linkPlace(id, placeRefDto);
             return trailResponseHelper.constructResponse(errors, linkedPlaceResultDtos,
                     trailManager.count(),
-                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                    ONE, ONE);
         }
         return trailResponseHelper.constructResponse(errors,
                 emptyList(),
                 trailManager.count(),
-                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                ONE, ONE);
     }
 
     @Operation(summary = "Remove place from trail")
@@ -72,11 +70,11 @@ public class AdminTrailController {
                     trailManager.unlinkPlace(id, placeRefDto);
             return trailResponseHelper.constructResponse(errors, linkedPlaceResultDtos,
                     trailManager.count(),
-                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                    ONE, ONE);
         }
         return trailResponseHelper.constructResponse(errors, emptyList(),
                 trailManager.count(),
-                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                ONE, ONE);
     }
 
     @Operation(summary = "Add media to trail")
@@ -91,11 +89,11 @@ public class AdminTrailController {
                     trailManager.linkMedia(id, linkedMediaRequest);
             return trailResponseHelper.constructResponse(errors, linkedMediaResultDtos,
                     trailManager.count(),
-                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                    ONE, ONE);
         }
         return trailResponseHelper.constructResponse(errors, emptyList(),
                 trailManager.count(),
-                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                ZERO, ONE);
     }
 
     @Operation(summary = "Remove media from trail")
@@ -109,11 +107,11 @@ public class AdminTrailController {
                     trailManager.unlinkMedia(id, unLinkeMediaRequestDto);
             return trailResponseHelper.constructResponse(errors, linkedMediaResultDtos,
                     trailManager.count(),
-                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                    ONE, ONE);
         }
         return trailResponseHelper.constructResponse(errors, emptyList(),
                 trailManager.count(),
-                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                ZERO, ONE);
     }
 
     @Operation(summary = "Remove trail by ID")
@@ -124,11 +122,11 @@ public class AdminTrailController {
             final List<TrailDto> deleted = trailManager.delete(id);
             return trailResponseHelper.constructResponse(emptySet(), deleted,
                     trailManager.count(),
-                    org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                    ONE, ONE);
         }
         return trailResponseHelper.constructResponse(emptySet(), emptyList(),
                 trailManager.count(),
-                org.sc.controller.Constants.ONE, org.sc.controller.Constants.ONE);
+                ZERO, ONE);
     }
 
     @Operation(summary = "Creates a new trail")
@@ -140,10 +138,10 @@ public class AdminTrailController {
         if (errors.isEmpty()) {
             List<TrailDto> savedTrail = trailImporterManager.save(request);
             return trailResponseHelper.constructResponse(emptySet(), savedTrail, trailManager.count(),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
         return trailResponseHelper.constructResponse(errors, emptyList(), trailManager.count(),
-                org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                ZERO, ONE);
     }
 
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
@@ -155,11 +153,11 @@ public class AdminTrailController {
         if (errors.isEmpty()) {
             List<TrailDto> updatedTrail = trailImporterManager.updateTrail(trailDto);
             return trailResponseHelper.constructResponse(emptySet(), updatedTrail,
-                    updatedTrail.size(), org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    updatedTrail.size(), ZERO, ONE);
         }
 
         return trailResponseHelper.constructResponse(errors, emptyList(),
-                org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                ZERO, ZERO, ONE);
     }
 
 

@@ -47,7 +47,6 @@ public class PoiRestIntegrationTest {
 
     @Autowired
     private DataSource dataSource;
-
     @Autowired
     private AdminPoiController adminPoiController;
     @Autowired
@@ -61,7 +60,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
     }
 
     @Test
@@ -126,7 +125,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
         PoiResponse getPoi = poiController.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);
@@ -149,7 +148,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals));
+                EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
         PoiResponse getPoi = poiController.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);
@@ -163,7 +162,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
         PoiResponse getAgainPoi = poiController.get( 0, 3);
 
@@ -192,7 +191,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals));
+                EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
         PoiResponse getPoi = poiController.get( 0, 3);
         PoiDto firstElement = getPoi.getContent().get(0);

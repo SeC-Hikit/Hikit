@@ -1,7 +1,6 @@
 package org.sc.data.entity.mapper;
 
 import org.bson.Document;
-import org.sc.common.rest.AccessibilityNotificationCreationDto;
 import org.sc.data.model.AccessibilityNotification;
 import org.sc.data.model.CoordinatesWithAltitude;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +52,6 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
                 .append(AccessibilityNotification.RESOLUTION, accessibilityNotification.getResolution())
                 .append(AccessibilityNotification.RECORD_DETAILS,
                         recordDetailsMapper.mapToDocument(accessibilityNotification.getRecordDetails()));
-    }
-
-    public Document mapCreationToDocument(AccessibilityNotificationCreationDto accessibilityNotification) {
-        return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getTrailId())
-                .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
-                .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
-                .append(AccessibilityNotification.IS_MINOR, accessibilityNotification.isMinor())
-                .append(AccessibilityNotification.COORDINATES,
-                        coordinatesMapper.mapToDocument(accessibilityNotification.getCoordinates()));
     }
 
     private CoordinatesWithAltitude mapToCoordinates(final Document doc) {

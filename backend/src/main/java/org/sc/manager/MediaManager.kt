@@ -47,7 +47,6 @@ class MediaManager @Autowired constructor(
                     Media(
                             null,
                             Date(),
-                            // todo REMOVE?
                             originalFileName,
                             fileName,
                             pathToSavedFile,
