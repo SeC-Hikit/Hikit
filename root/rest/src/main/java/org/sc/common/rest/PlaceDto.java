@@ -15,4 +15,5 @@ public class PlaceDto {
     private List<String> mediaIds;
     private List<CoordinatesDto> coordinates;
     private List<String> crossingTrailIds;
+    private RecordDetailsDto recordDetails;
 }

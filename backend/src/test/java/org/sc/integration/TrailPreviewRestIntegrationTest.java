@@ -7,10 +7,11 @@ import org.sc.common.rest.TrailPreviewDto;
 import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
-import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
-import org.sc.controller.TrailImporterController;
+import org.sc.controller.admin.AdminTrailController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.TrailPreviewController;
+import org.sc.controller.admin.AdminPlaceController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ public class TrailPreviewRestIntegrationTest {
     public static final String EXPECTED_COUNTRY = "Italy";
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
     public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
+    public static final String ANY_REALM = "S&C";
 
 
 //    public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(TrailImportRestIntegrationTest.EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
@@ -49,10 +51,12 @@ public class TrailPreviewRestIntegrationTest {
     @Autowired
     private DataSource dataSource;
 
-    @Autowired TrailImporterController importController;
+    @Autowired
+    AdminTrailImporterController importController;
     @Autowired TrailPreviewController controller;
-    @Autowired PlaceController placeController;
+    @Autowired AdminPlaceController placeController;
     @Autowired TrailController trailController;
+    @Autowired AdminTrailController adminTrailController;
     private TrailResponse trailResponse;
     private String trailId;
 
@@ -60,7 +64,7 @@ public class TrailPreviewRestIntegrationTest {
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        trailResponse = trailController.importTrail(trailImportDto);
+        trailResponse = adminTrailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }
 
@@ -82,7 +86,7 @@ public class TrailPreviewRestIntegrationTest {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailPreviewResponse response = controller.getTrailPreviews(0, 1);
+        TrailPreviewResponse response = controller.getTrailPreviews(0, 1, ANY_REALM);
         assertThat(response.getContent().size()).isEqualTo(1);
         TrailPreviewDto firstResult = response.getContent().get(0);
         assertAll(firstResult);

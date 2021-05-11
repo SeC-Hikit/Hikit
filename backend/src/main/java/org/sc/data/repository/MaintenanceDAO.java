@@ -60,8 +60,8 @@ public class MaintenanceDAO {
 
     public List<Maintenance> upsert(final Maintenance maintenance) {
         final Document maintenanceDocument = mapper.mapToDocument(maintenance);
-        final String existingOrNewObjectId = maintenance.get_id() == null ?
-                new ObjectId().toHexString() : maintenance.get_id();
+        final String existingOrNewObjectId = maintenance.getId() == null ?
+                new ObjectId().toHexString() : maintenance.getId();
         final Document updateResult = collection.findOneAndReplace(
                 new Document(Maintenance.OBJECT_ID, existingOrNewObjectId),
                 maintenanceDocument, new FindOneAndReplaceOptions().upsert(true)
@@ -73,9 +73,12 @@ public class MaintenanceDAO {
     }
 
     public List<Maintenance> delete(final String objectId) {
-        final Maintenance byId = getById(objectId);
-        collection.deleteOne(new Document(Maintenance.OBJECT_ID, objectId));
-        return Collections.singletonList(byId);
+        final List<Maintenance> byId = getById(objectId);
+        if (byId.isEmpty()) {
+            return Collections.emptyList();
+        }
+        byId.forEach(maintenance -> collection.deleteOne(new Document(Maintenance.OBJECT_ID, maintenance.getId())));
+        return byId;
     }
 
     public List<Maintenance> deleteByTrailId(final String trailId) {
@@ -84,11 +87,9 @@ public class MaintenanceDAO {
         return Collections.singletonList(byId);
     }
 
-    private Maintenance getById(final String id) {
+    public List<Maintenance> getById(final String id) {
         return toMaintenanceList(collection.find(
-                new Document(Maintenance.OBJECT_ID, id)))
-                .stream()
-                .findFirst().orElse(null);
+                new Document(Maintenance.OBJECT_ID, id)));
     }
 
     private Maintenance getByTrailId(final String trailId) {

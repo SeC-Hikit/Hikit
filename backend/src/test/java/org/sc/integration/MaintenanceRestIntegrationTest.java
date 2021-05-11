@@ -2,12 +2,13 @@ package org.sc.integration;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.sc.common.rest.MaintenanceCreationDto;
+import org.sc.common.rest.MaintenanceDto;
+import org.sc.controller.MaintenanceController;
+import org.sc.controller.admin.AdminMaintenanceController;
 import org.sc.data.model.Maintenance;
 import org.sc.data.model.TrailClassification;
 import org.sc.common.rest.response.MaintenanceResponse;
 import org.sc.configuration.DataSource;
-import org.sc.controller.MaintenanceController;
 import org.sc.data.mapper.MaintenanceMapper;
 import org.sc.data.repository.MaintenanceDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,19 +49,21 @@ public class MaintenanceRestIntegrationTest {
 
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
 
-    public static final MaintenanceCreationDto EXPECTED_MAINTENANCE =
-            new MaintenanceCreationDto(EXPECTED_DATE_IN_FUTURE(), EXPECTED_TRAIL_CODE_FUTURE,
-                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2);
+    public static final MaintenanceDto EXPECTED_MAINTENANCE =
+            new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), EXPECTED_TRAIL_CODE_FUTURE,
+                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, null);
 
-    public static final MaintenanceCreationDto EXPECTED_MAINTENANCE_PAST =
-            new MaintenanceCreationDto(EXPECTED_DATE_IN_PAST(), EXPECTED_TRAIL_CODE,
-                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2);
+    public static final MaintenanceDto EXPECTED_MAINTENANCE_PAST =
+            new MaintenanceDto(null, EXPECTED_DATE_IN_PAST(), EXPECTED_TRAIL_CODE,
+                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, null);
 
     @Autowired
     private DataSource dataSource;
 
     @Autowired
     private MaintenanceController maintenanceController;
+    @Autowired
+    private AdminMaintenanceController adminMaintenanceController;
 
     // Skip validation, and add past maintenance
     @Autowired
@@ -72,7 +75,7 @@ public class MaintenanceRestIntegrationTest {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        maintenanceController.create(EXPECTED_MAINTENANCE);
+        adminMaintenanceController.create(EXPECTED_MAINTENANCE);
         maintenanceDAO.upsert(maintenanceMapper.map(EXPECTED_MAINTENANCE_PAST));
     }
 
@@ -95,7 +98,7 @@ public class MaintenanceRestIntegrationTest {
         MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2);
         String id = response.getContent().get(0).getId();
 
-        MaintenanceResponse maintenanceResponse = maintenanceController.deleteMaintenance(id);
+        MaintenanceResponse maintenanceResponse = adminMaintenanceController.deleteMaintenance(id);
         assertThat(maintenanceResponse.getContent().get(0).getId()).isEqualTo(id);
 
         MaintenanceResponse responseAfterSecondCall = maintenanceController.getFutureMaintenance(0, 2);
@@ -104,7 +107,7 @@ public class MaintenanceRestIntegrationTest {
 
     @Test
     public void contextLoads() {
-        assertThat(maintenanceController).isNotNull();
+        assertThat(adminMaintenanceController).isNotNull();
     }
 
     @After

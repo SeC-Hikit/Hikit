@@ -1,7 +1,12 @@
 package org.sc.data.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
+@AllArgsConstructor
 public class Media {
 
     public static final String COLLECTION_NAME = "core.Media";
@@ -13,79 +18,15 @@ public class Media {
     public static final String FILE_URL = "fileUrl";
     public static final String MIME = "mime";
     public static final String FILE_SIZE = "fileSize";
+    public static final String FILE_DETAILS = "fileDetails";
 
-    private String _id;
+    private String id;
     private Date creationDate;
     private String name;
     private String fileName;
     private String fileUrl;
     private String mime;
-    private long fileSize;
+    private Long fileSize;
+    private FileDetails fileDetails;
 
-    public Media() { }
-
-    public Media(String _id, Date creationDate, String name,
-                 String fileName, String fileUrl, String mime,
-                 long fileSize) {
-        this._id = _id;
-        this.creationDate = creationDate;
-        this.name = name;
-        this.fileName = fileName;
-        this.fileUrl = fileUrl;
-        this.mime = mime;
-        this.fileSize = fileSize;
-    }
-
-    public String get_id() {
-        return _id;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
-    public String getMime() {
-        return mime;
-    }
-
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
-    }
-
-    public void setMime(String mime) {
-        this.mime = mime;
-    }
-
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
-    }
 }

@@ -6,9 +6,10 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
-import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
-import org.sc.controller.TrailImporterController;
+import org.sc.controller.admin.AdminTrailImporterController;
+import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
             singletonList(new PlaceRefDto(EXPECTED_NAME,
                     INTERMEDIATE_EXPECTED_COORDINATE, EXPECTED_PLACE_ID_INTERMEDIATE));
+    public static final String REALM = "S&C";
 
     public static List<PlaceRefDto> LOCATION_REFS;
 
@@ -66,11 +68,11 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     DataSource dataSource;
 
     @Autowired
-    TrailImporterController importController;
+    AdminTrailImporterController importController;
     @Autowired
-    PlaceController placeController;
-    @Autowired
-    TrailController trailController;
+    AdminPlaceController placeController;
+    @Autowired AdminTrailController adminTrailController;
+    @Autowired TrailController trailController;
 
     private TrailResponse trailResponse;
 
@@ -78,7 +80,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        trailResponse = trailController.importTrail(trailImportDto);
+        trailResponse = adminTrailController.importTrail(trailImportDto);
     }
 
     @Test
@@ -92,7 +94,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailResponse getTrail = trailController.get(0, 0, false);
+        TrailResponse getTrail = trailController.get(0, 0, false, REALM);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
@@ -101,7 +103,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Test
     public void delete() {
         String importedTrailId = trailResponse.getContent().get(0).getId();
-        TrailResponse deletedById = trailController.deleteById(importedTrailId);
+        TrailResponse deletedById = adminTrailController.deleteById(importedTrailId);
         assertThat(deletedById.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
         TrailResponse getTrail = trailController.getById(importedTrailId, false);
         Assert.assertTrue(getTrail.getContent().isEmpty());
@@ -109,7 +111,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void contextLoads() {
-        assertThat(trailController).isNotNull();
+        assertThat(adminTrailController).isNotNull();
     }
 
     @After
@@ -127,7 +129,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     }
 
-    static TrailImportDto createTrailImport(PlaceController placeController) {
+    static TrailImportDto createTrailImport(AdminPlaceController placeController) {
         PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);
@@ -139,7 +141,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
                 lastPlace.getContent().get(0).getId());
     }
 
-    static TrailImportDto createTrailImportForMorePoints(PlaceController placeController) {
+    static TrailImportDto createTrailImportForMorePoints(AdminPlaceController placeController) {
         PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);

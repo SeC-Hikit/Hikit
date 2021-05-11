@@ -18,13 +18,16 @@ public class PoiMapper implements Mapper<Poi> {
     private final CoordinatesMapper coordinatesMapper;
     private final KeyValMapper keyValMapper;
     private final LinkedMediaMapper linkedMediaMapper;
+    private final RecordDetailsMapper recordDetailsMapper;
 
     public PoiMapper(final CoordinatesMapper coordinatesMapper,
                      final KeyValMapper keyValMapper,
-                     final LinkedMediaMapper linkedMediaMapper) {
+                     final LinkedMediaMapper linkedMediaMapper,
+                     final RecordDetailsMapper recordDetailsMapper) {
         this.coordinatesMapper = coordinatesMapper;
         this.linkedMediaMapper = linkedMediaMapper;
         this.keyValMapper = keyValMapper;
+        this.recordDetailsMapper = recordDetailsMapper;
     }
 
     @Override
@@ -41,7 +44,8 @@ public class PoiMapper implements Mapper<Poi> {
                 document.getDate(Poi.CREATED_ON),
                 document.getDate(Poi.LAST_UPDATE_ON),
                 document.getList(Poi.EXTERNAL_RESOURCES, String.class),
-                getKeyVals(document));
+                getKeyVals(document),
+                recordDetailsMapper.mapToObject(document.get(Poi.RECORD_DETAILS, Document.class)));
     }
 
     @Override
@@ -59,6 +63,7 @@ public class PoiMapper implements Mapper<Poi> {
                 .append(Poi.CREATED_ON, poi.getCreatedOn())
                 .append(Poi.LAST_UPDATE_ON, poi.getLastUpdatedOn())
                 .append(Poi.EXTERNAL_RESOURCES, poi.getExternalResources())
+                .append(Poi.RECORD_DETAILS, poi.getRecordDetails())
                 .append(Poi.KEY_VAL, poi.getKeyVal().stream()
                         .map(keyValMapper::mapToDocument)
                         .collect(toList()));

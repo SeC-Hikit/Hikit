@@ -7,9 +7,9 @@ import org.sc.common.rest.FileDetailsDto
 import org.sc.common.rest.TrailRawDto
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
+import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.model.Coordinates
-import org.sc.data.model.CoordinatesWithAltitude
 import org.sc.data.model.Trail
 import org.sc.data.model.TrailCoordinates
 import org.sc.data.validator.FileNameValidator
@@ -37,6 +37,7 @@ class TrailFileManager @Autowired constructor(
     private val trailCoordinatesMapper: TrailCoordinatesMapper,
     private val fileManagementUtil: FileManagementUtil,
     private val fileNameValidator: FileNameValidator,
+    private val authFacade: AuthFacade,
     private val appProps: AppProperties
 ) {
 
@@ -86,6 +87,7 @@ class TrailFileManager @Autowired constructor(
             )
         }
 
+        val authHelper = authFacade.authHelper
         return TrailRawDto(
             "",
             track.name.orElse(emptyDefaultString),
@@ -93,7 +95,8 @@ class TrailFileManager @Autowired constructor(
             trailCoordinatesMapper.map(trailCoordinates.first()),
             trailCoordinatesMapper.map(trailCoordinates.last()),
             trailCoordinates.map { trailCoordinatesMapper.map(it) },
-            FileDetailsDto(Date(), "ANONYMOUS", uniqueFileName, originalFilename)
+            FileDetailsDto(Date(), authHelper.username, authHelper.instance,
+                    authHelper.realm, uniqueFileName, originalFilename)
         )
     }
 

@@ -24,4 +24,5 @@ public class PoiDto {
     private Date lastUpdatedOn;
     private List<String> externalResources;
     private List<KeyValueDto> keyVal;
+    private RecordDetailsDto recordDetails;
 }

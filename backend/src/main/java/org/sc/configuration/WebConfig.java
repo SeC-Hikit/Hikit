@@ -6,7 +6,10 @@ import org.sc.manager.MediaManager;
 import org.sc.manager.TrailFileManager;
 import org.sc.util.FileManagementUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
@@ -20,9 +23,15 @@ public class WebConfig implements WebMvcConfigurer {
     private final AppProperties appProperties;
 
     @Autowired
-    public WebConfig(final FileManagementUtil fileManagementUtil, AppProperties appProperties) {
+    public WebConfig(final FileManagementUtil fileManagementUtil,
+                     final AppProperties appProperties) {
         this.fileManagementUtil = fileManagementUtil;
         this.appProperties = appProperties;
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
     }
 
     @Override

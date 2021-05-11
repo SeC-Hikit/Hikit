@@ -16,4 +16,5 @@ public class MaintenanceDto {
     private String meetingPlace;
     private String description;
     private String contact;
+    private RecordDetailsDto recordDetails;
 }

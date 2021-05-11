@@ -8,13 +8,15 @@ import org.sc.common.rest.CoordinatesDto
 import org.sc.common.rest.KeyValueDto
 import org.sc.common.rest.PoiDto
 import org.sc.data.model.PoiMacroType
+import org.sc.data.validator.auth.AuthRealmValidator
 import java.lang.String.format
 import org.sc.data.validator.poi.PoiValidator
+import org.sc.manager.PoiManager
 import java.util.*
 
 class PoiValidatorTest {
 
-    companion object{
+    companion object {
         const val ANY = "ANY"
     }
 
@@ -24,38 +26,61 @@ class PoiValidatorTest {
     private val keyValValidatorMock: KeyValValidator =
         mockkClass(KeyValValidator::class)
 
+    private val poiManagerMock: PoiManager =
+        mockkClass(PoiManager::class)
+
+    private val authRealmValidator: AuthRealmValidator =
+        mockkClass(AuthRealmValidator::class)
+
 
     @Test
     fun `validation shall pass when all data correct`() {
         val anyTrailRequestPosMock = mockkClass(CoordinatesDto::class)
         val poiDto = PoiDto(
-                null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-                anyTrailRequestPosMock, Date(), Date(), listOf(), emptyList()
+            null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
+            anyTrailRequestPosMock, Date(), Date(), listOf(), emptyList(), null
         )
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
-        assertTrue(PoiValidator(keyValValidatorMock, trailCoordsValidatorMock).validate(poiDto).isEmpty())
+        assertTrue(
+            PoiValidator(
+                keyValValidatorMock,
+                trailCoordsValidatorMock,
+                poiManagerMock,
+                authRealmValidator
+            ).validate(poiDto).isEmpty()
+        )
     }
 
     @Test
     fun `validation should fail on missing name`() {
         val anyTrailRequestPosMock = mockkClass(CoordinatesDto::class)
         val poiDto = PoiDto(
-                null, "", ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-                anyTrailRequestPosMock, Date(), Date(), listOf(), emptyList()
+            null, "", ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
+            anyTrailRequestPosMock, Date(), Date(), listOf(), emptyList(), null
         )
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
-        assertTrue(PoiValidator(keyValValidatorMock, trailCoordsValidatorMock).validate(poiDto).isNotEmpty())
+        assertTrue(
+            PoiValidator(
+                keyValValidatorMock,
+                trailCoordsValidatorMock,
+                poiManagerMock,
+                authRealmValidator
+            ).validate(poiDto).isNotEmpty()
+        )
     }
 
     @Test
     fun `validation should fail creation on created after now`() {
         val anyTrailRequestPosMock = mockkClass(CoordinatesDto::class)
         val poiDto = PoiDto(
-                null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-                anyTrailRequestPosMock, Date(System.currentTimeMillis() + 10000), Date(), listOf(), emptyList()
+            null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
+            anyTrailRequestPosMock, Date(System.currentTimeMillis() + 10000), Date(), listOf(), emptyList(), null
         )
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
-        val validate = PoiValidator(keyValValidatorMock, trailCoordsValidatorMock).validate(poiDto)
+        val validate =
+            PoiValidator(keyValValidatorMock, trailCoordsValidatorMock, poiManagerMock, authRealmValidator).validate(
+                poiDto
+            )
         assertTrue(validate.isNotEmpty())
         validate.contains(String.format(PoiValidator.dateInFutureError, org.sc.data.model.Poi.CREATED_ON))
     }
@@ -64,11 +89,15 @@ class PoiValidatorTest {
     fun `validation should fail creation on update after now`() {
         val anyTrailRequestPosMock = mockkClass(CoordinatesDto::class)
         val poiDto = PoiDto(
-                null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-                anyTrailRequestPosMock, Date(), Date(System.currentTimeMillis() + 10000), listOf(), emptyList()
+            null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
+            anyTrailRequestPosMock, Date(), Date(System.currentTimeMillis() + 10000), listOf(), emptyList(),
+            null
         )
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
-        val validate = PoiValidator(keyValValidatorMock, trailCoordsValidatorMock).validate(poiDto)
+        val validate =
+            PoiValidator(keyValValidatorMock, trailCoordsValidatorMock, poiManagerMock, authRealmValidator).validate(
+                poiDto
+            )
         assertTrue(validate.isNotEmpty())
         validate.contains(String.format(PoiValidator.dateInFutureError, org.sc.data.model.Poi.LAST_UPDATE_ON))
     }
@@ -79,7 +108,7 @@ class PoiValidatorTest {
         val keyValValue = KeyValueDto("", "abc")
         val poiDto = PoiDto(
             null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-            anyTrailRequestPosMock, Date(), Date(), listOf(), listOf(keyValValue)
+            anyTrailRequestPosMock, Date(), Date(), listOf(), listOf(keyValValue), null
         )
         val expectedValue = format(
             ValidatorUtils.emptyFieldError,
@@ -89,7 +118,8 @@ class PoiValidatorTest {
             expectedValue
         )
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
-        val validate = PoiValidator(keyValValidatorMock, trailCoordsValidatorMock).validate(poiDto)
+        val validate = PoiValidator(keyValValidatorMock, trailCoordsValidatorMock, poiManagerMock, authRealmValidator)
+            .validate(poiDto)
         assertTrue(validate.isNotEmpty())
         validate.contains(expectedValue)
     }

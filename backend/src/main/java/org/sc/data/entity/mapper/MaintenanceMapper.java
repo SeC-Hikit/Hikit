@@ -2,10 +2,18 @@ package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.data.model.Maintenance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MaintenanceMapper implements Mapper<Maintenance> {
+
+    private final RecordDetailsMapper recordDetailsMapper;
+
+    @Autowired
+    public MaintenanceMapper(RecordDetailsMapper recordDetailsMapper) {
+        this.recordDetailsMapper = recordDetailsMapper;
+    }
 
     @Override
     public Maintenance mapToObject(Document document) {
@@ -15,7 +23,10 @@ public class MaintenanceMapper implements Mapper<Maintenance> {
                 document.getString(Maintenance.TRAIL_ID),
                 document.getString(Maintenance.MEETING_PLACE),
                 document.getString(Maintenance.DESCRIPTION),
-                document.getString(Maintenance.CONTACT));
+                document.getString(Maintenance.CONTACT),
+                recordDetailsMapper.mapToObject(
+                        document.get(Maintenance.RECORD_DETAILS, Document.class)
+                ));
     }
 
     @Override
@@ -24,6 +35,7 @@ public class MaintenanceMapper implements Mapper<Maintenance> {
                 .append(Maintenance.TRAIL_ID, object.getTrailId())
                 .append(Maintenance.CONTACT, object.getContact())
                 .append(Maintenance.DESCRIPTION, object.getDescription())
-                .append(Maintenance.MEETING_PLACE, object.getMeetingPlace());
+                .append(Maintenance.MEETING_PLACE, object.getMeetingPlace())
+                .append(Maintenance.RECORD_DETAILS, object.getRecordDetails());
     }
 }
