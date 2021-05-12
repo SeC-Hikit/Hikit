@@ -12,6 +12,7 @@ import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
+import org.sc.data.model.TrailStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,10 +22,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -58,7 +59,14 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
             singletonList(new PlaceRefDto(EXPECTED_NAME,
                     INTERMEDIATE_EXPECTED_COORDINATE, EXPECTED_PLACE_ID_INTERMEDIATE));
+
+    // FileDetails
+    public static final String ANY_FILENAME = "001xBO.gpx";
     public static final String REALM = "S&C";
+    public static final String INSTANCE_ID = "BOLOGNA_1";
+
+
+    public static final FileDetailsDto IMPORTED_FILE_DETAILS = new FileDetailsDto(EXPECTED_DATE, USER_ADMIN, INSTANCE_ID, REALM, ANY_FILENAME, ANY_FILENAME);
 
     public static List<PlaceRefDto> LOCATION_REFS;
 
@@ -142,9 +150,13 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     }
 
     static TrailImportDto createTrailImportForMorePoints(AdminPlaceController placeController) {
+
         PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);
+
+
+
         assertThat(firstPlace.getContent()).isNotEmpty();
         assertThat(addedPlace.getContent()).isNotEmpty();
         assertThat(lastPlace.getContent()).isNotEmpty();
@@ -154,16 +166,19 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     }
 
     public static TrailImportDto makeCorrectTrailDtoForImport(String startPlaceId, String placeId, String endPlaceId) {
-        LOCATION_REFS = Arrays.asList(new PlaceRefDto(EXPECTED_NAME,
-                START_EXPECTED_COORDINATE, startPlaceId), new PlaceRefDto(EXPECTED_NAME,
-                INTERMEDIATE_EXPECTED_COORDINATE, placeId), new PlaceRefDto(EXPECTED_NAME,
-                END_EXPECTED_COORDINATE, endPlaceId));
+        PlaceRefDto placeStartRef = new PlaceRefDto(EXPECTED_NAME,
+                START_EXPECTED_COORDINATE, startPlaceId);
+        PlaceRefDto endPlaceRef = new PlaceRefDto(EXPECTED_NAME,
+                END_EXPECTED_COORDINATE, endPlaceId);
+        LOCATION_REFS = Arrays.asList(placeStartRef, new PlaceRefDto(EXPECTED_NAME,
+                INTERMEDIATE_EXPECTED_COORDINATE, placeId), endPlaceRef);
 
-        return null;
-//        return new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-//                ANY_OFFICIAL_ETA, LOCATION_REFS,
-//                EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
-//                EXPECTED_TRAIL_COORDINATES, EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, EXPECTED_DATE);
+        return new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
+                ANY_OFFICIAL_ETA, placeStartRef, endPlaceRef, LOCATION_REFS,
+                EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
+                EXPECTED_TRAIL_COORDINATES, REALM, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, emptyList(), EXPECTED_DATE,
+                IMPORTED_FILE_DETAILS,
+                TrailStatus.RAW);
     }
 
 }

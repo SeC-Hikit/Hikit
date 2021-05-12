@@ -23,7 +23,6 @@ public class TrailDto {
     private List<TrailCoordinatesDto> coordinates;
     private List<LinkedMediaDto> mediaList;
     private Date lastUpdate;
-    private Date createdOn;
     private String territorialDivision;
     private String maintainingSection;
     private TrailStatus status;

@@ -17,9 +17,9 @@ public class TrailMapper implements Mapper<Trail> {
     protected final TrailCoordinatesMapper trailCoordinatesMapper;
     protected final GeoLineMapper geoLineMapper;
     protected final StatsTrailMapper statsTrailMapper;
-    private final LinkedMediaMapper linkedMediaMapper;
-    private final CycloMapper cycloMapper;
-    private final FileDetailsMapper fileDetailsMapper;
+    protected final LinkedMediaMapper linkedMediaMapper;
+    protected final CycloMapper cycloMapper;
+    protected final FileDetailsMapper fileDetailsMapper;
 
 
     @Autowired
@@ -53,7 +53,6 @@ public class TrailMapper implements Mapper<Trail> {
                 .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
                 .country(doc.getString(Trail.COUNTRY))
                 .coordinates(getCoordinatesWithAltitude(doc))
-                .createdOn(getCreatedDate(doc))
                 .lastUpdate(getLastUpdateDate(doc))
                 .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
@@ -89,7 +88,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()))
                 .append(Trail.CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
                 .append(Trail.FILE_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
-                .append(Trail.STATUS, object.getStatus());
+                .append(Trail.STATUS, object.getStatus().toString());
     }
 
     protected GeoLineString getGeoLine(final Document doc) {
@@ -122,10 +121,6 @@ public class TrailMapper implements Mapper<Trail> {
 
     protected Date getLastUpdateDate(Document doc) {
         return doc.getDate(Trail.LAST_UPDATE_DATE);
-    }
-
-    protected Date getCreatedDate(Document doc) {
-        return doc.getDate(Trail.CREATED_ON_DATE);
     }
 
     protected TrailClassification getClassification(Document doc) {

@@ -36,7 +36,6 @@ public class Trail {
     public static final String FILE_DETAILS = "fileDetails";
     public static final String CYCLO = "cyclo";
 
-    public static final String CREATED_ON_DATE = "lastUpdate";
     public static final String LAST_UPDATE_DATE = "lastUpdate";
 
     private String id;
@@ -53,7 +52,6 @@ public class Trail {
     private String country;
     private Date lastUpdate;
     private String maintainingSection;
-    private Date createdOn;
     private String territorialDivision;
     private StatsTrailMetadata statsTrailMetadata;
     private GeoLineString geoLineString;

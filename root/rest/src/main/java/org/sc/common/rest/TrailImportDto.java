@@ -23,7 +23,6 @@ public class TrailImportDto {
     private final boolean isVariant;
     private final String territorialDivision;
     private final List<LinkedMediaDto> linkedMediaDtos;
-    private final Date createdOn;
     private final Date lastUpdate;
     private final FileDetailsDto fileDetailsDto;
     private final TrailStatus trailStatus;

@@ -43,8 +43,7 @@ public class MediaRestIntegrationTest  {
     @Autowired AdminPoiController adminPoiController;
     @Autowired PlaceController placeController;
     @Autowired AdminPlaceController adminPlaceController;
-    @Autowired
-    AdminTrailImporterController importController;
+    @Autowired AdminTrailImporterController importController;
     @Autowired AdminTrailController trailController;
 
     public TrailImportDto expectedTrailDto;

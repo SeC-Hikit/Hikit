@@ -15,7 +15,7 @@ import static java.util.Collections.singletonList;
 
 public class ImportTrailIT {
 
-    private static final String USER_ADMIN = "mario";
+    public static final String USER_ADMIN = "mario";
 //    private static final String USER_ADMIN = "Luke";
 
     private static final String EXPECTED_PLACE_ID = "ANY_P1";
