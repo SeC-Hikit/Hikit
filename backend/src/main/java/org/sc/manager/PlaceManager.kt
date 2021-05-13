@@ -8,6 +8,7 @@ import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceMapper
 import org.sc.data.model.RecordDetails
+import org.sc.data.model.TrailCoordinates
 import org.sc.data.repository.PlaceDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

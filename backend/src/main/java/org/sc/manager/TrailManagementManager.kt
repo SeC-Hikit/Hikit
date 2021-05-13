@@ -1,6 +1,7 @@
 package org.sc.manager
 
 import org.sc.common.rest.*
+import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.*
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
@@ -21,7 +22,8 @@ class TrailManagementManager @Autowired constructor(
         private val fileDetailsMapper: FileDetailsMapper,
         private val trailRawDao: TrailRawDAO,
         private val trailMapper: TrailMapper,
-        private val placeManager: PlaceManager
+        private val placeManager: PlaceManager,
+        private val authFacade: AuthFacade
 ) {
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
@@ -52,7 +54,6 @@ class TrailManagementManager @Autowired constructor(
                 .country(importingTrail.country)
                 .statsTrailMetadata(statsTrailMetadata)
                 .coordinates(importingTrail.coordinates.map { trailCoordinatesMapper.map(it) })
-                .createdOn(createdOn)
                 .lastUpdate(createdOn)
                 .maintainingSection(importingTrail.maintainingSection)
                 .territorialDivision(importingTrail.territorialDivision)

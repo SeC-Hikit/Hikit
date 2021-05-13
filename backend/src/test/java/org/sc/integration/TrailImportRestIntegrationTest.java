@@ -1,15 +1,18 @@
 package org.sc.integration;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
-import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailStatus;
@@ -178,7 +181,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
                 EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
                 EXPECTED_TRAIL_COORDINATES, REALM, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, emptyList(), EXPECTED_DATE,
                 IMPORTED_FILE_DETAILS,
-                TrailStatus.RAW);
+                TrailStatus.PUBLIC);
     }
 
 }
