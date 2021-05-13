@@ -9,7 +9,8 @@ public class CycloFeasibilityMapper implements Mapper<CycloFeasibility> {
 
     @Override
     public CycloFeasibility mapToObject(Document document) {
-        return new CycloFeasibility(document.getBoolean(CycloFeasibility.IS_FEASIBLE),
+        return new CycloFeasibility(
+                document.getBoolean(CycloFeasibility.IS_FEASIBLE),
                 document.getInteger(CycloFeasibility.PORTAGE));
     }
 

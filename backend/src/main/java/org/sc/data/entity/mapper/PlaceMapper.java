@@ -12,12 +12,15 @@ public class PlaceMapper implements Mapper<Place> {
 
     final MultiPointCoordsMapper multiPointCoordsMapperMapper;
     final CoordinatesMapper coordinatesMapper;
+    final RecordDetailsMapper recordDetailsMapper;
 
     @Autowired
     public PlaceMapper(final MultiPointCoordsMapper multiPointCoordsMapper,
-                       final CoordinatesMapper coordinatesMapper) {
+                       final CoordinatesMapper coordinatesMapper,
+                       final RecordDetailsMapper recordDetailsMapper) {
         this.multiPointCoordsMapperMapper = multiPointCoordsMapper;
         this.coordinatesMapper = coordinatesMapper;
+        this.recordDetailsMapper = recordDetailsMapper;
     }
 
     @Override
@@ -31,7 +34,8 @@ public class PlaceMapper implements Mapper<Place> {
                 multiPointCoordsMapperMapper.mapToObject(document.get(Place.POINTS, Document.class)),
                 document.getList(Place.COORDINATES, Document.class).stream()
                         .map(coordinatesMapper::mapToObject).collect(Collectors.toList()),
-                document.getList(Place.CROSSING, String.class));
+                document.getList(Place.CROSSING, String.class),
+                recordDetailsMapper.mapToObject(document.get(Place.RECORD_DETAILS, Document.class)));
     }
 
     @Override
@@ -43,6 +47,7 @@ public class PlaceMapper implements Mapper<Place> {
                 .append(Place.MEDIA_IDS, object.getMediaIds())
                 .append(Place.CROSSING, object.getCrossingTrailIds())
                 .append(Place.POINTS, multiPointCoordsMapperMapper.mapToDocument(object.getPoints()))
+                .append(Place.RECORD_DETAILS, recordDetailsMapper.mapToDocument(object.getRecordDetails()))
                 .append(Place.COORDINATES, object.getCoordinates()
                         .stream().map(coordinatesMapper::mapToDocument)
                         .collect(Collectors.toList()));

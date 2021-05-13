@@ -14,8 +14,12 @@ class TrailPreviewManager @Autowired constructor(
     private val trailRawDAO: TrailRawDAO
 ) {
 
-    fun getPreviews(skip: Int, limit: Int): List<TrailPreviewDto> =
-        trailDAO.getTrailPreviews(skip, limit).map { trailPreviewMapper.map(it) }
+    fun getPreviews(
+        skip: Int,
+        limit: Int,
+        realm: String
+    ): List<TrailPreviewDto> =
+        trailDAO.getTrailPreviews(skip, limit, realm).map { trailPreviewMapper.map(it) }
 
     fun getRawPreviews(skip: Int, limit: Int): List<TrailPreviewDto> =
         trailRawDAO.get(skip, limit).map { trailPreviewMapper.map(it) }

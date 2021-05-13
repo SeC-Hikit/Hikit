@@ -10,7 +10,9 @@ import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
-import org.sc.controller.TrailImporterController;
+import org.sc.controller.admin.AdminTrailImporterController;
+import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,16 +35,18 @@ public class PlaceIntegrationTest extends ImportTrailIT {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired private AdminPlaceController adminPlaceController;
     @Autowired private PlaceController placeController;
+    @Autowired private AdminTrailController adminTrailController;
     @Autowired private TrailController trailController;
-    @Autowired private TrailImporterController importerController;
+    @Autowired private AdminTrailImporterController importerController;
 
     private PlaceResponse addedPlace;
 
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        addedPlace = placeController.create(CORRECT_PLACE_DTO);
+        addedPlace = adminPlaceController.create(CORRECT_PLACE_DTO);
     }
 
     @Test
@@ -63,7 +67,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
 
         returnedPlaceDto.setDescription(another_magical_description);
         returnedPlaceDto.setName(another_name);
-        placeController.update(returnedPlaceDto);
+        adminPlaceController.update(returnedPlaceDto);
 
         placeResponse = placeController.get(addedPlace.getContent().get(0).getId());
         returnedPlaceDto = placeResponse.getContent().get(0);
@@ -81,11 +85,11 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         String placeId = returnedPlaceDto.getId();
 
         // Import trail
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
-        TrailResponse importedResponse = trailController.importTrail(trailImportDto);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(adminPlaceController);
+        TrailResponse importedResponse = adminTrailController.importTrail(trailImportDto);
         String trailId = importedResponse.getContent().get(0).getId();
 
-        TrailResponse addPlaceToTrailResponse = trailController.addPlaceToTrail(trailId,
+        TrailResponse addPlaceToTrailResponse = adminTrailController.addPlaceToTrail(trailId,
                 new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId));
 
         assertThat(addPlaceToTrailResponse.getStatus()).isEqualTo(Status.OK);
@@ -93,7 +97,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
 
         assertThat(trailResponse.getContent().isEmpty()).isEqualTo(false);
 
-        placeController.delete(placeId);
+        adminPlaceController.delete(placeId);
 
         // Removed from place collection
         placeResponse = placeController.get(placeId);

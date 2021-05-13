@@ -14,8 +14,6 @@ After cloning the repo, simply run `mvn install -f root/pom.xml`.
 ### Deployment Build
 To incude all dependencies in a uber-jar, run `mvn install -P package`.
 
-### 
-
 ### Test
 There are two main types of tests written to address the S&C QA: unit tests and integration tests.
 The latter require the dependencies (see Run->Prerequisites) to be up and running as they test operations connecting to them.
@@ -28,24 +26,19 @@ S&C requires the following services up and running in order to fully operate:
 - [MongoDB 4.x](https://www.mongodb.com)
 - [OpenElevation](https://open-elevation.com/)
 
-To get these up and running in the least time possible, consider using docker images [here](https://hub.docker.com/_/mongo) and [here](https://hub.docker.com/r/openelevation/open-elevation/).
+To get these up and running in the least time possible, use the included `docker-compose.yml`:
+```
+cd docker
+sh rset_download.sh
+docker-compose up
+```
+Mind that the above set-up is for *test/dev only* as all services are exposed in the network and they do not
+use authentication.
 
 ### Properties
 
-Configure the following properties to fit your system conf:
-
-```
-# matches the open-elevation local port
-service.altitude.port=8080  
-
-# db settings
-db.name=your_db_name
-db.uri=mongodb://localhost:30000
-
-# trail GPX Storage on local filesystem
-trail.storage.path=your/trail/to/server
-```
-For more on the system properties, check out the wiki pages.
+Configure the `application.properties` file to fit the application runtime for your needs.
+For more on the system properties, check out the repo wiki pages.
 
 ## The API
 

@@ -39,12 +39,14 @@ public class TrailLightMapper extends TrailMapper {
                 .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
                 .country(doc.getString(Trail.COUNTRY))
                 .coordinates(getCoordinatesWithAltitude(doc))
-                .createdOn(getCreatedDate(doc))
                 .lastUpdate(getLastUpdateDate(doc))
                 .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
                 .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
+                .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)))
+                .status(getStatus(doc))
                 .build();
     }
 

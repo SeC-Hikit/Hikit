@@ -9,19 +9,18 @@ import org.springframework.stereotype.Component
 class RectangleValidator constructor(private val coordinatesValidator: CoordinatesValidator) : Validator<RectangleDto> {
 
     companion object {
-        const val DIAGONAL_ONE_HUNDRED_FIFTY_KM = 150000
-        const val diagonalLengthError = "Diagonal between selected vertexes is greater than 150 km!"
+        const val DIAGONAL_FIFTY_KM = 50000
+        const val diagonalLengthError = "Diagonal between selected vertexes is greater than 50 km!"
     }
 
     override fun validate(request: RectangleDto): Set<String> {
         val errors = mutableSetOf<String>()
         if (DistanceProcessor.getRadialDistance(request.bottomLeft.latitude, request.bottomLeft.longitude,
-                        request.topRight.latitude, request.topRight.longitude) > DIAGONAL_ONE_HUNDRED_FIFTY_KM) {
+                        request.topRight.latitude, request.topRight.longitude) > DIAGONAL_FIFTY_KM) {
             errors.add(diagonalLengthError)
         }
 
-        val errorsOnCoordinates = listOf(request.bottomLeft, request.topLeft,
-                request.topRight, request.bottomRight).flatMap {
+        val errorsOnCoordinates = listOf(request.bottomLeft, request.topRight).flatMap {
             coordinatesValidator
                     .validate(CoordinatesDto(it.latitude, it.longitude))
         }

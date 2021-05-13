@@ -25,7 +25,7 @@ public class CycloMapper implements Mapper<CycloDetails> {
 
     @Override
     public Document mapToDocument(CycloDetails object) {
-        return new Document(CycloDetails.CLASSIFICATION, object.getCycloClassification())
+        return new Document(CycloDetails.CLASSIFICATION, object.getCycloClassification().getClassification())
                 .append(CycloDetails.ETA, object.getOfficialEta())
                 .append(CycloDetails.CYCLO_FEASIBILITY_FORWARD, object.getWayForward())
                 .append(CycloDetails.CYCLO_FEASIBILITY_BACK, object.getWayBack())

@@ -33,7 +33,12 @@ class TrailManager @Autowired constructor(
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
 
-    fun get(isLight: Boolean, page: Int, count: Int): List<TrailDto> = trailDAO.getTrails(isLight, page, count)
+    fun get(
+        isLight: Boolean,
+        page: Int,
+        count: Int,
+        realm: String
+    ): List<TrailDto> = trailDAO.getTrails(isLight, page, count, realm)
         .map { trailMapper.map(it) }
 
     fun getById(id: String, isLight: Boolean): List<TrailDto> =
@@ -98,8 +103,7 @@ class TrailManager @Autowired constructor(
 
     fun findTrailsWithinRectangle(rectangleDto: RectangleDto): List<TrailDto>{
         val trails = trailDAO.findTrailWithinGeoSquare(
-                CoordinatesRectangle(rectangleDto.bottomLeft,rectangleDto.topLeft,
-                        rectangleDto.topRight,rectangleDto.bottomRight),0,100)
+                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight),0,100)
         return trails.map { trailMapper.map(it) }
     }
 

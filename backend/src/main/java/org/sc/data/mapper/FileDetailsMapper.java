@@ -7,6 +7,6 @@ import org.sc.data.model.FileDetails;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface FileDetailsMapper {
-    FileDetails map(FileDetailsDto trailRawDto);
-    FileDetailsDto map(FileDetails trailRaw);
+    FileDetails map(FileDetailsDto fd);
+    FileDetailsDto map(FileDetails fd);
 }

@@ -3,6 +3,7 @@ package org.sc.configuration;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
 import org.apache.logging.log4j.Logger;
+import org.sc.configuration.tenant.InstanceRegister;
 import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
 import org.sc.data.repository.TrailDatasetVersionDao;
@@ -30,6 +31,8 @@ public class StartupChecker {
     AppProperties appProperties;
     @Autowired
     FileManagementUtil fileManagementUtil;
+    @Autowired
+    InstanceRegister instanceRegister;
 
     @PostConstruct
     public void init() {
@@ -42,16 +45,20 @@ public class StartupChecker {
         configureDir(fileManagementUtil.getTrailKmlStoragePath(), "Could not create trail/kml folder");
         configureDir(fileManagementUtil.getTrailPdfStoragePath(), "Could not create trail/pdf folder");
 
+        instanceRegister.register(appProperties.getInstanceId(),
+                appProperties.getInstanceName(),
+                appProperties.getInstanceHostname(),
+                appProperties.getPort());
+
         try {
             trailDatasetVersionDao.getLast();
-
             configureIndexes();
-
 
         } catch (Exception mongoSocketOpenException) {
             LOGGER.error("Could not establish a correct configuration. Is the database available and running?");
         }
     }
+
 
     private void configureIndexes() {
         LOGGER.info("Ensuring DB indexes existence");
@@ -68,7 +75,7 @@ public class StartupChecker {
                 .forEach(
                         (indexArr) -> LOGGER.info("Ensured pointGeoIndex name " + indexArr.get(0) +
                                 " for collection: `" + indexArr.get(1) + "`")
-        );
+                );
     }
 
     private void configureDir(final String path,

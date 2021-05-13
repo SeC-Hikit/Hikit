@@ -10,10 +10,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 public class MongoConstants {
+    public static final String NO_FILTERING_TOKEN = "*";
     public static final String EXISTS_PARAM = "$exists";
     public static final String DOLLAR = "$";
     public static final String DOT = ".";
     public static final String OR = "$or";
+    public static final String $NOT_EQUAL = "$ne";
     public static final String $_NEAR_OPERATOR = "$near";
     public static final String $_GEOMETRY = "$geometry";
     public static final String NEAR_OPERATOR = "near";
@@ -38,6 +40,7 @@ public class MongoConstants {
 
     public static final String GEO_TYPE = "type";
     public static final String GEO_POINT = "Point";
+    public static final String GEO_POLYGON = "Polygon";
     public static final String GEO_COORDINATES = "coordinates";
 
     public static final FindOneAndReplaceOptions UPSERT_OPTIONS = new FindOneAndReplaceOptions().upsert(true)
