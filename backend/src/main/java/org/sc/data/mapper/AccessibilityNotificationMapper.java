@@ -8,9 +8,8 @@ import org.sc.data.model.AccessibilityNotification;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AccessibilityNotificationMapper {
-    @Mapping(source = "_id", target = "id")
     AccessibilityNotificationDto map(AccessibilityNotification an);
 
-    @Mapping(source = "id", target = "_id")
+    @Mapping(source = "id", target = "id")
     AccessibilityNotification map(AccessibilityNotificationDto an);
 }

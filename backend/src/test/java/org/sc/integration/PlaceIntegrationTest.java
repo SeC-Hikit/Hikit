@@ -23,7 +23,6 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")

@@ -10,6 +10,8 @@ import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
 import org.sc.data.model.AccessibilityNotification;
+import org.sc.data.model.Maintenance;
+import org.sc.data.model.Place;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -76,9 +78,12 @@ public class AccessibilityNotificationDAO {
 
     public List<AccessibilityNotification> insert(final AccessibilityNotification accessibilityNotification) {
         final Document accessibilityNotificationDocument = mapper.mapToDocument(accessibilityNotification);
+        final String existingOrNewObjectId = accessibilityNotification.getId() == null ?
+                new ObjectId().toHexString() : accessibilityNotification.getId();
+        accessibilityNotificationDocument.append(AccessibilityNotification.ID, existingOrNewObjectId);
         final Document addedResult = collection.findOneAndReplace(
-                new Document(), accessibilityNotificationDocument,
-                new FindOneAndReplaceOptions().upsert(true)
+                new Document(AccessibilityNotification.ID, existingOrNewObjectId),
+                accessibilityNotificationDocument, new FindOneAndReplaceOptions().upsert(true)
                         .returnDocument(ReturnDocument.AFTER));
         if (addedResult != null) {
             return Collections.singletonList(mapper.mapToObject(addedResult));

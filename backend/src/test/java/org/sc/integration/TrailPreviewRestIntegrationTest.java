@@ -24,7 +24,6 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sc.integration.TrailImportRestIntegrationTest.LOCATION_REFS;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")

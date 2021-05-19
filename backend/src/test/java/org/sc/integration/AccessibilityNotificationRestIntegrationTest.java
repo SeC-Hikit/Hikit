@@ -21,7 +21,6 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -63,7 +62,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         id = trailResponse.getContent().get(0).getId();
         adminAccessibilityIssueController.create(
                 new AccessibilityNotificationDto(null, EXPECTED_DESCRIPTION, id,
-                        new Date(), null, true, null, EXPECTED_COORDINATES, null));
+                        new Date(), null, true, null, EXPECTED_COORDINATES, new RecordDetailsDto()));
     }
 
     @Test
