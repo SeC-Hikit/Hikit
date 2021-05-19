@@ -132,14 +132,14 @@ public class PoiDAO {
 
     public List<Poi> unlinkMediaId(final String id, final String mediaId) {
         collection.updateOne(new Document(Poi.OBJECT_ID, id),
-                new Document(MongoConstants.PULL,
+                new Document(MongoConstants.$PULL,
                         new Document(Poi.MEDIA, new Document(LinkedMedia.ID, mediaId))));
         return getById(id);
     }
 
     public void unlinkMediaByAllPoi(final String mediaId) {
         collection.updateOne(new Document(),
-                new Document(MongoConstants.PULL, new Document(Poi.MEDIA, mediaId)));
+                new Document(MongoConstants.$PULL, new Document(Poi.MEDIA, mediaId)));
     }
 
     private List<Poi> toPoisList(final Iterable<Document> documents) {

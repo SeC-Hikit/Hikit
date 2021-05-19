@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.sc.data.repository.MongoConstants.$NOT_EQUAL;
 import static org.sc.data.repository.MongoConstants.EXISTS_PARAM;
 
 @Repository
@@ -40,7 +41,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getUnresolved(final int skip,
                                                          final int limit) {
         return toNotificationList(collection.find(
-                new Document(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)))
+                new Document(AccessibilityNotification.RESOLUTION, null))
                 .skip(skip)
                 .limit(limit));
     }
@@ -48,14 +49,14 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getUnresolvedByTrailId(final String id, final int skip, final int limit) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityNotification.TRAIL_ID, id)
-                        .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)))
+                        .append(AccessibilityNotification.RESOLUTION, null))
                 .skip(skip).limit(limit));
     }
 
     public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityNotification.TRAIL_ID, id)
-                        .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true)))
+                        .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, null)))
                 .skip(skip).limit(limit));
     }
 
@@ -72,7 +73,7 @@ public class AccessibilityNotificationDAO {
 
     public List<AccessibilityNotification> deleteByTrailId(final String trailId) {
         List<AccessibilityNotification> byTrailId = getByTrailId(trailId);
-        collection.deleteMany(new Document(AccessibilityNotification.TRAIL_ID, new ObjectId(trailId)));
+        collection.deleteMany(new Document(AccessibilityNotification.TRAIL_ID, trailId));
         return byTrailId;
     }
 
@@ -93,7 +94,7 @@ public class AccessibilityNotificationDAO {
 
     public List<AccessibilityNotification> resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
         collection.updateOne(
-                new Document(AccessibilityNotification.ID, new ObjectId(accessibilityNotificationResolutionDto.getId())),
+                new Document(AccessibilityNotification.ID, accessibilityNotificationResolutionDto.getId()),
                 new Document("$set", new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolutionDto.getResolution())
                         .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolutionDto.getResolutionDate())));
         return getById(accessibilityNotificationResolutionDto.getId());
@@ -101,13 +102,13 @@ public class AccessibilityNotificationDAO {
 
     public List<AccessibilityNotification> delete(final String objectId) {
         final List<AccessibilityNotification> accessibilityNotification = getById(objectId);
-        collection.deleteOne(new Document(AccessibilityNotification.ID, new ObjectId(objectId)));
+        collection.deleteOne(new Document(AccessibilityNotification.ID, objectId));
         return accessibilityNotification;
     }
 
     public List<AccessibilityNotification> getById(final String objectId) {
-        return new ArrayList<>(toNotificationList(collection.find(
-                new Document(AccessibilityNotification.ID, new ObjectId(objectId)))));
+        return toNotificationList(collection.find(
+                new Document(AccessibilityNotification.ID, objectId)));
     }
 
     private List<AccessibilityNotification> toNotificationList(FindIterable<Document> documents) {
@@ -120,21 +121,20 @@ public class AccessibilityNotificationDAO {
 
     public long countSolved() {
         return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION,
-                new Document(EXISTS_PARAM, true)));
+                new Document($NOT_EQUAL, null)));
     }
 
     public long countNotSolved() {
-        return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION,
-                new Document(EXISTS_PARAM, false)));
+        return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION, null));
     }
 
     public long countSolvedForTrailId(final String trailId) {
         return collection.countDocuments(new Document(AccessibilityNotification.TRAIL_ID, trailId)
-                .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, true)));
+                .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, null)));
     }
 
     public long countNotSolvedForTrailId(final String trailId) {
         return collection.countDocuments(new Document(AccessibilityNotification.TRAIL_ID, trailId)
-                .append(AccessibilityNotification.RESOLUTION, new Document(EXISTS_PARAM, false)));
+                .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, false)));
     }
 }

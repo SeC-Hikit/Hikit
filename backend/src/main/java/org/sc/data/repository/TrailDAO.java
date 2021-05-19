@@ -123,7 +123,7 @@ public class TrailDAO {
     public void unlinkMediaByAllTrails(final String mediaId) {
         // E.g: db.core.test.update({"b.mediaId": 1}, { $pull : { "b.$.mediaId": 1}}, {multi: true})
         collection.updateMany(new Document(),
-                new Document(PULL, new Document((Trail.MEDIA),
+                new Document($PULL, new Document((Trail.MEDIA),
                         new Document(LinkedMedia.ID, mediaId))));
     }
 
@@ -138,7 +138,7 @@ public class TrailDAO {
     public List<Trail> unlinkMedia(final String id,
                                    final String mediaId) {
         collection.updateOne(new Document(Trail.ID, id),
-                new Document(PULL, new Document(Trail.MEDIA,
+                new Document($PULL, new Document(Trail.MEDIA,
                         new Document(LinkedMedia.ID, mediaId))));
         return getTrailById(id, true);
     }
@@ -209,13 +209,13 @@ public class TrailDAO {
 
     public List<Trail> unLinkPlace(String id, PlaceRef placeRef) {
         collection.updateOne(new Document(Trail.ID, id),
-                new Document(PULL, new Document(Trail.LOCATIONS,
+                new Document($PULL, new Document(Trail.LOCATIONS,
                         new Document(PlaceRef.PLACE_ID, placeRef.getPlaceId()))));
         return getTrailById(id, false);
     }
 
     public void unlinkPlaceFromAllTrails(String placeId) {
-        Document update = new Document(PULL, new Document(Trail.LOCATIONS,
+        Document update = new Document($PULL, new Document(Trail.LOCATIONS,
                 new Document(PlaceRef.PLACE_ID, placeId)));
         collection.updateMany(new Document(),
                 update);
