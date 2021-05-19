@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 import static org.sc.integration.ImportTrailIT.CORRECT_PLACE_DTO;
 import static org.sc.integration.PoiRestIntegrationTest.*;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")

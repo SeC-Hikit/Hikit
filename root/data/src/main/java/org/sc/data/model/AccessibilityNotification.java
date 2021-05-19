@@ -22,7 +22,7 @@ public class AccessibilityNotification {
     public final static String COORDINATES = "coordinates";
     public final static String RECORD_DETAILS = "recordDetails";
 
-    private final String _id;
+    private final String id;
     private String description;
     private String trailId;
     private Date reportDate;

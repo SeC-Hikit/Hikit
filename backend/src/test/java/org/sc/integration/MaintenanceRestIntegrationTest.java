@@ -3,6 +3,7 @@ package org.sc.integration;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.MaintenanceDto;
+import org.sc.common.rest.RecordDetailsDto;
 import org.sc.controller.MaintenanceController;
 import org.sc.controller.admin.AdminMaintenanceController;
 import org.sc.data.model.Maintenance;
@@ -21,7 +22,6 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -51,11 +51,11 @@ public class MaintenanceRestIntegrationTest {
 
     public static final MaintenanceDto EXPECTED_MAINTENANCE =
             new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), EXPECTED_TRAIL_CODE_FUTURE,
-                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, null);
+                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto());
 
     public static final MaintenanceDto EXPECTED_MAINTENANCE_PAST =
             new MaintenanceDto(null, EXPECTED_DATE_IN_PAST(), EXPECTED_TRAIL_CODE,
-                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, null);
+                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto());
 
     @Autowired
     private DataSource dataSource;

@@ -27,7 +27,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
         final Date nullableResolutionDate = document.getDate(AccessibilityNotification.RESOLUTION_DATE);
         final Date reportedDate = document.getDate(AccessibilityNotification.REPORT_DATE);
         return new AccessibilityNotification(
-                document.getObjectId(AccessibilityNotification.ID).toHexString(),
+                document.getString(AccessibilityNotification.ID),
                 document.getString(AccessibilityNotification.DESCRIPTION),
                 document.getString(AccessibilityNotification.TRAIL_ID),
                 reportedDate,
@@ -42,7 +42,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
     @Override
     public Document mapToDocument(AccessibilityNotification accessibilityNotification) {
         return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getTrailId())
-                .append(AccessibilityNotification.ID, accessibilityNotification.get_id())
+                .append(AccessibilityNotification.ID, accessibilityNotification.getId())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())
                 .append(AccessibilityNotification.REPORT_DATE, accessibilityNotification.getReportDate())
                 .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotification.getResolutionDate())
