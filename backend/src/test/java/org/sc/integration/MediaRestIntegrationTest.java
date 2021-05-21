@@ -1,7 +1,6 @@
 package org.sc.integration;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
@@ -52,7 +51,7 @@ public class MediaRestIntegrationTest  {
     @Before
     public void setUp(){
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(adminPlaceController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(adminPlaceController);
         trailResponse = trailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }

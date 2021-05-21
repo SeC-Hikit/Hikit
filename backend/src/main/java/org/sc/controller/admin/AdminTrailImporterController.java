@@ -56,7 +56,7 @@ public class AdminTrailImporterController {
     @Operation(summary = "Read and import one GPX trail file")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailRawResponse readGpxFile(@RequestParam("file") MultipartFile gpxFile) {
+    public TrailRawResponse importGpx(@RequestParam("file") MultipartFile gpxFile) {
         return processUploadedFiles(Collections.singletonList(gpxFile));
     }
 
@@ -64,7 +64,7 @@ public class AdminTrailImporterController {
     @PostMapping(path = "/bulk",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailRawResponse readBulkGpxFile(@RequestParam("files") MultipartFile[] files) {
+    public TrailRawResponse importMassiveGpx(@RequestParam("files") MultipartFile[] files) {
         return processUploadedFiles(Arrays.asList(files));
     }
 

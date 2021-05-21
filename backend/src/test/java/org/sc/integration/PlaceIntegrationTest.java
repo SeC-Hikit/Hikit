@@ -1,7 +1,6 @@
 package org.sc.integration;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
@@ -84,7 +83,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         String placeId = returnedPlaceDto.getId();
 
         // Import trail
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(adminPlaceController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(adminPlaceController);
         TrailResponse importedResponse = adminTrailController.importTrail(trailImportDto);
         String trailId = importedResponse.getContent().get(0).getId();
 
