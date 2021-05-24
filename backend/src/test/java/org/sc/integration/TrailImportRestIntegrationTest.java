@@ -75,10 +75,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Autowired
     DataSource dataSource;
 
-    @Autowired
-    AdminTrailImporterController importController;
-    @Autowired
-    AdminPlaceController placeController;
+    @Autowired AdminPlaceController placeController;
     @Autowired AdminTrailController adminTrailController;
     @Autowired TrailController trailController;
 
