@@ -23,26 +23,26 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.sc.data.model.CoordinatesWithAltitude.LAT_INDEX;
+import static org.sc.data.model.CoordinatesWithAltitude.LONG_INDEX;
 import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class PlaceDAO {
     private final MongoCollection<Document> collection;
     private final PlaceMapper placeMapper;
-    private final MultiPointCoordsMapper multiPointCoordsMapper;
     private final CoordinatesMapper coordinatesMapper;
 
     @Autowired
     public PlaceDAO(final DataSource dataSource,
                     final PlaceMapper placeMapper,
-                    final MultiPointCoordsMapper multiPointCoordsMapper,
                     final CoordinatesMapper coordinatesMapper) {
         this.collection = dataSource.getDB().getCollection(Place.COLLECTION_NAME);
         this.placeMapper = placeMapper;
-        this.multiPointCoordsMapper = multiPointCoordsMapper;
         this.coordinatesMapper = coordinatesMapper;
     }
 
@@ -96,13 +96,15 @@ public class PlaceDAO {
     public void removeTrailFromPlace(final String id,
                                      final String trailId,
                                      final TrailCoordinates trailCoordinates) {
+        List<Place> byId = getById(id);
+        if (byId.isEmpty()) {
+            return;
+        }
         collection.updateOne(new Document(Place.ID, id),
                 new Document($PULL, new Document(Place.CROSSING,
                         trailId))
-                        .append($PULL, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
-                        .append($PULL, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
-                                CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
-        );
+                        .append($PULL, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates))));
+        deleteOrphanPlaceWhenNoMoreTrailsUseIt(byId.stream().findFirst().get(), trailCoordinates);
     }
 
     public List<Place> update(final Place place) {
@@ -155,6 +157,18 @@ public class PlaceDAO {
 
     public long count() {
         return collection.countDocuments();
+    }
+
+    private void deleteOrphanPlaceWhenNoMoreTrailsUseIt(Place place, TrailCoordinates trailCoordinates) {
+        final List<List<Double>> collect = place.getPoints().getCoordinates2D().stream().filter(p ->
+                (p.get(LONG_INDEX) != trailCoordinates.getLongitude() &&
+                        p.get(LAT_INDEX) != trailCoordinates.getLatitude())).collect(toList());
+        if (collect.isEmpty()) {
+            this.delete(place.getId());
+        } else {
+            place.setPoints(new MultiPointCoords2D(collect));
+            collection.findOneAndReplace(new Document(Place.ID, place.getId()), placeMapper.mapToDocument(place));
+        }
     }
 
     private List<Place> toPlaceList(final Iterable<Document> documents) {
