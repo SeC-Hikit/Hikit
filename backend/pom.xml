@@ -114,6 +114,11 @@
             <artifactId>jts</artifactId>
             <version>1.13</version>
         </dependency>
+        <dependency>
+            <groupId>de.micromata.jak</groupId>
+            <artifactId>JavaAPIforKml</artifactId>
+            <version>2.2.1</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

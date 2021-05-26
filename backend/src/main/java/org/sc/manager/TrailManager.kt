@@ -1,15 +1,15 @@
 package org.sc.manager
 
-import org.sc.data.mapper.*
 import org.sc.common.rest.*
 import org.sc.common.rest.geo.GeoLineDto
 import org.sc.common.rest.geo.RectangleDto
 import org.sc.data.geo.CoordinatesRectangle
+import org.sc.data.mapper.*
+import org.sc.data.model.*
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
-import org.sc.data.repository.TrailDAO
-import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
+import org.sc.data.repository.TrailDAO
 import org.sc.processor.GeoCalculator
 import org.sc.service.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
@@ -64,6 +64,7 @@ class TrailManager @Autowired constructor(
     fun save(trail: Trail): List<TrailDto> {
         // TODO #60 create a PDF and KML document too
         trailFileHelper.writeTrailToOfficialGpx(trail)
+        trailFileHelper.writeTrailToKml(trail)
         return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }
 

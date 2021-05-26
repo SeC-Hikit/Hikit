@@ -1,5 +1,8 @@
 package org.sc.manager
 
+import de.micromata.opengis.kml.v_2_2_0.AltitudeMode
+import de.micromata.opengis.kml.v_2_2_0.Kml
+import de.micromata.opengis.kml.v_2_2_0.LineString
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
 import org.sc.common.rest.CoordinatesDto
@@ -28,6 +31,7 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 import java.util.function.Consumer
+import javax.xml.bind.Marshaller
 
 @Component
 class TrailFileManager @Autowired constructor(
@@ -38,6 +42,7 @@ class TrailFileManager @Autowired constructor(
     private val fileManagementUtil: FileManagementUtil,
     private val fileNameValidator: FileNameValidator,
     private val authFacade: AuthFacade,
+    private val marshaller : Marshaller,
     private val appProps: AppProperties
 ) {
 
@@ -117,6 +122,15 @@ class TrailFileManager @Autowired constructor(
                     .name(trail.code).time(trail.lastUpdate.toInstant()).build()
             ).build()
         gpxFileHandlerHelper.writeToFile(gpx, pathToStoredFiles.resolve(trail.code + ".gpx"))
+    }
+
+    fun writeTrailToKml(trail: Trail) {
+        val kml = Kml()
+        val lineString: LineString = LineString().withAltitudeMode(AltitudeMode.ABSOLUTE)
+        trail.coordinates.forEach { lineString.addToCoordinates(it.longitude, it.latitude, it.altitude) }
+        kml.createAndSetDocument().createAndAddPlacemark().withGeometry(lineString)
+
+        kml.marshal(pathToStoredFiles.resolve(trail.code + ".kml").toFile())
     }
 
     fun getGPXFilesTempPathList(uploadedFiles: List<MultipartFile>): Map<String, Optional<Path>> {
