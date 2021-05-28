@@ -28,7 +28,6 @@ import static org.sc.controller.admin.Constants.PREFIX_MEDIA;
 @RestController
 @RequestMapping(PREFIX_MEDIA)
 public class AdminMediaController {
-    public final static String PREFIX = "/media";
     public static final String EMPTY_ID_ERROR = "Empty Id";
     public static final String FILE_IS_EMPTY_ERROR = "File is empty";
 
@@ -58,7 +57,7 @@ public class AdminMediaController {
     @Operation(summary = "Add media")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public MediaResponse upload(@RequestAttribute("file") MultipartFile file) throws IOException {
+    public MediaResponse upload(@RequestParam("file") MultipartFile file) throws IOException {
         if (file == null || file.getOriginalFilename() == null) {
             return mediaResponseHelper
                     .constructResponse(Collections.singleton(FILE_IS_EMPTY_ERROR),
