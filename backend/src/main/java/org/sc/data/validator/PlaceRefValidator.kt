@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PlaceRefValidator @Autowired constructor(
-    private val trailCoordinatesCreationValidator: TrailCoordinatesValidator,
+    private val trailCoordinatesCreationValidator: CoordinatesValidator,
     private val placeManager: PlaceManager
 ) : Validator<PlaceRefDto> {
 
@@ -18,7 +18,7 @@ class PlaceRefValidator @Autowired constructor(
         if (StringUtils.isBlank(request.name)) {
             errors.add(String.format(ValidatorUtils.emptyFieldError, "Name"))
         }
-        errors.addAll(trailCoordinatesCreationValidator.validate(request.trailCoordinates))
+        errors.addAll(trailCoordinatesCreationValidator.validate(request.coordinates))
         if (!placeManager.doesItExist(request.placeId)) {
             errors.add("Place with id:'${request.placeId}' does not exist")
         }

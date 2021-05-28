@@ -37,13 +37,13 @@ public class ImportTrailIT {
     public static final CoordinatesDto INTERMEDIATE_COORDINATES_DTO_2 = new CoordinatesDto(44.436087, 11.315623, 230.0);
     public static final CoordinatesDto END_COORDINATES_DTO = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
 
-    public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
-    public static final TrailCoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 20);
-    public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 50);
+    public static final CoordinatesDto START_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
+    public static final CoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new CoordinatesDto(44.436084, 11.315620, 250.0);
+    public static final CoordinatesDto END_EXPECTED_COORDINATE = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
 
     public static RecordDetailsDto ANY_RECORD_DETAILS_DTO = new RecordDetailsDto(A_DATE, USER_ADMIN, INSTANCE, REALM);
 
-    public static final PlaceRefDto START_REF_COORDINATE = new PlaceRefDto(EXPECTED_NAME, START_EXPECTED_COORDINATE, EXPECTED_PLACE_ID);
+    public static final PlaceRefDto START_REF_COORDINATE = new PlaceRefDto(EXPECTED_NAME, START_EXPECTED_COORDINATE_DTO, EXPECTED_PLACE_ID);
     public static final PlaceRefDto END_REF_COORDINATE = new PlaceRefDto(EXPECTED_NAME_2, END_EXPECTED_COORDINATE, EXPECTED_PLACE_ID2);
 
     public static final PlaceDto EXPECTED_START_POS = new PlaceDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_TAGS, emptyList(), singletonList(START_COORDINATES_DTO), emptyList(), ANY_RECORD_DETAILS_DTO);

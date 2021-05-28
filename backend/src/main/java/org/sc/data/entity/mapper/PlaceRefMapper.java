@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class PlaceRefMapper implements Mapper<PlaceRef> {
 
-    final TrailCoordinatesMapper coordinatesMapper;
+    final CoordinatesMapper coordinatesMapper;
 
     @Autowired
-    public PlaceRefMapper(final TrailCoordinatesMapper coordinatesMapper) {
+    public PlaceRefMapper(final CoordinatesMapper coordinatesMapper) {
         this.coordinatesMapper = coordinatesMapper;
     }
 
@@ -26,6 +26,6 @@ public class PlaceRefMapper implements Mapper<PlaceRef> {
     public Document mapToDocument(PlaceRef object) {
         return new Document(PlaceRef.NAME, object.getName())
                 .append(PlaceRef.PLACE_ID, object.getPlaceId())
-                .append(PlaceRef.COORDINATES, coordinatesMapper.mapToDocument(object.getTrailCoordinates()));
+                .append(PlaceRef.COORDINATES, coordinatesMapper.mapToDocument(object.getCoordinates()));
     }
 }

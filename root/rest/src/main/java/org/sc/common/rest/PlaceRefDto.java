@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class PlaceRefDto {
     private String name;
-    private TrailCoordinatesDto trailCoordinates;
+    private CoordinatesDto coordinates;
     private String placeId;
 }

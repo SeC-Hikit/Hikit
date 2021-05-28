@@ -6,8 +6,11 @@ import org.sc.common.rest.UnLinkeMediaRequestDto
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceMapper
+import org.sc.data.model.CoordinatesWithAltitude
+import org.sc.data.model.Place
 import org.sc.data.model.RecordDetails
 import org.sc.data.repository.PlaceDAO
+import org.sc.service.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -18,6 +21,7 @@ class PlaceManager @Autowired constructor(
     private val placeMapper: PlaceMapper,
     private val trailManager: TrailManager,
     private val linkedMediaMapper: LinkedMediaMapper,
+    private val altitudeServiceAdapter: AltitudeServiceAdapter,
     private val authFacade: AuthFacade
 ) {
 
@@ -28,8 +32,10 @@ class PlaceManager @Autowired constructor(
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int): List<PlaceDto> =
         placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
 
-    fun getNearPoint(longitude: Double, latitude: Double, distance: Double,
-                     skip: Int, limit: Int): List<PlaceDto> =
+    fun getNearPoint(
+        longitude: Double, latitude: Double, distance: Double,
+        skip: Int, limit: Int
+    ): List<PlaceDto> =
         placeDao.getNear(longitude, latitude, distance, skip, limit).map { placeMapper.map(it) }
 
     fun doesItExist(id: String) = getById(id).isNotEmpty()
@@ -40,12 +46,23 @@ class PlaceManager @Autowired constructor(
 
     fun create(place: PlaceDto): List<PlaceDto> {
         val mapCreation = placeMapper.mapCreation(place)
-        mapCreation.recordDetails = RecordDetails(Date(),
-                authFacade.authHelper.username,
-                authFacade.authHelper.instance,
-                authFacade.authHelper.realm)
+        mapCreation.recordDetails = RecordDetails(
+            Date(),
+            authFacade.authHelper.username,
+            authFacade.authHelper.instance,
+            authFacade.authHelper.realm
+        )
+        mapCreation.coordinates = ensureCorrectElevation(mapCreation)
         return placeDao.create(mapCreation).map { placeMapper.map(it) }
     }
+
+    private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
+        CoordinatesWithAltitude(
+            it.latitude, it.longitude,
+            altitudeServiceAdapter.getAltitudeByLongLat(it.latitude, it.longitude)
+        )
+    }
+
 
     fun deleteById(placeId: String): List<PlaceDto> {
         trailManager.removePlaceRefFromTrails(placeId)

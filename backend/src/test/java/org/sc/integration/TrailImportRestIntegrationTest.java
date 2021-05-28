@@ -48,17 +48,20 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     // Start POS coordinates
     public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
+    public static final CoordinatesDto START_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
 
     public static final TrailCoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436081, 11.315625, 250.0, 0);
+    public static final CoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436081, 11.315625, 250.0);
 
     // End Pos coordinates
     public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 50);
+    public static final CoordinatesDto END_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
     public static final List<TrailCoordinatesDto> EXPECTED_TRAIL_COORDINATES = Arrays.asList(
             START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
     );
     public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
             singletonList(new PlaceRefDto(EXPECTED_NAME,
-                    INTERMEDIATE_EXPECTED_COORDINATE, EXPECTED_PLACE_ID_INTERMEDIATE));
+                    INTERMEDIATE_EXPECTED_COORDINATE_DTO, EXPECTED_PLACE_ID_INTERMEDIATE));
 
     // FileDetails
     public static final String ANY_FILENAME = "001xBO.gpx";
@@ -148,11 +151,11 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     public static TrailImportDto makeCorrectTrailDtoForImport(String startPlaceId, String placeId, String endPlaceId) {
         PlaceRefDto placeStartRef = new PlaceRefDto(EXPECTED_NAME,
-                START_EXPECTED_COORDINATE, startPlaceId);
+                START_EXPECTED_COORDINATE_DTO, startPlaceId);
         PlaceRefDto endPlaceRef = new PlaceRefDto(EXPECTED_NAME,
-                END_EXPECTED_COORDINATE, endPlaceId);
+                END_EXPECTED_COORDINATE_DTO, endPlaceId);
         LOCATION_REFS = Arrays.asList(placeStartRef, new PlaceRefDto(EXPECTED_NAME,
-                INTERMEDIATE_EXPECTED_COORDINATE, placeId), endPlaceRef);
+                INTERMEDIATE_EXPECTED_COORDINATE_DTO, placeId), endPlaceRef);
 
         return new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 ANY_OFFICIAL_ETA, placeStartRef, endPlaceRef, LOCATION_REFS,

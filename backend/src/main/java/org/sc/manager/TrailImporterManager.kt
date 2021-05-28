@@ -6,6 +6,7 @@ import org.sc.data.mapper.*
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
+import org.sc.processor.DistanceProcessor
 import org.sc.processor.TrailsStatsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -19,7 +20,6 @@ class TrailImporterManager @Autowired constructor(
     private val placeMapper: PlaceRefMapper,
     private val trailCoordinatesMapper: TrailCoordinatesMapper,
     private val trailRawMapper: TrailRawMapper,
-    private val fileDetailsMapper: FileDetailsMapper,
     private val trailRawDao: TrailRawDAO,
     private val trailMapper: TrailMapper,
     private val authFacade: AuthFacade
@@ -27,7 +27,7 @@ class TrailImporterManager @Autowired constructor(
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
         trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
-                .first()
+            .first()
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
         val statsTrailMetadata = StatsTrailMetadata(
@@ -72,7 +72,16 @@ class TrailImporterManager @Autowired constructor(
                 )
             )
             .mediaList(emptyList())
-            .fileDetails(fileDetailsMapper.map(importingTrail.fileDetailsDto))
+            .fileDetails(
+                FileDetails(
+                    importingTrail.fileDetailsDto.uploadedOn,
+                    authHelper.username,
+                    authHelper.instance,
+                    authHelper.realm,
+                    importingTrail.fileDetailsDto.filename,
+                    importingTrail.fileDetailsDto.originalFilename
+                )
+            )
             .status(importingTrail.trailStatus)
             .build()
 
@@ -83,7 +92,7 @@ class TrailImporterManager @Autowired constructor(
         return savedTrailDao
     }
 
-    fun updateTrail(trailDto: TrailDto) : List<TrailDto> {
+    fun updateTrail(trailDto: TrailDto): List<TrailDto> {
 
         val trailToUpdate = trailsManager.getById(trailDto.id, false).first()
 
@@ -123,8 +132,21 @@ class TrailImporterManager @Autowired constructor(
     fun countTrailRaw() = trailRawDao.count()
 
     private fun getConsistentLocations(importingTrail: TrailImportDto) =
-        sortLocationsByTrailCoordinates(importingTrail.locations.map { placeMapper.map(it) })
+        sortLocationsByTrailCoordinates(
+            importingTrail.coordinates,
+            importingTrail.locations.map { placeMapper.map(it) })
 
-    private fun sortLocationsByTrailCoordinates(locations: List<PlaceRef>): List<PlaceRef> =
-        locations.sortedBy { it.trailCoordinates.distanceFromTrailStart }
+    private fun sortLocationsByTrailCoordinates(
+        coordinates: List<TrailCoordinatesDto>,
+        locations: List<PlaceRef>
+    ): List<PlaceRef> =
+        // for each location, check closest trail Coordinate distance
+        locations.sortedWith (compareBy{ pr ->
+            val closestCoordinatePoint: TrailCoordinatesDto? =
+                coordinates.minByOrNull { DistanceProcessor.distanceBetweenPoints(pr.coordinates, it) }
+
+            val distance = closestCoordinatePoint!!.distanceFromTrailStart +
+                    DistanceProcessor.distanceBetweenPoints(closestCoordinatePoint, pr.coordinates)
+            distance;
+        })
 }

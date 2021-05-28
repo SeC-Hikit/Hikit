@@ -114,9 +114,9 @@ public class TrailManipulationRestIntegrationTest {
                 Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0)), Collections.emptyList(),
                 new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
-        PlaceRefDto startPlace = new PlaceRefDto(start_place, new TrailCoordinatesDto(44.13998529867459, 11.15928920022217, 765.0, 0),
+        PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
                 any_fountain.getContent().get(0).getId());
-        PlaceRefDto endPlace = new PlaceRefDto(end_place, new TrailCoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0, 6345),
+        PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
                 another_fountain.getContent().get(0).getId());
 
         TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
@@ -166,9 +166,9 @@ public class TrailManipulationRestIntegrationTest {
                 Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0)), Collections.emptyList(),
                 new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
-        PlaceRefDto startPlace = new PlaceRefDto(start_place, new TrailCoordinatesDto(44.13998529867459, 11.15928920022217, 765.0, 0),
+        PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
                 any_fountain.getContent().get(0).getId());
-        PlaceRefDto endPlace = new PlaceRefDto(end_place, new TrailCoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0, 6345),
+        PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
                 another_fountain.getContent().get(0).getId());
 
         TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
@@ -188,7 +188,7 @@ public class TrailManipulationRestIntegrationTest {
         trailController.getById(trailResponse.getContent().get(0).getId(), false);
 
         //
-        //  Create the second trail
+        //  Check the second trail import, and use the coordinates to find intersection
         //
         TrailRawResponse byId033 = trailRawController.getById(trail033Import.getContent().stream().findFirst().get().getId());
         assertThat(byId033.getContent().size()).isEqualTo(1);
@@ -209,7 +209,6 @@ public class TrailManipulationRestIntegrationTest {
     public void whenTrailIsCreatedAndPlaceAddedAndRemoved_placeShallBeNoLongerPresentOnTrail() {
         TrailRawResponse byId = trailRawController.getById(trail035Import.getContent().stream().findFirst().get().getId());
         assertThat(byId.getContent().size()).isEqualTo(1);
-        TrailRawDto trailRawDto = byId.getContent().get(0);
 
         String placeId3 = "Any3";
         String placeId4 = "Any4";
@@ -228,9 +227,9 @@ public class TrailManipulationRestIntegrationTest {
                 Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.11522879887705, 11.159186600446347, 775.0)), Collections.emptyList(),
                 new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
 
-        PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new TrailCoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0, 0),
+        PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0),
                 any_start_waterfall.getContent().get(0).getId());
-        PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new TrailCoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0, 5376),
+        PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new CoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0),
                 any_end_bivouac.getContent().get(0).getId());
 
         TrailImportDto trail2Import = new TrailImportDto("ABC 2", "Any trail 2", "Any desc 2", 15,
@@ -262,7 +261,7 @@ public class TrailManipulationRestIntegrationTest {
 
         // Trail ID + PlaceRef used for adding/removing
         String trailId = createdTrailResponse.getContent().get(0).getId();
-        PlaceRefDto placeRefDto = new PlaceRefDto(anotherPlaceName, new TrailCoordinatesDto(latitude, longitude, altitude, 1466),
+        PlaceRefDto placeRefDto = new PlaceRefDto(anotherPlaceName, new CoordinatesDto(latitude, longitude, altitude),
                 anotherPlaceResponse.getContent().get(0).getId());
 
         // ADD PLACE TO TRAIL
@@ -289,11 +288,147 @@ public class TrailManipulationRestIntegrationTest {
 
 
         PlaceResponse placeResponseAfterDelete = placeController.get(anotherPlaceResponse.getContent().get(0).getId());
-        assertThat(placeResponseAfterDelete.getContent()).asList().isEmpty();
+        assertThat(placeResponseAfterDelete.getContent().get(0).getCoordinates()).asList().isEmpty();
     }
 
-    // TODO: add test with two trails referring to same place. Check that after one is deleted, the other one reference
-    // is still present
+    @Test
+    public void followingFindIntersectionsWithOtherLine_shallCreatePlaceConnectingBothTrails() {
+        TrailRawResponse byId = trailRawController.getById(trail035Import.getContent().stream().findFirst().get().getId());
+        assertThat(byId.getContent().size()).isEqualTo(1);
+        TrailRawDto trailRawDto = byId.getContent().get(0);
+
+        // Create the FIRST trail
+        String placeId1 = "Any";
+        String placeId2 = "Any2";
+
+        String start_place = "Start place";
+        PlaceResponse any_fountain = adminPlaceController.create(new PlaceDto(placeId1, start_place, "", Collections.singletonList("Any fountain"),
+                Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0)), Collections.emptyList(),
+                new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
+
+        String end_place = "End place";
+        PlaceResponse another_fountain = adminPlaceController.create(new PlaceDto(placeId2, end_place, "", Collections.singletonList("Another fountain"),
+                Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0)), Collections.emptyList(),
+                new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
+
+        PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
+                any_fountain.getContent().get(0).getId());
+        PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
+                another_fountain.getContent().get(0).getId());
+
+        TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
+                startPlace,
+                endPlace,
+                Arrays.asList(startPlace, endPlace), TrailClassification.E, "Italy",
+                trailRawDto.getCoordinates(), "CAI Bologna",
+                false, "Ovest", Collections.emptyList(),
+                new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
+
+        TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
+
+
+        String importedTrail035Id = trailResponse.getContent().stream().findFirst().get().getId();
+
+        TrailResponse trailReadBack = trailController.getById(
+                importedTrail035Id, false);
+        assertThat(trailReadBack
+                .getContent().size()).isEqualTo(1);
+        trailController.getById(trailResponse.getContent().get(0).getId(), false);
+
+        //  Create the second trail
+        String placeId3 = "Any3";
+        String placeId4 = "Any4";
+
+        TrailRawResponse byId033 = trailRawController.getById(trail033Import.getContent().stream().findFirst().get().getId());
+        assertThat(byId033.getContent().size()).isEqualTo(1);
+        TrailRawDto importedTrail033 = byId033.getContent().get(0);
+
+        String startPlaceName = "Another Start place";
+        PlaceResponse any_start_waterfall = adminPlaceController.create(new PlaceDto(placeId3, startPlaceName, "", Collections.singletonList("Any waterfall"),
+                Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0)), Collections.emptyList(),
+                new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
+
+        String endPlaceName = "Another End place";
+        PlaceResponse any_end_bivouac = adminPlaceController.create(new PlaceDto(placeId4, endPlaceName, "", Collections.singletonList("Another fountain"),
+                Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.11522879887705, 11.159186600446347, 775.0)), Collections.emptyList(),
+                new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
+
+        PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0),
+                any_start_waterfall.getContent().get(0).getId());
+        PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new CoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0),
+                any_end_bivouac.getContent().get(0).getId());
+
+        TrailImportDto trail2Import = new TrailImportDto("ABC 2", "Any trail 2", "Any desc 2", 15,
+                startPlace2,
+                endPlace2,
+                Arrays.asList(startPlace2, endPlace2), TrailClassification.EE, "Italy",
+                importedTrail033.getCoordinates(), "CAI Bologna",
+                false, "Ovest", Collections.emptyList(),
+                new Date(), importedTrail033.getFileDetails(), TrailStatus.PUBLIC);
+
+        TrailResponse trail2Response = adminTrailController.importTrail(trail2Import);
+
+        assertThat(trailController.getById(
+                trail2Response.getContent().stream().findFirst().get().getId(), false)
+                .getContent().size()).isEqualTo(1);
+        String importedTrail033ImportId = trail2Response.getContent().get(0).getId();
+        TrailResponse createdTrailResponse = trailController.getById(importedTrail033ImportId, false);
+
+        List<TrailCoordinatesDto> secondTrailCoordinates = createdTrailResponse.getContent().get(0).getCoordinates();
+
+        TrailIntersectionResponse trailIntersection = geoTrailController.findTrailIntersection(
+                new GeoLineDto(secondTrailCoordinates
+                        .stream().map(a -> new Coordinates2D(a.getLongitude(), a.getLatitude())).collect(Collectors.toList())),
+                0, 1000);
+
+        List<TrailIntersectionDto> content = trailIntersection.getContent();
+
+        List<TrailIntersectionDto> otherTrail = content.stream().filter(t -> t.getTrail().getId().equals(importedTrail035Id)).collect(Collectors.toList());
+
+        double expectedIntersectingLat = 44.1278146989955;
+        double expectedIntersectingLong = 11.14361829962144;
+
+        assertThat(otherTrail.get(0).getPoints().get(0).getLatitude()).isEqualTo(expectedIntersectingLat);
+        assertThat(otherTrail.get(0).getPoints().get(0).getLongitude()).isEqualTo(expectedIntersectingLong);
+
+        // Found the intersection point, go ahead and add a place connecting the two trails
+
+        String intersectionPlaceId = "IntersectionId";
+        String intersectionPlace = "Intersection place";
+        PlaceResponse intersectingPlaceResponse = adminPlaceController.create(new PlaceDto(intersectionPlaceId, intersectionPlace, "Any intersecting description",
+                Collections.singletonList("Any Crossway"),
+                Collections.emptyList(), Collections.singletonList(new CoordinatesDto(expectedIntersectingLat, expectedIntersectingLong, 0)),
+                Arrays.asList(importedTrail035Id, importedTrail033ImportId),
+                new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
+        PlaceDto intersectingPlace = intersectingPlaceResponse.getContent().get(0);
+        String intersectingPlaceId = intersectingPlace.getId();
+
+        // Adding the two places references
+        PlaceRefDto expected035PlaceRefDto = new PlaceRefDto("Crocevia con 033", intersectingPlace.getCoordinates().get(0),
+                intersectingPlaceId);
+
+        TrailResponse addedPlaceToTrailResponse = adminTrailController.addPlaceToTrail(importedTrail035Id,
+                expected035PlaceRefDto);
+
+        PlaceRefDto expected033PlaceRefDto = new PlaceRefDto("Crocevia con 035", intersectingPlace.getCoordinates().get(0),
+                intersectingPlaceId);
+
+        TrailResponse addedPlaceToTrailResponse2 = adminTrailController.addPlaceToTrail(importedTrail033ImportId,
+                expected033PlaceRefDto);
+
+        // Checking the two places references
+        assertThat(addedPlaceToTrailResponse.getContent().get(0).getLocations()).asList().contains(expected035PlaceRefDto);
+        assertThat(addedPlaceToTrailResponse2.getContent().get(0).getLocations()).asList().contains(expected033PlaceRefDto);
+        assertThat(placeController.get(intersectingPlaceId).getContent().get(0).getCrossingTrailIds()).asList().contains(importedTrail035Id, importedTrail033ImportId);
+
+        // Remove trail, shall leave no orphans
+        adminTrailController.deleteById(importedTrail035Id);
+        List<String> crossingTrailIdsInPlace = placeController.get(intersectingPlaceId).getContent().get(0).getCrossingTrailIds();
+        assertThat(crossingTrailIdsInPlace).asList().doesNotContain(importedTrail035Id);
+        assertThat(crossingTrailIdsInPlace).asList().contains(importedTrail033ImportId);
+    }
+
+    // TODO: test PUBLIC/DRAFT
 
     @After
     public void setDown() {

@@ -26,7 +26,7 @@ class TrailManager @Autowired constructor(
     private val trailMapper: TrailMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
     private val placeRefMapper: PlaceRefMapper,
-    private val trailCoordinatesMapper: TrailCoordinatesMapper,
+    private val coordinatesMapper: CoordinatesMapper,
     private val trailIntersectionMapper: TrailIntersectionMapper,
     private val altitudeService: AltitudeServiceAdapter
 ) {
@@ -53,7 +53,7 @@ class TrailManager @Autowired constructor(
         val deletedTrailInMem = trailDAO.delete(id)
         deletedTrailInMem.forEach { trail ->
             trail.locations.forEach {
-                placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.trailCoordinates)
+                placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.coordinates)
             }
         }
         logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, " +
@@ -82,7 +82,7 @@ class TrailManager @Autowired constructor(
 
     fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.addTrailIdToPlace(placeRef.placeId, id, placeRef.trailCoordinates)
+        placeDAO.addTrailIdToPlace(placeRef.placeId, id, placeRef.coordinates)
         return linkedTrail.map { trailMapper.map(it) }
     }
 
@@ -90,7 +90,7 @@ class TrailManager @Autowired constructor(
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
         placeDAO.removeTrailFromPlace(
             placeRef.placeId, id,
-            trailCoordinatesMapper.map(placeRef.trailCoordinates)
+            coordinatesMapper.map(placeRef.coordinates)
         )
         return unLinkPlace.map { trailMapper.map(it) }
     }

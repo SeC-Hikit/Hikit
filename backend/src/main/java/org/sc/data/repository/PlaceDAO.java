@@ -6,15 +6,13 @@ import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.TrailCoordinatesDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.CoordinatesMapper;
 import org.sc.data.entity.mapper.MultiPointCoordsMapper;
 import org.sc.data.entity.mapper.PlaceMapper;
-import org.sc.data.model.LinkedMedia;
-import org.sc.data.model.MultiPointCoords2D;
-import org.sc.data.model.Place;
-import org.sc.data.model.TrailCoordinates;
+import org.sc.data.model.*;
 import org.sc.util.coordinates.CoordinatesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -83,7 +81,7 @@ public class PlaceDAO {
     }
 
     public void addTrailIdToPlace(final String id,
-                                  final String trailId, TrailCoordinatesDto trailCoordinates) {
+                                  final String trailId, CoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
                 new Document(ADD_TO_SET, new Document(Place.CROSSING,
                         trailId))
@@ -95,16 +93,21 @@ public class PlaceDAO {
 
     public void removeTrailFromPlace(final String id,
                                      final String trailId,
-                                     final TrailCoordinates trailCoordinates) {
-        List<Place> byId = getById(id);
+                                     final Coordinates coordinates) {
+
+        collection.updateOne(new Document(Place.ID, id),
+                new Document($PULL, new Document(Place.CROSSING,
+                        trailId)));
+
+        collection.updateOne(new Document(Place.ID, id),
+                new Document($PULL, new Document(Place.COORDINATES,
+                        coordinatesMapper.mapToDocument(coordinates))));
+
+        final List<Place> byId = getById(id);
         if (byId.isEmpty()) {
             return;
         }
-        collection.updateOne(new Document(Place.ID, id),
-                new Document($PULL, new Document(Place.CROSSING,
-                        trailId))
-                        .append($PULL, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates))));
-        deleteOrphanPlaceWhenNoMoreTrailsUseIt(byId.stream().findFirst().get(), trailCoordinates);
+        deleteOrphanPlaceWhenNoMoreTrailsUseIt(byId.stream().findFirst().get(), coordinates);
     }
 
     public List<Place> update(final Place place) {
@@ -159,16 +162,17 @@ public class PlaceDAO {
         return collection.countDocuments();
     }
 
-    private void deleteOrphanPlaceWhenNoMoreTrailsUseIt(Place place, TrailCoordinates trailCoordinates) {
+    private void deleteOrphanPlaceWhenNoMoreTrailsUseIt(Place place, Coordinates trailCoordinates) {
         final List<List<Double>> collect = place.getPoints().getCoordinates2D().stream().filter(p ->
                 (p.get(LONG_INDEX) != trailCoordinates.getLongitude() &&
                         p.get(LAT_INDEX) != trailCoordinates.getLatitude())).collect(toList());
-        if (collect.isEmpty()) {
-            this.delete(place.getId());
+        // Mongo DB does not support empty GeoJSON multi point arrays
+        if(collect.isEmpty()) {
+            place.setPoints(new MultiPointCoords2D(Collections.singletonList(Arrays.asList(0.0, 0.0))));
         } else {
             place.setPoints(new MultiPointCoords2D(collect));
-            collection.findOneAndReplace(new Document(Place.ID, place.getId()), placeMapper.mapToDocument(place));
         }
+        collection.findOneAndReplace(new Document(Place.ID, place.getId()), placeMapper.mapToDocument(place));
     }
 
     private List<Place> toPlaceList(final Iterable<Document> documents) {
