@@ -20,6 +20,7 @@ import org.sc.controller.admin.AdminTrailRawController;
 import org.sc.data.model.Coordinates2D;
 import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailStatus;
+import org.sc.data.validator.RectangleValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -131,7 +132,7 @@ public class GeoTrailRestIntegrationTest {
 
         assertThat(trailResponse.getContent()).asList().isEmpty();
         assertThat(trailResponse.getStatus()).isEqualTo(Status.ERROR);
-        assertThat(trailResponse.getMessages().contains("Diagonal between selected vertexes is greater than 50 km!")).isTrue();
+        assertThat(trailResponse.getMessages().contains(RectangleValidator.diagonalLengthError)).isTrue();
     }
 
 
