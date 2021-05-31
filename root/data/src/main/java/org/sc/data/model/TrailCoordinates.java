@@ -2,7 +2,7 @@ package org.sc.data.model;
 
 import com.goebl.simplify.Point;
 
-public class TrailCoordinates implements Coordinates, Point {
+public class TrailCoordinates implements Coordinates {
 
     public final static String DISTANCE_FROM_START = "distFromStart";
 
@@ -65,15 +65,5 @@ public class TrailCoordinates implements Coordinates, Point {
         return Double.compare(that.getDistanceFromTrailStart(), getDistanceFromTrailStart()) == 0 &&
                 Double.compare(that.getLatitude(), getLatitude()) == 0 &&
                 Double.compare(that.getLongitude(), getLongitude()) == 0;
-    }
-
-    @Override
-    public double getX() {
-        return getLongitude();
-    }
-
-    @Override
-    public double getY() {
-        return getLatitude();
     }
 }

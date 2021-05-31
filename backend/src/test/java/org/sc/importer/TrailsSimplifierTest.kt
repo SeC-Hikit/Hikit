@@ -2,10 +2,10 @@ package org.sc.importer
 
 import org.junit.Assert
 import org.junit.Test
-
 import org.sc.data.model.TrailCoordinates
-import org.sc.data.model.TrailSimplifier
-import org.sc.processor.TrailsStatsCalculator
+import org.sc.processor.TrailSimplifier
+import org.sc.util.GpsReadUtils
+
 
 class TrailsSimplifierTest {
 
@@ -18,11 +18,22 @@ class TrailsSimplifierTest {
         val listMock = listOf(point1, point2, point3)
         val simplifier = TrailSimplifier().simplify(listMock)
         val len = simplifier.size
-        Assert.assertEquals(2, len )
+        Assert.assertEquals(3, len)
     }
 
     @Test
-    fun `simplify a coordinate list extracted from via Emilia`() {
+    fun `simplify a large coordinate list extracted from file`() {
+        val readPoints = GpsReadUtils.readPoints("/points/gps-track.txt");
+        val trailCoordinates = readPoints.mapIndexed { index, point ->
+            TrailCoordinates(point.y, point.x, 10.0 + index, index)
+        }
+        Assert.assertEquals(1306, trailCoordinates.size)
+        val simplifier = TrailSimplifier().simplify(trailCoordinates)
+        Assert.assertEquals(758, simplifier.size)
+    }
+
+    @Test
+    fun `do not simplify a small coordinate list extracted from via Emilia`() {
         val point1 = TrailCoordinates(44.49441503350789, 11.342670749165524, 10.1, 1)
         val point2 = TrailCoordinates(44.49702, 11.33780, 10.1, 2)
         val point3 = TrailCoordinates(44.50661524800948, 11.307084768272063, 10.1, 3)
@@ -44,16 +55,16 @@ class TrailsSimplifierTest {
         val point19 = TrailCoordinates(44.695943319981566, 10.634712307950334, 10.1, 19)
         val point20 = TrailCoordinates(44.80427658333105, 10.32764229103951, 10.1, 20)
 
-        val listPoint = listOf(point1, point2, point3, point4, point5, point6, point7, point8, point9, point10,
-                point11, point12, point13, point14, point15, point16, point17, point18, point19, point20)
+        val listPoint = listOf(
+            point1, point2, point3, point4, point5, point6, point7, point8, point9, point10,
+            point11, point12, point13, point14, point15, point16, point17, point18, point19, point20
+        )
         val simplifier = TrailSimplifier().simplify(listPoint)
-        val len = simplifier.size
-        Assert.assertEquals(10, len )
-
+        Assert.assertEquals(20, simplifier.size)
     }
 
     @Test
-    fun `simplify a coordinate list extracted from a bending trail - 009aBO`() {
+    fun `do not simplify a small coordinate list extracted from a bending trail - 009aBO`() {
         val point1 = TrailCoordinates(44.119134999365968, 11.063886999713153, 10.1, 1)
         val point2 = TrailCoordinates(44.119104698917965, 11.063783800188826, 10.1, 2)
         val point3 = TrailCoordinates(44.119054599162411, 11.063756500442889, 10.1, 3)
@@ -89,7 +100,7 @@ class TrailsSimplifierTest {
                 point21, point22, point23, point24, point25, point26, point27, point28, point29)
         val simplifier = TrailSimplifier().simplify(listPoint)
         val len = simplifier.size
-        Assert.assertEquals(20, len )
+        Assert.assertEquals(29, len )
 
     }
 }
