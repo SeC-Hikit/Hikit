@@ -4,6 +4,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.sc.data.model.TrailCoordinates
 import org.sc.processor.TrailSimplifier
+import org.sc.processor.TrailSimplifierLevel
 import org.sc.util.GpsReadUtils
 
 
@@ -16,7 +17,7 @@ class TrailsSimplifierTest {
         val point3 = TrailCoordinates(44.50661524800948, 11.307084768272063, 10.1, 3)
 
         val listMock = listOf(point1, point2, point3)
-        val simplifier = TrailSimplifier().simplify(listMock)
+        val simplifier = TrailSimplifier().simplify(listMock, TrailSimplifierLevel.LOW)
         val len = simplifier.size
         Assert.assertEquals(3, len)
     }
@@ -28,7 +29,7 @@ class TrailsSimplifierTest {
             TrailCoordinates(point.y, point.x, 10.0 + index, index)
         }
         Assert.assertEquals(1306, trailCoordinates.size)
-        val simplifier = TrailSimplifier().simplify(trailCoordinates)
+        val simplifier = TrailSimplifier().simplify(trailCoordinates, TrailSimplifierLevel.LOW)
         Assert.assertEquals(758, simplifier.size)
     }
 
@@ -59,7 +60,7 @@ class TrailsSimplifierTest {
             point1, point2, point3, point4, point5, point6, point7, point8, point9, point10,
             point11, point12, point13, point14, point15, point16, point17, point18, point19, point20
         )
-        val simplifier = TrailSimplifier().simplify(listPoint)
+        val simplifier = TrailSimplifier().simplify(listPoint, TrailSimplifierLevel.LOW)
         Assert.assertEquals(20, simplifier.size)
     }
 
@@ -98,7 +99,7 @@ class TrailsSimplifierTest {
         val listPoint = listOf(point1, point2, point3, point4, point5, point6, point7, point8, point9, point10,
                 point11, point12, point13, point14, point15, point16, point17, point18, point19, point20,
                 point21, point22, point23, point24, point25, point26, point27, point28, point29)
-        val simplifier = TrailSimplifier().simplify(listPoint)
+        val simplifier = TrailSimplifier().simplify(listPoint, TrailSimplifierLevel.LOW)
         val len = simplifier.size
         Assert.assertEquals(29, len )
 
