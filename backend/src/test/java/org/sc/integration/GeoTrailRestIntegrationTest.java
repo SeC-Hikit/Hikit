@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.sc.integration.TrailManipulationRestIntegrationTest.TRAIL_033_IMPORT_FILENAME;
@@ -62,6 +63,8 @@ public class GeoTrailRestIntegrationTest {
 
     private TrailRawResponse trail035Import;
     private TrailRawResponse trail033Import;
+    private String importedId;
+    private String secondTrailId;
 
     @Before
     public void setUp() throws IOException {
@@ -78,11 +81,58 @@ public class GeoTrailRestIntegrationTest {
                 new Coordinates2D(11.156454500448556, 44.138395199458394)));
 
         assertThat(trailResponse.getContent()).asList().isNotEmpty();
+        assertThat(trailResponse.getContent().get(0).getId()).isEqualTo(importedId);
     }
 
-    // TODO: one test shall not find it
-    // TODO: one test shall find two
-    // TODO: one test shall pass too large rectangle to be processed
+    @Test
+    public void afterImportingTrail_shallNotFindItUsingGeoTrail_asOutOfSearchArea() {
+        createAndAssertTrail();
+        TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
+                new Coordinates2D(11.074260, 44.513351),
+                new Coordinates2D(11.184882, 44.589685)));
+
+        assertThat(trailResponse.getContent()).asList().isEmpty();
+    }
+
+    @Test
+    public void afterImportingTrail_shallFindItUsingGeoTrail_asPartIsWithinSearchArea() {
+        createAndAssertTrail();
+        TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
+                new Coordinates2D(11.154664, 44.138261),
+                new Coordinates2D(11.160095, 44.139004)));
+
+        assertThat(trailResponse.getContent()).asList().isNotEmpty();
+        assertThat(trailResponse.getContent().get(0).getId()).isEqualTo(importedId);
+    }
+
+    @Test
+    public void afterImportingTrails_shallFindThemUsingGeoTrail_asWithinSearchArea() {
+        createAndAssertTrail();
+        createSecondTrailAndAssertIt();;
+
+        TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
+                new Coordinates2D(11.12780418, 44.13472887),
+                new Coordinates2D(11.14989416, 44.12174993)));
+
+        assertThat(trailResponse.getContent()).asList().isNotEmpty();
+        assertThat(trailResponse.getContent()).asList().size().isEqualTo(2);
+        assertThat(trailResponse.getContent().stream().map(TrailDto::getId).collect(Collectors.toList()))
+                .asList().contains(importedId, secondTrailId);
+    }
+
+    @Test
+    public void afterImportingTrails_shallGetTooLargeRectangleError() {
+        createAndAssertTrail();
+        createSecondTrailAndAssertIt();;
+
+        TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
+                new Coordinates2D(10.75034053, 44.28359988),
+                new Coordinates2D(12.04720300, 44.58065428)));
+
+        assertThat(trailResponse.getContent()).asList().isEmpty();
+        assertThat(trailResponse.getStatus()).isEqualTo(Status.ERROR);
+        assertThat(trailResponse.getMessages().contains("Diagonal between selected vertexes is greater than 50 km!")).isTrue();
+    }
 
 
     private void createAndAssertTrail() {
@@ -122,9 +172,49 @@ public class GeoTrailRestIntegrationTest {
         assertThat(trailController.getById(
                 trailResponse.getContent().stream().findFirst().get().getId(), false)
                 .getContent().size()).isEqualTo(1);
-        trailController.getById(trailResponse.getContent().get(0).getId(), false);
+        importedId = trailResponse.getContent().get(0).getId();
+        trailController.getById(importedId, false);
     }
 
+
+    private void createSecondTrailAndAssertIt() {
+        String placeId3 = "Any3";
+        String placeId4 = "Any4";
+
+        TrailRawResponse byId033 = trailRawController.getById(trail033Import.getContent().stream().findFirst().get().getId());
+        assertThat(byId033.getContent().size()).isEqualTo(1);
+        TrailRawDto importedTrail033 = byId033.getContent().get(0);
+
+        String startPlaceName = "Another Start place";
+        PlaceResponse any_start_waterfall = adminPlaceController.create(new PlaceDto(placeId3, startPlaceName, "", Collections.singletonList("Any waterfall"),
+                Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0)), Collections.emptyList(),
+                new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
+
+        String endPlaceName = "Another End place";
+        PlaceResponse any_end_bivouac = adminPlaceController.create(new PlaceDto(placeId4, endPlaceName, "", Collections.singletonList("Another fountain"),
+                Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.11522879887705, 11.159186600446347, 775.0)), Collections.emptyList(),
+                new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
+
+        PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0),
+                any_start_waterfall.getContent().get(0).getId());
+        PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new CoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0),
+                any_end_bivouac.getContent().get(0).getId());
+
+        TrailImportDto trail2Import = new TrailImportDto("ABC 2", "Any trail 2", "Any desc 2", 15,
+                startPlace2,
+                endPlace2,
+                Arrays.asList(startPlace2, endPlace2), TrailClassification.EE, "Italy",
+                importedTrail033.getCoordinates(), "CAI Bologna",
+                false, "Ovest", Collections.emptyList(),
+                new Date(), importedTrail033.getFileDetails(), TrailStatus.PUBLIC);
+
+        TrailResponse trail2Response = adminTrailController.importTrail(trail2Import);
+
+        assertThat(trailController.getById(
+                trail2Response.getContent().stream().findFirst().get().getId(), false)
+                .getContent().size()).isEqualTo(1);
+        secondTrailId = trail2Response.getContent().get(0).getId();
+    }
 
     public TrailRawResponse importRawTrail(final AdminTrailImporterController adminTrailImporterController,
                                            final String fileName) throws IOException {
