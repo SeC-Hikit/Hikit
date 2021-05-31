@@ -38,10 +38,8 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     private static final String EXPECTED_NAME = "ANY";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
     private static final Date EXPECTED_DATE = new Date();
-    public static final List<String> EXPECTED_TAGS = Arrays.asList("one", "two");
     public static final String EXPECTED_COUNTRY = "Italy";
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
-    public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
     public static final String EXPECTED_TERRITORIAL_DIVISION = "Porretta";
     public static final boolean IS_VARIANT = false;
     public static final int ANY_OFFICIAL_ETA = 20;

@@ -1,10 +1,15 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailIntersectionDto;
 import org.sc.common.rest.geo.GeoLineDto;
+import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.TrailIntersectionResponse;
+import org.sc.common.rest.response.TrailResponse;
+import org.sc.controller.response.TrailIntersectionHelper;
+import org.sc.controller.response.TrailResponseHelper;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.data.validator.GeoLineValidator;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +30,20 @@ public class GeoTrailController {
     public final static String PREFIX = "/geo-trail";
 
     private final TrailManager trailManager;
-    private final ControllerPagination controllerPagination;
-    private final GeoLineValidator geoLineValidator;
+    private final TrailIntersectionHelper trailIntersectionHelper;
+    private final TrailResponseHelper trailResponseHelper;
+    private final GeneralValidator generalValidator;
 
 
     @Autowired
     public GeoTrailController(final TrailManager trailManager,
-                              final GeoLineValidator geoLineValidator,
-                              final ControllerPagination controllerPagination) {
+                              final GeneralValidator generalValidator,
+                              final TrailIntersectionHelper trailIntersectionHelper,
+                              final TrailResponseHelper trailResponseHelper) {
         this.trailManager = trailManager;
-        this.controllerPagination = controllerPagination;
-        this.geoLineValidator = geoLineValidator;
+        this.trailIntersectionHelper = trailIntersectionHelper;
+        this.generalValidator = generalValidator;
+        this.trailResponseHelper = trailResponseHelper;
     }
 
     @Operation(summary = "Find all existing trail intersections for a given multi-coordinate line")
@@ -43,26 +51,28 @@ public class GeoTrailController {
     public TrailIntersectionResponse findTrailIntersection(@RequestBody GeoLineDto geoLineDto,
                                                            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        final Set<String> validate = geoLineValidator.validate(geoLineDto);
+        final Set<String> validate = generalValidator.validate(geoLineDto);
 
-        if (!validate.isEmpty()) return constructTrailResponse(validate, emptyList(), 0, skip, limit);
+        if (!validate.isEmpty()) return trailIntersectionHelper.constructResponse(validate, emptyList(), 0, skip, limit);
 
         final List<TrailIntersectionDto> intersections =
                 trailManager.findIntersection(geoLineDto, skip, limit);
-        return constructTrailResponse(emptySet(), intersections, intersections.size(), skip, limit);
+        return trailIntersectionHelper.constructResponse(emptySet(), intersections, intersections.size(), skip, limit);
     }
 
-    private TrailIntersectionResponse constructTrailResponse(final Set<String> errors,
-                                                             final List<TrailIntersectionDto> dtos,
-                                                             final long totalCount,
-                                                             final int skip,
-                                                             final int limit) {
-        if (!errors.isEmpty()) {
-            return new TrailIntersectionResponse(Status.ERROR, errors, dtos, 1L,
-                    Constants.ONE, limit, totalCount);
+    @Operation(summary = "Find geo-located trails within a defined polygon")
+    @PostMapping("/locate")
+    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto) {
+
+        final Set<String> errors = generalValidator.validate(rectangleDto);
+
+        if (errors.isEmpty()) {
+            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto);
+            return trailResponseHelper.constructResponse(emptySet(), foundTrails,
+                    foundTrails.size(), Constants.ZERO, Constants.ONE);
         }
-        return new TrailIntersectionResponse(Status.OK, errors, dtos,
-                controllerPagination.getCurrentPage(skip, limit),
-                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
+
+        return trailResponseHelper.constructResponse(errors, emptyList(),
+                Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
 }

@@ -90,21 +90,4 @@ public class TrailController {
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
-
-    @Operation(summary = "Find geo-located trails within a defined polygon")
-    @PostMapping("/geolocate")
-    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto) {
-
-        final Set<String> errors = generalValidator.validate(rectangleDto);
-
-        if (errors.isEmpty()) {
-            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto);
-            return trailResponseHelper.constructResponse(emptySet(), foundTrails,
-                    foundTrails.size(), Constants.ZERO, Constants.ONE);
-        }
-
-        return trailResponseHelper.constructResponse(errors, emptyList(),
-                Constants.ZERO, Constants.ZERO, Constants.ONE);
-    }
-
 }

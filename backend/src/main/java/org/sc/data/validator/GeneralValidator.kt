@@ -1,6 +1,7 @@
 package org.sc.data.validator
 
 import org.sc.common.rest.*
+import org.sc.common.rest.geo.GeoLineDto
 import org.sc.common.rest.geo.RectangleDto
 import org.sc.data.validator.poi.PoiExistenceValidator
 import org.sc.data.validator.poi.PoiValidator
@@ -30,6 +31,7 @@ class GeneralValidator @Autowired constructor(
     private val poiExistenceValidator: PoiExistenceValidator,
     private val poiValidator: PoiValidator,
     private val rectangleValidator: RectangleValidator,
+    private val geoLineValidator: GeoLineValidator
 ) {
     fun validate(acd: AccessibilityNotificationDto): Set<String> = accessibilityValidator.validate(acd)
     fun validate(cor: CoordinatesDto): Set<String> = coordinatesValidator.validate(cor)
@@ -44,6 +46,7 @@ class GeneralValidator @Autowired constructor(
     fun validate(ti: TrailImportDto): Set<String> = trailImportValidator.validate(ti)
     fun validate(td: TrailDto): Set<String> = trailUpdateValidator.validate(td)
     fun validate(poi: PoiDto): Set<String> = poiValidator.validate(poi)
+    fun validate(geoLine: GeoLineDto): Set<String> = geoLineValidator.validate(geoLine)
 
     fun validateFileName(fn: String): Set<String> = fileNameValidator.validate(fn)
 
