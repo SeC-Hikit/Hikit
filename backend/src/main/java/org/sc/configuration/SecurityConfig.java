@@ -29,7 +29,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = getLogger(SecurityConfig.class);
 
-    public static final String ALL_ALLOWED_WILDCARD = "/*";
+    public static final String ALL_ALLOWED_WILDCARD = "/**";
     public static final String AUTHENTICATION_IS_DISABLED_MESSAGE = "Authentication is disabled";
 
     @Autowired
@@ -55,7 +55,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     }
 
     @Bean
-    protected AuthenticationProvider authenticationProvider(){
+    protected AuthenticationProvider authenticationProvider() {
         return new AuthenticationFacade();
     }
 
@@ -72,7 +72,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
         if (!appProperties.getIsSecurityEnabled()) {
             LOGGER.warn(AUTHENTICATION_IS_DISABLED_MESSAGE);
-            http.authorizeRequests().antMatchers(ALL_ALLOWED_WILDCARD).permitAll();
+            http.csrf().disable().authorizeRequests()
+                    .antMatchers(ALL_ALLOWED_WILDCARD).permitAll();
         } else {
             http.csrf().disable().cors().disable().authorizeRequests()
                     .antMatchers("/trail*").hasAuthority("test-role")
