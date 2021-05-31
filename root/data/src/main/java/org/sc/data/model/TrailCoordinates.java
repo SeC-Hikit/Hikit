@@ -1,6 +1,8 @@
 package org.sc.data.model;
 
-public class TrailCoordinates implements Coordinates {
+import com.goebl.simplify.Point;
+
+public class TrailCoordinates implements Coordinates, Point {
 
     public final static String DISTANCE_FROM_START = "distFromStart";
 
@@ -63,5 +65,15 @@ public class TrailCoordinates implements Coordinates {
         return Double.compare(that.getDistanceFromTrailStart(), getDistanceFromTrailStart()) == 0 &&
                 Double.compare(that.getLatitude(), getLatitude()) == 0 &&
                 Double.compare(that.getLongitude(), getLongitude()) == 0;
+    }
+
+    @Override
+    public double getX() {
+        return getLongitude();
+    }
+
+    @Override
+    public double getY() {
+        return getLatitude();
     }
 }
