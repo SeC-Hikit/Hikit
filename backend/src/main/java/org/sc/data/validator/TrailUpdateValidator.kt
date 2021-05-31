@@ -2,7 +2,6 @@ package org.sc.data.validator
 
 import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.TrailDto
-import org.sc.common.rest.TrailImportDto
 import org.sc.data.validator.ValidatorUtils.Companion.emptyFieldError
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -22,6 +21,7 @@ class TrailUpdateValidator @Autowired constructor (
 
     override fun validate(request: TrailDto): Set<String> {
         val errors = mutableSetOf<String>()
+
         if (request.name == null) {
             errors.add(String.format(emptyFieldError, "Name"))
         }

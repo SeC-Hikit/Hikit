@@ -5,10 +5,10 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
+import org.sc.data.validator.*;
 import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.response.TrailResponseHelper;
-import org.sc.data.validator.*;
-import org.sc.manager.TrailImporterManager;
+import org.sc.manager.TrailManagementManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,21 +33,22 @@ public class TrailController {
     protected final TrailManager trailManager;
     protected final GeneralValidator generalValidator;
     protected final TrailResponseHelper trailResponseHelper;
-    protected final TrailImporterManager trailImporterManager;
+    protected final TrailManagementManager trailManagementManager;
     protected final AuthFacade authenticationProvider;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
                            final GeneralValidator generalValidator,
                            final TrailResponseHelper trailResponseHelper,
-                           final TrailImporterManager trailImporterManager,
+                           final TrailManagementManager trailManagementManager,
                            final AuthFacade authFacade) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
-        this.trailImporterManager = trailImporterManager;
+        this.trailManagementManager = trailManagementManager;
         this.authenticationProvider = authFacade;
     }
+
 
     @Operation(summary = "Retrieve trail")
     @GetMapping

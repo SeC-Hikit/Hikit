@@ -47,7 +47,7 @@ public class AdminAccessibilityIssueController {
                             accessibilityRes.getId())), emptyList(), accessibilityNotManager.count(),
                     org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
-        return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolved, accessibilityNotManager.count(),
+        return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolved, accessibilityNotManager.countSolved(),
                 org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }
 
