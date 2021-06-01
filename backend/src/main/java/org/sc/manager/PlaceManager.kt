@@ -2,6 +2,7 @@ package org.sc.manager
 
 import org.sc.common.rest.LinkedMediaDto
 import org.sc.common.rest.PlaceDto
+import org.sc.common.rest.TrailCoordinatesDto
 import org.sc.common.rest.UnLinkeMediaRequestDto
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
@@ -9,6 +10,7 @@ import org.sc.data.mapper.PlaceMapper
 import org.sc.data.model.CoordinatesWithAltitude
 import org.sc.data.model.Place
 import org.sc.data.model.RecordDetails
+import org.sc.data.model.TrailCoordinates
 import org.sc.data.repository.PlaceDAO
 import org.sc.service.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,11 +34,9 @@ class PlaceManager @Autowired constructor(
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int): List<PlaceDto> =
         placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
 
-    fun getNearPoint(
-        longitude: Double, latitude: Double, distance: Double,
-        skip: Int, limit: Int
-    ): List<PlaceDto> =
-        placeDao.getNear(longitude, latitude, distance, skip, limit).map { placeMapper.map(it) }
+    fun getNearPoint(longitude: Double, latitude: Double, distance: Double,
+                     skip: Int, limit: Int): List<PlaceDto> =
+            placeDao.getNear(longitude, latitude, distance, skip, limit).map { placeMapper.map(it) }
 
     fun doesItExist(id: String) = getById(id).isNotEmpty()
 
@@ -56,15 +56,7 @@ class PlaceManager @Autowired constructor(
         return placeDao.create(mapCreation).map { placeMapper.map(it) }
     }
 
-    private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
-        CoordinatesWithAltitude(
-            it.latitude, it.longitude,
-            altitudeServiceAdapter.getAltitudeByLongLat(it.latitude, it.longitude)
-        )
-    }
-
-
-    fun deleteById(placeId: String): List<PlaceDto> {
+   fun deleteById(placeId: String): List<PlaceDto> {
         trailManager.removePlaceRefFromTrails(placeId)
         return placeDao.delete(placeId).map { placeMapper.map(it) }
     }
@@ -80,6 +72,24 @@ class PlaceManager @Autowired constructor(
 
     fun unlinkMedia(placeId: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<PlaceDto> =
         placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
+
+    fun removeTrailFromPlaces(placeId: String, trailId: String,
+                              trailCoordinates: TrailCoordinates) {
+        placeDao.removeTrailFromPlace(placeId, trailId, trailCoordinates)
+    }
+
+    fun linkTrailToPlace(placeId: String,
+                         trailId: String,
+                         trailCoordinates: TrailCoordinatesDto) {
+        placeDao.addTrailIdToPlace(placeId, trailId, trailCoordinates)
+    }
+
+    private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
+        CoordinatesWithAltitude(
+            it.latitude, it.longitude,
+            altitudeServiceAdapter.getAltitudeByLongLat(it.latitude, it.longitude)
+        )
+    }
 
     fun count(): Long = placeDao.count()
 

@@ -30,6 +30,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     private static final Logger LOGGER = getLogger(SecurityConfig.class);
 
     public static final String ALL_ALLOWED_WILDCARD = "/**";
+    public static final String PROTECTED_CONTEXT = "/admin/*";
     public static final String AUTHENTICATION_IS_DISABLED_MESSAGE = "Authentication is disabled";
 
     @Autowired
@@ -76,7 +77,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                     .antMatchers(ALL_ALLOWED_WILDCARD).permitAll();
         } else {
             http.csrf().disable().cors().disable().authorizeRequests()
-                    .antMatchers("/trail*").hasAuthority("test-role")
+                    .antMatchers(PROTECTED_CONTEXT).hasAuthority("admin")
                     .anyRequest().authenticated();
         }
     }

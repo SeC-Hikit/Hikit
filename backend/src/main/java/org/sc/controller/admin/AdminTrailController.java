@@ -3,10 +3,9 @@ package org.sc.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
-import org.sc.manager.TrailImporterManager;
+import org.sc.manager.TrailManagementManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,7 +16,8 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
-import static org.sc.controller.Constants.*;
+import static org.sc.controller.Constants.ONE;
+import static org.sc.controller.Constants.ZERO;
 import static org.sc.controller.admin.Constants.PREFIX_TRAIL;
 
 @RestController
@@ -26,14 +26,14 @@ public class AdminTrailController {
 
     private final TrailManager trailManager;
     private final GeneralValidator generalValidator;
-    private final TrailImporterManager trailImporterManager;
+    private final TrailManagementManager trailImporterManager;
     private final TrailResponseHelper trailResponseHelper;
 
     @Autowired
     public AdminTrailController(final TrailManager trailManager,
                                 final GeneralValidator generalValidator,
                                 final TrailResponseHelper trailResponseHelper,
-                                final TrailImporterManager trailImporterManager) {
+                                final TrailManagementManager trailImporterManager) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;

@@ -1,19 +1,19 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
-import org.sc.controller.Constants;
-import org.sc.controller.ControllerPagination;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.manager.TrailFileManager;
-import org.sc.manager.TrailImporterManager;
+import org.sc.manager.TrailManagementManager;
 import org.sc.processor.GpxFileHandlerHelper;
 import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.sc.controller.Constants.*;
+import static org.sc.controller.Constants.ONE;
+import static org.sc.controller.Constants.ZERO;
 import static org.sc.controller.admin.Constants.PREFIX_IMPORT;
 import static org.sc.util.FileProbeUtil.GPX_MIME_TYPE;
 
@@ -34,7 +35,7 @@ public class AdminTrailImporterController {
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
     private final TrailFileManager trailFileManager;
-    private final TrailImporterManager trailImporterManager;
+    private final TrailManagementManager trailManagementManager;
     private final TrailRawResponseHelper trailRawResponseHelper;
     private final FileProbeUtil fileProbeUtil;
     private final GpxFileHandlerHelper gpxFileHandlerHelper;
@@ -42,14 +43,14 @@ public class AdminTrailImporterController {
 
     @Autowired
     public AdminTrailImporterController(final TrailFileManager trailFileManager,
-                                        final TrailImporterManager trailImporterManager,
+                                        final TrailManagementManager trailManagementManager,
                                         final TrailRawResponseHelper trailRawResponseHelper,
                                         final FileProbeUtil fileProbeUtil,
                                         final GpxFileHandlerHelper gpxFileHandlerHelper) {
         this.trailFileManager = trailFileManager;
-        this.trailImporterManager = trailImporterManager;
-        this.trailRawResponseHelper = trailRawResponseHelper;
+        this.trailManagementManager = trailManagementManager;
         this.fileProbeUtil = fileProbeUtil;
+        this.trailRawResponseHelper = trailRawResponseHelper;
         this.gpxFileHandlerHelper = gpxFileHandlerHelper;
     }
 
@@ -74,7 +75,7 @@ public class AdminTrailImporterController {
 
         if (originalFileNamesToTempPaths.isEmpty()) {
             return trailRawResponseHelper.constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
-                    trailImporterManager.countTrailRaw(),
+                    trailManagementManager.countTrailRaw(),
                     ZERO, ONE);
         }
 
@@ -107,7 +108,7 @@ public class AdminTrailImporterController {
                 }).collect(toList());
 
         final List<TrailRawDto> savedTrails = trailRawDtos.stream().map(
-                trailImporterManager::saveRaw
+                trailManagementManager::saveRaw
         ).collect(toList());
 
         final int size = savedTrails.size();
