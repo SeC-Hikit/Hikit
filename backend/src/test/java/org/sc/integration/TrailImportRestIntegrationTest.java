@@ -41,27 +41,28 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     private static final String EXPECTED_NAME = "ANY";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
     private static final Date EXPECTED_DATE = new Date();
-    public static final List<String> EXPECTED_TAGS = Arrays.asList("one", "two");
     public static final String EXPECTED_COUNTRY = "Italy";
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
-    public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
     public static final String EXPECTED_TERRITORIAL_DIVISION = "Porretta";
     public static final boolean IS_VARIANT = false;
     public static final int ANY_OFFICIAL_ETA = 20;
 
     // Start POS coordinates
     public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
+    public static final CoordinatesDto START_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
 
     public static final TrailCoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436081, 11.315625, 250.0, 0);
+    public static final CoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436081, 11.315625, 250.0);
 
     // End Pos coordinates
     public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 50);
+    public static final CoordinatesDto END_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
     public static final List<TrailCoordinatesDto> EXPECTED_TRAIL_COORDINATES = Arrays.asList(
             START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
     );
     public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
             singletonList(new PlaceRefDto(EXPECTED_NAME,
-                    INTERMEDIATE_EXPECTED_COORDINATE, EXPECTED_PLACE_ID_INTERMEDIATE));
+                    INTERMEDIATE_EXPECTED_COORDINATE_DTO, EXPECTED_PLACE_ID_INTERMEDIATE));
 
     // FileDetails
     public static final String ANY_FILENAME = "001xBO.gpx";
@@ -78,10 +79,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Autowired
     DataSource dataSource;
 
-    @Autowired
-    AdminTrailImporterController importController;
-    @Autowired
-    AdminPlaceController placeController;
+    @Autowired AdminPlaceController placeController;
     @Autowired AdminTrailController adminTrailController;
     @Autowired TrailController trailController;
 
@@ -90,7 +88,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         trailResponse = adminTrailController.importTrail(trailImportDto);
     }
 
@@ -140,26 +138,10 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     }
 
-    static TrailImportDto createTrailImport(AdminPlaceController placeController) {
+    static TrailImportDto createThreePointsTrailImport(AdminPlaceController placeController) {
         PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);
-        assertThat(firstPlace.getContent()).isNotEmpty();
-        assertThat(addedPlace.getContent()).isNotEmpty();
-        assertThat(lastPlace.getContent()).isNotEmpty();
-        return makeCorrectTrailDtoForImport(firstPlace.getContent().get(0).getId(),
-                addedPlace.getContent().get(0).getId(),
-                lastPlace.getContent().get(0).getId());
-    }
-
-    static TrailImportDto createTrailImportForMorePoints(AdminPlaceController placeController) {
-
-        PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
-        PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
-        PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);
-
-
-
         assertThat(firstPlace.getContent()).isNotEmpty();
         assertThat(addedPlace.getContent()).isNotEmpty();
         assertThat(lastPlace.getContent()).isNotEmpty();
@@ -170,11 +152,11 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     public static TrailImportDto makeCorrectTrailDtoForImport(String startPlaceId, String placeId, String endPlaceId) {
         PlaceRefDto placeStartRef = new PlaceRefDto(EXPECTED_NAME,
-                START_EXPECTED_COORDINATE, startPlaceId);
+                START_EXPECTED_COORDINATE_DTO, startPlaceId);
         PlaceRefDto endPlaceRef = new PlaceRefDto(EXPECTED_NAME,
-                END_EXPECTED_COORDINATE, endPlaceId);
+                END_EXPECTED_COORDINATE_DTO, endPlaceId);
         LOCATION_REFS = Arrays.asList(placeStartRef, new PlaceRefDto(EXPECTED_NAME,
-                INTERMEDIATE_EXPECTED_COORDINATE, placeId), endPlaceRef);
+                INTERMEDIATE_EXPECTED_COORDINATE_DTO, placeId), endPlaceRef);
 
         return new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 ANY_OFFICIAL_ETA, placeStartRef, endPlaceRef, LOCATION_REFS,

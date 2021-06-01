@@ -14,6 +14,6 @@ public class PlaceRef {
     public static final String PLACE_ID = "placeId";
 
     private String name;
-    private TrailCoordinates trailCoordinates;
+    private CoordinatesWithAltitude coordinates;
     private String placeId;
 }

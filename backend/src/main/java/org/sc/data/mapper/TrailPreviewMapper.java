@@ -3,9 +3,7 @@ package org.sc.data.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.sc.common.rest.PlaceRefDto;
 import org.sc.common.rest.TrailPreviewDto;
-import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailPreview;
 import org.sc.data.model.TrailRaw;
 
@@ -21,8 +19,8 @@ public interface TrailPreviewMapper {
     @Mapping(target = "finalPos.name", ignore = true)
     @Mapping(target = "startPos.name", ignore = true)
     @Mapping(target = "startPos.placeId", ignore = true)
-    @Mapping(target = "startPos.trailCoordinates", source = "startPos")
-    @Mapping(target = "finalPos.trailCoordinates", source = "finalPos")
+    @Mapping(target = "startPos.coordinates", source = "startPos")
+    @Mapping(target = "finalPos.coordinates", source = "finalPos")
     @Mapping(target = "finalPos.placeId", ignore = true)
     TrailPreviewDto map(TrailRaw trail);
 }

@@ -5,7 +5,7 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
-import org.sc.manager.TrailManagementManager;
+import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,14 +26,14 @@ public class AdminTrailController {
 
     private final TrailManager trailManager;
     private final GeneralValidator generalValidator;
-    private final TrailManagementManager trailImporterManager;
+    private final TrailImporterManager trailImporterManager;
     private final TrailResponseHelper trailResponseHelper;
 
     @Autowired
     public AdminTrailController(final TrailManager trailManager,
                                 final GeneralValidator generalValidator,
                                 final TrailResponseHelper trailResponseHelper,
-                                final TrailManagementManager trailImporterManager) {
+                                final TrailImporterManager trailImporterManager) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
@@ -145,7 +145,7 @@ public class AdminTrailController {
     }
 
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
-    @PostMapping
+    @PutMapping("/update")
     public TrailResponse updateTrail(@RequestBody TrailDto trailDto) {
         final Set<String> errors = generalValidator.validate(trailDto);
         errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
@@ -160,5 +160,20 @@ public class AdminTrailController {
                 ZERO, ZERO, ONE);
     }
 
+    @Operation(summary = "Changes a trail to PUBLIC/DRAFT status")
+    @PostMapping("/status")
+    public TrailResponse updateTrailStatus(@RequestBody TrailDto trailDto) {
+        final Set<String> errors = generalValidator.validate(trailDto);
+        errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
+
+        if (errors.isEmpty()) {
+            List<TrailDto> updatedTrail = trailImporterManager.switchToStatus(trailDto);
+            return trailResponseHelper.constructResponse(emptySet(), updatedTrail,
+                    updatedTrail.size(), ZERO, ONE);
+        }
+
+        return trailResponseHelper.constructResponse(errors, emptyList(),
+                ZERO, ZERO, ONE);
+    }
 
 }

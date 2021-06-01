@@ -175,16 +175,17 @@ public class TrailDAO {
                 geoSquare.getTopRight().getLatitude());
         final List<Double> resolvedBottomRightVertex = Arrays.asList(geoSquare.getTopRight().getLongitude(),
                 geoSquare.getBottomLeft().getLatitude());
-        FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
-                new Document($_GEO_INTERSECT, new Document(
-                        $_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
-                        .append(GEO_COORDINATES,
-                                Arrays.asList(
-                                        geoSquare.getBottomLeft().getAsList(),
-                                        resolvedTopLeftVertex,
-                                        geoSquare.getTopRight().getAsList(),
-                                        resolvedBottomRightVertex)
-                        ))))).skip(skip).limit(limit);
+        FindIterable<Document> foundTrails = collection.find(
+                new Document(Trail.GEO_LINE,
+                        new Document($_GEO_INTERSECT,
+                                new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_LINE_STRING)
+                                .append(GEO_COORDINATES,
+                                        Arrays.asList(
+                                                geoSquare.getBottomLeft().getAsList(),
+                                                resolvedTopLeftVertex,
+                                                geoSquare.getTopRight().getAsList(),
+                                                resolvedBottomRightVertex)
+                                ))))).skip(skip).limit(limit);
         return toTrailsList(foundTrails);
     }
 

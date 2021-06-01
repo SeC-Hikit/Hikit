@@ -5,7 +5,7 @@ import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.manager.TrailFileManager;
-import org.sc.manager.TrailManagementManager;
+import org.sc.manager.TrailImporterManager;
 import org.sc.processor.GpxFileHandlerHelper;
 import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class AdminTrailImporterController {
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
     private final TrailFileManager trailFileManager;
-    private final TrailManagementManager trailManagementManager;
+    private final TrailImporterManager trailManagementManager;
     private final TrailRawResponseHelper trailRawResponseHelper;
     private final FileProbeUtil fileProbeUtil;
     private final GpxFileHandlerHelper gpxFileHandlerHelper;
@@ -43,7 +43,7 @@ public class AdminTrailImporterController {
 
     @Autowired
     public AdminTrailImporterController(final TrailFileManager trailFileManager,
-                                        final TrailManagementManager trailManagementManager,
+                                        final TrailImporterManager trailManagementManager,
                                         final TrailRawResponseHelper trailRawResponseHelper,
                                         final FileProbeUtil fileProbeUtil,
                                         final GpxFileHandlerHelper gpxFileHandlerHelper) {
@@ -57,7 +57,7 @@ public class AdminTrailImporterController {
     @Operation(summary = "Read and import one GPX trail file")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailRawResponse readGpxFile(@RequestParam("file") MultipartFile gpxFile) {
+    public TrailRawResponse importGpx(@RequestParam("file") MultipartFile gpxFile) {
         return processUploadedFiles(Collections.singletonList(gpxFile));
     }
 
@@ -65,7 +65,7 @@ public class AdminTrailImporterController {
     @PostMapping(path = "/bulk",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TrailRawResponse readBulkGpxFile(@RequestParam("files") MultipartFile[] files) {
+    public TrailRawResponse importMassiveGpx(@RequestParam("files") MultipartFile[] files) {
         return processUploadedFiles(Arrays.asList(files));
     }
 

@@ -37,14 +37,6 @@ public class TrailPreviewRestIntegrationTest {
     public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
     public static final String ANY_REALM = "S&C";
 
-
-//    public static final TrailImportDto EXPECTED_TRAIL_DTO = new TrailImportDto(TrailImportRestIntegrationTest.EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-//            20, TrailImportRestIntegrationTest.SINGLETON_LIST_OF_REF_PLACES,
-//            EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
-//            Arrays.asList(
-//                    START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
-//            ), EXPECTED_DATE, EXPECTED_MAINTAINANCE_SECTION, false, "Porretta", new Date());
-
     public TrailImportDto expectedTrailDto;
 
     @Autowired
@@ -62,7 +54,7 @@ public class TrailPreviewRestIntegrationTest {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         trailResponse = adminTrailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }
@@ -76,7 +68,6 @@ public class TrailPreviewRestIntegrationTest {
     }
 
     private void assertAll(TrailPreviewDto firstResult) {
-//        assertThat(firstResult.getDate()).isEqualToIgnoringSeconds(EXPECTED_DATE);
         assertThat(firstResult.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
         assertThat(firstResult.getCode()).isEqualTo(TrailImportRestIntegrationTest.EXPECTED_TRAIL_CODE);
         assertThat(firstResult.getStartPos()).isEqualTo(LOCATION_REFS.get(0));

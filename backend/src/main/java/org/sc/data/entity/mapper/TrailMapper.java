@@ -46,6 +46,8 @@ public class TrailMapper implements Mapper<Trail> {
                 .name(doc.getString(Trail.NAME))
                 .description(doc.getString(Trail.DESCRIPTION))
                 .code(doc.getString(Trail.CODE))
+                .startLocation(placeMapper.mapToObject(doc.get(Trail.START_POS, Document.class)))
+                .endLocation(placeMapper.mapToObject(doc.get(Trail.FINAL_POS, Document.class)))
                 .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
                 .variant(doc.getBoolean(Trail.VARIANT))
                 .locations(getLocations(doc))
@@ -70,6 +72,8 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.NAME, object.getName())
                 .append(Trail.DESCRIPTION, object.getDescription())
                 .append(Trail.CODE, object.getCode())
+                .append(Trail.START_POS, placeMapper.mapToDocument(object.getStartLocation()))
+                .append(Trail.FINAL_POS, placeMapper.mapToDocument(object.getEndLocation()))
                 .append(Trail.OFFICIAL_ETA, object.getOfficialEta())
                 .append(Trail.LOCATIONS, object.getLocations().stream()
                         .map(placeMapper::mapToDocument).collect(toList()))
@@ -85,10 +89,18 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.MEDIA, object.getMediaList().stream()
                         .map(linkedMediaMapper::mapToDocument)
                         .collect(toList()))
-                .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()))
+                .append(Trail.GEO_LINE, getGeoLineValue(object))
                 .append(Trail.CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
                 .append(Trail.FILE_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
                 .append(Trail.STATUS, object.getStatus().toString());
+    }
+
+    private Document getGeoLineValue(Trail object) {
+        // Update
+        if(object.getGeoLineString() == null) {
+            return geoLineMapper.mapCoordsToDocument(object.getCoordinates());
+        }
+        return geoLineMapper.mapToDocument(object.getGeoLineString());
     }
 
     protected GeoLineString getGeoLine(final Document doc) {
