@@ -428,7 +428,6 @@ public class TrailManipulationRestIntegrationTest {
         assertThat(crossingTrailIdsInPlace).asList().contains(importedTrail033ImportId);
     }
 
-    // TODO: test PUBLIC/DRAFT
     @Test
     public void followingAddingConnectionBetweenTwoPoints_shallChangeStatusAndSeeThatReflectedOnPlace() {
         TrailRawResponse byId = trailRawController.getById(trail035Import.getContent().stream().findFirst().get().getId());
@@ -555,12 +554,43 @@ public class TrailManipulationRestIntegrationTest {
                 expected033PlaceRefDto);
 
         // Checking the two places references
-        assertThat(addedPlaceToTrailResponse.getContent().get(0).getLocations()).asList().contains(expected035PlaceRefDto);
+        TrailDto firstTrail = addedPlaceToTrailResponse.getContent().get(0);
+
+        assertThat(firstTrail.getLocations()).asList().contains(expected035PlaceRefDto);
         assertThat(addedPlaceToTrailResponse2.getContent().get(0).getLocations()).asList().contains(expected033PlaceRefDto);
         assertThat(placeController.get(intersectingPlaceId).getContent().get(0).getCrossingTrailIds()).asList()
                 .contains(importedTrail035Id, importedTrail033ImportId);
 
 
+        // Modify first trail status: PUBLIC -> DRAFT
+        firstTrail.setClassification(TrailClassification.EEA);
+        firstTrail.setStatus(TrailStatus.DRAFT);
+
+        adminTrailController.updateTrail(firstTrail);
+        adminTrailController.updateTrailStatus(firstTrail);
+
+        TrailResponse trailDraft = trailController.getById(firstTrail.getId(), false);
+
+        TrailDto updatedTrail = trailDraft.getContent().get(0);
+        assertThat(updatedTrail.getStatus()).isEqualTo(TrailStatus.DRAFT);
+        assertThat(updatedTrail.getClassification()).isEqualTo(TrailClassification.EEA);
+
+
+        assertThat(placeController.get(intersectingPlaceId)
+                .getContent().get(0).getCrossingTrailIds())
+                .asList().doesNotContain(updatedTrail.getId());
+
+
+        // Modify trail status: DRAFT -> PUBLIC
+        TrailDto trailTurnedToDraft = trailController.getById(firstTrail.getId(), false).getContent().get(0);
+        trailTurnedToDraft.setStatus(TrailStatus.PUBLIC);
+
+        adminTrailController.updateTrail(trailTurnedToDraft);
+        adminTrailController.updateTrailStatus(trailTurnedToDraft);
+
+        assertThat(placeController.get(intersectingPlaceId)
+                .getContent().get(0).getCrossingTrailIds())
+                .asList().contains(updatedTrail.getId());
     }
 
     @After

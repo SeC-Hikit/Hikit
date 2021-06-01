@@ -89,10 +89,18 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.MEDIA, object.getMediaList().stream()
                         .map(linkedMediaMapper::mapToDocument)
                         .collect(toList()))
-                .append(Trail.GEO_LINE, geoLineMapper.mapToDocument(object.getGeoLineString()))
+                .append(Trail.GEO_LINE, getGeoLineValue(object))
                 .append(Trail.CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
                 .append(Trail.FILE_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
                 .append(Trail.STATUS, object.getStatus().toString());
+    }
+
+    private Document getGeoLineValue(Trail object) {
+        // Update
+        if(object.getGeoLineString() == null) {
+            return geoLineMapper.mapCoordsToDocument(object.getCoordinates());
+        }
+        return geoLineMapper.mapToDocument(object.getGeoLineString());
     }
 
     protected GeoLineString getGeoLine(final Document doc) {

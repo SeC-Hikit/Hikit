@@ -8,6 +8,7 @@ import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
 import org.sc.processor.DistanceProcessor
 import org.sc.processor.TrailsStatsCalculator
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -24,6 +25,7 @@ class TrailImporterManager @Autowired constructor(
     private val trailMapper: TrailMapper,
     private val authFacade: AuthFacade
 ) {
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
         trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
@@ -85,7 +87,8 @@ class TrailImporterManager @Autowired constructor(
             .status(importingTrail.trailStatus)
             .build()
 
-        val savedTrailDao = trailsManager.save(trail)
+
+        val savedTrailDao = trailsManager.saveWithGeo(trail)
 
         trailDatasetVersionDao.increaseVersion()
 
@@ -97,8 +100,7 @@ class TrailImporterManager @Autowired constructor(
         val trailToUpdate = trailsManager.getById(trailDto.id, false).first()
 
         val removedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
-        val addedPlacesOnTrail = trailDto.locations.filterNot { trailToUpdate.locations.contains(it) }
-
+        val addedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
         removedPlacesOnTrail.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
         addedPlacesOnTrail.forEach { trailsManager.linkPlace(trailDto.id, it) }
 
@@ -124,10 +126,35 @@ class TrailImporterManager @Autowired constructor(
         trailToUpdate.maintainingSection = trailDto.maintainingSection
         trailToUpdate.territorialDivision = trailDto.territorialDivision
         trailToUpdate.cycloDetails = trailDto.cycloDetails
-        trailToUpdate.status = trailDto.status
 
-        return trailsManager.save(trailMapper.map(trailToUpdate))
+        return trailsManager.update(trailMapper.map(trailToUpdate))
     }
+
+    fun switchToStatus(trailDto: TrailDto): List<TrailDto> {
+        val trailToUpdate = trailsManager.getById(trailDto.id, false).first()
+
+        if(trailDto.status == trailToUpdate.status) {
+            logger.info("Did not change status to trail ${trailDto.id}")
+            return trailsManager.update(trailMapper.map(trailToUpdate))
+        }
+        // Turn PUBLIC -> DRAFT
+        if(isSwitchingToDraft(trailDto, trailToUpdate)) {
+            logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.DRAFT}""")
+            trailToUpdate.locations.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
+        // DRAFT -> PUBLIC
+        } else {
+            logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.PUBLIC}""")
+            trailDto.locations.forEach { trailsManager.linkPlace(trailDto.id, it) }
+        }
+        trailToUpdate.status = trailDto.status
+        return trailsManager.update(trailMapper.map(trailToUpdate))
+    }
+
+    private fun isSwitchingToDraft(
+        trailDto: TrailDto,
+        trailToUpdate: TrailDto
+    ) = trailDto.status == TrailStatus.DRAFT &&
+                trailToUpdate.status == TrailStatus.PUBLIC
 
     fun countTrailRaw() = trailRawDao.count()
 
