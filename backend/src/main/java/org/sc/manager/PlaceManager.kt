@@ -1,16 +1,10 @@
 package org.sc.manager
 
-import org.sc.common.rest.LinkedMediaDto
-import org.sc.common.rest.PlaceDto
-import org.sc.common.rest.TrailCoordinatesDto
-import org.sc.common.rest.UnLinkeMediaRequestDto
+import org.sc.common.rest.*
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceMapper
-import org.sc.data.model.CoordinatesWithAltitude
-import org.sc.data.model.Place
-import org.sc.data.model.RecordDetails
-import org.sc.data.model.TrailCoordinates
+import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
 import org.sc.service.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
@@ -74,13 +68,13 @@ class PlaceManager @Autowired constructor(
         placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
 
     fun removeTrailFromPlaces(placeId: String, trailId: String,
-                              trailCoordinates: TrailCoordinates) {
+                              trailCoordinates: CoordinatesDto) {
         placeDao.removeTrailFromPlace(placeId, trailId, trailCoordinates)
     }
 
     fun linkTrailToPlace(placeId: String,
                          trailId: String,
-                         trailCoordinates: TrailCoordinatesDto) {
+                         trailCoordinates: CoordinatesDto) {
         placeDao.addTrailIdToPlace(placeId, trailId, trailCoordinates)
     }
 

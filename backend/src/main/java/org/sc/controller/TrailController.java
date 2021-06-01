@@ -1,26 +1,22 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.*;
-import org.sc.common.rest.geo.RectangleDto;
+import org.sc.common.rest.CountDto;
+import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.data.validator.*;
 import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.response.TrailResponseHelper;
-import org.sc.manager.TrailManagementManager;
+import org.sc.data.validator.GeneralValidator;
+import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
@@ -33,14 +29,14 @@ public class TrailController {
     protected final TrailManager trailManager;
     protected final GeneralValidator generalValidator;
     protected final TrailResponseHelper trailResponseHelper;
-    protected final TrailManagementManager trailManagementManager;
+    protected final TrailImporterManager trailManagementManager;
     protected final AuthFacade authenticationProvider;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
                            final GeneralValidator generalValidator,
                            final TrailResponseHelper trailResponseHelper,
-                           final TrailManagementManager trailManagementManager,
+                           final TrailImporterManager trailManagementManager,
                            final AuthFacade authFacade) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
