@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.sc.processor.TrailSimplifierLevel.LOW;
+
 public class TrailSimplifier {
 
     public static final int POSITIVE_SCALAR = 1000000;
@@ -24,10 +26,25 @@ public class TrailSimplifier {
         //need to convert list to array, since is needed by the pkg
         allcoordinates.toArray(trailCoordinates);
 
-        float tolerance = 5f;
+        //float tolerance = 2f;
+        float tolerance = 0f;
+
+        if( compressionLevel == TrailSimplifierLevel.SUPER_LOW) {
+            tolerance = 50f;
+        } else if( compressionLevel == TrailSimplifierLevel.LOW) {
+            tolerance = 20f;
+        } else if( compressionLevel == TrailSimplifierLevel.MEDIUM) {
+           tolerance = 5f;
+        }
+
+
+
+
         boolean highQuality = true; // Douglas-Peucker, false for Radial-Distance
 
         // run simplification process
+        //TrailCoordinates[] lessPoints = simplify.simplify(trailCoordinates, tolerance, highQuality);
+
         TrailCoordinates[] lessPoints = simplify.simplify(trailCoordinates, tolerance, highQuality);
         return Arrays.stream(lessPoints).filter(Objects::nonNull).collect(Collectors.toList());
     }

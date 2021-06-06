@@ -8,7 +8,7 @@ import org.sc.processor.TrailSimplifierLevel
 import org.sc.util.GpsReadUtils
 
 
-class TrailsSimplifierTest {
+class TrailSimplifierTest {
 
     @Test
     fun `simplify a three-coordinate list`() {
@@ -29,7 +29,7 @@ class TrailsSimplifierTest {
             TrailCoordinates(point.y, point.x, 10.0 + index, index)
         }
         Assert.assertEquals(1306, trailCoordinates.size)
-        val simplifier = TrailSimplifier().simplify(trailCoordinates, TrailSimplifierLevel.LOW)
+        val simplifier = TrailSimplifier().simplify(trailCoordinates, TrailSimplifierLevel.MEDIUM)
         Assert.assertEquals(758, simplifier.size)
     }
 
