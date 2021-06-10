@@ -34,7 +34,7 @@ class TrailSimplifierTest {
     }
 
     @Test
-    fun `do not simplify a small coordinate list extracted from via Emilia`() {
+    fun `simplify a small coordinate list extracted from via Emilia`() {
         val point1 = TrailCoordinates(44.49441503350789, 11.342670749165524, 10.1, 1)
         val point2 = TrailCoordinates(44.49702, 11.33780, 10.1, 2)
         val point3 = TrailCoordinates(44.50661524800948, 11.307084768272063, 10.1, 3)
@@ -101,7 +101,7 @@ class TrailSimplifierTest {
                 point21, point22, point23, point24, point25, point26, point27, point28, point29)
         val simplifier = TrailSimplifier().simplify(listPoint, TrailSimplifierLevel.LOW)
         val len = simplifier.size
-        Assert.assertEquals(29, len )
+        Assert.assertEquals(24, len)
 
     }
 }
