@@ -114,6 +114,11 @@
             <artifactId>jts</artifactId>
             <version>1.13</version>
         </dependency>
+        <dependency>
+        <groupId>com.goebl</groupId>
+        <artifactId>simplify</artifactId>
+        <version>1.0.0</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

@@ -1,5 +1,7 @@
 package org.sc.data.model;
 
+import com.goebl.simplify.Point;
+
 public class TrailCoordinates implements Coordinates {
 
     public final static String DISTANCE_FROM_START = "distFromStart";
