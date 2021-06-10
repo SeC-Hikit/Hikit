@@ -34,7 +34,7 @@ class TrailSimplifierTest {
     }
 
     @Test
-    fun `simplify a small coordinate list extracted from via Emilia`() {
+    fun `do not simplify a small coordinate list extracted from via Emilia`() {
         val point1 = TrailCoordinates(44.49441503350789, 11.342670749165524, 10.1, 1)
         val point2 = TrailCoordinates(44.49702, 11.33780, 10.1, 2)
         val point3 = TrailCoordinates(44.50661524800948, 11.307084768272063, 10.1, 3)
@@ -65,7 +65,7 @@ class TrailSimplifierTest {
     }
 
     @Test
-    fun `do not simplify a small coordinate list extracted from a bending trail - 009aBO`() {
+    fun `simplify a small coordinate list extracted from a bending trail - 009aBO`() {
         val point1 = TrailCoordinates(44.119134999365968, 11.063886999713153, 10.1, 1)
         val point2 = TrailCoordinates(44.119104698917965, 11.063783800188826, 10.1, 2)
         val point3 = TrailCoordinates(44.119054599162411, 11.063756500442889, 10.1, 3)
