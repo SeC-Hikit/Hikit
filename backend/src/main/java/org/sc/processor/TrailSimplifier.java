@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.sc.processor.TrailSimplifierLevel.LOW;
-
 public class TrailSimplifier {
 
     public static final int POSITIVE_SCALAR = 1000000;
+    public static final float SUPER_LOW_Q_TOLERANCE = 50f;
+    public static final float LOW_Q_TOLERANCE = 20f;
+    public static final float MEDIUM_Q_TOLERANCE = 5f;
 
     public List<TrailCoordinates> simplify(List<TrailCoordinates> allcoordinates,
                                            TrailSimplifierLevel compressionLevel){
@@ -30,21 +31,16 @@ public class TrailSimplifier {
         float tolerance = 0f;
 
         if( compressionLevel == TrailSimplifierLevel.SUPER_LOW) {
-            tolerance = 50f;
+            tolerance = SUPER_LOW_Q_TOLERANCE;
         } else if( compressionLevel == TrailSimplifierLevel.LOW) {
-            tolerance = 20f;
+            tolerance = LOW_Q_TOLERANCE;
         } else if( compressionLevel == TrailSimplifierLevel.MEDIUM) {
-           tolerance = 5f;
+           tolerance = MEDIUM_Q_TOLERANCE;
         }
-
-
-
 
         boolean highQuality = true; // Douglas-Peucker, false for Radial-Distance
 
         // run simplification process
-        //TrailCoordinates[] lessPoints = simplify.simplify(trailCoordinates, tolerance, highQuality);
-
         TrailCoordinates[] lessPoints = simplify.simplify(trailCoordinates, tolerance, highQuality);
         return Arrays.stream(lessPoints).filter(Objects::nonNull).collect(Collectors.toList());
     }
@@ -58,7 +54,6 @@ public class TrailSimplifier {
         public double getY(TrailCoordinates trailCoordinates) {
             return trailCoordinates.getLatitude() * POSITIVE_SCALAR;
         }
-
     };
 
 
