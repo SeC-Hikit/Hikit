@@ -11,6 +11,7 @@ import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
 import org.sc.data.model.*;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -68,10 +69,16 @@ public class TrailDAO {
         return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit));
     }
 
-    public List<Trail> getTrailById(String id, boolean isLight) {
+    public List<Trail> getTrailById(String id, boolean isLight, String level) {
         if (isLight) {
             return toTrailsLightList(collection.find(new Document(Trail.ID, id)));
         }
+        //if level=
+        //if (level.equals(TrailSimplifierLevel.LOW.toString())){
+        //return toTrailsList(collection.find(new Document(Trail.ID, id)));
+        // }
+        //else if....
+    //return toTrailsList(collection.find(new Document(Trail.ID, id)));
         return toTrailsList(collection.find(new Document(Trail.ID, id)));
     }
 
@@ -83,8 +90,8 @@ public class TrailDAO {
         return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)));
     }
 
-    public List<Trail> delete(final String id) {
-        List<Trail> trailByCode = getTrailById(id, false);
+    public List<Trail> delete(final String id, String level) {
+        List<Trail> trailByCode = getTrailById(id, false, level);
         collection.deleteOne(new Document(Trail.ID, id));
         return trailByCode;
     }
@@ -128,19 +135,19 @@ public class TrailDAO {
     }
 
     public List<Trail> linkMedia(final String id,
-                                 final LinkedMedia linkMedia) {
+                                 final LinkedMedia linkMedia, final String level) {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document(ADD_TO_SET, new Document(Trail.MEDIA,
                         linkedMediaMapper.mapToDocument(linkMedia))));
-        return getTrailById(id, true);
+        return getTrailById(id, true, level);
     }
 
     public List<Trail> unlinkMedia(final String id,
-                                   final String mediaId) {
+                                   final String mediaId, final String level) {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document($PULL, new Document(Trail.MEDIA,
                         new Document(LinkedMedia.ID, mediaId))));
-        return getTrailById(id, true);
+        return getTrailById(id, true, level);
     }
 
     private Bson getRealmFilter(final String realm) {
@@ -201,18 +208,18 @@ public class TrailDAO {
         return toTrailsList(foundTrails);
     }
 
-    public List<Trail> linkPlace(String id, PlaceRef placeRef) {
+    public List<Trail> linkPlace(String id, PlaceRef placeRef, String level) {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document(ADD_TO_SET, new Document(Trail.LOCATIONS,
                         placeRefMapper.mapToDocument(placeRef))));
-        return getTrailById(id, false);
+        return getTrailById(id, false, level);
     }
 
-    public List<Trail> unLinkPlace(String id, PlaceRef placeRef) {
+    public List<Trail> unLinkPlace(String id, PlaceRef placeRef, String level) {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document($PULL, new Document(Trail.LOCATIONS,
                         new Document(PlaceRef.PLACE_ID, placeRef.getPlaceId()))));
-        return getTrailById(id, false);
+        return getTrailById(id, false, level);
     }
 
     public void unlinkPlaceFromAllTrails(String placeId) {

@@ -61,9 +61,9 @@ public class TrailController {
     @Operation(summary = "Retrieve trail by ID")
     @GetMapping("/{id}")
     public TrailResponse getById(@PathVariable String id,
-                                 @RequestParam(required = false, defaultValue = "false") Boolean light) {
+                                 @RequestParam(required = false, defaultValue = "false") Boolean light, String level) {
         return trailResponseHelper
-                .constructResponse(Collections.emptySet(), trailManager.getById(id, light),
+                .constructResponse(Collections.emptySet(), trailManager.getById(id, light, level),
                         trailManager.count(),
                         Constants.ONE, Constants.ONE);
     }

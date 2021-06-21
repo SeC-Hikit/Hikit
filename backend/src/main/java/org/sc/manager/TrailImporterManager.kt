@@ -7,6 +7,7 @@ import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
 import org.sc.processor.DistanceProcessor
+import org.sc.processor.TrailSimplifierLevel
 import org.sc.processor.TrailsStatsCalculator
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

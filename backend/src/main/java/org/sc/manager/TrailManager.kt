@@ -41,16 +41,16 @@ class TrailManager @Autowired constructor(
     ): List<TrailDto> = trailDAO.getTrails(isLight, page, count, realm)
         .map { trailMapper.map(it) }
 
-    fun getById(id: String, isLight: Boolean): List<TrailDto> =
-        trailDAO.getTrailById(id, isLight).map { trailMapper.map(it) }
+    fun getById(id: String, isLight: Boolean, level: String): List<TrailDto> =
+        trailDAO.getTrailById(id, isLight, level).map { trailMapper.map(it) }
 
     fun getByPlaceRefId(code: String, isLight: Boolean, page: Int, limit: Int): List<TrailDto> =
         trailDAO.getTrailByPlaceId(code, isLight, page, limit).map { trailMapper.map(it) }
 
-    fun delete(id: String): List<TrailDto> {
+    fun delete(id: String, level: String): List<TrailDto> {
         val deletedMaintenance = maintenanceDAO.deleteByTrailId(id)
         val deletedAccessibilityNotification = accessibilityNotificationDAO.deleteByTrailId(id)
-        val deletedTrailInMem = trailDAO.delete(id)
+        val deletedTrailInMem = trailDAO.delete(id, level)
         deletedTrailInMem.forEach { trail ->
             trail.locations.forEach {
                 placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.coordinates)
@@ -71,27 +71,27 @@ class TrailManager @Autowired constructor(
         return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }
 
-    fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto): List<TrailDto> {
+    fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto, level: String): List<TrailDto> {
         val linkMedia = linkedMediaMapper.map(linkedMediaRequest)
-        val result = trailDAO.linkMedia(id, linkMedia)
+        val result = trailDAO.linkMedia(id, linkMedia, level)
         return result.map { trailMapper.map(it) }
     }
 
-    fun unlinkMedia(id: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<TrailDto> {
-        val unlinkedTrail = trailDAO.unlinkMedia(id, unLinkeMediaRequestDto.id)
+    fun unlinkMedia(id: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto, level: String): List<TrailDto> {
+        val unlinkedTrail = trailDAO.unlinkMedia(id, unLinkeMediaRequestDto.id, level)
         return unlinkedTrail.map { trailMapper.map(it) }
     }
 
-    fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, true).isNotEmpty()
+    fun doesTrailExist(id: String, level: String): Boolean = trailDAO.getTrailById(id, true, level).isNotEmpty()
 
-    fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
-        val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
+    fun linkPlace(id: String, placeRef: PlaceRefDto, level: String): List<TrailDto> {
+        val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef), level)
         placeDAO.addTrailIdToPlace(placeRef.placeId, id, placeRef.coordinates)
         return linkedTrail.map { trailMapper.map(it) }
     }
 
-    fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
-        val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
+    fun unlinkPlace(id: String, placeRef: PlaceRefDto, level: String): List<TrailDto> {
+        val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef), level)
         placeDAO.removeTrailFromPlace(
             placeRef.placeId, id,
             coordinatesMapper.map(placeRef.coordinates)
