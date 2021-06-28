@@ -7,6 +7,7 @@ import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
 import org.sc.processor.DistanceProcessor
+import org.sc.processor.TrailSimplifier
 import org.sc.processor.TrailSimplifierLevel
 import org.sc.processor.TrailsStatsCalculator
 import org.slf4j.LoggerFactory
@@ -24,7 +25,8 @@ class TrailImporterManager @Autowired constructor(
     private val trailRawMapper: TrailRawMapper,
     private val trailRawDao: TrailRawDAO,
     private val trailMapper: TrailMapper,
-    private val authFacade: AuthFacade
+    private val authFacade: AuthFacade,
+    private val trailSimplifier: TrailSimplifier
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -45,6 +47,7 @@ class TrailImporterManager @Autowired constructor(
         val createdOn = Date()
 
         val authHelper = authFacade.authHelper
+        val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
         val trail = Trail.builder()
             .name(importingTrail.name)
             .startLocation(importingTrail.locations.map { placeMapper.map(it) }.first())
@@ -57,7 +60,10 @@ class TrailImporterManager @Autowired constructor(
             .classification(importingTrail.classification)
             .country(importingTrail.country)
             .statsTrailMetadata(statsTrailMetadata)
-            .coordinates(importingTrail.coordinates.map { trailCoordinatesMapper.map(it) })
+            .coordinates(coordinates)
+            .coordinatesSuperLow(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.SUPER_LOW))
+            .coordinatesLow(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW))
+            .coordinatesMedium(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.MEDIUM))
             .lastUpdate(createdOn)
             .maintainingSection(importingTrail.maintainingSection)
             .territorialDivision(importingTrail.territorialDivision)

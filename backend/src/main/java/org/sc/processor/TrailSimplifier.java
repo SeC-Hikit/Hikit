@@ -3,12 +3,14 @@ package org.sc.processor;
 import com.goebl.simplify.PointExtractor;
 import com.goebl.simplify.Simplify;
 import org.sc.data.model.TrailCoordinates;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Component
 public class TrailSimplifier {
 
     public static final int POSITIVE_SCALAR = 1000000;
