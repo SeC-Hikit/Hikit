@@ -141,7 +141,7 @@ class TrailImporterManager @Autowired constructor(
     }
 
     fun switchToStatus(trailDto: TrailDto): List<TrailDto> {
-        val trailToUpdate = trailsManager.getById(trailDto.id, TrailSimplifierLevel.MEDIUM).first()
+        val trailToUpdate = trailsManager.getById(trailDto.id, TrailSimplifierLevel.LOW).first()
 
         if(trailDto.status == trailToUpdate.status) {
             logger.info("Did not change status to trail ${trailDto.id}")

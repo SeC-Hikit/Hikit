@@ -38,22 +38,22 @@ public class TrailDAO {
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
-    private final LinkedMediaMapper linkedMediaMapper;
-    private final Mapper<Trail> trailLightMapper;
+    private final SelectiveArgumentMapper<Trail> trailLevelMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
+    private final LinkedMediaMapper linkedMediaMapper;
     private final PlaceRefMapper placeRefMapper;
 
     @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
+                    final SelectiveArgumentMapper<Trail> trailLevelMapper,
                     final LinkedMediaMapper linkedMediaMapper,
-                    final TrailLightMapper trailLightMapper,
                     final TrailPreviewMapper trailPreviewMapper,
                     final PlaceRefMapper placeRefMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.trailLevelMapper = trailLevelMapper;
         this.linkedMediaMapper = linkedMediaMapper;
-        this.trailLightMapper = trailLightMapper;
         this.trailPreviewMapper = trailPreviewMapper;
         this.placeRefMapper = placeRefMapper;
     }
@@ -211,7 +211,8 @@ public class TrailDAO {
 
     private List<Trail> toTrailsList(final Iterable<Document> documents,
                                      final TrailSimplifierLevel trailSimplifierLevel) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(t-> trailLevelMapper.mapToObject(t, trailSimplifierLevel)).collect(toList());
     }
 
     private Bson getRealmFilter(final String realm) {

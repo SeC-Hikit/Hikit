@@ -2,6 +2,7 @@ package org.sc.data.entity.mapper;
 
 import org.bson.Document;
 import org.sc.data.model.*;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class TrailMapper implements Mapper<Trail> {
+public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail> {
 
     protected final PlaceRefMapper placeMapper;
     protected final TrailCoordinatesMapper trailCoordinatesMapper;
@@ -54,7 +55,7 @@ public class TrailMapper implements Mapper<Trail> {
                 .classification(getClassification(doc))
                 .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
                 .country(doc.getString(Trail.COUNTRY))
-                .coordinates(getCoordinatesWithAltitude(doc))
+                .coordinates(getCoordinatesWithAltitude(doc, TrailSimplifierLevel.FULL))
                 .lastUpdate(getLastUpdateDate(doc))
                 .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
                 .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
@@ -95,9 +96,38 @@ public class TrailMapper implements Mapper<Trail> {
                 .append(Trail.STATUS, object.getStatus().toString());
     }
 
+    @Override
+    public Trail mapToObject(final Document doc,
+                             final TrailSimplifierLevel precisionLevel) {
+        return Trail.builder()
+                .id(doc.getString(Trail.ID))
+                .name(doc.getString(Trail.NAME))
+                .description(doc.getString(Trail.DESCRIPTION))
+                .code(doc.getString(Trail.CODE))
+                .startLocation(placeMapper.mapToObject(doc.get(Trail.START_POS, Document.class)))
+                .endLocation(placeMapper.mapToObject(doc.get(Trail.FINAL_POS, Document.class)))
+                .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
+                .variant(doc.getBoolean(Trail.VARIANT))
+                .locations(getLocations(doc))
+                .classification(getClassification(doc))
+                .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
+                .country(doc.getString(Trail.COUNTRY))
+                .coordinates(getCoordinatesWithAltitude(doc, precisionLevel))
+                .lastUpdate(getLastUpdateDate(doc))
+                .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
+                .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
+                .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .mediaList(getLinkedMediaMapper(doc))
+                .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)))
+                .status(getStatus(doc))
+                .build();
+
+    }
+
     private Document getGeoLineValue(Trail object) {
         // Update
-        if(object.getGeoLineString() == null) {
+        if (object.getGeoLineString() == null) {
             return geoLineMapper.mapCoordsToDocument(object.getCoordinates());
         }
         return geoLineMapper.mapToDocument(object.getGeoLineString());
@@ -121,14 +151,29 @@ public class TrailMapper implements Mapper<Trail> {
         return list.stream().map(linkedMediaMapper::mapToObject).collect(toList());
     }
 
-    private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc) {
-        final List<Document> list = doc.getList(Trail.COORDINATES, Document.class);
+    private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc,
+                                                              final TrailSimplifierLevel level) {
+
+        final List<Document> list = doc.getList(getCoordinatesFieldName(level), Document.class);
         return list.stream().map(trailCoordinatesMapper::mapToObject).collect(toList());
     }
 
     protected List<PlaceRef> getLocations(final Document doc) {
-        List<Document> list = doc.getList(Trail.LOCATIONS, Document.class);
+        final List<Document> list = doc.getList(Trail.LOCATIONS, Document.class);
         return list.stream().map(placeMapper::mapToObject).collect(toList());
+    }
+
+    private String getCoordinatesFieldName(final TrailSimplifierLevel level) {
+        switch (level) {
+            case LOW:
+                return Trail.COORDINATES_LOW;
+            case MEDIUM:
+                return Trail.COORDINATES_MEDIUM;
+            case HIGH:
+                return Trail.COORDINATES_HIGH;
+            default:
+                return Trail.COORDINATES;
+        }
     }
 
     protected Date getLastUpdateDate(Document doc) {
