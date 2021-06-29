@@ -3,12 +3,14 @@ package org.sc.processor;
 import com.goebl.simplify.PointExtractor;
 import com.goebl.simplify.Simplify;
 import org.sc.data.model.TrailCoordinates;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Component
 public class TrailSimplifier {
 
     public static final int POSITIVE_SCALAR = 1000000;
@@ -30,11 +32,11 @@ public class TrailSimplifier {
         //float tolerance = 2f;
         float tolerance = 0f;
 
-        if( compressionLevel == TrailSimplifierLevel.SUPER_LOW) {
+        if( compressionLevel == TrailSimplifierLevel.LOW) {
             tolerance = SUPER_LOW_Q_TOLERANCE;
-        } else if( compressionLevel == TrailSimplifierLevel.LOW) {
-            tolerance = LOW_Q_TOLERANCE;
         } else if( compressionLevel == TrailSimplifierLevel.MEDIUM) {
+            tolerance = LOW_Q_TOLERANCE;
+        } else if( compressionLevel == TrailSimplifierLevel.HIGH) {
            tolerance = MEDIUM_Q_TOLERANCE;
         }
 

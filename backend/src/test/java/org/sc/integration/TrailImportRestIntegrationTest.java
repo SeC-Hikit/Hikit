@@ -12,10 +12,10 @@ import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
-import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailStatus;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -95,7 +95,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Test
     public void getById_shouldFindOne() {
         String importedTrailId = trailResponse.getContent().get(0).getId();
-        TrailResponse getTrail = trailController.getById(importedTrailId, false);
+        TrailResponse getTrail = trailController.getById(importedTrailId, TrailSimplifierLevel.FULL);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
@@ -103,7 +103,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailResponse getTrail = trailController.get(0, 0, false, REALM);
+        TrailResponse getTrail = trailController.get(0, 0, REALM, TrailSimplifierLevel.FULL);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
@@ -114,7 +114,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
         String importedTrailId = trailResponse.getContent().get(0).getId();
         TrailResponse deletedById = adminTrailController.deleteById(importedTrailId);
         assertThat(deletedById.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
-        TrailResponse getTrail = trailController.getById(importedTrailId, false);
+        TrailResponse getTrail = trailController.getById(importedTrailId, TrailSimplifierLevel.FULL);
         Assert.assertTrue(getTrail.getContent().isEmpty());
     }
 

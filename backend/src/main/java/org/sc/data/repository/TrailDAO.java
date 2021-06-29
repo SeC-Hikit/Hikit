@@ -11,6 +11,7 @@ import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
 import org.sc.data.model.*;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -37,54 +38,56 @@ public class TrailDAO {
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
-    private final LinkedMediaMapper linkedMediaMapper;
-    private final Mapper<Trail> trailLightMapper;
+    private final SelectiveArgumentMapper<Trail> trailLevelMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
+    private final LinkedMediaMapper linkedMediaMapper;
     private final PlaceRefMapper placeRefMapper;
 
     @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
+                    final SelectiveArgumentMapper<Trail> trailLevelMapper,
                     final LinkedMediaMapper linkedMediaMapper,
-                    final TrailLightMapper trailLightMapper,
                     final TrailPreviewMapper trailPreviewMapper,
                     final PlaceRefMapper placeRefMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.trailLevelMapper = trailLevelMapper;
         this.linkedMediaMapper = linkedMediaMapper;
-        this.trailLightMapper = trailLightMapper;
         this.trailPreviewMapper = trailPreviewMapper;
         this.placeRefMapper = placeRefMapper;
     }
 
-    public List<Trail> getTrails(boolean isLight, int skip, int limit, String realm) {
+    public List<Trail> getTrails(int skip, int limit,
+                                 final TrailSimplifierLevel trailSimplifierLevel,
+                                 final String realm) {
         final Document realmFilter = !realm.equals(NO_FILTERING) ? new Document() :
                 new Document(Trail.FILE_DETAILS + DOT + FileDetails.REALM, realm);
-        if (isLight) {
-            return toTrailsLightList(collection
-                    .find(realmFilter)
-                    .skip(skip).limit(limit));
-        }
-        return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit));
+        return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit),
+                TrailSimplifierLevel.LOW);
     }
 
-    public List<Trail> getTrailById(String id, boolean isLight) {
-        if (isLight) {
-            return toTrailsLightList(collection.find(new Document(Trail.ID, id)));
-        }
-        return toTrailsList(collection.find(new Document(Trail.ID, id)));
+    public List<Trail> getTrailById(final String id,
+                                    final TrailSimplifierLevel trailSimplifierLevel) {
+        //if level=
+        //if (level.equals(TrailSimplifierLevel.LOW.toString())){
+        //return toTrailsList(collection.find(new Document(Trail.ID, id)));
+        // }
+        //else if....
+        //return toTrailsList(collection.find(new Document(Trail.ID, id)));
+        return toTrailsList(collection.find(new Document(Trail.ID, id)), trailSimplifierLevel);
     }
 
-    public List<Trail> getTrailByPlaceId(String id, boolean isLight,
-                                         int page, int limit) {
-        if (isLight) {
-            return toTrailsLightList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)).skip(page).limit(limit));
-        }
-        return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)));
+    public List<Trail> getTrailByPlaceId(final String id,
+                                         final int page,
+                                         final int limit,
+                                         final TrailSimplifierLevel trailSimplifierLevel) {
+        return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)).skip(page).limit(limit),
+                trailSimplifierLevel);
     }
 
     public List<Trail> delete(final String id) {
-        List<Trail> trailByCode = getTrailById(id, false);
+        List<Trail> trailByCode = getTrailById(id, TrailSimplifierLevel.MEDIUM);
         collection.deleteOne(new Document(Trail.ID, id));
         return trailByCode;
     }
@@ -103,7 +106,7 @@ public class TrailDAO {
         return Collections.singletonList(trailMapper.mapToObject(updateResult));
     }
 
-    public List<TrailPreview> getTrailPreviews(final int skip, final int limit, String realm) {
+    public List<TrailPreview> getTrailPreviews(final int skip, final int limit, final String realm) {
 
         final Bson filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
@@ -132,7 +135,7 @@ public class TrailDAO {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document(ADD_TO_SET, new Document(Trail.MEDIA,
                         linkedMediaMapper.mapToDocument(linkMedia))));
-        return getTrailById(id, true);
+        return getTrailById(id, TrailSimplifierLevel.LOW);
     }
 
     public List<Trail> unlinkMedia(final String id,
@@ -140,7 +143,76 @@ public class TrailDAO {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document($PULL, new Document(Trail.MEDIA,
                         new Document(LinkedMedia.ID, mediaId))));
-        return getTrailById(id, true);
+        return getTrailById(id, TrailSimplifierLevel.LOW);
+    }
+
+    public List<Trail> findTrailWithinGeoSquare(
+            final CoordinatesRectangle geoSquare,
+            final int skip, final int limit, final TrailSimplifierLevel level) {
+        final List<Double> resolvedTopLeftVertex = Arrays.asList(geoSquare.getBottomLeft().getLongitude(),
+                geoSquare.getTopRight().getLatitude());
+        final List<Double> resolvedBottomRightVertex = Arrays.asList(geoSquare.getTopRight().getLongitude(),
+                geoSquare.getBottomLeft().getLatitude());
+        FindIterable<Document> foundTrails = collection.find(
+                new Document(Trail.GEO_LINE,
+                        new Document($_GEO_INTERSECT,
+                                new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_LINE_STRING)
+                                        .append(GEO_COORDINATES,
+                                                Arrays.asList(
+                                                        geoSquare.getBottomLeft().getAsList(),
+                                                        resolvedTopLeftVertex,
+                                                        geoSquare.getTopRight().getAsList(),
+                                                        resolvedBottomRightVertex)
+                                        ))))).skip(skip).limit(limit);
+        return toTrailsList(foundTrails, level);
+    }
+
+    public List<Trail> findTrailPerfectlyContainedInGeoSquare(
+            CoordinatesRectangle outerGeoSquare,
+            final int skip, final int limit, final TrailSimplifierLevel level) {
+        FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
+                new Document($_GEO_WITHIN, new Document(
+                        $_BOX,
+                        Arrays.asList(outerGeoSquare.getBottomLeft().getAsList(),
+                                outerGeoSquare.getTopRight().getAsList())
+                )))).skip(skip).limit(limit);
+        return toTrailsList(foundTrails, level);
+    }
+
+    public List<Trail> linkPlace(String id, PlaceRef placeRef) {
+        collection.updateOne(new Document(Trail.ID, id),
+                new Document(ADD_TO_SET, new Document(Trail.LOCATIONS,
+                        placeRefMapper.mapToDocument(placeRef))));
+        return getTrailById(id, TrailSimplifierLevel.LOW);
+    }
+
+    public List<Trail> unLinkPlace(String id, PlaceRef placeRef) {
+        collection.updateOne(new Document(Trail.ID, id),
+                new Document($PULL, new Document(Trail.LOCATIONS,
+                        new Document(PlaceRef.PLACE_ID, placeRef.getPlaceId()))));
+        return getTrailById(id, TrailSimplifierLevel.LOW);
+    }
+
+    public void unlinkPlaceFromAllTrails(String placeId) {
+        Document update = new Document($PULL, new Document(Trail.LOCATIONS,
+                new Document(PlaceRef.PLACE_ID, placeId)));
+        collection.updateMany(new Document(),
+                update);
+    }
+
+    public long countTrail() {
+        return collection.countDocuments();
+    }
+
+    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(trailPreviewMapper::mapToObject).collect(toList());
+    }
+
+    private List<Trail> toTrailsList(final Iterable<Document> documents,
+                                     final TrailSimplifierLevel trailSimplifierLevel) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(t-> trailLevelMapper.mapToObject(t, trailSimplifierLevel)).collect(toList());
     }
 
     private Bson getRealmFilter(final String realm) {
@@ -166,76 +238,5 @@ public class TrailDAO {
                         new Document("$arrayElemAt",
                                 Arrays.asList(DOLLAR + Trail.LOCATIONS, -1)))
         ));
-    }
-
-    public List<Trail> findTrailWithinGeoSquare(
-            final CoordinatesRectangle geoSquare,
-            final int skip, final int limit) {
-        final List<Double> resolvedTopLeftVertex = Arrays.asList(geoSquare.getBottomLeft().getLongitude(),
-                geoSquare.getTopRight().getLatitude());
-        final List<Double> resolvedBottomRightVertex = Arrays.asList(geoSquare.getTopRight().getLongitude(),
-                geoSquare.getBottomLeft().getLatitude());
-        FindIterable<Document> foundTrails = collection.find(
-                new Document(Trail.GEO_LINE,
-                        new Document($_GEO_INTERSECT,
-                                new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_LINE_STRING)
-                                .append(GEO_COORDINATES,
-                                        Arrays.asList(
-                                                geoSquare.getBottomLeft().getAsList(),
-                                                resolvedTopLeftVertex,
-                                                geoSquare.getTopRight().getAsList(),
-                                                resolvedBottomRightVertex)
-                                ))))).skip(skip).limit(limit);
-        return toTrailsList(foundTrails);
-    }
-
-    public List<Trail> findTrailPerfectlyContainedInGeoSquare(
-            CoordinatesRectangle outerGeoSquare,
-            final int skip, final int limit) {
-        FindIterable<Document> foundTrails = collection.find(new Document(Trail.GEO_LINE,
-                new Document($_GEO_WITHIN, new Document(
-                        $_BOX,
-                        Arrays.asList(outerGeoSquare.getBottomLeft().getAsList(),
-                                outerGeoSquare.getTopRight().getAsList())
-                )))).skip(skip).limit(limit);
-        return toTrailsList(foundTrails);
-    }
-
-    public List<Trail> linkPlace(String id, PlaceRef placeRef) {
-        collection.updateOne(new Document(Trail.ID, id),
-                new Document(ADD_TO_SET, new Document(Trail.LOCATIONS,
-                        placeRefMapper.mapToDocument(placeRef))));
-        return getTrailById(id, false);
-    }
-
-    public List<Trail> unLinkPlace(String id, PlaceRef placeRef) {
-        collection.updateOne(new Document(Trail.ID, id),
-                new Document($PULL, new Document(Trail.LOCATIONS,
-                        new Document(PlaceRef.PLACE_ID, placeRef.getPlaceId()))));
-        return getTrailById(id, false);
-    }
-
-    public void unlinkPlaceFromAllTrails(String placeId) {
-        Document update = new Document($PULL, new Document(Trail.LOCATIONS,
-                new Document(PlaceRef.PLACE_ID, placeId)));
-        collection.updateMany(new Document(),
-                update);
-    }
-
-    public long countTrail() {
-        return collection.countDocuments();
-    }
-
-    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false)
-                .map(trailPreviewMapper::mapToObject).collect(toList());
-    }
-
-    private List<Trail> toTrailsLightList(Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailLightMapper::mapToObject).collect(toList());
-    }
-
-    private List<Trail> toTrailsList(Iterable<Document> documents) {
-        return StreamSupport.stream(documents.spliterator(), false).map(trailMapper::mapToObject).collect(toList());
     }
 }

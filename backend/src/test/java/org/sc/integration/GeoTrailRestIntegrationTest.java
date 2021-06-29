@@ -21,6 +21,7 @@ import org.sc.data.model.Coordinates2D;
 import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailStatus;
 import org.sc.data.validator.RectangleValidator;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -42,6 +43,8 @@ import static org.sc.integration.TrailManipulationRestIntegrationTest.TRAIL_035_
 @SpringBootTest
 @ActiveProfiles("test")
 public class GeoTrailRestIntegrationTest {
+
+    public static final TrailSimplifierLevel LEVEL = TrailSimplifierLevel.FULL;
 
     @Autowired
     DataSource dataSource;
@@ -79,7 +82,7 @@ public class GeoTrailRestIntegrationTest {
         createAndAssertTrail();
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.15928920022217, 44.13998529867459),
-                new Coordinates2D(11.156454500448556, 44.138395199458394)));
+                new Coordinates2D(11.156454500448556, 44.138395199458394)), LEVEL);
 
         assertThat(trailResponse.getContent()).asList().isNotEmpty();
         assertThat(trailResponse.getContent().get(0).getId()).isEqualTo(importedId);
@@ -90,7 +93,7 @@ public class GeoTrailRestIntegrationTest {
         createAndAssertTrail();
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.074260, 44.513351),
-                new Coordinates2D(11.184882, 44.589685)));
+                new Coordinates2D(11.184882, 44.589685)), LEVEL);
 
         assertThat(trailResponse.getContent()).asList().isEmpty();
     }
@@ -100,7 +103,7 @@ public class GeoTrailRestIntegrationTest {
         createAndAssertTrail();
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.154664, 44.138261),
-                new Coordinates2D(11.160095, 44.139004)));
+                new Coordinates2D(11.160095, 44.139004)), LEVEL);
 
         assertThat(trailResponse.getContent()).asList().isNotEmpty();
         assertThat(trailResponse.getContent().get(0).getId()).isEqualTo(importedId);
@@ -109,11 +112,11 @@ public class GeoTrailRestIntegrationTest {
     @Test
     public void afterImportingTrails_shallFindThemUsingGeoTrail_asWithinSearchArea() {
         createAndAssertTrail();
-        createSecondTrailAndAssertIt();;
+        createSecondTrailAndAssertIt();
 
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.12780418, 44.13472887),
-                new Coordinates2D(11.14989416, 44.12174993)));
+                new Coordinates2D(11.14989416, 44.12174993)), LEVEL);
 
         assertThat(trailResponse.getContent()).asList().isNotEmpty();
         assertThat(trailResponse.getContent()).asList().size().isEqualTo(2);
@@ -128,7 +131,7 @@ public class GeoTrailRestIntegrationTest {
 
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(10.75034053, 44.28359988),
-                new Coordinates2D(12.04720300, 44.58065428)));
+                new Coordinates2D(12.04720300, 44.58065428)), LEVEL);
 
         assertThat(trailResponse.getContent()).asList().isEmpty();
         assertThat(trailResponse.getStatus()).isEqualTo(Status.ERROR);
@@ -171,10 +174,10 @@ public class GeoTrailRestIntegrationTest {
 
 
         assertThat(trailController.getById(
-                trailResponse.getContent().stream().findFirst().get().getId(), false)
+                trailResponse.getContent().stream().findFirst().get().getId(), LEVEL)
                 .getContent().size()).isEqualTo(1);
         importedId = trailResponse.getContent().get(0).getId();
-        trailController.getById(importedId, false);
+        trailController.getById(importedId, LEVEL);
     }
 
 
@@ -212,7 +215,7 @@ public class GeoTrailRestIntegrationTest {
         TrailResponse trail2Response = adminTrailController.importTrail(trail2Import);
 
         assertThat(trailController.getById(
-                trail2Response.getContent().stream().findFirst().get().getId(), false)
+                trail2Response.getContent().stream().findFirst().get().getId(), LEVEL)
                 .getContent().size()).isEqualTo(1);
         secondTrailId = trail2Response.getContent().get(0).getId();
     }

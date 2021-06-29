@@ -17,19 +17,19 @@ class TrailSimplifierTest {
         val point3 = TrailCoordinates(44.50661524800948, 11.307084768272063, 10.1, 3)
 
         val listMock = listOf(point1, point2, point3)
-        val simplifier = TrailSimplifier().simplify(listMock, TrailSimplifierLevel.LOW)
+        val simplifier = TrailSimplifier().simplify(listMock, TrailSimplifierLevel.MEDIUM)
         val len = simplifier.size
         Assert.assertEquals(3, len)
     }
 
     @Test
     fun `simplify a large coordinate list extracted from file`() {
-        val readPoints = GpsReadUtils.readPoints("/points/gps-track.txt");
+        val readPoints = GpsReadUtils.readPoints("/points/gps-track.txt")
         val trailCoordinates = readPoints.mapIndexed { index, point ->
             TrailCoordinates(point.y, point.x, 10.0 + index, index)
         }
         Assert.assertEquals(1306, trailCoordinates.size)
-        val simplifier = TrailSimplifier().simplify(trailCoordinates, TrailSimplifierLevel.MEDIUM)
+        val simplifier = TrailSimplifier().simplify(trailCoordinates, TrailSimplifierLevel.HIGH)
         Assert.assertEquals(758, simplifier.size)
     }
 
@@ -60,7 +60,7 @@ class TrailSimplifierTest {
             point1, point2, point3, point4, point5, point6, point7, point8, point9, point10,
             point11, point12, point13, point14, point15, point16, point17, point18, point19, point20
         )
-        val simplifier = TrailSimplifier().simplify(listPoint, TrailSimplifierLevel.LOW)
+        val simplifier = TrailSimplifier().simplify(listPoint, TrailSimplifierLevel.MEDIUM)
         Assert.assertEquals(20, simplifier.size)
     }
 
@@ -99,7 +99,7 @@ class TrailSimplifierTest {
         val listPoint = listOf(point1, point2, point3, point4, point5, point6, point7, point8, point9, point10,
                 point11, point12, point13, point14, point15, point16, point17, point18, point19, point20,
                 point21, point22, point23, point24, point25, point26, point27, point28, point29)
-        val simplifier = TrailSimplifier().simplify(listPoint, TrailSimplifierLevel.LOW)
+        val simplifier = TrailSimplifier().simplify(listPoint, TrailSimplifierLevel.MEDIUM)
         val len = simplifier.size
         Assert.assertEquals(24, len)
 

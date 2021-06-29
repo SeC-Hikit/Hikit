@@ -10,5 +10,8 @@ import org.sc.data.model.Trail;
 public interface TrailMapper {
     TrailDto map(Trail trail);
     @Mapping(target = "geoLineString", ignore = true)
+    @Mapping(target = "coordinatesLow", ignore = true)
+    @Mapping(target = "coordinatesMedium", ignore = true)
+    @Mapping(target = "coordinatesHigh", ignore = true)
     Trail map(TrailDto trail);
 }

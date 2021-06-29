@@ -2,11 +2,16 @@ package org.sc.manager
 
 import org.sc.common.rest.*
 import org.sc.configuration.auth.AuthFacade
-import org.sc.data.mapper.*
+import org.sc.data.mapper.PlaceRefMapper
+import org.sc.data.mapper.TrailCoordinatesMapper
+import org.sc.data.mapper.TrailMapper
+import org.sc.data.mapper.TrailRawMapper
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
 import org.sc.processor.DistanceProcessor
+import org.sc.processor.TrailSimplifier
+import org.sc.processor.TrailSimplifierLevel
 import org.sc.processor.TrailsStatsCalculator
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +28,8 @@ class TrailImporterManager @Autowired constructor(
     private val trailRawMapper: TrailRawMapper,
     private val trailRawDao: TrailRawDAO,
     private val trailMapper: TrailMapper,
-    private val authFacade: AuthFacade
+    private val authFacade: AuthFacade,
+    private val trailSimplifier: TrailSimplifier
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -44,6 +50,7 @@ class TrailImporterManager @Autowired constructor(
         val createdOn = Date()
 
         val authHelper = authFacade.authHelper
+        val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
         val trail = Trail.builder()
             .name(importingTrail.name)
             .startLocation(importingTrail.locations.map { placeMapper.map(it) }.first())
@@ -56,7 +63,10 @@ class TrailImporterManager @Autowired constructor(
             .classification(importingTrail.classification)
             .country(importingTrail.country)
             .statsTrailMetadata(statsTrailMetadata)
-            .coordinates(importingTrail.coordinates.map { trailCoordinatesMapper.map(it) })
+            .coordinates(coordinates)
+            .coordinatesLow(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW))
+            .coordinatesMedium(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.MEDIUM))
+            .coordinatesHigh(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.HIGH))
             .lastUpdate(createdOn)
             .maintainingSection(importingTrail.maintainingSection)
             .territorialDivision(importingTrail.territorialDivision)
@@ -97,7 +107,7 @@ class TrailImporterManager @Autowired constructor(
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {
 
-        val trailToUpdate = trailsManager.getById(trailDto.id, false).first()
+        val trailToUpdate = trailsManager.getById(trailDto.id, TrailSimplifierLevel.LOW).first()
 
         val removedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
         val addedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
@@ -131,7 +141,7 @@ class TrailImporterManager @Autowired constructor(
     }
 
     fun switchToStatus(trailDto: TrailDto): List<TrailDto> {
-        val trailToUpdate = trailsManager.getById(trailDto.id, false).first()
+        val trailToUpdate = trailsManager.getById(trailDto.id, TrailSimplifierLevel.LOW).first()
 
         if(trailDto.status == trailToUpdate.status) {
             logger.info("Did not change status to trail ${trailDto.id}")
@@ -174,6 +184,6 @@ class TrailImporterManager @Autowired constructor(
 
             val distance = closestCoordinatePoint!!.distanceFromTrailStart +
                     DistanceProcessor.distanceBetweenPoints(closestCoordinatePoint, pr.coordinates)
-            distance;
+            distance
         })
 }

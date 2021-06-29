@@ -4,6 +4,7 @@ import org.sc.data.validator.Validator
 import org.sc.data.validator.ValidatorUtils
 import org.sc.data.validator.auth.AuthRealmValidator
 import org.sc.manager.TrailManager
+import org.sc.processor.TrailSimplifierLevel
 import org.springframework.stereotype.Component
 
 @Component
@@ -25,7 +26,7 @@ class TrailExistenceValidator constructor(
         if(errors.isNotEmpty()) {
             return errors
         }
-        val byId = trailManager.getById(id, true)
+        val byId = trailManager.getById(id, TrailSimplifierLevel.LOW)
         if(!realmValidator.isAdminSameRealmAsResource(byId.first().fileDetails.realm)){
             errors.add(AuthRealmValidator.NOT_ALLOWED_MSG)
         }

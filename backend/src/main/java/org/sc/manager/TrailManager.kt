@@ -1,16 +1,17 @@
 package org.sc.manager
 
-import org.sc.data.mapper.*
 import org.sc.common.rest.*
 import org.sc.common.rest.geo.GeoLineDto
 import org.sc.common.rest.geo.RectangleDto
 import org.sc.data.geo.CoordinatesRectangle
+import org.sc.data.mapper.*
+import org.sc.data.model.*
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.sc.data.repository.MaintenanceDAO
-import org.sc.data.repository.TrailDAO
-import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
+import org.sc.data.repository.TrailDAO
 import org.sc.processor.GeoCalculator
+import org.sc.processor.TrailSimplifierLevel
 import org.sc.service.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -34,18 +35,18 @@ class TrailManager @Autowired constructor(
     private val logger = Logger.getLogger(TrailManager::class.java.name)
 
     fun get(
-        isLight: Boolean,
-        page: Int,
-        count: Int,
-        realm: String
-    ): List<TrailDto> = trailDAO.getTrails(isLight, page, count, realm)
+            page: Int,
+            count: Int,
+            trailSimplifierLevel: TrailSimplifierLevel,
+            realm: String,
+    ): List<TrailDto> = trailDAO.getTrails(page, count, trailSimplifierLevel, realm)
         .map { trailMapper.map(it) }
 
-    fun getById(id: String, isLight: Boolean): List<TrailDto> =
-        trailDAO.getTrailById(id, isLight).map { trailMapper.map(it) }
+    fun getById(id: String, level: TrailSimplifierLevel): List<TrailDto> =
+        trailDAO.getTrailById(id, level).map { trailMapper.map(it) }
 
-    fun getByPlaceRefId(code: String, isLight: Boolean, page: Int, limit: Int): List<TrailDto> =
-        trailDAO.getTrailByPlaceId(code, isLight, page, limit).map { trailMapper.map(it) }
+    fun getByPlaceRefId(code: String, page: Int, limit: Int, level: TrailSimplifierLevel): List<TrailDto> =
+        trailDAO.getTrailByPlaceId(code, page, limit, level).map { trailMapper.map(it) }
 
     fun delete(id: String): List<TrailDto> {
         val deletedMaintenance = maintenanceDAO.deleteByTrailId(id)
@@ -82,7 +83,7 @@ class TrailManager @Autowired constructor(
         return unlinkedTrail.map { trailMapper.map(it) }
     }
 
-    fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, true).isNotEmpty()
+    fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, TrailSimplifierLevel.LOW).isNotEmpty()
 
     fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
@@ -105,15 +106,16 @@ class TrailManager @Autowired constructor(
         trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
 
-    fun findTrailsWithinRectangle(rectangleDto: RectangleDto): List<TrailDto>{
+    fun findTrailsWithinRectangle(rectangleDto: RectangleDto, level: TrailSimplifierLevel): List<TrailDto>{
         val trails = trailDAO.findTrailWithinGeoSquare(
-                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight),0,100)
+                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight),0,100, level)
         return trails.map { trailMapper.map(it) }
     }
 
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
         val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates)
-        val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit)
+        val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
+                TrailSimplifierLevel.FULL)
 
         return foundTrailsWithinGeoSquare.filter {
             GeoCalculator.areSegmentsIntersecting(
