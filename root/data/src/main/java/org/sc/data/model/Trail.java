@@ -51,9 +51,9 @@ public class Trail {
     private PlaceRef endLocation;
     private List<PlaceRef> locations;
     private List<TrailCoordinates> coordinates;
-    private List<TrailCoordinates> coordinatesSuperLow;
     private List<TrailCoordinates> coordinatesLow;
     private List<TrailCoordinates> coordinatesMedium;
+    private List<TrailCoordinates> coordinatesHigh;
     private TrailClassification classification;
     private String country;
     private Date lastUpdate;
