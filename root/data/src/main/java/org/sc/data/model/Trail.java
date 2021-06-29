@@ -25,10 +25,10 @@ public class Trail {
     public static final String CLASSIFICATION = "classification";
     public static final String COUNTRY = "country";
     public static final String STATS_METADATA = "statsMetadata";
-
     public static final String COORDINATES = "coordinates";
+    public static final String COORDINATES_SUPER_LOW = "coordinatesSuperLow";
     public static final String COORDINATES_LOW = "coordinatesLow";
-
+    public static final String COORDINATES_MEDIUM = "coordinatesMedium";
     public static final String SECTION_CARED_BY = "maintainingSection";
     public static final String TERRITORIAL_CARED_BY = "territorialDivision";
     public static final String LOCATIONS = "locations";
@@ -51,6 +51,9 @@ public class Trail {
     private PlaceRef endLocation;
     private List<PlaceRef> locations;
     private List<TrailCoordinates> coordinates;
+    private List<TrailCoordinates> coordinatesSuperLow;
+    private List<TrailCoordinates> coordinatesLow;
+    private List<TrailCoordinates> coordinatesMedium;
     private TrailClassification classification;
     private String country;
     private Date lastUpdate;
