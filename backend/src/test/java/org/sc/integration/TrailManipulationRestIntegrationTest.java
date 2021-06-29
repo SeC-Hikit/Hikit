@@ -22,6 +22,7 @@ import org.sc.controller.admin.AdminTrailController;
 import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.admin.AdminTrailRawController;
 import org.sc.data.model.*;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -46,6 +47,7 @@ public class TrailManipulationRestIntegrationTest {
 
     public static final String TRAIL_035_IMPORT_FILENAME = "035BO.gpx";
     public static final String TRAIL_033_IMPORT_FILENAME = "033BO.gpx";
+    public static final TrailSimplifierLevel LEVEL = TrailSimplifierLevel.FULL;
 
     @Autowired
     DataSource dataSource;
@@ -131,12 +133,12 @@ public class TrailManipulationRestIntegrationTest {
 
 
         assertThat(trailController.getById(
-                trailResponse.getContent().stream().findFirst().get().getId(), false)
+                trailResponse.getContent().stream().findFirst().get().getId(), LEVEL)
                 .getContent().size()).isEqualTo(1);
-        trailController.getById(trailResponse.getContent().get(0).getId(), false);
+        trailController.getById(trailResponse.getContent().get(0).getId(), LEVEL);
 
         TrailResponse geoLocateTrail = geoTrailController.geoLocateTrail(new RectangleDto(new Coordinates2D(11.15928920022217, 44.13998529867459),
-                new Coordinates2D(11.156454500448556, 44.138395199458394)));
+                new Coordinates2D(11.156454500448556, 44.138395199458394)), LEVEL);
 
         assertThat(geoLocateTrail.getContent()).asList().isNotEmpty();
         assertThat(geoLocateTrail.getContent().get(0)).isEqualTo(trailResponse.getContent().get(0));
@@ -183,9 +185,9 @@ public class TrailManipulationRestIntegrationTest {
 
 
         assertThat(trailController.getById(
-                trailResponse.getContent().stream().findFirst().get().getId(), false)
+                trailResponse.getContent().stream().findFirst().get().getId(), LEVEL)
                 .getContent().size()).isEqualTo(1);
-        trailController.getById(trailResponse.getContent().get(0).getId(), false);
+        trailController.getById(trailResponse.getContent().get(0).getId(), LEVEL);
 
         //
         //  Check the second trail import, and use the coordinates to find intersection
@@ -243,9 +245,9 @@ public class TrailManipulationRestIntegrationTest {
         TrailResponse trail2Response = adminTrailController.importTrail(trail2Import);
 
         assertThat(trailController.getById(
-                trail2Response.getContent().stream().findFirst().get().getId(), false)
+                trail2Response.getContent().stream().findFirst().get().getId(), LEVEL)
                 .getContent().size()).isEqualTo(1);
-        TrailResponse createdTrailResponse = trailController.getById(trail2Response.getContent().get(0).getId(), false);
+        TrailResponse createdTrailResponse = trailController.getById(trail2Response.getContent().get(0).getId(), LEVEL);
 
 
         // Create another place on the way
@@ -270,9 +272,9 @@ public class TrailManipulationRestIntegrationTest {
 
         assertThat(trailResponse.getStatus()).isEqualTo(Status.OK);
 
-        assertThat(trailController.getById(trailId, false).getContent().get(0).getLocations()).asList().contains(placeRefDto);
+        assertThat(trailController.getById(trailId, LEVEL).getContent().get(0).getLocations()).asList().contains(placeRefDto);
 
-        TrailDto retrievedTrail = trailController.getById(trailId, false).getContent().get(0);
+        TrailDto retrievedTrail = trailController.getById(trailId, LEVEL).getContent().get(0);
         assertThat(retrievedTrail.getLocations()).asList().contains(placeRefDto);
 
         PlaceDto placeDto = placeController.get(anotherPlaceResponse.getContent().get(0).getId()).getContent().get(0);
@@ -283,7 +285,7 @@ public class TrailManipulationRestIntegrationTest {
         // DELETE THE PLACE RECORD AND PLACE FROM TRAIL
         adminTrailController.removePlaceFromTrail(trailId, placeRefDto);
 
-        TrailDto retrievedTrailAfterDelete = trailController.getById(trailId, false).getContent().get(0);
+        TrailDto retrievedTrailAfterDelete = trailController.getById(trailId, LEVEL).getContent().get(0);
         assertThat(retrievedTrailAfterDelete.getLocations()).asList().doesNotContain(placeRefDto);
 
 
@@ -330,10 +332,10 @@ public class TrailManipulationRestIntegrationTest {
         String importedTrail035Id = trailResponse.getContent().stream().findFirst().get().getId();
 
         TrailResponse trailReadBack = trailController.getById(
-                importedTrail035Id, false);
+                importedTrail035Id, LEVEL);
         assertThat(trailReadBack
                 .getContent().size()).isEqualTo(1);
-        trailController.getById(trailResponse.getContent().get(0).getId(), false);
+        trailController.getById(trailResponse.getContent().get(0).getId(), LEVEL);
 
         //  Create the second trail
         String placeId3 = "Any3";
@@ -369,10 +371,10 @@ public class TrailManipulationRestIntegrationTest {
         TrailResponse trail2Response = adminTrailController.importTrail(trail2Import);
 
         assertThat(trailController.getById(
-                trail2Response.getContent().stream().findFirst().get().getId(), false)
+                trail2Response.getContent().stream().findFirst().get().getId(), LEVEL)
                 .getContent().size()).isEqualTo(1);
         String importedTrail033ImportId = trail2Response.getContent().get(0).getId();
-        TrailResponse createdTrailResponse = trailController.getById(importedTrail033ImportId, false);
+        TrailResponse createdTrailResponse = trailController.getById(importedTrail033ImportId, LEVEL);
 
         List<TrailCoordinatesDto> secondTrailCoordinates = createdTrailResponse.getContent().get(0).getCoordinates();
 
@@ -467,10 +469,10 @@ public class TrailManipulationRestIntegrationTest {
         String importedTrail035Id = trailResponse.getContent().stream().findFirst().get().getId();
 
         TrailResponse trailReadBack = trailController.getById(
-                importedTrail035Id, false);
+                importedTrail035Id, LEVEL);
         assertThat(trailReadBack
                 .getContent().size()).isEqualTo(1);
-        trailController.getById(trailResponse.getContent().get(0).getId(), false);
+        trailController.getById(trailResponse.getContent().get(0).getId(), LEVEL);
 
         //  Create the second trail
         String placeId3 = "Any3";
@@ -506,10 +508,10 @@ public class TrailManipulationRestIntegrationTest {
         TrailResponse trail2Response = adminTrailController.importTrail(trail2Import);
 
         assertThat(trailController.getById(
-                trail2Response.getContent().stream().findFirst().get().getId(), false)
+                trail2Response.getContent().stream().findFirst().get().getId(), LEVEL)
                 .getContent().size()).isEqualTo(1);
         String importedTrail033ImportId = trail2Response.getContent().get(0).getId();
-        TrailResponse createdTrailResponse = trailController.getById(importedTrail033ImportId, false);
+        TrailResponse createdTrailResponse = trailController.getById(importedTrail033ImportId, LEVEL);
 
         List<TrailCoordinatesDto> secondTrailCoordinates = createdTrailResponse.getContent().get(0).getCoordinates();
 
@@ -569,7 +571,7 @@ public class TrailManipulationRestIntegrationTest {
         adminTrailController.updateTrail(firstTrail);
         adminTrailController.updateTrailStatus(firstTrail);
 
-        TrailResponse trailDraft = trailController.getById(firstTrail.getId(), false);
+        TrailResponse trailDraft = trailController.getById(firstTrail.getId(), LEVEL);
 
         TrailDto updatedTrail = trailDraft.getContent().get(0);
         assertThat(updatedTrail.getStatus()).isEqualTo(TrailStatus.DRAFT);
@@ -582,7 +584,7 @@ public class TrailManipulationRestIntegrationTest {
 
 
         // Modify trail status: DRAFT -> PUBLIC
-        TrailDto trailTurnedToDraft = trailController.getById(firstTrail.getId(), false).getContent().get(0);
+        TrailDto trailTurnedToDraft = trailController.getById(firstTrail.getId(), LEVEL).getContent().get(0);
         trailTurnedToDraft.setStatus(TrailStatus.PUBLIC);
 
         adminTrailController.updateTrail(trailTurnedToDraft);

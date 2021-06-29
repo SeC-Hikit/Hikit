@@ -30,11 +30,11 @@ public class TrailSimplifier {
         //float tolerance = 2f;
         float tolerance = 0f;
 
-        if( compressionLevel == TrailSimplifierLevel.SUPER_LOW) {
+        if( compressionLevel == TrailSimplifierLevel.LOW) {
             tolerance = SUPER_LOW_Q_TOLERANCE;
-        } else if( compressionLevel == TrailSimplifierLevel.LOW) {
-            tolerance = LOW_Q_TOLERANCE;
         } else if( compressionLevel == TrailSimplifierLevel.MEDIUM) {
+            tolerance = LOW_Q_TOLERANCE;
+        } else if( compressionLevel == TrailSimplifierLevel.HIGH) {
            tolerance = MEDIUM_Q_TOLERANCE;
         }
 

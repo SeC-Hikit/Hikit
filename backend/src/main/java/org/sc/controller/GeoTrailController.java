@@ -10,8 +10,8 @@ import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.response.TrailIntersectionHelper;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
-import org.sc.data.validator.GeoLineValidator;
 import org.sc.manager.TrailManager;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,12 +62,13 @@ public class GeoTrailController {
 
     @Operation(summary = "Find geo-located trails within a defined polygon")
     @PostMapping("/locate")
-    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto) {
+    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto,
+                                        @RequestParam TrailSimplifierLevel level) {
 
         final Set<String> errors = generalValidator.validate(rectangleDto);
 
         if (errors.isEmpty()) {
-            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto);
+            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto, level);
             return trailResponseHelper.constructResponse(emptySet(), foundTrails,
                     foundTrails.size(), Constants.ZERO, Constants.ONE);
         }

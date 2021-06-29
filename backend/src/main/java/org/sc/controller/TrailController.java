@@ -11,6 +11,7 @@ import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailImporterManager;
 import org.sc.manager.TrailManager;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,19 +52,20 @@ public class TrailController {
     public TrailResponse get(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-            @RequestParam(required = false, defaultValue = "false") Boolean light,
-            @RequestParam(required = false, defaultValue = "*") String realm) {
+            @RequestParam(required = false, defaultValue = "*") String realm,
+            @RequestParam(defaultValue = "low") TrailSimplifierLevel level) {
         return trailResponseHelper
-                .constructResponse(Collections.emptySet(), trailManager.get(light, skip, limit, realm),
+                .constructResponse(Collections.emptySet(), trailManager.
+                                get(skip, limit, level, realm),
                         trailManager.count(), skip, limit);
     }
 
     @Operation(summary = "Retrieve trail by ID")
     @GetMapping("/{id}")
     public TrailResponse getById(@PathVariable String id,
-                                 @RequestParam(required = false, defaultValue = "false") Boolean light, String level) {
+                                 @RequestParam(defaultValue = "low") TrailSimplifierLevel level) {
         return trailResponseHelper
-                .constructResponse(Collections.emptySet(), trailManager.getById(id, light, level),
+                .constructResponse(Collections.emptySet(), trailManager.getById(id, level),
                         trailManager.count(),
                         Constants.ONE, Constants.ONE);
     }
@@ -71,10 +73,11 @@ public class TrailController {
     @Operation(summary = "Retrieve trail by place ID")
     @GetMapping("/place/{id}")
     public TrailResponse getByPlaceId(@PathVariable String id,
-                                      @RequestParam(required = false, defaultValue = "false") Boolean light,
+                                      @RequestParam(defaultValue = "low") String level,
                                       @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                       @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        List<TrailDto> byPlaceRefId = trailManager.getByPlaceRefId(id, light, skip, limit);
+        final List<TrailDto> byPlaceRefId = trailManager.getByPlaceRefId(id, skip, limit,
+                TrailSimplifierLevel.valueOf(level));
         return trailResponseHelper.constructResponse(Collections.emptySet(), byPlaceRefId,
                 trailManager.count(),
                 skip, limit);

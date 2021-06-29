@@ -3,15 +3,19 @@ package org.sc.integration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.sc.common.rest.*;
+import org.sc.common.rest.PlaceDto;
+import org.sc.common.rest.PlaceRefDto;
+import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailImportDto;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
-import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
+import org.sc.controller.admin.AdminTrailImporterController;
+import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +33,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
 
     private static final String EXPECTED_DESCRIPTION = "<p>ANY_DESCRIPTION</p>";
     public static final List<String> TAGS = Arrays.asList("Magic", "Place");
+    public static final String LEVEL = TrailSimplifierLevel.FULL.toString();
 
     @Autowired
     private DataSource dataSource;
@@ -91,7 +96,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
                 new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId));
 
         assertThat(addPlaceToTrailResponse.getStatus()).isEqualTo(Status.OK);
-        TrailResponse trailResponse = trailController.getByPlaceId(placeId, false, 0, 10);
+        TrailResponse trailResponse = trailController.getByPlaceId(placeId, LEVEL, 0, 10);
 
         assertThat(trailResponse.getContent().isEmpty()).isEqualTo(false);
 
@@ -102,7 +107,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(true);
 
         // Check has been removed from trails too
-        trailResponse = trailController.getByPlaceId(placeId, false, 0, 10);
+        trailResponse = trailController.getByPlaceId(placeId, LEVEL, 0, 10);
         assertThat(trailResponse.getContent().isEmpty()).isEqualTo(true);
     }
 
