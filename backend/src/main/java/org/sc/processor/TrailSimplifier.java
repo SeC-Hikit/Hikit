@@ -16,7 +16,8 @@ public class TrailSimplifier {
     public static final int POSITIVE_SCALAR = 1000000;
     public static final float SUPER_LOW_Q_TOLERANCE = 50f;
     public static final float LOW_Q_TOLERANCE = 20f;
-    public static final float MEDIUM_Q_TOLERANCE = 5f;// Douglas-Peucker, false for Radial-Distance
+    public static final float MEDIUM_Q_TOLERANCE = 5f;
+    // Douglas-Peucker, false for Radial-Distance
     public static final boolean IS_DOUGLAS_PECKER_ALGORITHM = true;
 
     public List<TrailCoordinates> simplify(List<TrailCoordinates> allCoordinates,

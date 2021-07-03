@@ -1,5 +1,6 @@
 package org.sc.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ public class Coordinates2D {
         this.longitude = longitude;
     }
 
+    @JsonIgnore
     public List<Double> getAsList(){
         return Arrays.asList(longitude, latitude);
     }
