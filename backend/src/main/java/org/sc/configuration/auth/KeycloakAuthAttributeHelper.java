@@ -35,7 +35,7 @@ public class KeycloakAuthAttributeHelper implements AuthHelper {
         if(principal instanceof KeycloakPrincipal) {
             final KeycloakPrincipal<KeycloakSecurityContext> kp =
                     (KeycloakPrincipal<KeycloakSecurityContext>) principal;
-            return kp.getKeycloakSecurityContext().getIdToken().getPreferredUsername();
+            return kp.getKeycloakSecurityContext().getToken().getPreferredUsername();
         }
         throw new IllegalStateException();
     }
@@ -45,7 +45,7 @@ public class KeycloakAuthAttributeHelper implements AuthHelper {
         if(principal instanceof KeycloakPrincipal) {
             final KeycloakPrincipal<KeycloakSecurityContext> kp =
                     (KeycloakPrincipal<KeycloakSecurityContext>) principal;
-            final IDToken token = kp.getKeycloakSecurityContext().getIdToken();
+            final IDToken token = kp.getKeycloakSecurityContext().getToken();
 
             final Map<String, Object> claims = token.getOtherClaims();
 

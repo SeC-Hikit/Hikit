@@ -1,8 +1,8 @@
 {
-  "realm": "springBootKeycloack",
+  "realm": "SeC",
   "auth-server-url": "http://localhost:10010/auth/",
   "ssl-required": "external",
-  "resource": "login-app",
+  "resource": "backend",
   "public-client": true,
   "confidential-port": 0
 }

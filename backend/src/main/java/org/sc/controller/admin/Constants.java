@@ -4,6 +4,7 @@ public class Constants {
 
     public static String PREFIX = "/admin";
 
+    public static final String PREFIX_TEST = "/admin/test";
     public static final String PREFIX_TRAIL = "/admin/trail";
     public static final String PREFIX_PLACE = "/admin/place";
     public static final String PREFIX_POI = "/admin/poi";
