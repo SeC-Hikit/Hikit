@@ -35,6 +35,9 @@ docker-compose up
 Mind that the above set-up is for *test/dev only* as all services are exposed in the network and they do not
 use authentication.
 
+### Production
+As for production, S&C takes advantage of a Keycloak instance, as it does not implement user and roles natively.
+
 ### Properties
 
 Configure the `application.properties` file to fit the application runtime for your needs.
