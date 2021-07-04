@@ -25,7 +25,7 @@ class RectangleValidatorTest {
         every { requestMock.topRight.longitude} returns 11.2
 
         val validateResult = rectangleValidator.validate(requestMock)
-        assertTrue(validateResult.contains(RectangleValidator.diagonalLengthError))
+        assertTrue(validateResult.contains(RectangleValidator.diagonalLengthErrorLower))
         }
 
         @Test
@@ -42,7 +42,7 @@ class RectangleValidatorTest {
         every { requestMock.topRight.longitude} returns 12.317288
 
         val validateResult = rectangleValidator.validate(requestMock)
-        assertTrue(validateResult.contains(RectangleValidator.diagonalLengthError))
+        assertTrue(validateResult.contains(RectangleValidator.diagonalLengthErrorLower))
     }
 
     @Test

@@ -10,7 +10,8 @@ class RectangleValidator constructor(private val coordinatesValidator: Coordinat
 
     companion object {
         const val DIAGONAL_FIFTY_KM = 50000
-        const val diagonalLengthError = "Diagonal between selected vertexes is greater than 50 km!"
+        const val diagonalLengthError = "Diagonal between selected vertexes is greater than 50 km"
+        const val diagonalLengthErrorLower = "Diagonal between selected vertexes cannot lower or equal to 0"
     }
 
     override fun validate(request: RectangleDto): Set<String> {
@@ -18,6 +19,11 @@ class RectangleValidator constructor(private val coordinatesValidator: Coordinat
         if (DistanceProcessor.getRadialDistance(request.bottomLeft.latitude, request.bottomLeft.longitude,
                         request.topRight.latitude, request.topRight.longitude) > DIAGONAL_FIFTY_KM) {
             errors.add(diagonalLengthError)
+        }
+
+        if (DistanceProcessor.getRadialDistance(request.bottomLeft.latitude, request.bottomLeft.longitude,
+                request.topRight.latitude, request.topRight.longitude) <= 0) {
+            errors.add(diagonalLengthErrorLower)
         }
 
         val errorsOnCoordinates = listOf(request.bottomLeft, request.topRight).flatMap {
