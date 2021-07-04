@@ -48,7 +48,7 @@ Alternatively, to interact directly with the REST API, the Swagger UI can be fou
 
 ### The project UI
 Once the API is running, you could make use of a user interface to make REST calls to it.
-[A UI for the Bologna Alpine club](https://github.com/loreV/SeC-Frontend) has been developed to visualize and simplify working with trails data.
+[The official UI](https://github.com/loreV/SeC-Frontend) has been developed to visualize and simplify working with trails data.
 
 ## Vision and challenges
 S&C aims to be a user focused API, that makes easy to gather and save rich data about trails.
