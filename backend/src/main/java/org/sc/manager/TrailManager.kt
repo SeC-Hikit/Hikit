@@ -65,6 +65,7 @@ class TrailManager @Autowired constructor(
     fun saveWithGeo(trail: Trail): List<TrailDto> {
         // TODO #60 create a PDF and KML document too
         trailFileHelper.writeTrailToOfficialGpx(trail)
+        trailFileHelper.writeTrailToKml(trail)
         return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }
 
