@@ -1,6 +1,9 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.sc.configuration.AppProperties;
+import org.sc.processor.pdf.PdfFileHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +14,20 @@ import static org.sc.controller.admin.Constants.PREFIX_TEST;
 @RequestMapping(PREFIX_TEST)
 public class AdminTestController {
 
+    private final PdfFileHelper pdfFileHelper;
+    private final AppProperties appProperties;
+
+    @Autowired
+    public AdminTestController(final PdfFileHelper pdfFileHelper,
+                               final AppProperties appProperties) {
+        this.pdfFileHelper = pdfFileHelper;
+        this.appProperties = appProperties;
+    }
+
     @Operation(summary = "Test admin")
     @GetMapping
     public String test() {
-
-        return "{'Hello':'Bello'}";
+        pdfFileHelper.test(appProperties.getStorage() + "/abc.pdf");
+        return "A";
     }
 }

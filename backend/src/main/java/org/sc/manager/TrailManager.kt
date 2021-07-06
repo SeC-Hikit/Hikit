@@ -23,7 +23,7 @@ class TrailManager @Autowired constructor(
     private val maintenanceDAO: MaintenanceDAO,
     private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
     private val placeDAO: PlaceDAO,
-    private val trailFileHelper: TrailFileManager,
+    private val trailFileManager: TrailFileManager,
     private val trailMapper: TrailMapper,
     private val linkedMediaMapper: LinkedMediaMapper,
     private val placeRefMapper: PlaceRefMapper,
@@ -64,8 +64,10 @@ class TrailManager @Autowired constructor(
 
     fun saveWithGeo(trail: Trail): List<TrailDto> {
         // TODO #60 create a PDF and KML document too
-        trailFileHelper.writeTrailToOfficialGpx(trail)
-        trailFileHelper.writeTrailToKml(trail)
+        // TODO: make this run on another thread
+        trailFileManager.writeTrailToOfficialGpx(trail)
+        trailFileManager.writeTrailToKml(trail)
+
         return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }
 

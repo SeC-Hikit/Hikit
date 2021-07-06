@@ -31,6 +31,7 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 import java.util.function.Consumer
+import java.util.logging.Logger
 import javax.xml.bind.Marshaller
 
 @Component
@@ -54,6 +55,8 @@ class TrailFileManager @Autowired constructor(
 
         const val IMPORT_FILE_EXTENSION = "gpx"
     }
+
+    private val logger = Logger.getLogger(TrailFileManager::class.java.name)
 
     private val pathToStoredFiles = File(fileManagementUtil.getTrailGpxStoragePath()).toPath()
     private val uploadDir = File(appProps.tempStorage)
@@ -106,6 +109,7 @@ class TrailFileManager @Autowired constructor(
     }
 
     fun writeTrailToOfficialGpx(trail: Trail) {
+        logger.info("Writing GPX trail for trail with 'id' ${trail.id}")
         val creator = "S&C_$VERSION"
         val gpx = GPX.builder(creator)
             .addTrack { track ->
@@ -129,12 +133,11 @@ class TrailFileManager @Autowired constructor(
         val lineString: LineString = LineString().withAltitudeMode(AltitudeMode.ABSOLUTE)
         trail.coordinates.forEach { lineString.addToCoordinates(it.longitude, it.latitude, it.altitude) }
         kml.createAndSetDocument().createAndAddPlacemark().withGeometry(lineString)
-
         kml.marshal(pathToStoredFiles.resolve(trail.code + ".kml").toFile())
     }
 
     fun getGPXFilesTempPathList(uploadedFiles: List<MultipartFile>): Map<String, Optional<Path>> {
-        // We shall not accept files missing the original file names as we may have issues
+        // We shall not accept files missing the original file names
         val findUploadedFilesWithMissingNames = findUploadedFilesWithMissingNames(uploadedFiles)
         if (findUploadedFilesWithMissingNames.isNotEmpty()) return emptyMap()
 
