@@ -23,7 +23,7 @@ public class AppProperties {
     private final boolean enabledSecurity;
     private final String securityDisabledUserRoles;
     private final String instanceId;
-    private final String instanceName;
+    private final String instanceRealm;
     private final String instanceHostname;
 
     @Autowired
@@ -38,7 +38,7 @@ public class AppProperties {
                          final @Value("${security.enabled:true}") boolean enabledSecurity,
                          final @Value("${security.disabled.user-roles}") String secDisabledUserRoles,
                          final @Value("${instance.id}") String instanceId,
-                         final @Value("${instance.realm}") String instanceName,
+                         final @Value("${instance.realm}") String instanceRealm,
                          final @Value("${instance.hostname:127.0.0.1}") String instanceHostname
     ) {
         this.port = port;
@@ -52,7 +52,7 @@ public class AppProperties {
         this.enabledSecurity = enabledSecurity;
         this.securityDisabledUserRoles = secDisabledUserRoles;
         this.instanceId = instanceId;
-        this.instanceName = instanceName;
+        this.instanceRealm = instanceRealm;
         this.instanceHostname = instanceHostname;
     }
 
@@ -100,8 +100,8 @@ public class AppProperties {
         return instanceId;
     }
 
-    public String getInstanceName() {
-        return instanceName;
+    public String getInstanceRealm() {
+        return instanceRealm;
     }
 
     public String getInstanceHostname() {

@@ -46,7 +46,7 @@ public class StartupChecker {
         configureDir(fileManagementUtil.getTrailPdfStoragePath(), "Could not create trail/pdf folder");
 
         instanceRegister.register(appProperties.getInstanceId(),
-                appProperties.getInstanceName(),
+                appProperties.getInstanceRealm(),
                 appProperties.getInstanceHostname(),
                 appProperties.getPort());
 
