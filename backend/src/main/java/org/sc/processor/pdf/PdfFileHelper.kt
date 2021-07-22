@@ -2,6 +2,7 @@ package org.sc.processor.pdf
 
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfWriter
+import org.sc.data.model.Trail
 import org.springframework.stereotype.Component
 import java.io.FileOutputStream
 import java.nio.file.Path
@@ -20,9 +21,10 @@ class PdfFileHelper {
         Font.BOLD, BaseColor.BLACK
     )
 
-    fun test(filePath : String) {
+    fun exportPdf(trail: Trail, filePath : Path) {
         val document = Document()
-        PdfWriter.getInstance(document, FileOutputStream(filePath))
+
+        PdfWriter.getInstance(document, FileOutputStream(filePath.toFile()))
 
         addMetadata(document)
 

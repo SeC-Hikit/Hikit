@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+
 import static org.sc.controller.admin.Constants.PREFIX_TEST;
 
 @RestController
@@ -27,7 +29,7 @@ public class AdminTestController {
     @Operation(summary = "Test admin")
     @GetMapping
     public String test() {
-        pdfFileHelper.test(appProperties.getStorage() + "/abc.pdf");
+        pdfFileHelper.exportPdf(null, new File(appProperties.getStorage() + "/abc.pdf").toPath());
         return "A";
     }
 }
