@@ -144,6 +144,12 @@ public class AdminTrailController {
                 ZERO, ONE);
     }
 
+
+
+
+
+
+
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
     @PutMapping("/update")
     public TrailResponse updateTrail(@RequestBody TrailDto trailDto) {
