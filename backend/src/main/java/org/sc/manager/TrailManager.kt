@@ -67,6 +67,7 @@ class TrailManager @Autowired constructor(
         // TODO: make this run on another thread
         trailFileManager.writeTrailToOfficialGpx(trail)
         trailFileManager.writeTrailToKml(trail)
+        trailFileManager.writeTrailToPdf(trail)
 
         return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }
