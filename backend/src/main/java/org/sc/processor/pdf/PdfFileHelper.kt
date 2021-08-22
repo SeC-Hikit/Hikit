@@ -55,7 +55,7 @@ class PdfFileHelper {
         addMetadata(document)
         document.open()
 
-        //Adding date
+        //Adding date (static..to be improved)
         val date = Paragraph("Generata il 13/07/2021", summaryFont)
         date.alignment = com.itextpdf.text.Element.ALIGN_RIGHT;
 
