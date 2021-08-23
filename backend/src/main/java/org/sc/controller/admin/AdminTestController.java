@@ -2,6 +2,7 @@ package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.configuration.AppProperties;
+import org.sc.data.model.Trail;
 import org.sc.processor.pdf.PdfFileHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class AdminTestController {
     @Operation(summary = "Test admin")
     @GetMapping
     public String test() {
-        pdfFileHelper.exportPdf(null, new File(appProperties.getStorage() + "/abc.pdf").toPath());
+        pdfFileHelper.exportPdf(Trail.builder().build(), new File(appProperties.getStorage() + "/abc.pdf").toPath());
         return "A";
     }
 }
