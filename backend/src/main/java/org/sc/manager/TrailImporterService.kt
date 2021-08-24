@@ -177,7 +177,7 @@ class TrailImporterService @Autowired constructor(
     private fun generatePdfFile(trailSaved: TrailDto) {
         val trailId = trailSaved.id
         val places = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
-        val maintenancesByTrailId = maintenanceManager.getById(trailId)
+        val maintenancesByTrailId = maintenanceManager.getPastMaintenanceForTrailId(trailId, 0, Int.MAX_VALUE)
         val lastMaintenance = maintenancesByTrailId.maxByOrNull { it.date }!!
         val openIssues = accessibilityNotificationManager.getUnresolvedByTrailId(trailId, 0, Int.MAX_VALUE)
         logger.info("""Generating PDF file for trail '$trailId'""")
