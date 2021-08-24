@@ -1,16 +1,16 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.Main;
 import org.sc.common.rest.BatchStatus;
 import org.sc.common.rest.GenerateRequestDto;
-import org.sc.common.rest.Status;
+import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.response.ResourceGeneratorResponse;
 import org.sc.configuration.AppProperties;
-import org.sc.controller.response.PlaceResponseHelper;
 import org.sc.data.model.Trail;
 import org.sc.data.repository.TrailDAO;
 import org.sc.manager.TrailFileManager;
+import org.sc.manager.TrailImporterService;
+import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.format;
 import static org.sc.controller.admin.Constants.PREFIX_RESOURCE;
-import static org.sc.data.repository.TrailDAO.NO_FILTERING;
 
 @RestController
 @RequestMapping(PREFIX_RESOURCE)
@@ -36,18 +35,23 @@ public class AdminResourceController {
 
     final static Logger LOGGER = LoggerFactory.getLogger(AdminResourceController.class);
 
-    private static final AtomicBoolean isMigrationRunning = new AtomicBoolean();
     public static final String COULD_NOT_ERROR = "Could not re-generate resources for Trail with Id '%s'";
-    private final TrailFileManager trailFileManager;
+    public static final String REGENERATE_FOR_TRAIL_ID_MESSAGE = "Going to re-generate file for trail with id '%s'";
+    public static final String DONE_REGENERATING_FOR_TRAIL_ID = "Done regenerating files for trail with id '%s'";
+
+
+    private static final AtomicBoolean isMigrationRunning = new AtomicBoolean();
+
+    private final TrailImporterService trailImporterService;
+    private final TrailManager trailManager;
     private final AppProperties appProperties;
-    private final TrailDAO trailDAO;
 
     @Autowired
-    public AdminResourceController(final TrailDAO trailDAO,
-                                   final TrailFileManager trailFileManager,
+    public AdminResourceController(final TrailManager trailManager,
+                                   final TrailImporterService trailImporterService,
                                    final AppProperties appProperties) {
-        this.trailDAO = trailDAO;
-        this.trailFileManager = trailFileManager;
+        this.trailManager = trailManager;
+        this.trailImporterService = trailImporterService;
         this.appProperties = appProperties;
     }
 
@@ -62,11 +66,10 @@ public class AdminResourceController {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
 
-                final List<Trail> trails = trailDAO.getTrails(0, Integer.MAX_VALUE, TrailSimplifierLevel.FULL,
+                final List<TrailDto> trails = trailManager.get(0,
+                        Integer.MAX_VALUE, TrailSimplifierLevel.FULL,
                         appProperties.getInstanceRealm());
-
                 doExport(trails);
-
                 isMigrationRunning.set(false);
             });
         }
@@ -89,7 +92,7 @@ public class AdminResourceController {
 
                 generateRequestDto.getIds().forEach(id -> {
                     if (id == null) return;
-                    final List<Trail> singletonList = trailDAO.getTrailById(id, TrailSimplifierLevel.LOW);
+                    final List<TrailDto> singletonList = trailManager.getById(id, TrailSimplifierLevel.LOW);
                     if (singletonList.isEmpty()) {
                         LOGGER.warn(String.format(COULD_NOT_ERROR +
                                 ", as it does not exist", id));
@@ -103,11 +106,6 @@ public class AdminResourceController {
                     }
                     doExport(singletonList);
                 });
-                final List<Trail> trails = trailDAO.getTrails(0, Integer.MAX_VALUE, TrailSimplifierLevel.FULL,
-                        appProperties.getInstanceRealm());
-
-                doExport(trails);
-
                 isMigrationRunning.set(false);
             });
         }
@@ -115,8 +113,12 @@ public class AdminResourceController {
         return new ResourceGeneratorResponse(BatchStatus.OK);
     }
 
-    private void doExport(List<Trail> trails) {
-        trails.forEach(t -> LOGGER.info(format("Going to re-generate file for trail with id '%s'", t.getId())));
-        trails.forEach(trailFileManager::writeTrailToOfficialGpx);
+    private void doExport(List<TrailDto> trails) {
+        trails.forEach(t -> {
+            final String trailId = t.getId();
+            LOGGER.info(format(REGENERATE_FOR_TRAIL_ID_MESSAGE, trailId));
+            trailImporterService.updateResourcesForTrail(t);
+            LOGGER.info(format(DONE_REGENERATING_FOR_TRAIL_ID, trailId));
+        });
     }
 }

@@ -62,13 +62,7 @@ class TrailManager @Autowired constructor(
         return deletedTrailInMem.map { trailMapper.map(it) }
     }
 
-    fun saveWithGeo(trail: Trail): List<TrailDto> {
-        // TODO #60 create a PDF and KML document too
-        // TODO: make this run on another thread
-        trailFileManager.writeTrailToOfficialGpx(trail)
-        trailFileManager.writeTrailToKml(trail)
-        trailFileManager.writeTrailToPdf(trail)
-
+    fun save(trail: Trail): List<TrailDto> {
         return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }
 

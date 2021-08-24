@@ -19,8 +19,12 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class TrailImporterManager @Autowired constructor(
+class TrailImporterService @Autowired constructor(
     private val trailsManager: TrailManager,
+    private val trailFileManager: TrailFileManager,
+    private val placeManager: PlaceManager,
+    private val accessibilityNotificationManager: AccessibilityNotificationManager,
+    private val maintenanceManager: MaintenanceManager,
     private val trailsStatsCalculator: TrailsStatsCalculator,
     private val trailDatasetVersionDao: TrailDatasetVersionDao,
     private val placeMapper: PlaceRefMapper,
@@ -97,12 +101,20 @@ class TrailImporterManager @Autowired constructor(
             .status(importingTrail.trailStatus)
             .build()
 
+        val savedTrailAsList = trailsManager.save(trail)
+        val trailSaved = savedTrailAsList.first()
 
-        val savedTrailDao = trailsManager.saveWithGeo(trail)
+        updateResourcesForTrail(trailSaved)
 
         trailDatasetVersionDao.increaseVersion()
 
-        return savedTrailDao
+        return savedTrailAsList
+    }
+
+    fun updateResourcesForTrail(savedTrail: TrailDto) {
+        trailFileManager.writeTrailToOfficialGpx(savedTrail)
+        trailFileManager.writeTrailToKml(savedTrail)
+        generatePdfFile(savedTrail)
     }
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {
@@ -137,6 +149,8 @@ class TrailImporterManager @Autowired constructor(
         trailToUpdate.territorialDivision = trailDto.territorialDivision
         trailToUpdate.cycloDetails = trailDto.cycloDetails
 
+        generatePdfFile(trailToUpdate)
+
         return trailsManager.update(trailMapper.map(trailToUpdate))
     }
 
@@ -158,6 +172,16 @@ class TrailImporterManager @Autowired constructor(
         }
         trailToUpdate.status = trailDto.status
         return trailsManager.update(trailMapper.map(trailToUpdate))
+    }
+
+    private fun generatePdfFile(trailSaved: TrailDto) {
+        val trailId = trailSaved.id
+        val places = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
+        val maintenancesByTrailId = maintenanceManager.getById(trailId)
+        val lastMaintenance = maintenancesByTrailId.maxByOrNull { it.date }!!
+        val openIssues = accessibilityNotificationManager.getUnresolvedByTrailId(trailId, 0, Int.MAX_VALUE)
+        logger.info("""Generating PDF file for trail '$trailId'""")
+        trailFileManager.writeTrailToPdf(trailSaved, places, lastMaintenance, openIssues)
     }
 
     private fun isSwitchingToDraft(

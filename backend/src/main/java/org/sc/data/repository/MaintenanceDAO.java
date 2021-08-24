@@ -12,6 +12,7 @@ import org.sc.data.model.Maintenance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -82,9 +83,9 @@ public class MaintenanceDAO {
     }
 
     public List<Maintenance> deleteByTrailId(final String trailId) {
-        final Maintenance byId = getByTrailId(trailId);
-        collection.deleteOne(new Document(Maintenance.TRAIL_ID, trailId));
-        return Collections.singletonList(byId);
+        final List<Maintenance> byId = getByTrailId(trailId);
+        collection.deleteMany(new Document(Maintenance.TRAIL_ID, trailId));
+        return byId;
     }
 
     public List<Maintenance> getById(final String id) {
@@ -92,11 +93,9 @@ public class MaintenanceDAO {
                 new Document(Maintenance.OBJECT_ID, id)));
     }
 
-    private Maintenance getByTrailId(final String trailId) {
-        return toMaintenanceList(collection.find(
-                new Document(Maintenance.TRAIL_ID, trailId)))
-                .stream()
-                .findFirst().orElse(null);
+    public List<Maintenance> getByTrailId(final String trailId) {
+        return new ArrayList<>(toMaintenanceList(collection.find(
+                new Document(Maintenance.TRAIL_ID, trailId))));
     }
 
     private List<Maintenance> toMaintenanceList(FindIterable<Document> documents) {
