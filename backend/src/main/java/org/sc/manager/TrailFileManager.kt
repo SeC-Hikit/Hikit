@@ -5,9 +5,7 @@ import de.micromata.opengis.kml.v_2_2_0.Kml
 import de.micromata.opengis.kml.v_2_2_0.LineString
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
-import org.sc.common.rest.CoordinatesDto
-import org.sc.common.rest.FileDetailsDto
-import org.sc.common.rest.TrailRawDto
+import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.VERSION
 import org.sc.configuration.auth.AuthFacade
@@ -44,7 +42,7 @@ class TrailFileManager @Autowired constructor(
         private val fileManagementUtil: FileManagementUtil,
         private val fileNameValidator: FileNameValidator,
         private val authFacade: AuthFacade,
-        private val appProps: AppProperties
+        appProps: AppProperties
 ) {
 
     companion object {
@@ -111,7 +109,7 @@ class TrailFileManager @Autowired constructor(
         )
     }
 
-    fun writeTrailToOfficialGpx(trail: Trail) {
+    fun writeTrailToOfficialGpx(trail: TrailDto) {
         logger.info("Writing GPX trail for trail with 'id' ${trail.id}")
         val creator = "S&C_$VERSION"
         val gpx = GPX.builder(creator)
@@ -131,7 +129,7 @@ class TrailFileManager @Autowired constructor(
         gpxFileHandlerHelper.writeToFile(gpx, pathToGpxStoredFiles.resolve(trail.code + ".gpx"))
     }
 
-    fun writeTrailToKml(trail: Trail) {
+    fun writeTrailToKml(trail: TrailDto) {
         val kml = Kml()
         val lineString: LineString = LineString().withAltitudeMode(AltitudeMode.ABSOLUTE)
         trail.coordinates.forEach { lineString.addToCoordinates(it.longitude, it.latitude, it.altitude) }
@@ -139,8 +137,10 @@ class TrailFileManager @Autowired constructor(
         kml.marshal(pathToKmlStoredFiles.resolve(trail.code + ".kml").toFile())
     }
 
-    fun writeTrailToPdf(trail: Trail) {
-        pdfFileHandlerHelper.exportPdf(trail, pathToPdfStoredFiles.resolve(trail.code + ".pdf"))
+    fun writeTrailToPdf(trail: TrailDto, places: List<PlaceDto>, lastMaintenance: MaintenanceDto,
+                        reportedOpenIssues: List<AccessibilityNotificationDto>) {
+        val pathname = pathToPdfStoredFiles.resolve(trail.code + ".pdf")
+        pdfFileHandlerHelper.exportPdf(trail, places, lastMaintenance, reportedOpenIssues, pathname)
     }
 
     fun getGPXFilesTempPathList(uploadedFiles: List<MultipartFile>): Map<String, Optional<Path>> {

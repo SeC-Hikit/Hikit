@@ -24,7 +24,6 @@ class PlaceManager @Autowired constructor(
     fun getPaginated(skip: Int, limit: Int): List<PlaceDto> =
         placeDao.get(skip, limit).map { placeMapper.map(it) }
 
-
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int): List<PlaceDto> =
         placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
 
@@ -36,7 +35,6 @@ class PlaceManager @Autowired constructor(
 
     fun getById(id: String): List<PlaceDto> =
         placeDao.getById(id).map { placeMapper.map(it) }
-
 
     fun create(place: PlaceDto): List<PlaceDto> {
         val mapCreation = placeMapper.mapCreation(place)

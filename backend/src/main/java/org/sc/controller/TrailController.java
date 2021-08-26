@@ -9,7 +9,7 @@ import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
-import org.sc.manager.TrailImporterManager;
+import org.sc.manager.TrailImporterService;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +30,14 @@ public class TrailController {
     protected final TrailManager trailManager;
     protected final GeneralValidator generalValidator;
     protected final TrailResponseHelper trailResponseHelper;
-    protected final TrailImporterManager trailManagementManager;
+    protected final TrailImporterService trailManagementManager;
     protected final AuthFacade authenticationProvider;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
                            final GeneralValidator generalValidator,
                            final TrailResponseHelper trailResponseHelper,
-                           final TrailImporterManager trailManagementManager,
+                           final TrailImporterService trailManagementManager,
                            final AuthFacade authFacade) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;

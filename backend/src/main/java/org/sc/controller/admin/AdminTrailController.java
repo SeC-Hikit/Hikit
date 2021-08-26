@@ -5,7 +5,7 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
-import org.sc.manager.TrailImporterManager;
+import org.sc.manager.TrailImporterService;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,14 +26,14 @@ public class AdminTrailController {
 
     private final TrailManager trailManager;
     private final GeneralValidator generalValidator;
-    private final TrailImporterManager trailImporterManager;
+    private final TrailImporterService trailImporterManager;
     private final TrailResponseHelper trailResponseHelper;
 
     @Autowired
     public AdminTrailController(final TrailManager trailManager,
                                 final GeneralValidator generalValidator,
                                 final TrailResponseHelper trailResponseHelper,
-                                final TrailImporterManager trailImporterManager) {
+                                final TrailImporterService trailImporterManager) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
