@@ -18,15 +18,15 @@ class AccessibilityNotificationManager @Autowired constructor(
 ) {
 
     fun byId(id: String): List<AccessibilityNotificationDto> =
-        accessibilityDAO.getById(id).map { accessibilityMapper.map(it) };
+        accessibilityDAO.getById(id).map { accessibilityMapper.map(it) }
 
     fun getSolved(skip: Int, limit: Int): List<AccessibilityNotificationDto> {
         val solved = accessibilityDAO.getSolved(skip, limit)
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getResolvedById(code: String, skip: Int, limit: Int): List<AccessibilityNotificationDto> {
-        val solved = accessibilityDAO.getResolvedByTrailId(code, skip, limit)
+    fun getResolvedByTrailId(trailId: String, skip: Int, limit: Int): List<AccessibilityNotificationDto> {
+        val solved = accessibilityDAO.getResolvedByTrailId(trailId, skip, limit)
         return solved.map { accessibilityMapper.map(it) }
     }
 
@@ -35,8 +35,8 @@ class AccessibilityNotificationManager @Autowired constructor(
         return unresolved.map { accessibilityMapper.map(it) }
     }
 
-    fun getUnresolvedById(code: String, skip: Int, limit: Int): List<AccessibilityNotificationDto> {
-        val unresolved = accessibilityDAO.getUnresolvedByTrailId(code, skip, limit)
+    fun getUnresolvedByTrailId(trailId: String, skip: Int, limit: Int): List<AccessibilityNotificationDto> {
+        val unresolved = accessibilityDAO.getUnresolvedByTrailId(trailId, skip, limit)
         return unresolved.map { accessibilityMapper.map(it) }
     }
 

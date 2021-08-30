@@ -1,6 +1,6 @@
 {
-  "realm": "SeC",
-  "auth-server-url": "http://localhost:10010/auth/",
+  "realm": "SeC-Test",
+  "auth-server-url": "http://localhost:8080/auth/",
   "ssl-required": "external",
   "resource": "backend",
   "public-client": true,

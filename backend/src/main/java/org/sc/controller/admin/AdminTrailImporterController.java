@@ -5,7 +5,7 @@ import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.manager.TrailFileManager;
-import org.sc.manager.TrailImporterManager;
+import org.sc.manager.TrailImporterService;
 import org.sc.processor.GpxFileHandlerHelper;
 import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class AdminTrailImporterController {
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
     private final TrailFileManager trailFileManager;
-    private final TrailImporterManager trailManagementManager;
+    private final TrailImporterService trailManagementManager;
     private final TrailRawResponseHelper trailRawResponseHelper;
     private final FileProbeUtil fileProbeUtil;
     private final GpxFileHandlerHelper gpxFileHandlerHelper;
@@ -43,7 +43,7 @@ public class AdminTrailImporterController {
 
     @Autowired
     public AdminTrailImporterController(final TrailFileManager trailFileManager,
-                                        final TrailImporterManager trailManagementManager,
+                                        final TrailImporterService trailManagementManager,
                                         final TrailRawResponseHelper trailRawResponseHelper,
                                         final FileProbeUtil fileProbeUtil,
                                         final GpxFileHandlerHelper gpxFileHandlerHelper) {

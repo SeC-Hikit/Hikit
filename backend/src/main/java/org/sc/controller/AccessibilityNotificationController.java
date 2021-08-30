@@ -55,7 +55,7 @@ public class AccessibilityNotificationController {
             @PathVariable String trailId,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        List<AccessibilityNotificationDto> resolvedById = accessibilityNotManager.getResolvedById(trailId, skip, limit);
+        List<AccessibilityNotificationDto> resolvedById = accessibilityNotManager.getResolvedByTrailId(trailId, skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolvedById,
                 accessibilityNotManager.countSolvedForTrailId(trailId), skip, limit);
     }
@@ -77,7 +77,7 @@ public class AccessibilityNotificationController {
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
-                accessibilityNotManager.getUnresolvedById(trailId, skip, limit),
+                accessibilityNotManager.getUnresolvedByTrailId(trailId, skip, limit),
                 accessibilityNotManager.countNotSolvedForTrailId(trailId), skip, limit);
     }
 }

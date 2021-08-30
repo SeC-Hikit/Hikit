@@ -21,7 +21,11 @@ class MaintenanceManager @Autowired constructor(
 
 
     fun getById(id: String): List<MaintenanceDto> {
-        return maintenanceDao.getById(id).map {maintenanceMapper.map(it)};
+        return maintenanceDao.getById(id).map {maintenanceMapper.map(it)}
+    }
+
+    fun getByTrailId(id: String): List<MaintenanceDto> {
+        return maintenanceDao.getByTrailId(id).map {maintenanceMapper.map(it)}
     }
 
     fun getPast(page: Int, count: Int): List<MaintenanceDto> =

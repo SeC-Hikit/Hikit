@@ -13,4 +13,5 @@ public class Constants {
     public static final String PREFIX_MEDIA = "/admin/media";
     public static final String PREFIX_IMPORT = "/admin/import";
     public static final String PREFIX_MAINTENANCE = "/admin/maintenance";
+    public static final String PREFIX_RESOURCE = "/admin/resource";
 }
