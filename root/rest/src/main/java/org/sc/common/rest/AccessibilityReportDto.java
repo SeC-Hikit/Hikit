@@ -15,6 +15,6 @@ public class AccessibilityReportDto {
     private String telephone;
     private String issueId;
     private Date reportDate;
-    private CoordinatesDto coordinates;
+    private TrailCoordinatesDto coordinates;
     private RecordDetailsDto recordDetails;
 }

@@ -3,7 +3,7 @@ package org.sc.common.rest.response
 import org.sc.common.rest.AccessibilityReportDto
 import org.sc.common.rest.Status
 
-data class AccessibilityReportResponseResponse(
+data class AccessibilityReportResponse(
         val status: Status,
         val messages: Set<String>,
         val content: List<AccessibilityReportDto>,
