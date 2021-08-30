@@ -21,11 +21,11 @@ public class AccessibilityIssueResponseHelper {
         this.controllerPagination = controllerPagination;
     }
 
-    public AccessibilityResponse constructResponse(Set<String> errors,
-                                                   List<AccessibilityNotificationDto> dtos,
-                                                   long totalCount,
-                                                   int skip,
-                                                   int limit) {
+    public AccessibilityResponse constructResponse(final Set<String> errors,
+                                                   final List<AccessibilityNotificationDto> dtos,
+                                                   final long totalCount,
+                                                   final int skip,
+                                                   final int limit) {
         if (!errors.isEmpty()) {
             return new AccessibilityResponse(Status.ERROR, errors, dtos, 1L,
                     Constants.ONE, limit, totalCount);
