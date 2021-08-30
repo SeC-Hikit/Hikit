@@ -3,7 +3,7 @@ package org.sc.common.rest.response
 import org.sc.common.rest.AccessibilityReportDto
 import org.sc.common.rest.Status
 
-data class AccessibilityResponse(
+data class AccessibilityReportResponseResponse(
         val status: Status,
         val messages: Set<String>,
         val content: List<AccessibilityReportDto>,
@@ -12,4 +12,4 @@ data class AccessibilityResponse(
         override val size: Long,
         override val totalCount: Long
 ) :
-    RESTResponse(currentPage, totalPages, size, totalCount)
+        RESTResponse(currentPage, totalPages, size, totalCount)
