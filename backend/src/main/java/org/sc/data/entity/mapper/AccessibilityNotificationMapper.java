@@ -22,7 +22,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
     }
 
     @Override
-    public AccessibilityNotification mapToObject(Document document) {
+    public AccessibilityNotification mapToObject(final Document document) {
         final String nullableResolution = document.getString(AccessibilityNotification.RESOLUTION);
         final Date nullableResolutionDate = document.getDate(AccessibilityNotification.RESOLUTION_DATE);
         final Date reportedDate = document.getDate(AccessibilityNotification.REPORT_DATE);
@@ -40,7 +40,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
     }
 
     @Override
-    public Document mapToDocument(AccessibilityNotification accessibilityNotification) {
+    public Document mapToDocument(final AccessibilityNotification accessibilityNotification) {
         return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getTrailId())
                 .append(AccessibilityNotification.ID, accessibilityNotification.getId())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())

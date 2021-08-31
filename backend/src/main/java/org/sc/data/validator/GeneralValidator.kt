@@ -31,8 +31,10 @@ class GeneralValidator @Autowired constructor(
     private val poiExistenceValidator: PoiExistenceValidator,
     private val poiValidator: PoiValidator,
     private val rectangleValidator: RectangleValidator,
-    private val geoLineValidator: GeoLineValidator
+    private val geoLineValidator: GeoLineValidator,
+    private val accessibilityReportValidator: AccessibilityReportValidator
 ) {
+    fun validate(acd: AccessibilityReportDto): Set<String> = accessibilityReportValidator.validate(acd)
     fun validate(acd: AccessibilityNotificationDto): Set<String> = accessibilityValidator.validate(acd)
     fun validate(cor: CoordinatesDto): Set<String> = coordinatesValidator.validate(cor)
     fun validate(kv: KeyValueDto): Set<String> = keyValValidator.validate(kv)
@@ -50,7 +52,8 @@ class GeneralValidator @Autowired constructor(
 
     fun validateFileName(fn: String): Set<String> = fileNameValidator.validate(fn)
 
-    fun validateUpdateAcc(id: String): Set<String> = accessibilityValidator.validateDeleteRequest(id)
+    fun validateAcc(id: String): Set<String> = accessibilityValidator.validateUpdateRequest(id)
+    fun validateReportAcc(id: String): Set<String> = accessibilityReportValidator.validateUpdateRequest(id)
     fun validateUpdateMedia(id: String): Set<String> = mediaExistenceValidator.validateDeleteRequest(id)
     fun validateUpdatePlace(id: String): Set<String> = placeExistenceValidator.validatePlace(id)
     fun validateUpdatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
