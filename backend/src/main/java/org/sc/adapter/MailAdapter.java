@@ -1,4 +1,4 @@
-package org.sc.service;
+package org.sc.adapter;
 
 import org.sc.configuration.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +10,13 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
-public class MailService {
+public class MailAdapter {
 
     private final AppProperties appProperties;
     private final JavaMailSender javaMailSender;
 
     @Autowired
-    public MailService(final AppProperties appProperties,
+    public MailAdapter(final AppProperties appProperties,
                        final JavaMailSender javaMailSender) {
         this.appProperties = appProperties;
         this.javaMailSender = javaMailSender;

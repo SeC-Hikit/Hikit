@@ -11,13 +11,12 @@ import org.sc.configuration.AppProperties.VERSION
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.model.Coordinates
-import org.sc.data.model.Trail
 import org.sc.data.model.TrailCoordinates
 import org.sc.data.validator.FileNameValidator
 import org.sc.processor.GpxFileHandlerHelper
 import org.sc.processor.TrailsStatsCalculator
 import org.sc.processor.pdf.PdfFileHelper
-import org.sc.service.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceAdapter
 import org.sc.util.FileManagementUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

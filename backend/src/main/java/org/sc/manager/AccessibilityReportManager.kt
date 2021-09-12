@@ -5,6 +5,7 @@ import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.AccessibilityReportMapper
 import org.sc.data.model.RecordDetails
 import org.sc.data.repository.AccessibilityReportDao
+import org.sc.util.StringIdGenerator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -13,7 +14,7 @@ import java.util.*
 class AccessibilityReportManager @Autowired constructor(
         private val accessibilityMapper: AccessibilityReportMapper,
         private val accessibilityReportDAO: AccessibilityReportDao,
-        private val authFacade: AuthFacade,
+        private val stringIdGenerator: StringIdGenerator
 ) {
 
     fun byId(id: String): List<AccessibilityReportDto> =
@@ -30,15 +31,23 @@ class AccessibilityReportManager @Autowired constructor(
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun save(accessibilityNotificationCreation: AccessibilityReportDto): List<AccessibilityReportDto> {
+    fun create(accessibilityNotificationCreation: AccessibilityReportDto, instance: String, realm: String): List<AccessibilityReportDto> {
         val mapped = accessibilityMapper.map(accessibilityNotificationCreation)
-        val authHelper = authFacade.authHelper
         mapped.recordDetails = RecordDetails(
                 Date(),
-                authHelper.username,
-                authHelper.instance,
-                authHelper.realm)
-        return accessibilityReportDAO.upsert(mapped)
+                accessibilityNotificationCreation.email,
+                instance, realm)
+
+        return accessibilityReportDAO.upsert(mapped, stringIdGenerator.generate())
+                .map { accessibilityMapper.map(it) }
+    }
+
+    fun validate(validationId: String): List<AccessibilityReportDto> {
+        return accessibilityReportDAO.validate(validationId).map { accessibilityMapper.map(it) }
+    }
+
+    fun update(accReport: AccessibilityReportDto): List<AccessibilityReportDto> {
+        return accessibilityReportDAO.update(accessibilityMapper.map(accReport))
                 .map { accessibilityMapper.map(it) }
     }
 

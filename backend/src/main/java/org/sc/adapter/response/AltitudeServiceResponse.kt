@@ -1,4 +1,4 @@
-package org.sc.service.response
+package org.sc.adapter.response
 
 
 data class AltitudeApiResponse constructor(val results: List<AltitudeDataPoint> = listOf())
