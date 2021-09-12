@@ -12,7 +12,7 @@ import org.sc.data.repository.PlaceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.processor.GeoCalculator
 import org.sc.processor.TrailSimplifierLevel
-import org.sc.service.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.logging.Logger

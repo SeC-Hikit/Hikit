@@ -7,6 +7,7 @@ import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.sc.common.rest.AccessibilityReportDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityReportMapper;
 import org.sc.data.model.AccessibilityNotification;
@@ -15,6 +16,7 @@ import org.sc.data.model.RecordDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.print.Doc;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -41,6 +43,11 @@ public class AccessibilityReportDao {
                 new Document(AccessibilityReport.ID, id)));
     }
 
+    public List<AccessibilityReport> getByValidationId(String validationId) {
+        return toNotificationList(collection.find(
+                new Document(AccessibilityReport.VALIDATION_ID, validationId)));
+    }
+
     public List<AccessibilityReport> getByTrailId(String trailId, int skip, int limit) {
         return toNotificationList(collection.find(
                         new Document(AccessibilityReport.TRAIL_ID, trailId))
@@ -49,8 +56,10 @@ public class AccessibilityReportDao {
         );
     }
 
-    public List<AccessibilityReport> upsert(final AccessibilityReport accessibilityReport) {
+    public List<AccessibilityReport> upsert(final AccessibilityReport accessibilityReport, final String validationId) {
         final Document accessibilityNotificationDocument = mapper.mapToDocument(accessibilityReport);
+        accessibilityNotificationDocument.append(AccessibilityReport.VALIDATION_ID, validationId);
+        accessibilityNotificationDocument.append(AccessibilityReport.IS_VALID, false);
         final String existingOrNewObjectId = accessibilityReport.getId() == null ?
                 new ObjectId().toHexString() : accessibilityReport.getId();
         accessibilityNotificationDocument.append(AccessibilityNotification.ID, existingOrNewObjectId);
@@ -79,6 +88,19 @@ public class AccessibilityReportDao {
     private List<AccessibilityReport> getByTrailId(final String trailId) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityReport.TRAIL_ID, new ObjectId(trailId))));
+    }
+
+    public List<AccessibilityReport> update(final AccessibilityReport accReport) {
+        List<AccessibilityReport> found = getById(accReport.getId());
+        if (found.isEmpty()) return Collections.emptyList();
+        collection.updateOne(new Document(AccessibilityReport.ID, accReport.getId()),
+                new Document(AccessibilityReport.REPORT_DATE, accReport.getReportDate())
+                        .append(AccessibilityReport.TELEPHONE, accReport.getTelephone())
+                        .append(AccessibilityReport.ISSUE_ID, accReport.getIssueId())
+                        .append(AccessibilityReport.DESCRIPTION, accReport.getDescription())
+                        .append(AccessibilityReport.EMAIL, accReport.getEmail())
+        );
+        return found;
     }
 
     public List<AccessibilityReport> getUnapgradedByRealm(final String realm, final int skip, final int limit) {
@@ -122,6 +144,14 @@ public class AccessibilityReportDao {
         return collection.countDocuments(
                 new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
                         .append(AccessibilityReport.ISSUE_ID, new Document($NOT_EQUAL, "")));
+    }
+
+    public List<AccessibilityReport> validate(final String validationId) {
+        if (!getByValidationId(validationId).isEmpty()) {
+            collection.updateOne(new Document(AccessibilityReport.VALIDATION_ID, validationId),
+                    new Document(AccessibilityReport.IS_VALID, true));
+        }
+        return Collections.emptyList();
     }
 
     public long countByTrailId(final String id) {

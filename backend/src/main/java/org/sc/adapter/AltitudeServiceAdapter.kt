@@ -1,11 +1,11 @@
-package org.sc.service
+package org.sc.adapter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.LOCAL_IP_ADDRESS
-import org.sc.service.response.AltitudeApiRequestPoint
-import org.sc.service.response.AltitudeApiResponse
-import org.sc.service.response.AltitudeServiceRequest
+import org.sc.adapter.response.AltitudeApiRequestPoint
+import org.sc.adapter.response.AltitudeApiResponse
+import org.sc.adapter.response.AltitudeServiceRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
@@ -72,8 +72,8 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
                 if(connection.responseCode == HttpURLConnection.HTTP_OK) {
 
-                    val inputStream: DataInputStream = DataInputStream(connection.inputStream)
-                    val reader: BufferedReader = BufferedReader(InputStreamReader(inputStream))
+                    val inputStream = DataInputStream(connection.inputStream)
+                    val reader = BufferedReader(InputStreamReader(inputStream))
                     val output: String = reader.readLine()
 
                     val gsonBuilder: AltitudeApiResponse = objectMapper.readValue(output, AltitudeApiResponse::class.java)
@@ -89,7 +89,7 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
             }
         }
 
-        return listOf();
+        return listOf()
     }
 
     private fun buildAltitudeRequestConnection(contentSize : Int) : HttpURLConnection {

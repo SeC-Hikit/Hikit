@@ -10,8 +10,8 @@ public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
     private final TrailCoordinatesMapper trailCoordinatesMapper;
     private final RecordDetailsMapper recordDetailsMapper;
 
-    public AccessibilityReportMapper(TrailCoordinatesMapper trailCoordinatesMapper,
-                                     RecordDetailsMapper recordDetailsMapper) {
+    public AccessibilityReportMapper(final TrailCoordinatesMapper trailCoordinatesMapper,
+                                     final RecordDetailsMapper recordDetailsMapper) {
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.recordDetailsMapper = recordDetailsMapper;
     }
@@ -25,6 +25,7 @@ public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
                 document.getString(AccessibilityReport.TELEPHONE),
                 document.getDate(AccessibilityReport.REPORT_DATE),
                 document.getString(AccessibilityReport.ISSUE_ID),
+                document.getBoolean(AccessibilityReport.IS_VALID),
                 trailCoordinatesMapper.mapToObject(document.get(AccessibilityReport.COORDINATES, Document.class)),
                 recordDetailsMapper.mapToObject(document.get(AccessibilityReport.RECORD_DETAILS, Document.class)));
     }

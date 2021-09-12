@@ -6,7 +6,7 @@ import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceMapper
 import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
-import org.sc.service.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceAdapter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*

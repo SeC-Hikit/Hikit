@@ -20,6 +20,8 @@ public class AccessibilityReport {
     public final static String DESCRIPTION = "description";
     public final static String REPORT_DATE = "reportDate";
     public final static String ISSUE_ID = "issuedId";
+    public final static String VALIDATION_ID = "validationId";
+    public final static String IS_VALID = "isValid";
     public final static String COORDINATES = "coordinates";
     public final static String RECORD_DETAILS = "recordDetails";
 
@@ -30,6 +32,7 @@ public class AccessibilityReport {
     private String telephone;
     private Date reportDate;
     private String issueId;
+    private boolean valid;
     private TrailCoordinates coordinates;
     private RecordDetails recordDetails;
 }

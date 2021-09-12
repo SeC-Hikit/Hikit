@@ -6,6 +6,7 @@ import org.sc.common.rest.response.AccessibilityReportResponse;
 import org.sc.controller.response.AccessibilityReportResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.AccessibilityReportManager;
+import org.sc.service.AccessibilityReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,13 @@ public class AdminAccessibilityReportController {
 
     private final AccessibilityReportResponseHelper accessibilityIssueResponseHelper;
     private final GeneralValidator generalValidator;
-    private final AccessibilityReportManager accessibilityNotManager;
+    private final AccessibilityReportService reportService;
 
     @Autowired
-    public AdminAccessibilityReportController(final AccessibilityReportManager accessibilityNotificationManager,
+    public AdminAccessibilityReportController(final AccessibilityReportService accService,
                                               final AccessibilityReportResponseHelper accessibilityIssueResponseHelper,
                                               final GeneralValidator generalValidator) {
-        this.accessibilityNotManager = accessibilityNotificationManager;
+        this.reportService = accService;
         this.accessibilityIssueResponseHelper = accessibilityIssueResponseHelper;
         this.generalValidator = generalValidator;
     }
@@ -41,12 +42,12 @@ public class AdminAccessibilityReportController {
             @RequestBody AccessibilityReportDto accReport) {
         final Set<String> errors = generalValidator.validate(accReport);
         if (!errors.isEmpty() || accReport.getId() != null) {
-            return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), accessibilityNotManager.count(),
+            return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), reportService.count(),
                     org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
         return accessibilityIssueResponseHelper
-                .constructResponse(errors, accessibilityNotManager.save(accReport),
-                        accessibilityNotManager.count(),
+                .constructResponse(errors, reportService.create(accReport),
+                        reportService.count(),
                         org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }
 
@@ -58,15 +59,14 @@ public class AdminAccessibilityReportController {
         final Set<String> errors = generalValidator.validate(accReport);
         final Set<String> updateError = generalValidator.validateReportAcc(accReport.getId());
         if (!updateError.isEmpty() || !errors.isEmpty()) {
-            return accessibilityIssueResponseHelper.constructResponse(updateError, emptyList(), accessibilityNotManager.count(),
+            return accessibilityIssueResponseHelper.constructResponse(updateError, emptyList(), reportService.count(),
                     org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
         return accessibilityIssueResponseHelper
-                .constructResponse(updateError, accessibilityNotManager.save(accReport),
-                        accessibilityNotManager.count(),
+                .constructResponse(updateError, reportService.update(accReport),
+                        reportService.count(),
                         org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
     }
-
 
     @Operation(summary = "Remove accessibility reports")
     @DeleteMapping("/{id}")
@@ -74,14 +74,14 @@ public class AdminAccessibilityReportController {
             @PathVariable String id) {
         Set<String> errors = generalValidator.validateReportAcc(id);
         if (!errors.isEmpty()) {
-            return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), accessibilityNotManager.count(),
+            return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), reportService.count(),
                     org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
         }
 
         final List<AccessibilityReportDto> isDeleted =
-                accessibilityNotManager.delete(id);
+                reportService.delete(id);
         return accessibilityIssueResponseHelper
-                .constructResponse(emptySet(), isDeleted, accessibilityNotManager.count(),
+                .constructResponse(emptySet(), isDeleted, reportService.count(),
                         org.sc.controller.Constants.ZERO,
                         org.sc.controller.Constants.ONE);
     }
