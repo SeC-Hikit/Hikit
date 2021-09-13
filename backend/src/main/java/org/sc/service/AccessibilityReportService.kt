@@ -35,6 +35,7 @@ class AccessibilityReportService @Autowired constructor(
         val createdValue = create.first()
         val activationId = accessibilityReportManager.getActivationIdById(createdValue.id).first()
         accessibilityReportMailAdapter.sendValidation(createdValue.reportDate,
+                trail.first().code,
                 createdValue.trailId,
                 createdValue.recordDetails.realm,
                 createdValue.description, activationId, createdValue.email)
