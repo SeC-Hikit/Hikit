@@ -8,18 +8,25 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.text.SimpleDateFormat;
 
 @Service
 public class MailAdapter {
 
+    public final static String HTML_TEMPLATE = "<html><head></head><body>%s</body></html>";
+    public final static String DATE_FORMAT = "dd-MM-yyyy";
+
     private final AppProperties appProperties;
     private final JavaMailSender javaMailSender;
+
+    private final SimpleDateFormat dateFormatter;
 
     @Autowired
     public MailAdapter(final AppProperties appProperties,
                        final JavaMailSender javaMailSender) {
         this.appProperties = appProperties;
         this.javaMailSender = javaMailSender;
+        this.dateFormatter = new SimpleDateFormat(DATE_FORMAT);
     }
 
     public void send(final String subject,
@@ -34,4 +41,11 @@ public class MailAdapter {
         javaMailSender.send(msg);
     }
 
+    public SimpleDateFormat getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public String getActivationAddress() {
+        return appProperties.getValidationAddress();
+    }
 }

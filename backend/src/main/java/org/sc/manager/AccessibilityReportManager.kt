@@ -20,6 +20,9 @@ class AccessibilityReportManager @Autowired constructor(
     fun byId(id: String): List<AccessibilityReportDto> =
             accessibilityReportDAO.getById(id).map { accessibilityMapper.map(it) }
 
+    fun getActivationIdById(id: String) : List<String> =
+            accessibilityReportDAO.getActivationIdById(id)
+
     fun getUnapgradedByRealm(realm: String, skip: Int, limit: Int): List<AccessibilityReportDto> =
             accessibilityReportDAO.getUnapgradedByRealm(realm, skip, limit).map { accessibilityMapper.map(it) }
 
