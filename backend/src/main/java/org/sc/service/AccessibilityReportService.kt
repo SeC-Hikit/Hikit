@@ -26,7 +26,6 @@ class AccessibilityReportService @Autowired constructor(
     fun getByTrailId(trailId: String, skip: Int, limit: Int): List<AccessibilityReportDto> =
             accessibilityReportManager.getByTrailId(trailId, skip, limit)
 
-
     fun create(accessibilityNotificationCreation: AccessibilityReportDto): List<AccessibilityReportDto> {
         val trail = trailManager.getById(accessibilityNotificationCreation.trailId,
                 TrailSimplifierLevel.LOW)
@@ -34,7 +33,7 @@ class AccessibilityReportService @Autowired constructor(
                 trail.first().fileDetails.onInstance,
                 trail.first().fileDetails.realm)
         val createdValue = create.first()
-        val activationId = accessibilityReportManager.getActivationIdById(createdValue.id)
+        val activationId = accessibilityReportManager.getActivationIdById(createdValue.id).first()
         accessibilityReportMailAdapter.sendValidation(createdValue.reportDate,
                 createdValue.trailId,
                 createdValue.recordDetails.realm,
