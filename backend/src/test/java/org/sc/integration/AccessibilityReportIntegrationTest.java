@@ -25,7 +25,7 @@ import static org.sc.integration.ImportTrailIT.INTERMEDIATE_COORDINATES_DTO;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class AccessibilityReportTest {
+public class AccessibilityReportIntegrationTest {
 
 
     public static final String ANY_DESCRIPTION = "Report desc";
