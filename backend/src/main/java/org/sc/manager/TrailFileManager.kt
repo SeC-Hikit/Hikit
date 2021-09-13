@@ -136,7 +136,7 @@ class TrailFileManager @Autowired constructor(
         kml.marshal(pathToKmlStoredFiles.resolve(trail.code + ".kml").toFile())
     }
 
-    fun writeTrailToPdf(trail: TrailDto, places: List<PlaceDto>, lastMaintenance: MaintenanceDto,
+    fun writeTrailToPdf(trail: TrailDto, places: List<PlaceDto>, lastMaintenance: List<MaintenanceDto>,
                         reportedOpenIssues: List<AccessibilityNotificationDto>) {
         val pathname = pathToPdfStoredFiles.resolve(trail.code + ".pdf")
         pdfFileHandlerHelper.exportPdf(trail, places, lastMaintenance, reportedOpenIssues, pathname)

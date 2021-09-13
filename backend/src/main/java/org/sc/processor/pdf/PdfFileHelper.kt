@@ -14,6 +14,7 @@ import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Component
 class PdfFileHelper {
@@ -80,7 +81,7 @@ class PdfFileHelper {
 
     fun exportPdf(trail: TrailDto,
                   places: List<PlaceDto>,
-                  lastMaintenance: MaintenanceDto,
+                  lastMaintenance: List<MaintenanceDto>,
                   reportedStillOpenIssue: List<AccessibilityNotificationDto>,
                   filePath: Path) {
         val document = Document()
@@ -138,7 +139,7 @@ class PdfFileHelper {
             elements.add(issuesTitle)
 
             reportedStillOpenIssue.forEach {
-                val issuesList = List(false)
+                val issuesList = com.itextpdf.text.List(false)
                 issuesList.add(it.description)
             }
         }
@@ -242,17 +243,24 @@ class PdfFileHelper {
     private fun makeAndGetData(): Paragraph =
             Paragraph(DATA_TITLE, bigBold)
 
-    private fun makeAndGetSummary(trail: TrailDto, maintenanceDto: MaintenanceDto): Paragraph {
+    private fun makeAndGetSummary(trail: TrailDto, maintenanceListDto: List<MaintenanceDto>): Paragraph {
         val stats = trail.statsTrailMetadata
+
+        val lastMaintenanceData = getLastMaintenanceData(maintenanceListDto)
+
         return Paragraph(trail.classification.name +
                 " - tempo " + getEtaString(trail) + " di percorrenza: " + stats.eta + ",\n" +
                 "Dislivello Positivo: " + stats.totalRise + "m,\n" +
                 "Dislivello Negativo: " + stats.totalFall + "m,\n" +
-                "Distanza Totale: " + stats.length + "m,\n" +
-                "Ultima manutenzione: " + maintenanceDto.date.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT)), summaryFont)
+                "Distanza Totale: " + stats.length + "m,\n" + lastMaintenanceData, summaryFont)
     }
+
+    private fun getLastMaintenanceData(maintenanceListDto: List<MaintenanceDto>): String =
+            if (maintenanceListDto.isNotEmpty())
+                "Ultima manutenzione: " + maintenanceListDto.first().date.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT)) else ""
+
 
     private fun getEtaString(trail: TrailDto): String =
             if (trail.officialEta == -1) "stimato" else "ufficiale"
