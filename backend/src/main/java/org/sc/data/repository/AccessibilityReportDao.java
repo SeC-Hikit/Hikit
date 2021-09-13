@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.print.Doc;
+import javax.print.attribute.standard.DocumentName;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -125,6 +127,13 @@ public class AccessibilityReportDao {
         );
     }
 
+    public List<String> getActivationIdById(String id) {
+        return StreamSupport.stream(collection.find(new Document(AccessibilityReport.ID, id))
+                .projection(new Document(AccessibilityReport.VALIDATION_ID, MongoConstants.ONE))
+                .map(entry -> entry.getString(AccessibilityReport.VALIDATION_ID)).spliterator(), false)
+                .collect(Collectors.toList());
+    }
+
     public long count() {
         return collection.countDocuments();
     }
@@ -162,5 +171,4 @@ public class AccessibilityReportDao {
     private List<AccessibilityReport> toNotificationList(final FindIterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(mapper::mapToObject).collect(toList());
     }
-
 }

@@ -25,6 +25,7 @@ public class AppProperties {
     private final String instanceId;
     private final String instanceRealm;
     private final String instanceHostname;
+    private final String validationAddress;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
@@ -39,7 +40,8 @@ public class AppProperties {
                          final @Value("${security.disabled.user-roles}") String secDisabledUserRoles,
                          final @Value("${instance.id}") String instanceId,
                          final @Value("${instance.realm}") String instanceRealm,
-                         final @Value("${instance.hostname:127.0.0.1}") String instanceHostname
+                         final @Value("${instance.hostname:127.0.0.1}") String instanceHostname,
+                         final @Value("${instance.report.validation.address}") String validationAddress
     ) {
         this.port = port;
         this.trailStorage = storage;
@@ -54,6 +56,7 @@ public class AppProperties {
         this.instanceId = instanceId;
         this.instanceRealm = instanceRealm;
         this.instanceHostname = instanceHostname;
+        this.validationAddress = validationAddress;
     }
 
     public String getPort() {
@@ -106,5 +109,9 @@ public class AppProperties {
 
     public String getInstanceHostname() {
         return instanceHostname;
+    }
+
+    public String getValidationAddress() {
+        return validationAddress;
     }
 }

@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 public class MongoConstants {
     public static final int ASCENDING_ORDER = 1;
+    public static final int ONE = ASCENDING_ORDER;
 
     public static final String NO_FILTERING_TOKEN = "*";
     public static final String EXISTS_PARAM = "$exists";

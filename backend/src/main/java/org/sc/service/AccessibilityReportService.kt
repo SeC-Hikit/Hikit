@@ -34,7 +34,11 @@ class AccessibilityReportService @Autowired constructor(
                 trail.first().fileDetails.onInstance,
                 trail.first().fileDetails.realm)
         val createdValue = create.first()
-        accessibilityReportMailAdapter.sendValidation(createdValue.reportDate, createdValue.trailId, createdValue.recordDetails.realm)
+        val activationId = accessibilityReportManager.getActivationIdById(createdValue.id)
+        accessibilityReportMailAdapter.sendValidation(createdValue.reportDate,
+                createdValue.trailId,
+                createdValue.recordDetails.realm,
+                createdValue.description, activationId, createdValue.email)
         return create
     }
 
