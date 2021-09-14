@@ -75,9 +75,9 @@ public class AccessibilityReportController {
 
     @Operation(summary = "Get reports by trail ID")
     @GetMapping("/trail/{id}")
-    public AccessibilityReportResponse getByByTrailId(final String id,
-                                                      @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                                      @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+    public AccessibilityReportResponse getByTrailId(final String id,
+                                                    @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                                    @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         final List<AccessibilityReportDto> upgradedByTrailId = accessService.getByTrailId(id, skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 upgradedByTrailId, accessService.countByTrailId(id)
