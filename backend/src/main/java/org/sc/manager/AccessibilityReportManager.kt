@@ -1,7 +1,6 @@
 package org.sc.manager
 
 import org.sc.common.rest.AccessibilityReportDto
-import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.AccessibilityReportMapper
 import org.sc.data.model.RecordDetails
 import org.sc.data.repository.AccessibilityReportDao

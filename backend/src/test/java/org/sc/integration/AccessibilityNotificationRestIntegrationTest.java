@@ -60,9 +60,10 @@ public class AccessibilityNotificationRestIntegrationTest {
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         trailResponse = trailController.importTrail(trailImportDto);
         id = trailResponse.getContent().get(0).getId();
+        Date reportDate = new Date();
         adminAccessibilityIssueController.create(
                 new AccessibilityNotificationDto(null, EXPECTED_DESCRIPTION, id,
-                        new Date(), null, true, null, EXPECTED_COORDINATES, new RecordDetailsDto()));
+                        reportDate, reportDate, true, "", EXPECTED_COORDINATES, new RecordDetailsDto()));
     }
 
     @Test

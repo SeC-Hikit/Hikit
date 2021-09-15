@@ -41,7 +41,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getUnresolved(final int skip,
                                                          final int limit) {
         return toNotificationList(collection.find(
-                new Document(AccessibilityNotification.RESOLUTION, null))
+                new Document(AccessibilityNotification.RESOLUTION, ""))
                 .skip(skip)
                 .limit(limit));
     }
@@ -49,7 +49,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getUnresolvedByTrailId(final String id, final int skip, final int limit) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityNotification.TRAIL_ID, id)
-                        .append(AccessibilityNotification.RESOLUTION, null))
+                        .append(AccessibilityNotification.RESOLUTION, ""))
                 .skip(skip).limit(limit));
     }
 

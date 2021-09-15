@@ -1,9 +1,11 @@
 package org.sc.data.repository;
 
+import com.mongodb.Mongo;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
@@ -93,16 +95,18 @@ public class AccessibilityReportDao {
     }
 
     public List<AccessibilityReport> update(final AccessibilityReport accReport) {
-        List<AccessibilityReport> found = getById(accReport.getId());
+        String id = accReport.getId();
+        List<AccessibilityReport> found = getById(id);
         if (found.isEmpty()) return Collections.emptyList();
-        collection.updateOne(new Document(AccessibilityReport.ID, accReport.getId()),
-                new Document(AccessibilityReport.REPORT_DATE, accReport.getReportDate())
-                        .append(AccessibilityReport.TELEPHONE, accReport.getTelephone())
-                        .append(AccessibilityReport.ISSUE_ID, accReport.getIssueId())
-                        .append(AccessibilityReport.DESCRIPTION, accReport.getDescription())
-                        .append(AccessibilityReport.EMAIL, accReport.getEmail())
+        collection.updateOne(new Document(AccessibilityReport.ID, id),
+                new Document(MongoConstants.$_SET,
+                        new Document(AccessibilityReport.REPORT_DATE, accReport.getReportDate())
+                                .append(AccessibilityReport.TELEPHONE, accReport.getTelephone())
+                                .append(AccessibilityReport.ISSUE_ID, accReport.getIssueId())
+                                .append(AccessibilityReport.DESCRIPTION, accReport.getDescription())
+                                .append(AccessibilityReport.EMAIL, accReport.getEmail()))
         );
-        return found;
+        return getById(id);
     }
 
     public List<AccessibilityReport> getUnapgradedByRealm(final String realm, final int skip, final int limit) {
@@ -129,8 +133,8 @@ public class AccessibilityReportDao {
 
     public List<String> getActivationIdById(String id) {
         return StreamSupport.stream(collection.find(new Document(AccessibilityReport.ID, id))
-                .projection(new Document(AccessibilityReport.VALIDATION_ID, MongoConstants.ONE))
-                .map(entry -> entry.getString(AccessibilityReport.VALIDATION_ID)).spliterator(), false)
+                        .projection(new Document(AccessibilityReport.VALIDATION_ID, MongoConstants.ONE))
+                        .map(entry -> entry.getString(AccessibilityReport.VALIDATION_ID)).spliterator(), false)
                 .collect(Collectors.toList());
     }
 
@@ -158,7 +162,8 @@ public class AccessibilityReportDao {
     public List<AccessibilityReport> validate(final String validationId) {
         if (!getByValidationId(validationId).isEmpty()) {
             collection.updateOne(new Document(AccessibilityReport.VALIDATION_ID, validationId),
-                    new Document(AccessibilityReport.IS_VALID, true));
+                    new Document(MongoConstants.$_SET, new Document(AccessibilityReport.IS_VALID, true)));
+            return getByValidationId(validationId);
         }
         return Collections.emptyList();
     }

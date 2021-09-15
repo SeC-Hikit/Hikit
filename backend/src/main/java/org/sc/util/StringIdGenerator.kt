@@ -1,6 +1,7 @@
 package org.sc.util
 
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class StringIdGenerator {
@@ -12,7 +13,7 @@ class StringIdGenerator {
         (1..stringLength)
                 .map { kotlin.random.Random.nextInt(0, charPool.size) }
                 .map(charPool::get)
-                .joinToString("")
+                .joinToString(Date().toInstant().toString())
 
 
 }

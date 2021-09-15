@@ -70,9 +70,9 @@ public class AdminAccessibilityReportController {
 
     @Operation(summary = "Remove accessibility reports")
     @DeleteMapping("/{id}")
-    public AccessibilityReportResponse deleteAccessibilityNotification(
+    public AccessibilityReportResponse deleteAccessibilityNotificationReport(
             @PathVariable String id) {
-        Set<String> errors = generalValidator.validateReportAcc(id);
+        final Set<String> errors = generalValidator.validateReportAcc(id);
         if (!errors.isEmpty()) {
             return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), reportService.count(),
                     org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
@@ -82,6 +82,24 @@ public class AdminAccessibilityReportController {
                 reportService.delete(id);
         return accessibilityIssueResponseHelper
                 .constructResponse(emptySet(), isDeleted, reportService.count(),
+                        org.sc.controller.Constants.ZERO,
+                        org.sc.controller.Constants.ONE);
+    }
+
+    @Operation(summary = "Upgrade a report")
+    @PutMapping("/upgrade/{id}")
+    public AccessibilityReportResponse upgradeReport(
+            @PathVariable String id) {
+        final Set<String> errors = generalValidator.validateReportAcc(id);
+        if (!errors.isEmpty()) {
+            return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), reportService.count(),
+                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+        }
+
+        final List<AccessibilityReportDto> upgraded =
+                reportService.upgrade(id);
+        return accessibilityIssueResponseHelper
+                .constructResponse(emptySet(), upgraded, reportService.count(),
                         org.sc.controller.Constants.ZERO,
                         org.sc.controller.Constants.ONE);
     }

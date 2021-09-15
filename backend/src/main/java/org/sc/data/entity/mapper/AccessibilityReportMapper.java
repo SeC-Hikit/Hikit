@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
 
-    private final TrailCoordinatesMapper trailCoordinatesMapper;
+    private final CoordinatesMapper trailCoordinatesMapper;
     private final RecordDetailsMapper recordDetailsMapper;
 
-    public AccessibilityReportMapper(final TrailCoordinatesMapper trailCoordinatesMapper,
+    public AccessibilityReportMapper(final CoordinatesMapper trailCoordinatesMapper,
                                      final RecordDetailsMapper recordDetailsMapper) {
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.recordDetailsMapper = recordDetailsMapper;
@@ -25,6 +25,7 @@ public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
                 document.getString(AccessibilityReport.TELEPHONE),
                 document.getDate(AccessibilityReport.REPORT_DATE),
                 document.getString(AccessibilityReport.ISSUE_ID),
+                document.getString(AccessibilityReport.VALIDATION_ID),
                 document.getBoolean(AccessibilityReport.IS_VALID),
                 trailCoordinatesMapper.mapToObject(document.get(AccessibilityReport.COORDINATES, Document.class)),
                 recordDetailsMapper.mapToObject(document.get(AccessibilityReport.RECORD_DETAILS, Document.class)));
@@ -39,6 +40,7 @@ public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
                 .append(AccessibilityReport.TELEPHONE, object.getTelephone())
                 .append(AccessibilityReport.REPORT_DATE, object.getReportDate())
                 .append(AccessibilityReport.ISSUE_ID, object.getIssueId())
+                .append(AccessibilityReport.VALIDATION_ID, object.getValidationId())
                 .append(AccessibilityReport.COORDINATES, trailCoordinatesMapper.mapToDocument(object.getCoordinates()))
                 .append(AccessibilityReport.RECORD_DETAILS, recordDetailsMapper.mapToDocument(object.getRecordDetails()));
     }

@@ -10,6 +10,6 @@ import org.sc.data.model.AccessibilityReport;
 public interface AccessibilityReportMapper {
     AccessibilityReportDto map(AccessibilityReport ar);
 
-    @Mapping(target = "valid", ignore = true)
+    @Mapping(target = "validationId", ignore = true)
     AccessibilityReport map(AccessibilityReportDto ar);
 }

@@ -80,8 +80,7 @@ public class AccessibilityReportController {
                                                     @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         final List<AccessibilityReportDto> upgradedByTrailId = accessService.getByTrailId(id, skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
-                upgradedByTrailId, accessService.countByTrailId(id)
-                , skip, limit);
+                upgradedByTrailId, accessService.countByTrailId(id), skip, limit);
     }
 
     @Operation(summary = "Retrieve upgraded reports")

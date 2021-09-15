@@ -32,7 +32,8 @@ public class AccessibilityReport {
     private String telephone;
     private Date reportDate;
     private String issueId;
+    private String validationId;
     private boolean valid;
-    private TrailCoordinates coordinates;
+    private Coordinates coordinates;
     private RecordDetails recordDetails;
 }
