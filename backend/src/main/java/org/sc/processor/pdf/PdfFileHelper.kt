@@ -15,6 +15,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.roundToInt
 
 @Component
 class PdfFileHelper {
@@ -26,13 +27,13 @@ class PdfFileHelper {
 
         const val DATE_FORMAT = "dd-MM-yyyy"
 
-        const val DOC_NAME_TITLE = "Relazione del sentiero n."
+        const val DOC_NAME_TITLE = "Relazione del sentiero "
         const val DATA_TITLE = "Dati di percorrenza"
         const val DESCRIPTION_TITLE = "Descrizione"
-        const val WAY_TITLE = "Percorso"
         const val PROBLEMS_ON_TRAIL = "Problemi riscontrati sul percorso"
         const val CYCLO_ESCURSIONISM_TITLE = "Ciclo Escursionismo"
         const val FEASABILITY_DATA_TITLE = "Dati di percorrenza"
+        const val PLACE_TITLE = "Località di rilievo"
 
         const val ETA_PART = ", tempo di percorrenza: "
 
@@ -92,85 +93,9 @@ class PdfFileHelper {
 
         document.open()
 
-        //Adding date
-        val date = Paragraph(getGeneratedOnString(), summaryFont)
-        date.alignment = Element.ALIGN_RIGHT
-        elements.add(date)
-        // Adding section name (ex chunk)
         val section = Paragraph(trail.maintainingSection, caiFont)
-        elements.add(section)
-        // Adding title
+        val date = Paragraph(getGeneratedOnString(), summaryFont)
         val title = Paragraph(getTitle(trail.code), hugeBold)
-        elements.add(title)
-        // Adding trail summary
-        val summaryTitle = makeAndGetData()
-        summaryTitle.spacingAfter = COMMON_MARGIN
-        summaryTitle.spacingBefore = DOUBLE_MARGIN
-        elements.add(summaryTitle)
-
-        val summary = makeAndGetSummary(trail, lastMaintenance)
-        summary.spacingAfter = COMMON_MARGIN
-        elements.add(summary)
-
-        // Adding Description
-        val paragraphDesTitle = Paragraph(DESCRIPTION_TITLE, bigBold)
-        paragraphDesTitle.spacingAfter = COMMON_MARGIN
-        elements.add(paragraphDesTitle)
-
-        val paragraphDes = Paragraph(trail.description, paragraphFont)
-        paragraphDes.spacingAfter = COMMON_MARGIN
-        elements.add(paragraphDes)
-        // Adding Route
-        val routeTitle = Paragraph(WAY_TITLE, bigBold)
-        routeTitle.spacingAfter = COMMON_MARGIN
-
-        places.forEach {
-            val paragraphName = Paragraph(it.name, smallBold)
-            paragraphName.spacingAfter = COMMON_MARGIN
-            val paragraph = Paragraph(it.description, paragraphFont)
-            paragraph.spacingAfter = COMMON_MARGIN
-            elements.add(paragraph)
-        }
-
-        if (reportedStillOpenIssue.isNotEmpty()) {
-            // Adding issues (if any)  --- list
-            val issuesTitle = Paragraph(PROBLEMS_ON_TRAIL, hugeBold)
-            issuesTitle.spacingAfter = COMMON_MARGIN
-            elements.add(issuesTitle)
-
-            reportedStillOpenIssue.forEach {
-                val issuesList = com.itextpdf.text.List(false)
-                issuesList.add(it.description)
-            }
-        }
-
-        if (trail.cycloDetails.cycloClassification != CycloClassification.UNCLASSIFIED) {
-
-            val cycloDetails = trail.cycloDetails
-
-            val cicloRouteTitle = Paragraph(CYCLO_ESCURSIONISM_TITLE, hugeBold)
-            cicloRouteTitle.spacingBefore = TRIPLE_MARGIN
-            cicloRouteTitle.spacingAfter = COMMON_MARGIN
-
-            elements.add(cicloRouteTitle)
-
-            val cicloSummaryTitle = Paragraph(FEASABILITY_DATA_TITLE, bigBold)
-            cicloSummaryTitle.spacingAfter = COMMON_MARGIN
-            val cicloSummary = Paragraph(
-                    cycloDetails.cycloClassification.classification + ETA_PART + cycloDetails.officialEta + "m.\n" +
-                            makeFeasibleWayForwardCyclo(trail, trail.startLocation, trail.endLocation) + "\n" +
-                            makeFeasibleWayBackCyclo(trail, trail.endLocation, trail.startLocation) + "\n", summaryFont)
-
-            cicloSummary.spacingAfter = COMMON_MARGIN
-
-            val cicloDescTitle = Paragraph(DESCRIPTION_TITLE, bigBold)
-            cicloDescTitle.spacingAfter = COMMON_MARGIN
-            elements.add(cicloDescTitle)
-
-            val cicloDes = Paragraph(cycloDetails.description, paragraphFont)
-            cicloDes.spacingAfter = COMMON_MARGIN
-            elements.add(cicloDes)
-        }
 
         val path: Path = Paths.get(ClassLoader.getSystemResource("$MEDIA_PATH/$SEC_LOGO").toURI())
         val imgSec = Image.getInstance(path.toAbsolutePath().toString())
@@ -201,10 +126,100 @@ class PdfFileHelper {
 
         elements.add(topTable)
 
+        date.alignment = Element.ALIGN_RIGHT
+
+        val summaryTitle = makeAndGetData()
+        summaryTitle.spacingAfter = COMMON_MARGIN
+        summaryTitle.spacingBefore = DOUBLE_MARGIN
+        elements.add(summaryTitle)
+
+        val summary = makeAndGetSummary(trail, lastMaintenance)
+        summary.spacingAfter = COMMON_MARGIN
+        elements.add(summary)
+
+        // Adding Description
+        val paragraphDesTitle = Paragraph(DESCRIPTION_TITLE, bigBold)
+        paragraphDesTitle.spacingAfter = COMMON_MARGIN
+        elements.add(paragraphDesTitle)
+
+        val description = stripHtml(trail.description)
+        val paragraphDes = Paragraph(description, paragraphFont)
+        paragraphDes.spacingAfter = COMMON_MARGIN
+        elements.add(paragraphDes)
+        // Adding Route
+        val routeTitle = Paragraph(PLACE_TITLE, bigBold)
+        routeTitle.spacingAfter = COMMON_MARGIN
+        elements.add(routeTitle)
+
+        places.forEach {
+            val paragraphName = Paragraph(stripHtml(it.name), smallBold)
+            paragraphName.spacingAfter = COMMON_MARGIN
+            val paragraph = Paragraph(stripHtml(it.description), paragraphFont)
+            paragraph.spacingAfter = COMMON_MARGIN
+            elements.add(paragraphName)
+            elements.add(paragraph)
+        }
+
+        val issuesTitle = Paragraph(PROBLEMS_ON_TRAIL, hugeBold)
+        issuesTitle.spacingAfter = COMMON_MARGIN
+        elements.add(issuesTitle)
+
+        val issuesList = com.itextpdf.text.List(false)
+        if (reportedStillOpenIssue.isNotEmpty()) {
+            // Adding issues (if any)  --- list
+            reportedStillOpenIssue.forEach {
+                issuesList.add(stripHtml(it.description))
+            }
+        } else {
+            issuesList.add("Nessuna segnalazione")
+        }
+
+        elements.add(issuesList)
+
+
+        val cicloRouteTitle = getCycloTitle()
+        elements.add(cicloRouteTitle)
+
+        if (trail.cycloDetails.cycloClassification != CycloClassification.UNCLASSIFIED) {
+
+            val cycloDetails = trail.cycloDetails
+
+            val cicloSummaryTitle = Paragraph(FEASABILITY_DATA_TITLE, bigBold)
+            cicloSummaryTitle.spacingAfter = COMMON_MARGIN
+            val cicloSummary = Paragraph(
+                    cycloDetails.cycloClassification.classification + ETA_PART + getEstimatedFriendlyTime(cycloDetails.officialEta.toDouble()) + "m.\n" +
+                            makeFeasibleWayForwardCyclo(trail, trail.startLocation, trail.endLocation) + "\n" +
+                            makeFeasibleWayBackCyclo(trail, trail.endLocation, trail.startLocation) + "\n", summaryFont)
+
+            cicloSummary.spacingAfter = COMMON_MARGIN
+
+            val cicloDescTitle = Paragraph(DESCRIPTION_TITLE, bigBold)
+            cicloDescTitle.spacingAfter = COMMON_MARGIN
+            elements.add(cicloDescTitle)
+
+            val cicloDes = Paragraph(cycloDetails.description, paragraphFont)
+            cicloDes.spacingAfter = COMMON_MARGIN
+            elements.add(cicloDes)
+        } else {
+            val cycloClassificationList = com.itextpdf.text.List(false)
+            cycloClassificationList.add("Il sentiero non è classificato")
+            elements.add(cycloClassificationList)
+        }
+
+        finalizeDocument(elements, document)
+    }
+
+    private fun getCycloTitle(): Paragraph {
+        val cicloRouteTitle = Paragraph(CYCLO_ESCURSIONISM_TITLE, hugeBold)
+        cicloRouteTitle.spacingBefore = TRIPLE_MARGIN
+        cicloRouteTitle.spacingAfter = COMMON_MARGIN
+        return cicloRouteTitle
+    }
+
+    private fun finalizeDocument(elements: MutableList<Element>, document: Document) {
         elements.forEach {
             document.add(it)
         }
-
         document.close()
     }
 
@@ -248,11 +263,18 @@ class PdfFileHelper {
 
         val lastMaintenanceData = getLastMaintenanceData(maintenanceListDto)
 
-        return Paragraph(trail.classification.name +
-                " - tempo " + getEtaString(trail) + " di percorrenza: " + stats.eta + ",\n" +
-                "Dislivello Positivo: " + stats.totalRise + "m,\n" +
-                "Dislivello Negativo: " + stats.totalFall + "m,\n" +
-                "Distanza Totale: " + stats.length + "m,\n" + lastMaintenanceData, summaryFont)
+        return Paragraph("Classificazione escursionistica: " + trail.classification.name +
+                "\n" +
+                "Tempo " + getEtaString(trail) + " di percorrenza: " + getEstimatedFriendlyTime(stats.eta) + ",\n" +
+                "Dislivello Positivo: " + stats.totalRise.roundToInt() + "m,\n" +
+                "Dislivello Negativo: " + stats.totalFall.roundToInt() + "m,\n" +
+                "Distanza Totale: " + stats.length.roundToInt() + "m,\n" + lastMaintenanceData, summaryFont)
+    }
+
+    private fun getEstimatedFriendlyTime(time : Double): String {
+        val hr = (time / 60).roundToInt()
+        val minutes = (time % 60).roundToInt()
+        return "$hr ore e $minutes minuti"
     }
 
     private fun getLastMaintenanceData(maintenanceListDto: List<MaintenanceDto>): String =
@@ -269,6 +291,8 @@ class PdfFileHelper {
             LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT))
 
     private fun getTitle(code: String) = """$DOC_NAME_TITLE${code}"""
+
+    private fun stripHtml(string: String) = string.replace(Regex("<.*?>"), "")
 
     private fun addMetadata(trail: TrailDto,
                             document: Document) {
