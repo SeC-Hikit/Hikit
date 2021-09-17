@@ -29,13 +29,12 @@ class PdfFileHelper {
 
         const val DOC_NAME_TITLE = "Relazione del sentiero "
         const val DATA_TITLE = "Dati di percorrenza"
-        const val DESCRIPTION_TITLE = "Descrizione"
+        const val DESCRIPTION_TITLE = "Descrizione del percorso"
         const val PROBLEMS_ON_TRAIL = "Problemi riscontrati sul percorso"
         const val CYCLO_ESCURSIONISM_TITLE = "Ciclo Escursionismo"
         const val FEASABILITY_DATA_TITLE = "Dati di percorrenza"
+        const val FEASABILITY_TITLE = "Percorrenza"
         const val PLACE_TITLE = "Località di rilievo"
-
-        const val ETA_PART = ", tempo di percorrenza: "
 
         private const val SMALL_MARGIN = 5f
         private const val COMMON_MARGIN = SMALL_MARGIN * 2
@@ -128,9 +127,13 @@ class PdfFileHelper {
 
         date.alignment = Element.ALIGN_RIGHT
 
+        val startEnd = Paragraph(trail.startLocation.name + " - " + trail.endLocation.name)
+        startEnd.spacingBefore = DOUBLE_MARGIN
+        startEnd.spacingAfter = COMMON_MARGIN
+        elements.add(startEnd)
+
         val summaryTitle = makeAndGetData()
         summaryTitle.spacingAfter = COMMON_MARGIN
-        summaryTitle.spacingBefore = DOUBLE_MARGIN
         elements.add(summaryTitle)
 
         val summary = makeAndGetSummary(trail, lastMaintenance)
@@ -147,7 +150,7 @@ class PdfFileHelper {
         paragraphDes.spacingAfter = COMMON_MARGIN
         elements.add(paragraphDes)
         // Adding Route
-        val routeTitle = Paragraph(PLACE_TITLE, bigBold)
+        val routeTitle = Paragraph(PLACE_TITLE, hugeBold)
         routeTitle.spacingAfter = COMMON_MARGIN
         elements.add(routeTitle)
 
@@ -186,12 +189,24 @@ class PdfFileHelper {
 
             val cicloSummaryTitle = Paragraph(FEASABILITY_DATA_TITLE, bigBold)
             cicloSummaryTitle.spacingAfter = COMMON_MARGIN
-            val cicloSummary = Paragraph(
-                    cycloDetails.cycloClassification.classification + ETA_PART + getEstimatedFriendlyTime(cycloDetails.officialEta.toDouble()) + "m.\n" +
-                            makeFeasibleWayForwardCyclo(trail, trail.startLocation, trail.endLocation) + "\n" +
-                            makeFeasibleWayBackCyclo(trail, trail.endLocation, trail.startLocation) + "\n", summaryFont)
 
-            cicloSummary.spacingAfter = COMMON_MARGIN
+            val cycloGeneralData = com.itextpdf.text.List(false)
+            cycloGeneralData.add("Classificazione ciclistica: " + cycloDetails.cycloClassification.classification)
+            cycloGeneralData.add("Tempo di percorrenza: " + getEstimatedFriendlyTime(cycloDetails.officialEta.toDouble()))
+            cycloGeneralData.lastItem.spacingAfter = COMMON_MARGIN
+
+            elements.add(cicloSummaryTitle)
+            elements.add(cycloGeneralData)
+
+
+            val cicloFeasibilityTitle = Paragraph(FEASABILITY_TITLE, bigBold)
+            val cycloFeasabilityList = com.itextpdf.text.List(false)
+            cycloFeasabilityList.add(makeFeasibleWayForwardCyclo(trail, trail.startLocation, trail.endLocation))
+            cycloFeasabilityList.add(makeFeasibleWayBackCyclo(trail, trail.endLocation, trail.startLocation))
+            cycloFeasabilityList.lastItem.spacingAfter = COMMON_MARGIN
+
+            elements.add(cicloFeasibilityTitle)
+            elements.add(cycloFeasabilityList)
 
             val cicloDescTitle = Paragraph(DESCRIPTION_TITLE, bigBold)
             cicloDescTitle.spacingAfter = COMMON_MARGIN
@@ -211,7 +226,7 @@ class PdfFileHelper {
 
     private fun getCycloTitle(): Paragraph {
         val cicloRouteTitle = Paragraph(CYCLO_ESCURSIONISM_TITLE, hugeBold)
-        cicloRouteTitle.spacingBefore = TRIPLE_MARGIN
+        cicloRouteTitle.spacingBefore = COMMON_MARGIN
         cicloRouteTitle.spacingAfter = COMMON_MARGIN
         return cicloRouteTitle
     }
@@ -244,15 +259,17 @@ class PdfFileHelper {
     private fun makeFeasibleWayForwardCyclo(trail: TrailDto,
                                             fromPlaceRef: PlaceRefDto,
                                             toPlaceRef: PlaceRefDto): String {
-        return if (trail.cycloDetails.wayForward.isFeasible) ("Tratto '" +
-                fromPlaceRef.name + "' - " + toPlaceRef.name + " percorribile.") else ""
+        val isFeasible = if (trail.cycloDetails.wayForward.isFeasible) "" else "non"
+        return ("Tratto da località '" +
+                fromPlaceRef.name + "' a località '" + toPlaceRef.name + "' " + isFeasible + "  percorribile.")
     }
 
     private fun makeFeasibleWayBackCyclo(trail: TrailDto,
                                          fromPlaceRef: PlaceRefDto,
                                          toPlaceRef: PlaceRefDto): String {
-        return if (trail.cycloDetails.wayBack.isFeasible) ("Tratto di ritorno '" +
-                fromPlaceRef.name + "' - " + toPlaceRef.name + " percorribile.") else ""
+        val isFeasible = if (trail.cycloDetails.wayBack.isFeasible) "" else "non"
+        return ("Tratto di ritorno da località '" +
+                fromPlaceRef.name + "' a località '" + toPlaceRef.name + "' " + isFeasible + " percorribile.")
     }
 
     private fun makeAndGetData(): Paragraph =
@@ -271,7 +288,7 @@ class PdfFileHelper {
                 "Distanza Totale: " + stats.length.roundToInt() + "m,\n" + lastMaintenanceData, summaryFont)
     }
 
-    private fun getEstimatedFriendlyTime(time : Double): String {
+    private fun getEstimatedFriendlyTime(time: Double): String {
         val hr = (time / 60).roundToInt()
         val minutes = (time % 60).roundToInt()
         return "$hr ore e $minutes minuti"
