@@ -15,6 +15,7 @@ public class AppProperties {
     private final String port;
     private final String trailStorage;
     private final String tempStorage;
+    private final String altitudeServiceHost;
     private final Integer altitudeServicePort;
     private final String mongoDbUri;
     private final String dbName;
@@ -31,6 +32,7 @@ public class AppProperties {
     public AppProperties(final @Value("${server.port}") String port,
                          final @Value("${storage.path}") String storage,
                          final @Value("${temp.storage.path}") String tempStorage,
+                         final @Value("${service.altitude.host:127.0.0.1}") String altitudeServiceHost,
                          final @Value("${service.altitude.port}") Integer altitudeServicePort,
                          final @Value("${db.uri}") String mongoDbUri,
                          final @Value("${db.name}") String dbName,
@@ -46,6 +48,7 @@ public class AppProperties {
         this.port = port;
         this.trailStorage = storage;
         this.tempStorage = tempStorage;
+        this.altitudeServiceHost = altitudeServiceHost;
         this.altitudeServicePort = altitudeServicePort;
         this.mongoDbUri = mongoDbUri;
         this.dbName = dbName;
@@ -113,5 +116,9 @@ public class AppProperties {
 
     public String getValidationAddress() {
         return validationAddress;
+    }
+
+    public String getAltitudeServiceHost() {
+        return altitudeServiceHost;
     }
 }

@@ -25,7 +25,8 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
                                                     private val objectMapper: ObjectMapper) {
 
     private val portToAltitudeService : Int = appProperties.altitudeServicePort
-    private val pathToServiceApi: String = "$LOCAL_IP_ADDRESS:$portToAltitudeService/api/v1/lookup"
+    private val hostToAltitudeService : String = appProperties.altitudeServiceHost
+    private val pathToServiceApi: String = "$hostToAltitudeService:$portToAltitudeService/api/v1/lookup"
 
     fun getAltitudeByLongLat(latitude: Double,
                              longitude: Double): Double {

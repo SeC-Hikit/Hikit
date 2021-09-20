@@ -1,4 +1,9 @@
 .github/*
 .idea/*
-docker/
 root/
+
+docker/data/*
+docker/docker-compose.yml
+docker/docker-compose.cluster.yml
+docker/rset_download.sh
+docker/build.sh
