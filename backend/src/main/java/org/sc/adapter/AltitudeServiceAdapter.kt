@@ -83,12 +83,12 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
                 } else {
                     retryCounter++
-                    logger.info("retrying... ${retryCounter} time(s)");
+                    logger.info("retrying... $retryCounter time(s)");
                     TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
                 }
             } catch (exception: Exception) {
                 retryCounter++
-                logger.info("exception retrying... ${retryCounter} time(s)");
+                logger.info("exception retrying... $retryCounter time(s)");
                 TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
             }
         }
