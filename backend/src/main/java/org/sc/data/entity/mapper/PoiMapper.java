@@ -1,5 +1,6 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.CoordinatesWithAltitude;
 import org.sc.data.model.KeyVal;
@@ -11,9 +12,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Component
 public class PoiMapper implements Mapper<Poi> {
+    private static final Logger LOGGER = getLogger(PoiMapper.class);
 
     private final CoordinatesMapper coordinatesMapper;
     private final KeyValMapper keyValMapper;
@@ -32,6 +35,7 @@ public class PoiMapper implements Mapper<Poi> {
 
     @Override
     public Poi mapToObject(final Document document) {
+        LOGGER.trace("mapToObject Document: {} ", document);
         return new Poi(document.getString(Poi.OBJECT_ID),
                 document.getString(Poi.NAME),
                 document.getString(Poi.DESCRIPTION),
@@ -50,6 +54,7 @@ public class PoiMapper implements Mapper<Poi> {
 
     @Override
     public Document mapToDocument(final Poi poi) {
+        LOGGER.trace("mapToDocument Poi: {} ", poi);
         return new Document(Poi.NAME, poi.getName())
                 .append(Poi.DESCRIPTION, poi.getDescription())
                 .append(Poi.TAGS, poi.getTags())

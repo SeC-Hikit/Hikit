@@ -1,15 +1,12 @@
 package org.sc.data.repository;
 
-import com.mongodb.Mongo;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
-import com.mongodb.client.model.UpdateOptions;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.jetbrains.annotations.NotNull;
-import org.sc.common.rest.AccessibilityReportDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityReportMapper;
 import org.sc.data.model.AccessibilityNotification;
@@ -18,18 +15,18 @@ import org.sc.data.model.RecordDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.print.Doc;
-import javax.print.attribute.standard.DocumentName;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoConstants.$NOT_EQUAL;
 
 @Repository
 public class AccessibilityReportDao {
+    private static final Logger LOGGER = getLogger(AccessibilityReportDao.class);
 
     private final MongoCollection<Document> collection;
 
@@ -74,18 +71,21 @@ public class AccessibilityReportDao {
         if (addedResult != null) {
             return Collections.singletonList(mapper.mapToObject(addedResult));
         }
+        LOGGER.error("upsert addedResult is null for AccessibilityReport: {}, validationId: {}", accessibilityReport, validationId);
         throw new IllegalStateException();
     }
 
     public List<AccessibilityReport> delete(final String id) {
         final List<AccessibilityReport> byId = getById(id);
         collection.deleteOne(new Document(AccessibilityReport.ID, id));
+        LOGGER.info("deleted AccessibilityReports: {}, for id: {}", byId, id);
         return byId;
     }
 
     public List<AccessibilityReport> deleteByTrailId(final String trailId) {
         final List<AccessibilityReport> byTrailId = getByTrailId(trailId);
         collection.deleteMany(new Document(AccessibilityReport.TRAIL_ID, trailId));
+        LOGGER.info("deleted AccessibilityReports: {}, for id: {}", byTrailId, trailId);
         return byTrailId;
     }
 
@@ -97,6 +97,7 @@ public class AccessibilityReportDao {
     public List<AccessibilityReport> update(final AccessibilityReport accReport) {
         String id = accReport.getId();
         List<AccessibilityReport> found = getById(id);
+        LOGGER.info("update AccessibilityReports: {}, for AccessibilityReport: {}", found, accReport);
         if (found.isEmpty()) return Collections.emptyList();
         collection.updateOne(new Document(AccessibilityReport.ID, id),
                 new Document(MongoConstants.$_SET,
@@ -165,6 +166,7 @@ public class AccessibilityReportDao {
                     new Document(MongoConstants.$_SET, new Document(AccessibilityReport.IS_VALID, true)));
             return getByValidationId(validationId);
         }
+        LOGGER.info("validate empty getByValidationId for id: {}", validationId);
         return Collections.emptyList();
     }
 

@@ -16,6 +16,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 
 const val ALTITUDE_CALL_RETRIES = 3
 const val ALTITUDE_CALL_CHUNK_SIZE = 500
@@ -23,7 +24,7 @@ const val ALTITUDE_CALL_CHUNK_SIZE = 500
 @Service
 class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties,
                                                     private val objectMapper: ObjectMapper) {
-
+    private val logger: Logger = Logger.getLogger(AltitudeServiceAdapter::class.java.name)
     private val portToAltitudeService : Int = appProperties.altitudeServicePort
     private val pathToServiceApi: String = "$LOCAL_IP_ADDRESS:$portToAltitudeService/api/v1/lookup"
 
@@ -49,6 +50,7 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
                 result.addAll(coordinateAltitudeList)
             } else {
                 //in case of error the result contains the same number of elements of the input
+                logger.info("chunk.size ${chunk.size} different than coordinateAltitudeList.size ${coordinateAltitudeList.size}");
                 result.addAll(MutableList(coordinates.size) { 0.0 })
             }
         }
@@ -81,10 +83,12 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
                 } else {
                     retryCounter++
+                    logger.info("retrying... ${retryCounter} time(s)");
                     TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
                 }
             } catch (exception: Exception) {
                 retryCounter++
+                logger.info("exception retrying... ${retryCounter} time(s)");
                 TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
             }
         }

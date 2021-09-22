@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
@@ -21,11 +22,13 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoConstants.$NOT_EQUAL;
 import static org.sc.data.repository.MongoConstants.EXISTS_PARAM;
 
 @Repository
 public class AccessibilityNotificationDAO {
+    private static final Logger LOGGER = getLogger(AccessibilityNotificationDAO.class);
 
     private final MongoCollection<Document> collection;
 
@@ -89,6 +92,7 @@ public class AccessibilityNotificationDAO {
         if (addedResult != null) {
             return Collections.singletonList(mapper.mapToObject(addedResult));
         }
+        LOGGER.error("insert addedResult is null for AccessibilityNotification: {}", accessibilityNotification);
         throw new IllegalStateException();
     }
 
@@ -103,6 +107,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> delete(final String objectId) {
         final List<AccessibilityNotification> accessibilityNotification = getById(objectId);
         collection.deleteOne(new Document(AccessibilityNotification.ID, objectId));
+        LOGGER.info("delete AccessibilityNotifications: {}, for id: {}", accessibilityNotification, objectId);
         return accessibilityNotification;
     }
 

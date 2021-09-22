@@ -4,6 +4,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
@@ -21,11 +22,12 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class PoiDAO {
-
+    private static final Logger LOGGER = getLogger(PoiDAO.class);
 
     private final MongoCollection<Document> collection;
     private final PoiMapper mapper;
@@ -100,6 +102,7 @@ public class PoiDAO {
         if (updateResult != null) {
             return Collections.singletonList(mapper.mapToObject(updateResult));
         }
+        LOGGER.error("update updateResult is null for Poi: {}", poiRequest);
         throw new IllegalStateException();
     }
 
@@ -114,12 +117,14 @@ public class PoiDAO {
         if (updateResult != null) {
             return Collections.singletonList(mapper.mapToObject(updateResult));
         }
+        LOGGER.error("upsert updateResult is null for Poi: {}", poiRequest);
         throw new IllegalStateException();
     }
 
     public List<Poi> delete(final String id) {
         final List<Poi> byId = getById(id);
         collection.deleteOne(new Document(Poi.OBJECT_ID, id));
+        LOGGER.info("delete Pois: {} for id: {}", byId, id);
         return byId;
     }
 

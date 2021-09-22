@@ -1,5 +1,6 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.Place;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +8,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 @Component
 public class PlaceMapper implements Mapper<Place> {
+    private static final Logger LOGGER = getLogger(PlaceMapper.class);
 
     final MultiPointCoordsMapper multiPointCoordsMapperMapper;
     final CoordinatesMapper coordinatesMapper;
@@ -25,6 +29,7 @@ public class PlaceMapper implements Mapper<Place> {
 
     @Override
     public Place mapToObject(final Document document) {
+        LOGGER.trace("mapToObject Document: {} ", document);
         return new Place(
                 document.getString(Place.ID),
                 document.getString(Place.NAME),
@@ -40,6 +45,7 @@ public class PlaceMapper implements Mapper<Place> {
 
     @Override
     public Document mapToDocument(final Place object) {
+        LOGGER.trace("mapToDocument Place: {} ", object);
         return new Document(Place.ID, object.getId())
                 .append(Place.NAME, object.getName())
                 .append(Place.DESCRIPTION, object.getDescription())

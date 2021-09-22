@@ -17,6 +17,7 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
+import java.util.logging.Logger
 
 @Component
 class MediaManager @Autowired constructor(
@@ -31,6 +32,8 @@ class MediaManager @Autowired constructor(
     companion object {
         const val MEDIA_MID = "file"
     }
+
+    private val logger: Logger = Logger.getLogger(MediaManager::class.java.name)
 
     fun save(originalFileName: String, tempFile: Path): List<MediaDto> {
 
@@ -61,6 +64,7 @@ class MediaManager @Autowired constructor(
                             )
                     )
             )
+            logger.info("save Media originalFileName: $originalFileName to $pathToSavedFile in instance: ${authHelper.instance}, realm: ${authHelper.realm}")
             return mediaDAO.getById(save.first().id).map { mediaMapper.mediaToDto(it) }
         }
         return emptyList()

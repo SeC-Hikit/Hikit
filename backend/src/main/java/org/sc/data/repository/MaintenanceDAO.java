@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
@@ -20,9 +21,11 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Repository
 public class MaintenanceDAO {
+    private static final Logger LOGGER = getLogger(MaintenanceDAO.class);
 
     private final MongoCollection<Document> collection;
     private final MaintenanceMapper mapper;
@@ -70,11 +73,13 @@ public class MaintenanceDAO {
         if (updateResult != null) {
             return Collections.singletonList(mapper.mapToObject(updateResult));
         }
+        LOGGER.error("upsert addedResult is null for Maintenance: {}", maintenance);
         throw new IllegalStateException();
     }
 
     public List<Maintenance> delete(final String objectId) {
         final List<Maintenance> byId = getById(objectId);
+        LOGGER.info("delete Maintenances: {}, for id: {}", byId, objectId);
         if (byId.isEmpty()) {
             return Collections.emptyList();
         }
@@ -85,6 +90,7 @@ public class MaintenanceDAO {
     public List<Maintenance> deleteByTrailId(final String trailId) {
         final List<Maintenance> byId = getByTrailId(trailId);
         collection.deleteMany(new Document(Maintenance.TRAIL_ID, trailId));
+        LOGGER.info("deleteByTrailId Maintenances: {}, for id: {}", byId, trailId);
         return byId;
     }
 

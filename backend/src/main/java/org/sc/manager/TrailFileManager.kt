@@ -129,6 +129,7 @@ class TrailFileManager @Autowired constructor(
     }
 
     fun writeTrailToKml(trail: TrailDto) {
+        logger.info("Writing KML for trail with 'id' ${trail.id}")
         val kml = Kml()
         val lineString: LineString = LineString().withAltitudeMode(AltitudeMode.ABSOLUTE)
         trail.coordinates.forEach { lineString.addToCoordinates(it.longitude, it.latitude, it.altitude) }
@@ -140,6 +141,7 @@ class TrailFileManager @Autowired constructor(
                         reportedOpenIssues: List<AccessibilityNotificationDto>) {
         val pathname = pathToPdfStoredFiles.resolve(trail.code + ".pdf")
         pdfFileHandlerHelper.exportPdf(trail, places, lastMaintenance, reportedOpenIssues, pathname)
+        logger.info("Exported pdf for trail with 'id' ${trail.id} in path: $pathname")
     }
 
     fun getGPXFilesTempPathList(uploadedFiles: List<MultipartFile>): Map<String, Optional<Path>> {
@@ -165,6 +167,7 @@ class TrailFileManager @Autowired constructor(
                             result.put(gpxFile.originalFilename!!, Optional.of(tempFile))
                         }
             } catch (e: IOException) {
+                logger.severe("Exception caught in getGPXFilesTempPathList for uploadedFiles $uploadedFiles! $e")
                 result[gpxFile.originalFilename!!] = Optional.empty()
             }
         })

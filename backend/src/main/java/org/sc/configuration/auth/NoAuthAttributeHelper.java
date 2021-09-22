@@ -1,5 +1,6 @@
 package org.sc.configuration.auth;
 
+import org.apache.logging.log4j.Logger;
 import org.sc.configuration.AppProperties;
 import org.sc.data.auth.UserToAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 @Service
 @Qualifier(NoAuthAttributeHelper.NO_AUTH_BEAN)
 public class NoAuthAttributeHelper implements AuthHelper {
+    private static final Logger LOGGER = getLogger(NoAuthAttributeHelper.class);
 
     public static final String NO_AUTH_BEAN = "NO_AUTH_BEAN";
 
@@ -67,15 +71,18 @@ public class NoAuthAttributeHelper implements AuthHelper {
             if (a.contains(ATTRIBUTE_RECOGNIZER)) {
                 final List<String> split = Arrays.asList(a.split(ATTRIBUTE_RECOGNIZER));
                 if (split.size() != KEY_PAIR_SIZE) {
+                    LOGGER.error("Error splitting attribute {}: size {} not expected.", a, split.size());
                     throw new IllegalArgumentException();
                 }
                 userToAttributes.getAttributes().put(
                         split.get(ELEM_ZERO),
                         split.get(ELEM_ONE));
             } else {
+                LOGGER.info("Attribute {} does not contain ATTRIBUTE_RECOGNIZER. Setting username", a);
                 userToAttributes.setUsername(a);
             }
         });
+        LOGGER.debug("userToAttributes populated successfully! username: {}, attribute: {} ", userToAttributes.getUsername(), userToAttributes.getAttributes());
         return userToAttributes;
     }
 }

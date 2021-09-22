@@ -1,6 +1,7 @@
 package org.sc.data.repository;
 
 import com.mongodb.client.MongoCollection;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
@@ -16,10 +17,12 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoConstants.UPSERT_OPTIONS;
 
 @Repository
 public class TrailRawDAO {
+    private static final Logger LOGGER = getLogger(TrailRawDAO.class);
 
     private final MongoCollection<Document> collection;
     private final TrailRawMapper trailRawMapper;
@@ -43,6 +46,7 @@ public class TrailRawDAO {
     public List<TrailRaw> deleteById(final String id) {
         List<TrailRaw> byIdInMemory = getById(id);
         collection.deleteOne(new Document(TrailRaw.ID, id));
+        LOGGER.info("delete TrailRaws: {} for id: {}", byIdInMemory, id);
         return byIdInMemory;
     }
 
@@ -53,6 +57,7 @@ public class TrailRawDAO {
         Document upserted = collection.findOneAndReplace(new Document(TrailRaw.ID, objectId),
                 trailRawDoc, UPSERT_OPTIONS);
         if(upserted == null) {
+            LOGGER.error("createRawTrail upserted is null for TrailRaw: {}", rawTrail);
             throw new IllegalStateException();
         }
         return Collections.singletonList(trailRawMapper.mapToObject(upserted));

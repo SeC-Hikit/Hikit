@@ -56,6 +56,7 @@ public class KeycloakAuthAttributeHelper implements AuthHelper {
             LOGGER.warn(String.format("User '%s', does not contain claim '%s'", token.getName(), userAttributeName));
             return "";
         }
+        LOGGER.error("principal {} not an instance of KeycloakPrincipal", principal);
         throw new IllegalStateException();
     }
 

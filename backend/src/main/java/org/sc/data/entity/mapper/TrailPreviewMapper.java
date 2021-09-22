@@ -1,12 +1,16 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 @Component
 public class TrailPreviewMapper implements Mapper<TrailPreview> {
+    private static final Logger LOGGER = getLogger(TrailPreviewMapper.class);
 
     private final PlaceRefMapper placeMapper;
     private final FileDetailsMapper fileDetailsMapper;
@@ -23,6 +27,7 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
 
     @Override
     public TrailPreview mapToObject(Document doc) {
+        LOGGER.trace("mapToObject Document: {} ", doc);
         return new TrailPreview(
                 doc.getString(Trail.ID),
                 doc.getString(Trail.CODE),

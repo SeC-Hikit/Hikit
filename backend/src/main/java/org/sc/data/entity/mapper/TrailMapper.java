@@ -1,5 +1,6 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.*;
 import org.sc.processor.TrailSimplifierLevel;
@@ -10,9 +11,11 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Component
 public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail> {
+    private static final Logger LOGGER = getLogger(TrailMapper.class);
 
     protected final PlaceRefMapper placeMapper;
     protected final TrailCoordinatesMapper trailCoordinatesMapper;
@@ -42,6 +45,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
 
     @Override
     public Trail mapToObject(final Document doc) {
+        LOGGER.trace("mapToObject Document: {} ", doc);
         return Trail.builder()
                 .id(doc.getString(Trail.ID))
                 .name(doc.getString(Trail.NAME))
@@ -69,6 +73,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
 
     @Override
     public Document mapToDocument(final Trail object) {
+        LOGGER.trace("Entering mapToDocument. Trail: {} ", object);
         return new Document()
                 .append(Trail.NAME, object.getName())
                 .append(Trail.DESCRIPTION, object.getDescription())
@@ -105,6 +110,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     @Override
     public Trail mapToObject(final Document doc,
                              final TrailSimplifierLevel precisionLevel) {
+        LOGGER.trace("Entering mapToObject. Document: {}, TrailSimplifierLevel: {} ", doc, precisionLevel);
         return Trail.builder()
                 .id(doc.getString(Trail.ID))
                 .name(doc.getString(Trail.NAME))
@@ -134,6 +140,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     private Document getGeoLineValue(Trail object) {
         // Update
         if (object.getGeoLineString() == null) {
+            LOGGER.debug("GeoLineString is null for Trail: {}", object);
             return geoLineMapper.mapCoordsToDocument(object.getCoordinates());
         }
         return geoLineMapper.mapToDocument(object.getGeoLineString());
