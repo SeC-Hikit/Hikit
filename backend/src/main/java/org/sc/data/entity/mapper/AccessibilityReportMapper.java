@@ -38,7 +38,7 @@ public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
 
     @Override
     public Document mapToDocument(AccessibilityReport object) {
-        LOGGER.trace("mapToDocument AccessibilityNotification: {} ", object);
+        LOGGER.trace("mapToDocument AccessibilityReport: {} ", object);
         return new Document(AccessibilityReport.ID, object.getId())
                 .append(AccessibilityReport.DESCRIPTION, object.getDescription())
                 .append(AccessibilityReport.TRAIL_ID, object.getTrailId())

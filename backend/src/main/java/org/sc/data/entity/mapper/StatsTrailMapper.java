@@ -25,7 +25,7 @@ public class StatsTrailMapper implements Mapper<StatsTrailMetadata> {
 
     @Override
     public Document mapToDocument(StatsTrailMetadata object) {
-        LOGGER.trace("mapToDocument RecordDetails: {} ", object);
+        LOGGER.trace("mapToDocument StatsTrailMetadata: {} ", object);
         return new Document(StatsTrailMetadata.TOTAL_RISE, object.getTotalRise())
                 .append(StatsTrailMetadata.TOTAL_FALL, object.getTotalFall())
                 .append(StatsTrailMetadata.LENGTH, object.getLength())
