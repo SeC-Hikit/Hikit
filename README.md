@@ -38,7 +38,7 @@ use authentication.
 
 ### S&C on Docker
 In case you want to test run S&C in combination with all its dependencies:
-- Run a deployment build (see [Deployment build](#Deployment-build) )
+- Run a deployment build (see [Deployment build](#Deployment-build))
 - Run `sh docker/build.sh`
 - Run `docker compose -f docker-compose.yml -f docker-compose.cluster.yml up`
 The service will be available on `http://localhost:8990/api/v1`
