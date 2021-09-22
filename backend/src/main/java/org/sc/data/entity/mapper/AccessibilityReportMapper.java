@@ -1,11 +1,15 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.AccessibilityReport;
 import org.springframework.stereotype.Component;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 @Component
 public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
+    private static final Logger LOGGER = getLogger(AccessibilityReportMapper.class);
 
     private final CoordinatesMapper trailCoordinatesMapper;
     private final RecordDetailsMapper recordDetailsMapper;
@@ -18,6 +22,7 @@ public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
 
     @Override
     public AccessibilityReport mapToObject(Document document) {
+        LOGGER.trace("mapToObject Document: {} ", document);
         return new AccessibilityReport(document.getString(AccessibilityReport.ID),
                 document.getString(AccessibilityReport.DESCRIPTION),
                 document.getString(AccessibilityReport.TRAIL_ID),
@@ -33,6 +38,7 @@ public class AccessibilityReportMapper implements Mapper<AccessibilityReport> {
 
     @Override
     public Document mapToDocument(AccessibilityReport object) {
+        LOGGER.trace("mapToDocument AccessibilityReport: {} ", object);
         return new Document(AccessibilityReport.ID, object.getId())
                 .append(AccessibilityReport.DESCRIPTION, object.getDescription())
                 .append(AccessibilityReport.TRAIL_ID, object.getTrailId())

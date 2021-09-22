@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
@@ -18,9 +19,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Repository
 public class MediaDAO {
+    private static final Logger LOGGER = getLogger(MediaDAO.class);
+
     private final MongoCollection<Document> collection;
     private final MediaMapper mapper;
 
@@ -45,6 +49,7 @@ public class MediaDAO {
         if (updateResult != null) {
             return Collections.singletonList(mapper.mapToObject(updateResult));
         }
+        LOGGER.error("save updateResult is null for Media: {}", media);
         throw new IllegalStateException();
     }
 
@@ -57,6 +62,7 @@ public class MediaDAO {
     public List<Media> deleteById(String id) {
         final List<Media> byId = getById(id);
         collection.deleteOne(new Document(Media.OBJECT_ID, id));
+        LOGGER.info("deleteById Medias: {}, for id: {}", byId, id);
         return byId;
     }
 

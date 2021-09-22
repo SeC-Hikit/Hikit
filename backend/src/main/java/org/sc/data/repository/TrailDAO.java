@@ -4,6 +4,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -25,10 +26,12 @@ import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.*;
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class TrailDAO {
+    private static final Logger LOGGER = getLogger(TrailDAO.class);
 
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
     public static final String NO_FILTERING = "*";
@@ -89,6 +92,7 @@ public class TrailDAO {
     public List<Trail> delete(final String id) {
         List<Trail> trailByCode = getTrailById(id, TrailSimplifierLevel.MEDIUM);
         collection.deleteOne(new Document(Trail.ID, id));
+        LOGGER.info("delete Trails: {}, for id: {}", trailByCode, id);
         return trailByCode;
     }
 
@@ -101,6 +105,7 @@ public class TrailDAO {
                 new Document(Trail.ID, existingOrNewObjectId),
                 trailDocument, UPSERT_OPTIONS);
         if (updateResult == null) {
+            LOGGER.error("upsert updateResult is null for Trail: {}, existingOrNewObjectId: {}", trailRequest, existingOrNewObjectId);
             throw new IllegalStateException();
         }
         return Collections.singletonList(trailMapper.mapToObject(updateResult));
@@ -164,6 +169,8 @@ public class TrailDAO {
                                                         geoSquare.getTopRight().getAsList(),
                                                         resolvedBottomRightVertex)
                                         ))))).skip(skip).limit(limit);
+        LOGGER.error("findTrailWithinGeoSquare geoSquare: {}, skip: {}, limit: {}, level: {}, resolvedTopLeftVertex: {}, resolvedBottomRightVertex: {}",
+                geoSquare, skip, limit, level, resolvedTopLeftVertex, resolvedBottomRightVertex);
         return toTrailsList(foundTrails, level);
     }
 

@@ -1,14 +1,17 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.Poi;
 import org.sc.data.model.TrailProvider;
 import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Component
 public class TrailProviderMapper implements Mapper<TrailProvider> {
+    private static final Logger LOGGER = getLogger(TrailProviderMapper.class);
 
     private final KeyValMapper keyValMapper;
 
@@ -18,6 +21,7 @@ public class TrailProviderMapper implements Mapper<TrailProvider> {
 
     @Override
     public TrailProvider mapToObject(Document document) {
+        LOGGER.trace("mapToObject Document: {} ", document);
         return new TrailProvider(document.getString(TrailProvider.ID),
                 document.getString(TrailProvider.NAME),
                 document.getString(TrailProvider.PARENT_ID),
@@ -28,6 +32,7 @@ public class TrailProviderMapper implements Mapper<TrailProvider> {
 
     @Override
     public Document mapToDocument(TrailProvider object) {
+        LOGGER.trace("mapToDocument TrailProvider: {} ", object);
         return new Document(TrailProvider.ID, object.getId())
                 .append(TrailProvider.NAME, object.getName())
                 .append(TrailProvider.DESCRIPTION, object.getDescription())

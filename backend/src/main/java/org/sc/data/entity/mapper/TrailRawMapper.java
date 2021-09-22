@@ -1,5 +1,6 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,11 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Component
 public class TrailRawMapper implements Mapper<TrailRaw> {
+    private static final Logger LOGGER = getLogger(TrailRawMapper.class);
 
     protected final TrailCoordinatesMapper trailCoordinatesMapper;
     protected final FileDetailsMapper fileDetailsMapper;
@@ -25,6 +28,7 @@ public class TrailRawMapper implements Mapper<TrailRaw> {
 
     @Override
     public TrailRaw mapToObject(final Document doc) {
+        LOGGER.trace("mapToObject Document: {} ", doc);
         return TrailRaw.builder()
                 .id(doc.getString(TrailRaw.ID))
                 .name(doc.getString(TrailRaw.NAME))
@@ -39,6 +43,7 @@ public class TrailRawMapper implements Mapper<TrailRaw> {
 
     @Override
     public Document mapToDocument(final TrailRaw object) {
+        LOGGER.trace("mapToDocument TrailRaw: {} ", object);
         return new Document()
                 .append(TrailRaw.ID, object.getId())
                 .append(TrailRaw.NAME, object.getName())

@@ -1,12 +1,16 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.Media;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 @Component
 public class MediaMapper implements Mapper<Media> {
+    private static final Logger LOGGER = getLogger(MediaMapper.class);
 
     private final FileDetailsMapper fileDetailsMapper;
 
@@ -17,6 +21,7 @@ public class MediaMapper implements Mapper<Media> {
 
     @Override
     public Media mapToObject(final Document document) {
+        LOGGER.trace("mapToObject Document: {} ", document);
         return new Media(
                 document.getString(Media.OBJECT_ID),
                 document.getDate(Media.CREATION_DATE),
@@ -30,6 +35,7 @@ public class MediaMapper implements Mapper<Media> {
 
     @Override
     public Document mapToDocument(final Media object) {
+        LOGGER.trace("mapToDocument Media: {} ", object);
         return new Document()
                 .append(Media.CREATION_DATE, object.getCreationDate())
                 .append(Media.NAME, object.getName())

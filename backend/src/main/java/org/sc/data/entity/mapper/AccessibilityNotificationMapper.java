@@ -1,5 +1,6 @@
 package org.sc.data.entity.mapper;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.AccessibilityNotification;
 import org.sc.data.model.CoordinatesWithAltitude;
@@ -8,8 +9,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 @Component
 public class AccessibilityNotificationMapper implements Mapper<AccessibilityNotification> {
+    private static final Logger LOGGER = getLogger(AccessibilityNotificationMapper.class);
 
     final CoordinatesMapper coordinatesMapper;
     private final RecordDetailsMapper recordDetailsMapper;
@@ -23,6 +27,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
 
     @Override
     public AccessibilityNotification mapToObject(final Document document) {
+        LOGGER.trace("mapToObject Document: {} ", document);
         final String nullableResolution = document.getString(AccessibilityNotification.RESOLUTION);
         final Date nullableResolutionDate = document.getDate(AccessibilityNotification.RESOLUTION_DATE);
         final Date reportedDate = document.getDate(AccessibilityNotification.REPORT_DATE);
@@ -41,6 +46,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
 
     @Override
     public Document mapToDocument(final AccessibilityNotification accessibilityNotification) {
+        LOGGER.trace("mapToDocument AccessibilityNotification: {} ", accessibilityNotification);
         return new Document(AccessibilityNotification.TRAIL_ID, accessibilityNotification.getTrailId())
                 .append(AccessibilityNotification.ID, accessibilityNotification.getId())
                 .append(AccessibilityNotification.DESCRIPTION, accessibilityNotification.getDescription())

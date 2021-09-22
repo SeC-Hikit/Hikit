@@ -3,6 +3,7 @@ package org.sc.data.repository;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
@@ -25,12 +26,15 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.model.CoordinatesWithAltitude.LAT_INDEX;
 import static org.sc.data.model.CoordinatesWithAltitude.LONG_INDEX;
 import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class PlaceDAO {
+    private static final Logger LOGGER = getLogger(PlaceDAO.class);
+
     private final MongoCollection<Document> collection;
     private final PlaceMapper placeMapper;
     private final CoordinatesMapper coordinatesMapper;
@@ -71,12 +75,14 @@ public class PlaceDAO {
         final String newObjectId =
                 new ObjectId().toHexString();
         Document created = upsertItem(doc, newObjectId);
+        LOGGER.debug("create Place: {}, Document: {}", place, created);
         return Collections.singletonList(placeMapper.mapToObject(created));
     }
 
     public List<Place> delete(final String id) {
         final List<Place> places = getById(id);
         collection.deleteOne(new Document(Place.ID, id));
+        LOGGER.info("delete Places: {}, for id: {}", places, id);
         return places;
     }
 
@@ -104,6 +110,7 @@ public class PlaceDAO {
                         coordinatesMapper.mapToDocument(coordinates))));
 
         final List<Place> byId = getById(id);
+        LOGGER.info("removeTrailFromPlace Places: {}, for id: {}, trailId: {}, coordinates: {}", byId, id, trailId, coordinates);
         if (byId.isEmpty()) {
             return;
         }
@@ -112,6 +119,7 @@ public class PlaceDAO {
 
     public List<Place> update(final Place place) {
         if (place.getId() == null) {
+            LOGGER.error("update null id for Place: {}", place);
             throw new IllegalStateException();
         }
         final Document doc = placeMapper.mapToDocument(place);
@@ -126,6 +134,7 @@ public class PlaceDAO {
                 new Document(Place.ID, existingOrNewObjectId), doc,
                 new FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER));
         if (created == null) {
+            LOGGER.error("upsertItem created is null for Document: {}, existingOrNewObjectId: {}", doc, existingOrNewObjectId);
             throw new IllegalStateException();
         }
         return created;
@@ -166,6 +175,7 @@ public class PlaceDAO {
         final List<List<Double>> collect = place.getPoints().getCoordinates2D().stream().filter(p ->
                 (p.get(LONG_INDEX) != trailCoordinates.getLongitude() &&
                         p.get(LAT_INDEX) != trailCoordinates.getLatitude())).collect(toList());
+        LOGGER.info("deleteOrphanPlaceWhenNoMoreTrailsUseIt collect {} retrieved for Place: {}, Coordinates: {}", collect, place, trailCoordinates);
         // Mongo DB does not support empty GeoJSON multi point arrays
         if(collect.isEmpty()) {
             place.setPoints(new MultiPointCoords2D(Collections.singletonList(Arrays.asList(0.0, 0.0))));
