@@ -4,5 +4,7 @@
   "ssl-required": "external",
   "resource": "backend",
   "public-client": true,
-  "confidential-port": 0
+  "confidential-port": 0,
+  "truststore": "path-to-store",
+  "truststore-password": "secret"
 }
