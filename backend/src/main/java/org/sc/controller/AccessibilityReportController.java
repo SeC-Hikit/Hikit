@@ -44,14 +44,16 @@ public class AccessibilityReportController {
 
     @Operation(summary = "Count all accessibility reports for realm")
     @GetMapping("/count/{realm}")
-    public CountResponse getCount(final String realm) {
+    public CountResponse getCount(
+            @PathVariable final String realm) {
         final long count = accessService.count(realm);
         return new CountResponse(Status.OK, emptySet(), new CountDto(count));
     }
 
     @Operation(summary = "Get report by id")
     @GetMapping("/{id}")
-    public AccessibilityReportResponse getById(final String id) {
+    public AccessibilityReportResponse getById(
+            @PathVariable final String id) {
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessService.byId(id),
                 ONE, ZERO, ONE);
@@ -75,9 +77,10 @@ public class AccessibilityReportController {
 
     @Operation(summary = "Get reports by trail ID")
     @GetMapping("/trail/{id}")
-    public AccessibilityReportResponse getByTrailId(final String id,
-                                                    @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                                    @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+    public AccessibilityReportResponse getByTrailId(
+            @PathVariable final String id,
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         final List<AccessibilityReportDto> upgradedByTrailId = accessService.getByTrailId(id, skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 upgradedByTrailId, accessService.countByTrailId(id), skip, limit);
@@ -86,7 +89,7 @@ public class AccessibilityReportController {
     @Operation(summary = "Retrieve upgraded reports")
     @GetMapping("/upgraded/{realm}")
     public AccessibilityReportResponse getUpgraded(
-            final String realm,
+            @PathVariable final String realm,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
@@ -97,7 +100,7 @@ public class AccessibilityReportController {
     @Operation(summary = "Validate newly created reports")
     @GetMapping("/validate/{validationId}")
     public AccessibilityReportResponse validate(
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) String validationId) {
+            @PathVariable String validationId) {
         List<AccessibilityReportDto> values = accessService.validate(validationId);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 values, values.size(), 0, values.size());
@@ -106,14 +109,13 @@ public class AccessibilityReportController {
     @Operation(summary = "Retrieve not-upgraded reports")
     @GetMapping("/not-upgraded/{realm}")
     public AccessibilityReportResponse getUnapgraded(
-            final String realm,
+            @PathVariable final String realm,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessService.getUnapgradedByRealm(realm, skip, limit),
                 accessService.countUnapgraded(realm), skip, limit);
     }
-
 
 
 }
