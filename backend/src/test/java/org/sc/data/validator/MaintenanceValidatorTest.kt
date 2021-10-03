@@ -7,6 +7,7 @@ import org.junit.Test
 import org.sc.common.rest.MaintenanceDto
 import org.sc.data.validator.MaintenanceValidator.Companion.dateInPast
 import org.sc.data.validator.auth.AuthRealmValidator
+import org.sc.data.validator.trail.TrailExistenceValidator
 import org.sc.manager.MaintenanceManager
 import java.util.*
 
@@ -17,20 +18,24 @@ class MaintenanceValidatorTest {
 
         val maintenanceManagerMock = mockkClass(MaintenanceManager::class)
         val realmValidatorMock = mockkClass(AuthRealmValidator::class)
+        val trailExistenceValidator = mockkClass(TrailExistenceValidator::class)
 
 
         val maintenanceValidator = MaintenanceValidator(
-            maintenanceManagerMock,
-            realmValidatorMock,
+                maintenanceManagerMock,
+                trailExistenceValidator,
+                realmValidatorMock,
         )
 
         val requestMock = mockkClass(MaintenanceDto::class)
 
+        val trailId = "100BO"
         every { requestMock.meetingPlace } returns "La via"
-        every { requestMock.trailId } returns "100BO"
+        every { requestMock.trailId } returns trailId
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() + 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
+        every { trailExistenceValidator.validateExistenceAndRealm(trailId) } returns emptySet()
 
         val validateResult = maintenanceValidator.validate(requestMock)
         assertTrue(validateResult.isEmpty())
@@ -41,17 +46,20 @@ class MaintenanceValidatorTest {
 
         val maintenanceManagerMock = mockkClass(MaintenanceManager::class)
         val realmValidatorMock = mockkClass(AuthRealmValidator::class)
+        val trailExistenceValidator = mockkClass(TrailExistenceValidator::class)
 
 
-        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock, realmValidatorMock)
+        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock,trailExistenceValidator, realmValidatorMock)
 
         val requestMock = mockkClass(MaintenanceDto::class)
 
+        val trailId = "100BO"
         every { requestMock.meetingPlace } returns ""
-        every { requestMock.trailId } returns "100BO"
+        every { requestMock.trailId } returns trailId
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() + 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
+        every { trailExistenceValidator.validateExistenceAndRealm(trailId) } returns emptySet()
 
         val validateResult = maintenanceCreationValidator.validate(requestMock)
         assertTrue(validateResult.contains("Empty field 'Meeting Place'"))
@@ -59,25 +67,29 @@ class MaintenanceValidatorTest {
     }
 
     @Test
-    fun `validation errors contain missing meeting place and code when not given`() {
+    fun `validation errors contain missing meeting place, and trailId when not given`() {
 
         val maintenanceManagerMock = mockkClass(MaintenanceManager::class)
         val realmValidatorMock = mockkClass(AuthRealmValidator::class)
+        val trailExistenceValidator = mockkClass(TrailExistenceValidator::class)
 
-        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock, realmValidatorMock)
+        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock, trailExistenceValidator, realmValidatorMock)
 
         val requestMock = mockkClass(MaintenanceDto::class)
 
+        val trailId = ""
         every { requestMock.meetingPlace } returns ""
-        every { requestMock.trailId } returns ""
+        every { requestMock.trailId } returns trailId
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() + 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
+        every { trailExistenceValidator.validateExistenceAndRealm(trailId) } returns setOf("Error")
 
         val validateResult = maintenanceCreationValidator.validate(requestMock)
         assertTrue(validateResult.contains("Empty field 'Meeting Place'"))
         assertTrue(validateResult.contains("Empty field 'Code'"))
-        assertTrue(validateResult.size == 2)
+        assertTrue(validateResult.contains("Error"))
+        assertTrue(validateResult.size == 3)
     }
 
     @Test
@@ -85,18 +97,20 @@ class MaintenanceValidatorTest {
 
         val maintenanceManagerMock = mockkClass(MaintenanceManager::class)
         val realmValidatorMock = mockkClass(AuthRealmValidator::class)
+        val trailExistenceValidator = mockkClass(TrailExistenceValidator::class)
 
-
-        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock, realmValidatorMock)
+        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock, trailExistenceValidator, realmValidatorMock)
 
         val requestMock = mockkClass(MaintenanceDto::class)
 
 
+        val trailId = "100bo"
         every { requestMock.meetingPlace } returns "a place"
-        every { requestMock.trailId } returns "100bo"
+        every { requestMock.trailId } returns trailId
         every { requestMock.description } returns "A description"
         every { requestMock.date } returns Date(System.currentTimeMillis() - 1000 * 60 * 24)
         every { requestMock.contact } returns "Anybody"
+        every { trailExistenceValidator.validateExistenceAndRealm(trailId) } returns emptySet()
 
         val validateResult = maintenanceCreationValidator.validate(requestMock)
         assertTrue(validateResult.contains(dateInPast))
@@ -108,18 +122,20 @@ class MaintenanceValidatorTest {
 
         val maintenanceManagerMock = mockkClass(MaintenanceManager::class)
         val realmValidatorMock = mockkClass(AuthRealmValidator::class)
+        val trailExistenceValidator = mockkClass(TrailExistenceValidator::class)
 
-
-        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock, realmValidatorMock)
+        val maintenanceCreationValidator = MaintenanceValidator(maintenanceManagerMock, trailExistenceValidator, realmValidatorMock)
 
         val requestMock = mockkClass(MaintenanceDto::class)
 
 
+        val trailId = "100bo"
         every { requestMock.meetingPlace } returns "a place"
-        every { requestMock.trailId } returns "100bo"
+        every { requestMock.trailId } returns trailId
         every { requestMock.description } returns ""
         every { requestMock.date } returns Date(System.currentTimeMillis() - 1000 * 60 * 24)
         every { requestMock.contact } returns ""
+        every { trailExistenceValidator.validateExistenceAndRealm(trailId) } returns emptySet()
 
         val validateResult = maintenanceCreationValidator.validate(requestMock)
         assertTrue(validateResult.contains(dateInPast))

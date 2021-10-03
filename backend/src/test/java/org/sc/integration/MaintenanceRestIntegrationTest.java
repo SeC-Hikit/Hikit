@@ -4,8 +4,12 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.MaintenanceDto;
 import org.sc.common.rest.RecordDetailsDto;
+import org.sc.common.rest.TrailImportDto;
+import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.MaintenanceController;
 import org.sc.controller.admin.AdminMaintenanceController;
+import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.Maintenance;
 import org.sc.data.model.TrailClassification;
 import org.sc.common.rest.response.MaintenanceResponse;
@@ -49,14 +53,6 @@ public class MaintenanceRestIntegrationTest {
 
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
 
-    public static final MaintenanceDto EXPECTED_MAINTENANCE =
-            new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), EXPECTED_TRAIL_CODE_FUTURE,
-                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto());
-
-    public static final MaintenanceDto EXPECTED_MAINTENANCE_PAST =
-            new MaintenanceDto(null, EXPECTED_DATE_IN_PAST(), EXPECTED_TRAIL_CODE,
-                    EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto());
-
     @Autowired
     private DataSource dataSource;
 
@@ -71,26 +67,38 @@ public class MaintenanceRestIntegrationTest {
     @Autowired
     private MaintenanceMapper maintenanceMapper;
 
+    @Autowired
+    private AdminPlaceController placeController;
+    @Autowired
+    private AdminTrailController adminTrailController;
+    private String importedTrailId;
 
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        adminMaintenanceController.create(EXPECTED_MAINTENANCE);
-        maintenanceDAO.upsert(maintenanceMapper.map(EXPECTED_MAINTENANCE_PAST));
+
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
+        importedTrailId = trailResponse.getContent().get(0).getId();
+
+        adminMaintenanceController.create(new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), importedTrailId,
+                EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto()));
+        maintenanceDAO.upsert(maintenanceMapper.map(new MaintenanceDto(null, EXPECTED_DATE_IN_PAST(), importedTrailId,
+                EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto())));
     }
 
     @Test
     public void getPast_shouldFindOne() {
         MaintenanceResponse response = maintenanceController.getPastMaintenance(0, 2);
         assertThat(response.getContent().size()).isEqualTo(1);
-        assertThat(response.getContent().get(0).getTrailId()).isEqualTo(EXPECTED_TRAIL_CODE);
+        assertThat(response.getContent().get(0).getTrailId()).isEqualTo(importedTrailId);
     }
 
     @Test
     public void getFuture_shouldFindOne() {
         MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2);
         assertThat(response.getContent().size()).isEqualTo(1);
-        assertThat(response.getContent().get(0).getTrailId()).isEqualTo(EXPECTED_TRAIL_CODE_FUTURE);
+        assertThat(response.getContent().get(0).getTrailId()).isEqualTo(importedTrailId);
     }
 
     @Test

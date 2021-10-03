@@ -58,7 +58,7 @@ public class PoiRestIntegrationTest {
 
     @Before
     public void setUp(){
-//        IntegrationUtils.clearCollections(dataSource);
+        IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
         importedTrailId = trailResponse.getContent().get(0).getId();

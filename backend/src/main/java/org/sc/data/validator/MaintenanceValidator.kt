@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.MaintenanceDto
 import org.sc.data.validator.ValidatorUtils.Companion.emptyFieldError
 import org.sc.data.validator.auth.AuthRealmValidator
+import org.sc.data.validator.trail.TrailExistenceValidator
 import org.sc.manager.MaintenanceManager
 import org.springframework.stereotype.Component
 import java.util.*
@@ -12,6 +13,7 @@ import java.util.*
 @Component
 class MaintenanceValidator constructor(
     private val maintenanceManager: MaintenanceManager,
+    private val trailExistenceValidator: TrailExistenceValidator,
     private val realmValidator: AuthRealmValidator
 ) : Validator<MaintenanceDto> {
 
@@ -33,6 +35,7 @@ class MaintenanceValidator constructor(
         if (request.date == null) {
             errors.add(String.format(emptyFieldError, "date"))
         }
+        errors.addAll(trailExistenceValidator.validateExistenceAndRealm(request.trailId))
         if (request.date.before(Date())) {
             errors.add(dateInPast)
         }
@@ -40,7 +43,7 @@ class MaintenanceValidator constructor(
     }
 
     fun validateExistenceAndRealm(id: String): Set<String> {
-        val maintenance = maintenanceManager.getById(id);
+        val maintenance = maintenanceManager.getById(id)
         if (maintenance.isEmpty()) {
             return mutableSetOf(String.format(ValidatorUtils.notExistingItem, "Maintenance", id))
         }
