@@ -19,6 +19,7 @@ public class IntegrationUtils {
         IntegrationUtils.emptyCollection(dataSource, Media.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Maintenance.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, AccessibilityNotification.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, AccessibilityReport.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Place.COLLECTION_NAME);
     }

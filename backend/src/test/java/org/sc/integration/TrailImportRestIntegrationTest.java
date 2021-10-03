@@ -1,6 +1,5 @@
 package org.sc.integration;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
-import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailStatus;
 import org.sc.processor.TrailSimplifierLevel;
@@ -36,7 +34,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
 
     private static final String EXPECTED_PLACE_ID_INTERMEDIATE = "ANY_INTERMEDIATE";
-    public static final String EXPECTED_TRAIL_CODE = "123BO";
+    public static final String EXPECTED_TRAIL_ID = "123BO";
 
     private static final String EXPECTED_NAME = "ANY";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
@@ -113,7 +111,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public void delete() {
         String importedTrailId = trailResponse.getContent().get(0).getId();
         TrailResponse deletedById = adminTrailController.deleteById(importedTrailId);
-        assertThat(deletedById.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+        assertThat(deletedById.getContent().get(0).getCode()).isEqualTo(EXPECTED_TRAIL_ID);
         TrailResponse getTrail = trailController.getById(importedTrailId, TrailSimplifierLevel.FULL);
         Assert.assertTrue(getTrail.getContent().isEmpty());
     }
@@ -123,13 +121,13 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
         assertThat(adminTrailController).isNotNull();
     }
 
-    @After
-    public void setDown() {
-        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
-    }
+//    @After
+//    public void setDown() {
+//        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
+//    }
 
     private void assertFirtElement(TrailDto firstElement) {
-        assertThat(firstElement.getCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+        assertThat(firstElement.getCode()).isEqualTo(EXPECTED_TRAIL_ID);
         assertThat(firstElement.getCoordinates()).isEqualTo(EXPECTED_TRAIL_COORDINATES);
         assertThat(firstElement.getDescription()).isEqualTo(EXPECTED_DESCRIPTION);
         assertThat(firstElement.getCountry()).isEqualTo(EXPECTED_COUNTRY);
@@ -158,7 +156,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
         LOCATION_REFS = Arrays.asList(placeStartRef, new PlaceRefDto(EXPECTED_NAME,
                 INTERMEDIATE_EXPECTED_COORDINATE_DTO, placeId), endPlaceRef);
 
-        return new TrailImportDto(EXPECTED_TRAIL_CODE, EXPECTED_NAME, EXPECTED_DESCRIPTION,
+        return new TrailImportDto(EXPECTED_TRAIL_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 ANY_OFFICIAL_ETA, placeStartRef, endPlaceRef, LOCATION_REFS,
                 EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
                 EXPECTED_TRAIL_COORDINATES, REALM, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, emptyList(), EXPECTED_DATE,

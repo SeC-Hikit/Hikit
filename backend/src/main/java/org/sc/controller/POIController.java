@@ -44,7 +44,7 @@ public class POIController {
         return new CountResponse(Status.OK, emptySet(), new CountDto(count));
     }
 
-    @Operation(summary = "Retrieve POI")
+    @Operation(summary = "Retrieve POIs")
     @GetMapping
     public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {

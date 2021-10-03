@@ -53,7 +53,7 @@ public class TrailController {
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
             @RequestParam(required = false, defaultValue = "*") String realm,
-            @RequestParam(defaultValue = "low") TrailSimplifierLevel level) {
+            @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level) {
         return trailResponseHelper
                 .constructResponse(Collections.emptySet(), trailManager.
                                 get(skip, limit, level, realm),
@@ -63,7 +63,7 @@ public class TrailController {
     @Operation(summary = "Retrieve trail by ID")
     @GetMapping("/{id}")
     public TrailResponse getById(@PathVariable String id,
-                                 @RequestParam(defaultValue = "low") TrailSimplifierLevel level) {
+                                 @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level) {
         return trailResponseHelper
                 .constructResponse(Collections.emptySet(), trailManager.getById(id, level),
                         trailManager.count(),

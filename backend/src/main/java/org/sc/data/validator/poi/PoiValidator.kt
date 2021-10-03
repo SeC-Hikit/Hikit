@@ -8,7 +8,9 @@ import org.sc.data.validator.KeyValValidator
 import org.sc.data.validator.Validator
 import org.sc.data.validator.ValidatorUtils
 import org.sc.data.validator.auth.AuthRealmValidator
+import org.sc.data.validator.trail.TrailExistenceValidator
 import org.sc.manager.PoiManager
+import org.sc.manager.TrailManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -18,6 +20,7 @@ class PoiValidator @Autowired constructor(
     private val keyValValidator: KeyValValidator,
     private val coordinatesValidator: CoordinatesValidator,
     private val poiManager: PoiManager,
+    private val trailExistenceValidator: TrailExistenceValidator,
     private val realmValidator: AuthRealmValidator
 ) : Validator<PoiDto> {
 
@@ -32,6 +35,9 @@ class PoiValidator @Autowired constructor(
         if(request.createdOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.CREATED_ON))
         if(request.lastUpdatedOn == null) { String.format(dateInFutureError, Poi.LAST_UPDATE_ON) }
         if(request.lastUpdatedOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.LAST_UPDATE_ON))
+        request.trailIds.forEach {
+            errors.addAll(trailExistenceValidator.validate(it))
+        }
         errors.addAll(coordinatesValidator.validate(request.coordinates))
         request.keyVal.forEach {
             val err = keyValValidator.validate(it)

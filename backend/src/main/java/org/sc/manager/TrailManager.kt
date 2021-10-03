@@ -19,17 +19,16 @@ import java.util.logging.Logger
 
 @Component
 class TrailManager @Autowired constructor(
-    private val trailDAO: TrailDAO,
-    private val maintenanceDAO: MaintenanceDAO,
-    private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
-    private val placeDAO: PlaceDAO,
-    private val trailFileManager: TrailFileManager,
-    private val trailMapper: TrailMapper,
-    private val linkedMediaMapper: LinkedMediaMapper,
-    private val placeRefMapper: PlaceRefMapper,
-    private val coordinatesMapper: CoordinatesMapper,
-    private val trailIntersectionMapper: TrailIntersectionMapper,
-    private val altitudeService: AltitudeServiceAdapter
+        private val trailDAO: TrailDAO,
+        private val maintenanceDAO: MaintenanceDAO,
+        private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
+        private val placeDAO: PlaceDAO,
+        private val trailMapper: TrailMapper,
+        private val linkedMediaMapper: LinkedMediaMapper,
+        private val placeRefMapper: PlaceRefMapper,
+        private val coordinatesMapper: CoordinatesMapper,
+        private val trailIntersectionMapper: TrailIntersectionMapper,
+        private val altitudeService: AltitudeServiceAdapter
 ) {
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)

@@ -29,12 +29,7 @@ import static org.sc.integration.TrailImportRestIntegrationTest.LOCATION_REFS;
 @ActiveProfiles("test")
 public class TrailPreviewRestIntegrationTest {
 
-    private static final String EXPECTED_NAME = "ANY";
-    private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
-    private static final Date EXPECTED_DATE = new Date();
-    public static final String EXPECTED_COUNTRY = "Italy";
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
-    public static final String EXPECTED_MAINTAINANCE_SECTION = "CAI Bologna";
     public static final String ANY_REALM = "S&C";
 
     public TrailImportDto expectedTrailDto;
@@ -69,7 +64,7 @@ public class TrailPreviewRestIntegrationTest {
 
     private void assertAll(TrailPreviewDto firstResult) {
         assertThat(firstResult.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
-        assertThat(firstResult.getCode()).isEqualTo(TrailImportRestIntegrationTest.EXPECTED_TRAIL_CODE);
+        assertThat(firstResult.getCode()).isEqualTo(TrailImportRestIntegrationTest.EXPECTED_TRAIL_ID);
         assertThat(firstResult.getStartPos()).isEqualTo(LOCATION_REFS.get(0));
         assertThat(firstResult.getFinalPos()).isEqualTo(LOCATION_REFS.get(2));
     }

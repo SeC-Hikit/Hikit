@@ -2,14 +2,15 @@ package org.sc.integration;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.sc.common.rest.CoordinatesDto;
-import org.sc.common.rest.KeyValueDto;
-import org.sc.common.rest.LinkedMediaDto;
-import org.sc.common.rest.PoiDto;
+import org.sc.common.rest.*;
 import org.sc.common.rest.response.PoiResponse;
+import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.POIController;
+import org.sc.controller.PlaceController;
+import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminPoiController;
+import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.Poi;
 import org.sc.data.model.PoiMacroType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,11 @@ public class PoiRestIntegrationTest {
     public static final String EXPECTED_ID = "MY_ID";
     public static final String EXPECTED_NAME = "ANY_POI";
     public static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
-    public static final String EXPECTED_TRAIL_CODE = "123BO";
     public static final Date EXPECTED_DATE = new Date();
     public static final CoordinatesDto EXPECTED_COORDINATE = new CoordinatesDto(44.436084, 11.315620, 250.0);
     public static final List<String> EXPECTED_MICRO_TYPES = Arrays.asList("minorType1", "minorType2");
     public static final PoiMacroType EXPECTED_MACRO_TYPE = PoiMacroType.BELVEDERE;
     public static final List<String> EXPECTED_EXTERNAL_RESOURCES = Arrays.asList("http://externalresource.com", "http://externalresource2.com");
-    public static final List<String> EXPECTED_TRAIL_IDS = Collections.singletonList(EXPECTED_TRAIL_CODE);
     public static final List<LinkedMediaDto> EXPECTED_MEDIA_IDS = Collections.emptyList();
     public static final List<String> EXPECTED_TAGS = Arrays.asList("poiType", "poiType2");
     public static final KeyValueDto EXPECTED_KEYVAL = new KeyValueDto("a", "b");
@@ -51,13 +50,22 @@ public class PoiRestIntegrationTest {
     @Autowired
     private POIController poiController;
 
+    @Autowired
+    private AdminPlaceController placeController;
+    @Autowired
+    private AdminTrailController adminTrailController;
+    private String importedTrailId;
+
     @Before
     public void setUp(){
-        IntegrationUtils.clearCollections(dataSource);
+//        IntegrationUtils.clearCollections(dataSource);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
+        importedTrailId = trailResponse.getContent().get(0).getId();
         adminPoiController.create(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
-                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
     }
@@ -88,7 +96,7 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getTrailByTrailId_shouldFindOne(){
-        PoiResponse getPoi = poiController.getByTrail("123BO", 0, 1);
+        PoiResponse getPoi = poiController.getByTrail(importedTrailId, 0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
@@ -122,7 +130,7 @@ public class PoiRestIntegrationTest {
         adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
-                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
@@ -145,7 +153,7 @@ public class PoiRestIntegrationTest {
         adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
-                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
@@ -159,7 +167,7 @@ public class PoiRestIntegrationTest {
         adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
-                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
@@ -188,7 +196,7 @@ public class PoiRestIntegrationTest {
         adminPoiController.create(new PoiDto(anyOtherId, anyOtherName, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
-                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
@@ -231,6 +239,6 @@ public class PoiRestIntegrationTest {
         assertThat(firstElement.getExternalResources()).isEqualTo(EXPECTED_EXTERNAL_RESOURCES);
         assertThat(firstElement.getTags()).isEqualTo(EXPECTED_TAGS);
         assertThat(firstElement.getMediaList()).isEqualTo(EXPECTED_MEDIA_IDS);
-        assertThat(firstElement.getTrailIds()).isEqualTo(EXPECTED_TRAIL_IDS);
+        assertThat(firstElement.getTrailIds()).isEqualTo(Collections.singletonList(importedTrailId));
     }
 }

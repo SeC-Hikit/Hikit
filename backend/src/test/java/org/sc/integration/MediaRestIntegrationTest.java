@@ -138,7 +138,7 @@ public class MediaRestIntegrationTest  {
         adminPoiController.create(new PoiDto(EXPECTED_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
-                EXPECTED_MEDIA_IDS, EXPECTED_TRAIL_IDS,
+                EXPECTED_MEDIA_IDS, Collections.singletonList(trailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
