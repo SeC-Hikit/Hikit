@@ -20,7 +20,7 @@ class PoiManager @Autowired constructor(
     private val authFacade: AuthFacade)
 {
 
-    fun getPoiPaginated(page: Int, count: Int): List<PoiDto> {
+    fun getPoiPaginated(page: Int, count: Int, realm: String): List<PoiDto> {
         return poiDAO.get(page, count).map { poiDtoMapper.poiToPoiDto(it) }
     }
 

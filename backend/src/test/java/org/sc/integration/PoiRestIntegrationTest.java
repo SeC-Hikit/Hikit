@@ -43,6 +43,7 @@ public class PoiRestIntegrationTest {
     public static final List<String> EXPECTED_TAGS = Arrays.asList("poiType", "poiType2");
     public static final KeyValueDto EXPECTED_KEYVAL = new KeyValueDto("a", "b");
     public static final List<KeyValueDto> EXPECTED_KEY_VALS = Collections.singletonList(EXPECTED_KEYVAL);
+    public static final String ANY_REALM = "S&C";
 
     @Autowired
     private DataSource dataSource;
@@ -72,7 +73,7 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getAllPaged_shouldFindOne(){
-        PoiResponse getPoi = poiController.get(0, 1);
+        PoiResponse getPoi = poiController.get(0, 1, ANY_REALM);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
@@ -126,7 +127,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
-        PoiResponse getPoi = poiController.get( 0, 3);
+        PoiResponse getPoi = poiController.get( 0, 3, ANY_REALM);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
@@ -149,7 +150,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
-        PoiResponse getPoi = poiController.get( 0, 3);
+        PoiResponse getPoi = poiController.get( 0, 3, ANY_REALM);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
@@ -163,7 +164,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
-        PoiResponse getAgainPoi = poiController.get( 0, 3);
+        PoiResponse getAgainPoi = poiController.get( 0, 3, ANY_REALM);
 
         PoiDto actual = getAgainPoi.getContent()
                 .stream()
@@ -192,7 +193,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
-        PoiResponse getPoi = poiController.get( 0, 3);
+        PoiResponse getPoi = poiController.get( 0, 3, ANY_REALM);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);

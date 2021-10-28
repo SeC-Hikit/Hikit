@@ -47,8 +47,9 @@ public class POIController {
     @Operation(summary = "Retrieve POI")
     @GetMapping
     public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiPaginated(skip, limit),
+                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                           @RequestParam(required = false, defaultValue = "*") String realm) {
+        return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiPaginated(skip, limit, realm),
                 poiManager.count(), skip, limit);
     }
 
