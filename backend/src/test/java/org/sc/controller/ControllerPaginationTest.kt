@@ -2,6 +2,8 @@ package org.sc.controller
 
 import org.junit.Assert.*
 import org.junit.Test
+import org.sc.controller.ControllerPagination.checkLimSkip
+import kotlin.test.assertFailsWith
 
 class ControllerPaginationTest {
 
@@ -21,6 +23,20 @@ class ControllerPaginationTest {
         assertEquals(2, ControllerPagination.getCurrentPage(11, 10))
         assertEquals(3, ControllerPagination.getCurrentPage(20, 10))
         assertEquals(3, ControllerPagination.getCurrentPage(29, 10))
+    }
+
+    @Test
+    fun `shall throw exception`() {
+        assertFailsWith<IllegalArgumentException> {
+            checkLimSkip(10, 20)
+        }
+    }
+
+    @Test
+    fun `shall throw exception if limit equals to zero`() {
+        assertFailsWith<IllegalArgumentException> {
+            checkLimSkip(0, 20)
+        }
     }
 
 }
