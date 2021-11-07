@@ -14,7 +14,9 @@ class TrailImportValidator @Autowired constructor (
 
     companion object {
         private const val minGeoPoints = 3
+        private const val minLocations = 2
         const val emptyListPointError = "No coordinates"
+        const val minLocationBoundaryError = "At least $minLocations locations are required"
         const val tooFewPointsError = "At least $minGeoPoints geoPoints should be specified"
         const val dateInFutureError = "The provided date is in the future"
     }
@@ -34,6 +36,9 @@ class TrailImportValidator @Autowired constructor (
             if (request.lastUpdate.after(Date())) {
                 errors.add(dateInFutureError)
             }
+        }
+        if(request.locations.size < 2) {
+            errors.add(minLocationBoundaryError)
         }
 
         errors.addAll(request.locations.flatMap { placeRefValidator.validate(it) })
