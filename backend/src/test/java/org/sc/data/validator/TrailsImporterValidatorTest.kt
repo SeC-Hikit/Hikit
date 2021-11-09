@@ -185,5 +185,35 @@ class TrailsImporterValidatorTest {
         assertTrue(validateResult.contains(dateInFutureError))
     }
 
+    @Test
+    fun `validation fails if at least start and end location are present`() {
+
+        val trailsImporterValidator = TrailImportValidator(trailCoordsValidatorMock, placeValidatorMock)
+
+        val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
+        val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
+        val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
+
+        every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
+        every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
+        every { trailCoordsValidatorMock.validate(finalTrailCoordsPosMock) } returns emptySet()
+
+
+        val requestMock = mockkClass(TrailImportDto::class)
+
+        every { requestMock.name } returns "Trail name"
+        every { requestMock.code } returns "001BO"
+        every { requestMock.description } returns "A description"
+        every { requestMock.classification } returns TrailClassification.E
+        every { requestMock.country } returns "Italy"
+        every { requestMock.lastUpdate } returns Date()
+        every { requestMock.locations } returns emptyList()
+        every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
+
+        val validateResult = trailsImporterValidator.validate(requestMock)
+
+        assertTrue(validateResult.isNotEmpty())
+    }
+
 
 }
