@@ -4,11 +4,14 @@ import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import org.sc.common.rest.PlaceDto
+import org.sc.common.rest.PlaceRefDto
 import org.sc.data.model.TrailClassification
 import org.sc.common.rest.TrailCoordinatesDto
 import org.sc.common.rest.TrailImportDto
+import org.sc.data.model.PlaceRef
 import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError
 import java.util.*
 
@@ -20,6 +23,15 @@ class TrailsImporterValidatorTest {
     private val placeValidatorMock: PlaceRefValidator =
             mockkClass(PlaceRefValidator::class)
 
+    private val startPosMock = mockkClass(PlaceRefDto::class)
+    private val endPosMock = mockkClass(PlaceRefDto::class)
+
+    @Before
+    fun setup () {
+        every { placeValidatorMock.validate(startPosMock) } returns emptySet()
+        every { placeValidatorMock.validate(endPosMock) } returns emptySet()
+    }
+
     @Test
     fun `validation shall pass when all data correct`() {
 
@@ -28,6 +40,7 @@ class TrailsImporterValidatorTest {
         val anyTrailRequestPosMock = mockkClass(TrailCoordinatesDto::class)
         val startTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
         val finalTrailCoordsPosMock = mockkClass(TrailCoordinatesDto::class)
+
 
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns emptySet()
         every { trailCoordsValidatorMock.validate(startTrailCoordsPosMock) } returns emptySet()
@@ -41,9 +54,9 @@ class TrailsImporterValidatorTest {
         every { requestMock.classification } returns TrailClassification.E
         every { requestMock.country } returns "Italy"
         every { requestMock.lastUpdate } returns Date()
-        every { requestMock.locations } returns emptyList()
-        every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 
+        every { requestMock.locations } returns listOf(startPosMock, endPosMock)
+        every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 
         val validateResult = trailsImporterValidator.validate(requestMock)
         assertTrue(validateResult.isEmpty())
@@ -71,13 +84,12 @@ class TrailsImporterValidatorTest {
         every { requestMock.classification } returns TrailClassification.E
         every { requestMock.country } returns "Italy"
         every { requestMock.lastUpdate } returns Date()
-        every { requestMock.locations } returns emptyList()
+        every { requestMock.locations } returns listOf(startPosMock, endPosMock)
         every { requestMock.coordinates } returns listOf(startTrailCoordsPosMock, anyTrailRequestPosMock, finalTrailCoordsPosMock)
 
 
         val validateResult = trailsImporterValidator.validate(requestMock)
         assertTrue(validateResult.contains("Empty field 'Name'"))
-        assertEquals(1, validateResult.size)
     }
 
     @Test
@@ -108,7 +120,6 @@ class TrailsImporterValidatorTest {
         val validateResult = trailsImporterValidator.validate(requestMock)
         assertTrue(validateResult.contains("Empty field 'Name'"))
         assertTrue(validateResult.contains("Empty field 'Code'"))
-        assertEquals(2, validateResult.size)
     }
 
     @Test
@@ -142,7 +153,6 @@ class TrailsImporterValidatorTest {
         assertTrue(validateResult.contains("Empty field 'Name'"))
         assertTrue(validateResult.contains("Empty field 'Code'"))
         assertTrue(validateResult.contains(errorWithTrail))
-        assertEquals(3, validateResult.size)
     }
 
     @Test
@@ -173,9 +183,7 @@ class TrailsImporterValidatorTest {
 
         val validateResult = trailsImporterValidator.validate(requestMock)
         assertTrue(validateResult.contains(dateInFutureError))
-        assertEquals(1, validateResult.size)
     }
-
 
 
 }
