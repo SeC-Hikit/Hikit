@@ -32,14 +32,17 @@ public class AccessibilityReportController {
     private final AccessibilityReportResponseHelper accessibilityIssueResponseHelper;
     private final GeneralValidator generalValidator;
     private final AccessibilityReportService accessService;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public AccessibilityReportController(final AccessibilityReportService accessibilityNotificationManager,
                                          final AccessibilityReportResponseHelper accessibilityIssueResponseHelper,
-                                         final GeneralValidator generalValidator) {
+                                         final GeneralValidator generalValidator,
+                                         final ControllerPagination controllerPagination) {
         this.accessService = accessibilityNotificationManager;
         this.accessibilityIssueResponseHelper = accessibilityIssueResponseHelper;
         this.generalValidator = generalValidator;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Count all accessibility reports for realm")
@@ -82,6 +85,7 @@ public class AccessibilityReportController {
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         final List<AccessibilityReportDto> upgradedByTrailId = accessService.getByTrailId(id, skip, limit);
+        controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 upgradedByTrailId, accessService.countByTrailId(id), skip, limit);
     }
@@ -92,6 +96,7 @@ public class AccessibilityReportController {
             @PathVariable final String realm,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessService.getUpgradedByRealm(realm, skip, limit),
                 accessService.countUpgraded(realm), skip, limit);
@@ -112,6 +117,7 @@ public class AccessibilityReportController {
             @PathVariable final String realm,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessService.getUnapgradedByRealm(realm, skip, limit),
                 accessService.countUnapgraded(realm), skip, limit);

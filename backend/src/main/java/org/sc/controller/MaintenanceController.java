@@ -28,12 +28,15 @@ public class MaintenanceController {
 
     private final MaintenanceResponseHelper maintenanceResponseHelper;
     private final MaintenanceManager maintenanceManager;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public MaintenanceController(final MaintenanceManager maintenanceManager,
-                                 final MaintenanceResponseHelper maintenanceResponseHelper) {
+                                 final MaintenanceResponseHelper maintenanceResponseHelper,
+                                 final ControllerPagination controllerPagination) {
         this.maintenanceManager = maintenanceManager;
         this.maintenanceResponseHelper = maintenanceResponseHelper;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Retrieve all future maintenance")
@@ -41,6 +44,7 @@ public class MaintenanceController {
     public MaintenanceResponse getFutureMaintenance(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return maintenanceResponseHelper
                 .constructResponse(emptySet(), maintenanceManager.getFuture(skip, limit),
                         maintenanceManager.countFutureMaintenance(), skip, limit);
@@ -51,6 +55,7 @@ public class MaintenanceController {
     public MaintenanceResponse getPastMaintenance(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return maintenanceResponseHelper
                 .constructResponse(emptySet(), maintenanceManager.getPast(skip, limit),
                         maintenanceManager.countFutureMaintenance(), skip, limit);
@@ -62,6 +67,7 @@ public class MaintenanceController {
             @PathVariable String id,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return maintenanceResponseHelper
                 .constructResponse(emptySet(), maintenanceManager.getPastMaintenanceForTrailId(id, skip, limit),
                         Constants.ONE, skip, limit);

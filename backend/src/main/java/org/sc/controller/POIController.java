@@ -16,6 +16,7 @@ import static java.lang.String.format;
 import static java.util.Collections.*;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.controller.ControllerPagination.*;
 
 @RestController
 @RequestMapping(POIController.PREFIX)
@@ -27,14 +28,16 @@ public class POIController {
     private final PoiManager poiManager;
     private final GeneralValidator generalValidator;
     private final PoiResponseHelper poiResponseHelper;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public POIController(final PoiManager poiManager,
                          final GeneralValidator generalValidator,
-                         final PoiResponseHelper poiResponseHelper) {
+                         final PoiResponseHelper poiResponseHelper,final ControllerPagination controllerPagination) {
         this.poiManager = poiManager;
         this.generalValidator = generalValidator;
         this.poiResponseHelper = poiResponseHelper;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Count all POIs in DB")
@@ -48,6 +51,7 @@ public class POIController {
     @GetMapping
     public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiPaginated(skip, limit),
                 poiManager.count(), skip, limit);
     }
@@ -64,6 +68,7 @@ public class POIController {
     public PoiResponse getByTrail(@PathVariable String code,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByTrailId(code, skip, limit),
                 poiManager.count(), skip, limit);
     }
@@ -73,6 +78,7 @@ public class POIController {
     public PoiResponse getByMacro(@PathVariable String type,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByMacro(type, skip, limit),
                 poiManager.count(), skip, limit);
     }
@@ -82,6 +88,7 @@ public class POIController {
     public PoiResponse getByNameOrTags(@PathVariable String name,
                                        @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                        @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByName(name, skip, limit),
                 poiManager.count(), skip, limit);
     }
