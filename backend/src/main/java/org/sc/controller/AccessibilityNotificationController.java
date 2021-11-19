@@ -24,12 +24,15 @@ public class AccessibilityNotificationController {
 
     private final AccessibilityIssueResponseHelper accessibilityIssueResponseHelper;
     private final AccessibilityNotificationManager accessibilityNotManager;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public AccessibilityNotificationController(final AccessibilityNotificationManager accessibilityNotificationManager,
-                                               final AccessibilityIssueResponseHelper accessibilityIssueResponseHelper) {
+                                               final AccessibilityIssueResponseHelper accessibilityIssueResponseHelper,
+                                               final ControllerPagination controllerPagination) {
         this.accessibilityNotManager = accessibilityNotificationManager;
         this.accessibilityIssueResponseHelper = accessibilityIssueResponseHelper;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Count all accessibility notifications in DB")
@@ -44,6 +47,7 @@ public class AccessibilityNotificationController {
     public AccessibilityResponse getSolved(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessibilityNotManager.getSolved(skip, limit),
                 accessibilityNotManager.count(), skip, limit);
@@ -56,6 +60,7 @@ public class AccessibilityNotificationController {
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         List<AccessibilityNotificationDto> resolvedById = accessibilityNotManager.getResolvedByTrailId(trailId, skip, limit);
+        controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolvedById,
                 accessibilityNotManager.countSolvedForTrailId(trailId), skip, limit);
     }
@@ -65,6 +70,7 @@ public class AccessibilityNotificationController {
     public AccessibilityResponse getNotSolved(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessibilityNotManager.getUnresolved(skip, limit),
                 accessibilityNotManager.countNotSolved(), skip, limit);
@@ -76,6 +82,7 @@ public class AccessibilityNotificationController {
             @PathVariable String trailId,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessibilityNotManager.getUnresolvedByTrailId(trailId, skip, limit),
                 accessibilityNotManager.countNotSolvedForTrailId(trailId), skip, limit);

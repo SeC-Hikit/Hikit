@@ -23,11 +23,14 @@ public class TrailRawController {
 
     private final TrailRawManager trailRawManager;
     private final TrailRawResponseHelper trailRawResponseHelper;
+    private final ControllerPagination controllerPagination;
 
     public TrailRawController(final TrailRawManager trailRawManager,
-                              final TrailRawResponseHelper trailRawResponseHelper) {
+                              final TrailRawResponseHelper trailRawResponseHelper,
+                              final ControllerPagination controllerPagination) {
         this.trailRawManager = trailRawManager;
         this.trailRawResponseHelper = trailRawResponseHelper;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Retrieve raw trails")
@@ -36,6 +39,7 @@ public class TrailRawController {
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit
     ) {
+        controllerPagination.checkSkipLim(skip, limit);
         return trailRawResponseHelper
                 .constructResponse(Collections.emptySet(),
                         trailRawManager.get(skip, limit),

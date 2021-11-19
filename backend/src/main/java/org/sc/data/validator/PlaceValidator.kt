@@ -14,12 +14,14 @@ class PlaceValidator @Autowired constructor(
 
     companion object {
         const val noNameError = "No name specified in position"
+        const val noCoords = "Empty coordinates list. At least one coordinate shall be specified"
     }
 
     override fun validate(request: PlaceDto): Set<String> {
         val listOfErrorMessages = mutableSetOf<String>()
         listOfErrorMessages.addAll(request.mediaIds.flatMap { mediaExistenceValidator.validate(it) })
         listOfErrorMessages.addAll(request.crossingTrailIds.flatMap { trailExistenceValidator.validate(it) })
+        if(request.coordinates.isEmpty())listOfErrorMessages.add(noCoords)
         listOfErrorMessages.addAll(request.coordinates.flatMap { trailCoordinatesCreationValidator.validate(it) })
         if (isEmpty(request.name)) listOfErrorMessages.add(noNameError)
         return listOfErrorMessages
