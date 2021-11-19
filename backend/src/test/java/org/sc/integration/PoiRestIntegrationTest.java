@@ -6,6 +6,8 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
+import org.sc.configuration.auth.AuthFacade;
+import org.sc.configuration.auth.AuthHelper;
 import org.sc.controller.POIController;
 import org.sc.controller.PlaceController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -57,6 +59,9 @@ public class PoiRestIntegrationTest {
     private AdminTrailController adminTrailController;
     private String importedTrailId;
 
+    @Autowired
+    private AuthFacade authHelper;
+
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
@@ -68,7 +73,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, new RecordDetailsDto(new Date(), "AnyUser", "SeC-Bo-123", authHelper.getAuthHelper().getRealm())));
     }
 
     @Test
@@ -77,6 +82,20 @@ public class PoiRestIntegrationTest {
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
+    }
+
+    @Test
+    public void getByRealm_shouldFindOne() {
+        PoiResponse getPoi = poiController.get(0, 1, authHelper.getAuthHelper().getRealm());
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertThat(getPoi.getContent().size()).isEqualTo(1);
+        assertGetFirstElement(firstElement);
+    }
+
+    @Test
+    public void getByUnknownRealm_shouldReturnEmpty() {
+        PoiResponse getPoi = poiController.get(0, 1, "Any other sec realm");
+        assertThat(getPoi.getContent()).isEmpty();
     }
 
     @Test
