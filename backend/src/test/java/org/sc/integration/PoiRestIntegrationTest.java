@@ -6,6 +6,8 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
+import org.sc.configuration.auth.AuthFacade;
+import org.sc.configuration.auth.AuthHelper;
 import org.sc.controller.POIController;
 import org.sc.controller.PlaceController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -24,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -56,8 +59,11 @@ public class PoiRestIntegrationTest {
     private AdminTrailController adminTrailController;
     private String importedTrailId;
 
+    @Autowired
+    private AuthFacade authHelper;
+
     @Before
-    public void setUp(){
+    public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
@@ -67,11 +73,11 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, new RecordDetailsDto(new Date(), "AnyUser", "SeC-Bo-123", authHelper.getAuthHelper().getRealm())));
     }
 
     @Test
-    public void getById_shouldFindOne(){
+    public void getById_shouldFindOne() {
         PoiResponse getPoi = poiController.get(EXPECTED_ID);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
@@ -79,15 +85,29 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
-    public void getAllPaged_shouldFindOne(){
-        PoiResponse getPoi = poiController.get(0, 1);
+    public void getByRealm_shouldFindOne() {
+        PoiResponse getPoi = poiController.get(0, 1, authHelper.getAuthHelper().getRealm());
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
     }
 
     @Test
-    public void getByMacro_shouldFindOne(){
+    public void getByUnknownRealm_shouldReturnEmpty() {
+        PoiResponse getPoi = poiController.get(0, 1, "Any other sec realm");
+        assertThat(getPoi.getContent()).isEmpty();
+    }
+
+    @Test
+    public void getAllPaged_shouldFindOne() {
+        PoiResponse getPoi = poiController.get(0, 1, NO_FILTERING_TOKEN);
+        PoiDto firstElement = getPoi.getContent().get(0);
+        assertThat(getPoi.getContent().size()).isEqualTo(1);
+        assertGetFirstElement(firstElement);
+    }
+
+    @Test
+    public void getByMacro_shouldFindOne() {
         PoiResponse getPoi = poiController.getByMacro(EXPECTED_MACRO_TYPE.toString(), 0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
@@ -95,7 +115,7 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
-    public void getTrailByTrailId_shouldFindOne(){
+    public void getTrailByTrailId_shouldFindOne() {
         PoiResponse getPoi = poiController.getByTrail(importedTrailId, 0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
@@ -103,7 +123,7 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
-    public void getTrailLikeName_shouldFind(){
+    public void getTrailLikeName_shouldFind() {
         PoiResponse getPoi = poiController.getByNameOrTags("poiType", 0, 1);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
@@ -111,19 +131,19 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
-    public void getTrailByNonExistingTrailId_shouldNotFindAny(){
+    public void getTrailByNonExistingTrailId_shouldNotFindAny() {
         PoiResponse getPoi = poiController.getByTrail("100BO_NOT_EXISTING", 0, 1);
         Assert.assertTrue(getPoi.getContent().isEmpty());
     }
 
     @Test
-    public void getTrailByNonExistingMacro_shouldNotFindAny(){
+    public void getTrailByNonExistingMacro_shouldNotFindAny() {
         PoiResponse getPoi = poiController.getByMacro(PoiMacroType.CULTURAL.toString(), 0, 1);
         Assert.assertTrue(getPoi.getContent().isEmpty());
     }
 
     @Test
-    public void getTrails_shouldFindTwo(){
+    public void getTrails_shouldFindTwo() {
         String anyOtherName = "ANY_OTHER_NAME";
         String anyOtherId = "ANY_OTHER_ID";
 
@@ -134,7 +154,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
-        PoiResponse getPoi = poiController.get( 0, 3);
+        PoiResponse getPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
@@ -143,7 +163,7 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateKeyVals(){
+    public void shouldUpdateKeyVals() {
         String anyOtherName = "ANY_OTHER_NAME";
         String anyOtherId = "ANY_OTHER_ID";
         KeyValueDto anyOtherKeyVal = new KeyValueDto("age", "3");
@@ -157,7 +177,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
-        PoiResponse getPoi = poiController.get( 0, 3);
+        PoiResponse getPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
@@ -171,7 +191,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
-        PoiResponse getAgainPoi = poiController.get( 0, 3);
+        PoiResponse getAgainPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
 
         PoiDto actual = getAgainPoi.getContent()
                 .stream()
@@ -186,7 +206,7 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
-    public void afterSomeKeyValuesAreAlreadyPresent_shouldUpdateKeyValsWithOneOnly(){
+    public void afterSomeKeyValuesAreAlreadyPresent_shouldUpdateKeyValsWithOneOnly() {
         String anyOtherName = "ANY_OTHER_NAME";
         String anyOtherId = "ANY_OTHER_ID";
         KeyValueDto anyOtherKeyVal = new KeyValueDto("age", "3");
@@ -200,7 +220,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
-        PoiResponse getPoi = poiController.get( 0, 3);
+        PoiResponse getPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertGetFirstElement(firstElement);
         PoiDto secondElement = getPoi.getContent().get(1);
@@ -219,12 +239,12 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
-    public void contextLoads(){
+    public void contextLoads() {
         assertThat(adminPoiController).isNotNull();
     }
 
     @After
-    public void setDown(){
+    public void setDown() {
         IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
     }
 

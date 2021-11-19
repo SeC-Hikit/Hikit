@@ -75,7 +75,7 @@ public class MaintenanceRestIntegrationTest {
 
     @Before
     public void setUp() {
-        IntegrationUtils.clearCollections(dataSource);
+//        IntegrationUtils.clearCollections(dataSource);
 
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
@@ -120,7 +120,7 @@ public class MaintenanceRestIntegrationTest {
 
     @After
     public void setDown() {
-        IntegrationUtils.emptyCollection(dataSource, Maintenance.COLLECTION_NAME);
+//        IntegrationUtils.emptyCollection(dataSource, Maintenance.COLLECTION_NAME);
     }
 
 }
