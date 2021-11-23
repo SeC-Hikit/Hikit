@@ -40,8 +40,8 @@ use authentication.
 In case you want to test run S&C in combination with all its dependencies:
 - Run a deployment build (see [Deployment build](#Deployment-build))
 - Run `sh docker/build.sh`
-- Run `docker compose -f docker-compose.yml -f docker-compose.cluster.yml up`
-The service will be available on `http://localhost:8990/api/v1`
+- Run `docker compose -f ./docker/docker-compose.yml -f ./docker/docker-compose.cluster.yml up`
+The service will be available at `http://localhost:8990/api/v<N>` (where <N> is the version number)
 
 ### Production
 As for production, S&C takes advantage of a Keycloak instance, as it does not implement user and roles natively.
