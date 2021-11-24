@@ -20,7 +20,8 @@ public class FileDetailsMapper implements Mapper<FileDetails> {
                 document.getString(ON_INSTANCE),
                 document.getString(REALM),
                 document.getString(FILENAME),
-                document.getString(ORIGINAL_FILENAME));
+                document.getString(ORIGINAL_FILENAME),
+                document.getString(LAST_MODIFIED_BY));
     }
 
     @Override
@@ -32,6 +33,7 @@ public class FileDetailsMapper implements Mapper<FileDetails> {
                 .append(ON_INSTANCE, object.getOnInstance())
                 .append(REALM, object.getRealm())
                 .append(FILENAME, object.getFilename())
-                .append(ORIGINAL_FILENAME, object.getOriginalFilename());
+                .append(ORIGINAL_FILENAME, object.getOriginalFilename())
+                .append(LAST_MODIFIED_BY, object.getLastModifiedBy());
     }
 }
