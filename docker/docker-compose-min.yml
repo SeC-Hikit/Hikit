@@ -1,0 +1,8 @@
+version: '3.0'
+services:
+  open_altitude:
+    image: "openelevation/open-elevation"
+    ports:
+      - "8080:8080"
+    volumes:
+    - "./data:/code/data"
