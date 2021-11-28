@@ -34,7 +34,7 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
                 getClassification(doc),
                 getPos(doc, Trail.START_POS),
                 getPos(doc, Trail.FINAL_POS),
-                fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)),
+                fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)),
                 cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)).getCycloClassification()
                         != CycloClassification.UNCLASSIFIED,
                 getStatus(doc));

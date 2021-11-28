@@ -19,7 +19,7 @@ public class TrailRaw {
     public static String START_POS = Trail.START_POS;
     public static String FINAL_POS = Trail.FINAL_POS;
     public static String COORDINATES = Trail.COORDINATES;
-    public static String FILE_DETAILS = Trail.FILE_DETAILS;
+    public static String FILE_DETAILS = Trail.RECORD_DETAILS;
 
     private String id;
     private String name;

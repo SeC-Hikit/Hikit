@@ -66,7 +66,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
                 .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
-                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)))
                 .status(getStatus(doc))
                 .build();
     }
@@ -103,7 +103,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                         .collect(toList()))
                 .append(Trail.GEO_LINE, getGeoLineValue(object))
                 .append(Trail.CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
-                .append(Trail.FILE_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
+                .append(Trail.RECORD_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
                 .append(Trail.STATUS, object.getStatus().toString());
     }
 
@@ -131,7 +131,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
                 .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
-                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.FILE_DETAILS, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)))
                 .status(getStatus(doc))
                 .build();
 

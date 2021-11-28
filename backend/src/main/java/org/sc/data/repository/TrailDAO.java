@@ -35,7 +35,7 @@ public class TrailDAO {
 
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
     public static final String NO_FILTERING = "*";
-    public static final String REALM_STRUCT = Trail.FILE_DETAILS + DOT + FileDetails.REALM;
+    public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
 
 
     private final MongoCollection<Document> collection;
@@ -65,7 +65,7 @@ public class TrailDAO {
                                  final TrailSimplifierLevel trailSimplifierLevel,
                                  final String realm) {
         final Document realmFilter = !realm.equals(NO_FILTERING) ? new Document() :
-                new Document(Trail.FILE_DETAILS + DOT + FileDetails.REALM, realm);
+                new Document(Trail.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
         return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit),
                 TrailSimplifierLevel.LOW);
     }
@@ -235,7 +235,7 @@ public class TrailDAO {
                 include(Trail.CLASSIFICATION),
                 include(Trail.CYCLO),
                 include(Trail.STATUS),
-                include(Trail.FILE_DETAILS),
+                include(Trail.RECORD_DETAILS),
                 include(Trail.LAST_UPDATE_DATE),
                 include(Trail.CODE),
                 computed(Trail.START_POS,
