@@ -30,7 +30,7 @@ public class MediaMapper implements Mapper<Media> {
                 document.getString(Media.FILE_URL),
                 document.getString(Media.MIME),
                 document.getLong(Media.FILE_SIZE),
-                fileDetailsMapper.mapToObject(document.get(Media.FILE_DETAILS, Document.class)));
+                fileDetailsMapper.mapToObject(document.get(Media.RECORD_DETAILS, Document.class)));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MediaMapper implements Mapper<Media> {
                 .append(Media.FILE_URL, object.getFileUrl())
                 .append(Media.MIME, object.getMime())
                 .append(Media.FILE_SIZE, object.getFileSize())
-                .append(Media.FILE_DETAILS,
+                .append(Media.RECORD_DETAILS,
                         fileDetailsMapper.mapToDocument(object.getFileDetails()));
     }
 }
