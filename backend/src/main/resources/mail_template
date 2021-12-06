@@ -1,0 +1,62 @@
+<html>
+<head>
+<style>
+
+footer {
+  text-align: center;
+  padding: 3px;
+  background-color: #1C9466;
+  color: white;
+}
+a:link {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: white;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:active {
+  color: white;
+  background-color: transparent;
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<br>
+<tr>
+<td>
+ <img src="mail_combined_logo.png.png" alt="Head" width="100%" style="display: block;" />
+</td>
+</tr>
+<br>
+ <table border="0" cellpadding="0" cellspacing="0" width="90%" align="center">
+  <tr>
+   <td>
+    <h1 style="font-family:serif">Header</h1>
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <p style="font-family:serif"; align="justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+   </td>
+  </tr>
+  </table>
+<br>
+<footer>
+<p style="font-family:serif">Contatti: <a href="mailto:info@sentieriecartografia.it">info@sentieriecartografia.it</a></p>
+<p><a style="font-family:serif" href="https://www.sentieriecartografia.it/" target="_blank">vai al sito</a></p>
+</footer>
+</body>
+</html>
