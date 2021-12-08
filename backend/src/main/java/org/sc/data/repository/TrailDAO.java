@@ -158,7 +158,7 @@ public class TrailDAO {
                 geoSquare.getTopRight().getLatitude());
         final List<Double> resolvedBottomRightVertex = Arrays.asList(geoSquare.getTopRight().getLongitude(),
                 geoSquare.getBottomLeft().getLatitude());
-        FindIterable<Document> foundTrails = collection.find(
+        final FindIterable<Document> foundTrails = collection.find(
                 new Document(Trail.GEO_LINE,
                         new Document($_GEO_INTERSECT,
                                 new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_LINE_STRING)
@@ -169,7 +169,7 @@ public class TrailDAO {
                                                         geoSquare.getTopRight().getAsList(),
                                                         resolvedBottomRightVertex)
                                         ))))).skip(skip).limit(limit);
-        LOGGER.error("findTrailWithinGeoSquare geoSquare: {}, skip: {}, limit: {}, level: {}, resolvedTopLeftVertex: {}, resolvedBottomRightVertex: {}",
+        LOGGER.info("findTrailWithinGeoSquare geoSquare: {}, skip: {}, limit: {}, level: {}, resolvedTopLeftVertex: {}, resolvedBottomRightVertex: {}",
                 geoSquare, skip, limit, level, resolvedTopLeftVertex, resolvedBottomRightVertex);
         return toTrailsList(foundTrails, level);
     }
