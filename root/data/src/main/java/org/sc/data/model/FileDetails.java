@@ -17,6 +17,7 @@ public class FileDetails {
     public static final String REALM = "realm";
     public static final String FILENAME = "filename";
     public static final String ORIGINAL_FILENAME = "originalFilename";
+    public static final String LAST_MODIFIED_BY = "lastModifiedBy";
 
     private Date uploadedOn;
     private String uploadedBy;
@@ -24,4 +25,5 @@ public class FileDetails {
     private String realm;
     private String filename;
     private String originalFilename;
+    private String lastModifiedBy;
 }

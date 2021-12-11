@@ -16,4 +16,5 @@ public class FileDetailsDto {
     private String realm;
     private String filename;
     private String originalFilename;
+    private String lastModifiedBy;
 }
