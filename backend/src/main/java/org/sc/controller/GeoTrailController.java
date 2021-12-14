@@ -66,7 +66,7 @@ public class GeoTrailController {
     @Operation(summary = "Find geo-located trails within a defined polygon")
     @PostMapping("/locate")
     public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto,
-                                        @RequestParam TrailSimplifierLevel level) {
+                                        @RequestParam(defaultValue = "MEDIUM") TrailSimplifierLevel level) {
 
         final Set<String> errors = generalValidator.validate(rectangleDto);
 
