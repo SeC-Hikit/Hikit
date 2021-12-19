@@ -3,7 +3,9 @@ package org.sc.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @Configuration
 public class AppProperties {
 
@@ -27,6 +29,7 @@ public class AppProperties {
     private final String instanceRealm;
     private final String instanceHostname;
     private final String validationAddress;
+    private final int jobImageBatchSize;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
@@ -43,7 +46,8 @@ public class AppProperties {
                          final @Value("${instance.id}") String instanceId,
                          final @Value("${instance.realm}") String instanceRealm,
                          final @Value("${instance.hostname:127.0.0.1}") String instanceHostname,
-                         final @Value("${instance.report.validation.address}") String validationAddress
+                         final @Value("${instance.report.validation.address}") String validationAddress,
+                         final @Value("${jobImage.batchsize}") int jobImageBatchSize
     ) {
         this.port = port;
         this.trailStorage = storage;
@@ -60,6 +64,7 @@ public class AppProperties {
         this.instanceRealm = instanceRealm;
         this.instanceHostname = instanceHostname;
         this.validationAddress = validationAddress;
+        this.jobImageBatchSize = jobImageBatchSize;
     }
 
     public String getPort() {
@@ -120,5 +125,9 @@ public class AppProperties {
 
     public String getAltitudeServiceHost() {
         return altitudeServiceHost;
+    }
+
+    public int getJobImageBatchSize() {
+        return jobImageBatchSize;
     }
 }
