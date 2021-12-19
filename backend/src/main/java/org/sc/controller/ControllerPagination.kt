@@ -20,4 +20,10 @@ object ControllerPagination {
 
     private fun electResult(toLong: Long) = if (toLong == 0L) 1 else toLong
 
+    fun checkSkipLim(skip: Int, limit: Int) {
+        if (limit <= 0)
+            throw IllegalArgumentException("Limit must be positive!")
+        if (limit < skip)
+            throw IllegalArgumentException("Limit must be greater than skip!")
+    }
 }

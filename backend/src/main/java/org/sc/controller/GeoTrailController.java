@@ -33,17 +33,19 @@ public class GeoTrailController {
     private final TrailIntersectionHelper trailIntersectionHelper;
     private final TrailResponseHelper trailResponseHelper;
     private final GeneralValidator generalValidator;
-
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public GeoTrailController(final TrailManager trailManager,
                               final GeneralValidator generalValidator,
                               final TrailIntersectionHelper trailIntersectionHelper,
-                              final TrailResponseHelper trailResponseHelper) {
+                              final TrailResponseHelper trailResponseHelper,
+                              final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
         this.trailIntersectionHelper = trailIntersectionHelper;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Find all existing trail intersections for a given multi-coordinate line")
@@ -52,6 +54,7 @@ public class GeoTrailController {
                                                            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         final Set<String> validate = generalValidator.validate(geoLineDto);
+        controllerPagination.checkSkipLim(skip, limit);
 
         if (!validate.isEmpty()) return trailIntersectionHelper.constructResponse(validate, emptyList(), 0, skip, limit);
 
@@ -63,7 +66,7 @@ public class GeoTrailController {
     @Operation(summary = "Find geo-located trails within a defined polygon")
     @PostMapping("/locate")
     public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto,
-                                        @RequestParam TrailSimplifierLevel level) {
+                                        @RequestParam(defaultValue = "MEDIUM") TrailSimplifierLevel level) {
 
         final Set<String> errors = generalValidator.validate(rectangleDto);
 

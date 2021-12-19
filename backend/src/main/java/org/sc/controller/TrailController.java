@@ -32,18 +32,21 @@ public class TrailController {
     protected final TrailResponseHelper trailResponseHelper;
     protected final TrailImporterService trailManagementManager;
     protected final AuthFacade authenticationProvider;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
                            final GeneralValidator generalValidator,
                            final TrailResponseHelper trailResponseHelper,
                            final TrailImporterService trailManagementManager,
-                           final AuthFacade authFacade) {
+                           final AuthFacade authFacade,
+                           final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
         this.trailManagementManager = trailManagementManager;
         this.authenticationProvider = authFacade;
+        this.controllerPagination = controllerPagination;
     }
 
 
@@ -54,6 +57,7 @@ public class TrailController {
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
             @RequestParam(required = false, defaultValue = "*") String realm,
             @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level) {
+        controllerPagination.checkSkipLim(skip, limit);
         return trailResponseHelper
                 .constructResponse(Collections.emptySet(), trailManager.
                                 get(skip, limit, level, realm),
@@ -76,6 +80,7 @@ public class TrailController {
                                       @RequestParam(defaultValue = "low") String level,
                                       @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                       @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         final List<TrailDto> byPlaceRefId = trailManager.getByPlaceRefId(id, skip, limit,
                 TrailSimplifierLevel.valueOf(level));
         return trailResponseHelper.constructResponse(Collections.emptySet(), byPlaceRefId,

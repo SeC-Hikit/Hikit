@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
+import org.sc.data.model.FileDetails;
 import org.sc.data.model.LinkedMedia;
 import org.sc.data.entity.mapper.LinkedMediaMapper;
 import org.sc.data.entity.mapper.PoiMapper;
@@ -16,6 +17,7 @@ import org.sc.data.model.Poi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.print.Doc;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,8 +45,13 @@ public class PoiDAO {
     }
 
     public List<Poi> get(final int page,
-                         final int count) {
-        return toPoisList(collection.find().skip(page).limit(count));
+                         final int count,
+                         final String realm) {
+        if (realm.equals(NO_FILTERING_TOKEN)) {
+            return toPoisList(collection.find().skip(page).limit(count));
+        }
+        final Document filter = new Document(Poi.RECORD_DETAILS + "." + FileDetails.REALM, realm);
+        return toPoisList(collection.find(filter).skip(page).limit(count));
     }
 
     public List<Poi> getById(final String id) {

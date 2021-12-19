@@ -25,12 +25,15 @@ public class TrailPreviewController {
 
     private final TrailPreviewManager trailManager;
     private final TrailPreviewResponseHelper trailPreviewResponseHelper;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public TrailPreviewController(final TrailPreviewManager trailManager,
-                                  final TrailPreviewResponseHelper trailPreviewResponseHelper) {
+                                  final TrailPreviewResponseHelper trailPreviewResponseHelper,
+                                  final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
         this.trailPreviewResponseHelper = trailPreviewResponseHelper;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Retrieve trail previews")
@@ -38,6 +41,7 @@ public class TrailPreviewController {
     public TrailPreviewResponse getTrailPreviews(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
                                                  @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+        controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
                 .constructResponse(emptySet(), trailManager.getPreviews(skip, limit, realm),
                         trailManager.countPreview(), skip, limit);
@@ -48,6 +52,7 @@ public class TrailPreviewController {
     public TrailPreviewResponse getRawTrailPreviews(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
                 .constructResponse(emptySet(), trailManager.getRawPreviews(skip, limit),
                         trailManager.countRaw(), skip, limit);

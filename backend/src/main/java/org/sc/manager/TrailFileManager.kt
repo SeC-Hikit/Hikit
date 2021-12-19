@@ -104,7 +104,7 @@ class TrailFileManager @Autowired constructor(
                 trailCoordinatesMapper.map(trailCoordinates.last()),
                 trailCoordinates.map { trailCoordinatesMapper.map(it) },
                 FileDetailsDto(Date(), authHelper.username, authHelper.instance,
-                        authHelper.realm, uniqueFileName, originalFilename)
+                        authHelper.realm, uniqueFileName, originalFilename, authHelper.username)
         )
     }
 

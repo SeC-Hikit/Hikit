@@ -1,7 +1,8 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.*;
+import org.sc.common.rest.CountDto;
+import org.sc.common.rest.Status;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.controller.response.PoiResponseHelper;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
-import static java.lang.String.format;
-import static java.util.Collections.*;
+import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 
@@ -27,14 +27,16 @@ public class POIController {
     private final PoiManager poiManager;
     private final GeneralValidator generalValidator;
     private final PoiResponseHelper poiResponseHelper;
+    private final ControllerPagination controllerPagination;
 
     @Autowired
     public POIController(final PoiManager poiManager,
                          final GeneralValidator generalValidator,
-                         final PoiResponseHelper poiResponseHelper) {
+                         final PoiResponseHelper poiResponseHelper,final ControllerPagination controllerPagination) {
         this.poiManager = poiManager;
         this.generalValidator = generalValidator;
         this.poiResponseHelper = poiResponseHelper;
+        this.controllerPagination = controllerPagination;
     }
 
     @Operation(summary = "Count all POIs in DB")
@@ -47,8 +49,10 @@ public class POIController {
     @Operation(summary = "Retrieve POIs")
     @GetMapping
     public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiPaginated(skip, limit),
+                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                           @RequestParam(required = false, defaultValue = "*") String realm) {
+        controllerPagination.checkSkipLim(skip, limit);
+        return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiPaginated(skip, limit, realm),
                 poiManager.count(), skip, limit);
     }
 
@@ -64,6 +68,7 @@ public class POIController {
     public PoiResponse getByTrail(@PathVariable String code,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByTrailId(code, skip, limit),
                 poiManager.count(), skip, limit);
     }
@@ -73,6 +78,7 @@ public class POIController {
     public PoiResponse getByMacro(@PathVariable String type,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByMacro(type, skip, limit),
                 poiManager.count(), skip, limit);
     }
@@ -82,6 +88,7 @@ public class POIController {
     public PoiResponse getByNameOrTags(@PathVariable String name,
                                        @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                        @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByName(name, skip, limit),
                 poiManager.count(), skip, limit);
     }

@@ -62,7 +62,8 @@ class MediaManager @Autowired constructor(
                                     authHelper.instance,
                                     authHelper.realm,
                                     fileName,
-                                    originalFileName
+                                    originalFileName,
+                                    authHelper.username
                             ),
                             false
                     )

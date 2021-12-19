@@ -20,35 +20,35 @@ import java.util.*
 
 @Component
 class TrailImporterService @Autowired constructor(
-    private val trailsManager: TrailManager,
-    private val trailFileManager: TrailFileManager,
-    private val placeManager: PlaceManager,
-    private val accessibilityNotificationManager: AccessibilityNotificationManager,
-    private val maintenanceManager: MaintenanceManager,
-    private val trailsStatsCalculator: TrailsStatsCalculator,
-    private val trailDatasetVersionDao: TrailDatasetVersionDao,
-    private val placeMapper: PlaceRefMapper,
-    private val trailCoordinatesMapper: TrailCoordinatesMapper,
-    private val trailRawMapper: TrailRawMapper,
-    private val trailRawDao: TrailRawDAO,
-    private val trailMapper: TrailMapper,
-    private val authFacade: AuthFacade,
-    private val trailSimplifier: TrailSimplifier
+        private val trailsManager: TrailManager,
+        private val trailFileManager: TrailFileManager,
+        private val placeManager: PlaceManager,
+        private val accessibilityNotificationManager: AccessibilityNotificationManager,
+        private val maintenanceManager: MaintenanceManager,
+        private val trailsStatsCalculator: TrailsStatsCalculator,
+        private val trailDatasetVersionDao: TrailDatasetVersionDao,
+        private val placeMapper: PlaceRefMapper,
+        private val trailCoordinatesMapper: TrailCoordinatesMapper,
+        private val trailRawMapper: TrailRawMapper,
+        private val trailRawDao: TrailRawDAO,
+        private val trailMapper: TrailMapper,
+        private val authFacade: AuthFacade,
+        private val trailSimplifier: TrailSimplifier
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
-        trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
-            .first()
+            trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
+                    .first()
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
         val statsTrailMetadata = StatsTrailMetadata(
-            trailsStatsCalculator.calculateTotRise(importingTrail.coordinates),
-            trailsStatsCalculator.calculateTotFall(importingTrail.coordinates),
-            trailsStatsCalculator.calculateEta(importingTrail.coordinates),
-            trailsStatsCalculator.calculateTrailLength(importingTrail.coordinates),
-            trailsStatsCalculator.calculateHighestPlace(importingTrail.coordinates),
-            trailsStatsCalculator.calculateLowestPlace(importingTrail.coordinates)
+                trailsStatsCalculator.calculateTotRise(importingTrail.coordinates),
+                trailsStatsCalculator.calculateTotFall(importingTrail.coordinates),
+                trailsStatsCalculator.calculateEta(importingTrail.coordinates),
+                trailsStatsCalculator.calculateTrailLength(importingTrail.coordinates),
+                trailsStatsCalculator.calculateHighestPlace(importingTrail.coordinates),
+                trailsStatsCalculator.calculateLowestPlace(importingTrail.coordinates)
         )
 
         val createdOn = Date()
@@ -56,50 +56,51 @@ class TrailImporterService @Autowired constructor(
         val authHelper = authFacade.authHelper
         val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
         val trail = Trail.builder()
-            .name(importingTrail.name)
-            .startLocation(importingTrail.locations.map { placeMapper.map(it) }.first())
-            .endLocation(importingTrail.locations.map { placeMapper.map(it) }.last())
-            .description(importingTrail.description)
-            .officialEta(importingTrail.officialEta)
-            .code(importingTrail.code)
-            .variant(importingTrail.isVariant)
-            .locations(getConsistentLocations(importingTrail))
-            .classification(importingTrail.classification)
-            .country(importingTrail.country)
-            .statsTrailMetadata(statsTrailMetadata)
-            .coordinates(coordinates)
-            .coordinatesLow(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW))
-            .coordinatesMedium(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.MEDIUM))
-            .coordinatesHigh(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.HIGH))
-            .lastUpdate(createdOn)
-            .maintainingSection(importingTrail.maintainingSection)
-            .territorialDivision(importingTrail.territorialDivision)
-            .geoLineString(GeoLineString(importingTrail.coordinates.map {
-                Coordinates2D(
-                    it.longitude,
-                    it.latitude
+                .name(importingTrail.name)
+                .startLocation(importingTrail.locations.map { placeMapper.map(it) }.first())
+                .endLocation(importingTrail.locations.map { placeMapper.map(it) }.last())
+                .description(importingTrail.description)
+                .officialEta(importingTrail.officialEta)
+                .code(importingTrail.code)
+                .variant(importingTrail.isVariant)
+                .locations(getConsistentLocations(importingTrail))
+                .classification(importingTrail.classification)
+                .country(importingTrail.country)
+                .statsTrailMetadata(statsTrailMetadata)
+                .coordinates(coordinates)
+                .coordinatesLow(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW))
+                .coordinatesMedium(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.MEDIUM))
+                .coordinatesHigh(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.HIGH))
+                .lastUpdate(createdOn)
+                .maintainingSection(importingTrail.maintainingSection)
+                .territorialDivision(importingTrail.territorialDivision)
+                .geoLineString(GeoLineString(importingTrail.coordinates.map {
+                    Coordinates2D(
+                            it.longitude,
+                            it.latitude
+                    )
+                }))
+                .cycloDetails(
+                        CycloDetails(
+                                CycloClassification.UNCLASSIFIED, 0,
+                                CycloFeasibility(true, 0),
+                                CycloFeasibility(true, 0), ""
+                        )
                 )
-            }))
-            .cycloDetails(
-                CycloDetails(
-                    CycloClassification.UNCLASSIFIED, 0,
-                    CycloFeasibility(true, 0),
-                    CycloFeasibility(true, 0), ""
+                .mediaList(emptyList())
+                .fileDetails(
+                        FileDetails(
+                                importingTrail.fileDetailsDto.uploadedOn,
+                                authHelper.username,
+                                authHelper.instance,
+                                authHelper.realm,
+                                importingTrail.fileDetailsDto.filename,
+                                importingTrail.fileDetailsDto.originalFilename,
+                                authHelper.username
+                        )
                 )
-            )
-            .mediaList(emptyList())
-            .fileDetails(
-                FileDetails(
-                    importingTrail.fileDetailsDto.uploadedOn,
-                    authHelper.username,
-                    authHelper.instance,
-                    authHelper.realm,
-                    importingTrail.fileDetailsDto.filename,
-                    importingTrail.fileDetailsDto.originalFilename
-                )
-            )
-            .status(importingTrail.trailStatus)
-            .build()
+                .status(importingTrail.trailStatus)
+                .build()
 
         val savedTrailAsList = trailsManager.save(trail)
         val trailSaved = savedTrailAsList.first()
@@ -157,15 +158,15 @@ class TrailImporterService @Autowired constructor(
     fun switchToStatus(trailDto: TrailDto): List<TrailDto> {
         val trailToUpdate = trailsManager.getById(trailDto.id, TrailSimplifierLevel.LOW).first()
 
-        if(trailDto.status == trailToUpdate.status) {
+        if (trailDto.status == trailToUpdate.status) {
             logger.info("Did not change status to trail ${trailDto.id}")
             return trailsManager.update(trailMapper.map(trailToUpdate))
         }
         // Turn PUBLIC -> DRAFT
-        if(isSwitchingToDraft(trailDto, trailToUpdate)) {
+        if (isSwitchingToDraft(trailDto, trailToUpdate)) {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.DRAFT}""")
             trailToUpdate.locations.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
-        // DRAFT -> PUBLIC
+            // DRAFT -> PUBLIC
         } else {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.PUBLIC}""")
             trailDto.locations.forEach { trailsManager.linkPlace(trailDto.id, it) }
@@ -185,29 +186,29 @@ class TrailImporterService @Autowired constructor(
     }
 
     private fun isSwitchingToDraft(
-        trailDto: TrailDto,
-        trailToUpdate: TrailDto
+            trailDto: TrailDto,
+            trailToUpdate: TrailDto
     ) = trailDto.status == TrailStatus.DRAFT &&
-                trailToUpdate.status == TrailStatus.PUBLIC
+            trailToUpdate.status == TrailStatus.PUBLIC
 
     fun countTrailRaw() = trailRawDao.count()
 
     private fun getConsistentLocations(importingTrail: TrailImportDto) =
-        sortLocationsByTrailCoordinates(
-            importingTrail.coordinates,
-            importingTrail.locations.map { placeMapper.map(it) })
+            sortLocationsByTrailCoordinates(
+                    importingTrail.coordinates,
+                    importingTrail.locations.map { placeMapper.map(it) })
 
     private fun sortLocationsByTrailCoordinates(
-        coordinates: List<TrailCoordinatesDto>,
-        locations: List<PlaceRef>
+            coordinates: List<TrailCoordinatesDto>,
+            locations: List<PlaceRef>
     ): List<PlaceRef> =
-        // for each location, check closest trail Coordinate distance
-        locations.sortedWith (compareBy{ pr ->
-            val closestCoordinatePoint: TrailCoordinatesDto? =
-                coordinates.minByOrNull { DistanceProcessor.distanceBetweenPoints(pr.coordinates, it) }
+            // for each location, check closest trail Coordinate distance
+            locations.sortedWith(compareBy { pr ->
+                val closestCoordinatePoint: TrailCoordinatesDto? =
+                        coordinates.minByOrNull { DistanceProcessor.distanceBetweenPoints(pr.coordinates, it) }
 
-            val distance = closestCoordinatePoint!!.distanceFromTrailStart +
-                    DistanceProcessor.distanceBetweenPoints(closestCoordinatePoint, pr.coordinates)
-            distance
-        })
+                val distance = closestCoordinatePoint!!.distanceFromTrailStart +
+                        DistanceProcessor.distanceBetweenPoints(closestCoordinatePoint, pr.coordinates)
+                distance
+            })
 }

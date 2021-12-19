@@ -38,6 +38,7 @@ public class PlaceController {
     @GetMapping
     public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                              @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return constructResponse(emptySet(),
                 placeManager.getPaginated(skip, limit), placeManager.count(), skip, limit);
     }
@@ -56,6 +57,7 @@ public class PlaceController {
     public PlaceResponse getLikeNameOrTags(@PathVariable String name,
                                            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         return constructResponse(emptySet(),
                 placeManager.getLikeNameOrTags(name, skip, limit),
                 placeManager.count(), skip, limit);
@@ -66,6 +68,7 @@ public class PlaceController {
     public PlaceResponse geolocatePlace(@RequestBody PointGeolocationDto pointGeolocationDto,
                                         @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                         @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         final Set<String> errors = generalValidator.validate(pointGeolocationDto);
         if (errors.isEmpty()) {
             final CoordinatesDto coordinatesDto = pointGeolocationDto.getCoordinatesDto();
@@ -84,6 +87,7 @@ public class PlaceController {
                                             long totalCount,
                                             int skip,
                                             int limit) {
+        controllerPagination.checkSkipLim(skip, limit);
         if (!errors.isEmpty()) {
             return new PlaceResponse(Status.ERROR, errors, dtos, 1L,
                     Constants.ONE, limit, totalCount);
