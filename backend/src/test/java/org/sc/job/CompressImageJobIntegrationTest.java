@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CompressImageJobTest {
+public class CompressImageJobIntegrationTest {
 
     private static final String PATH_FILENAME = "path/filename.jpg";
     private static final String EXPECTED_PATH_FILENAME = "path/filename_m.jpg";
