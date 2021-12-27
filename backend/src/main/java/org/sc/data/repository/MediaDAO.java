@@ -2,10 +2,14 @@ package org.sc.data.repository;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
 import org.sc.data.model.Media;
@@ -20,6 +24,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.sc.data.model.Media.IS_COMPRESSED;
 
 @Repository
 public class MediaDAO {
@@ -69,4 +74,20 @@ public class MediaDAO {
     public long count(){
         return collection.countDocuments();
     }
+
+    public FindIterable<Document> getMediaNotGenerated() {
+        Bson missingField = Filters.not(Filters.exists(IS_COMPRESSED));
+        Bson notGenerated = Filters.eq(IS_COMPRESSED, false);
+
+        return collection.find(Filters.or(missingField, notGenerated));
+    }
+
+    public UpdateResult updateCompressed(final Media media) {
+        Document query = new Document().append("_id", media.getId());
+        Bson updates = Updates.combine(Updates.set(IS_COMPRESSED, true));
+
+        return collection.updateOne(query, updates);
+    }
+
+
 }

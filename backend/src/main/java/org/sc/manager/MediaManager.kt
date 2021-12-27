@@ -1,5 +1,7 @@
 package org.sc.manager
 
+import com.mongodb.client.FindIterable
+import org.bson.Document
 import org.sc.common.rest.MediaDto
 import org.sc.configuration.auth.AuthFacade
 import org.sc.controller.MediaController
@@ -62,7 +64,8 @@ class MediaManager @Autowired constructor(
                                     fileName,
                                     originalFileName,
                                     authHelper.username
-                            )
+                            ),
+                            false
                     )
             )
             logger.info("save Media originalFileName: $originalFileName to $pathToSavedFile in instance: ${authHelper.instance}, realm: ${authHelper.realm}")
@@ -104,6 +107,18 @@ class MediaManager @Autowired constructor(
 
     private fun makeFileName(fileExtension: String) =
             Date().time.toString() + "." + fileExtension
+
+    fun getMediaNotGenerated(): FindIterable<Document> = mediaDAO.mediaNotGenerated
+
+    fun updateCompressed(media: Media) {
+        val updateCompressed = mediaDAO.updateCompressed(media)
+
+        if (updateCompressed.modifiedCount == 0L) {
+            logger.info("No image found")
+        }
+
+    }
+
 }
 
 
