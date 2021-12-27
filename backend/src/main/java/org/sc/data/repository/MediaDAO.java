@@ -17,6 +17,7 @@ import org.sc.data.entity.mapper.MediaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.model.Media.IS_COMPRESSED;
+import static org.sc.data.model.Media.RESOLUTIONS;
 
 @Repository
 public class MediaDAO {
@@ -84,9 +86,9 @@ public class MediaDAO {
 
     public UpdateResult updateCompressed(final Media media) {
         Document query = new Document().append("_id", media.getId());
-        Bson updates = Updates.combine(Updates.set(IS_COMPRESSED, true));
-
-        return collection.updateOne(query, updates);
+        final Bson updates = Updates.combine(Updates.set(IS_COMPRESSED, true));
+        final Bson resolutionUpdates = Updates.combine(Updates.set(RESOLUTIONS, media.getResolutions()));
+        return collection.updateOne(query, Arrays.asList(updates, resolutionUpdates));
     }
 
 

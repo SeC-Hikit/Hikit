@@ -65,7 +65,8 @@ class MediaManager @Autowired constructor(
                                     originalFileName,
                                     authHelper.username
                             ),
-                            false
+                            false,
+                            emptyList()
                     )
             )
             logger.info("save Media originalFileName: $originalFileName to $pathToSavedFile in instance: ${authHelper.instance}, realm: ${authHelper.realm}")
@@ -108,7 +109,7 @@ class MediaManager @Autowired constructor(
     private fun makeFileName(fileExtension: String) =
             Date().time.toString() + "." + fileExtension
 
-    fun getMediaNotGenerated(): FindIterable<Document> = mediaDAO.mediaNotGenerated
+    fun getUncompressedMedia(): FindIterable<Document> = mediaDAO.mediaNotGenerated
 
     fun updateCompressed(media: Media) {
         val updateCompressed = mediaDAO.updateCompressed(media)
