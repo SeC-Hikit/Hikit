@@ -70,9 +70,22 @@ class MediaManager @Autowired constructor(
                     )
             )
             logger.info("save Media originalFileName: $originalFileName to $pathToSavedFile in instance: ${authHelper.instance}, realm: ${authHelper.realm}")
+
+            deleteTempMedia(tempFile)
+
             return mediaDAO.getById(save.first().id).map { mediaMapper.mediaToDto(it) }
         }
+
+
         return emptyList()
+    }
+
+    private fun deleteTempMedia(tempFile: Path) {
+        val file = tempFile.toFile()
+        val delete = file.delete()
+        if (!delete) {
+            logger.info("The temp file '${file.absolutePath}' could not be deleted")
+        }
     }
 
     fun getExtensionFromName(name: String): String {
