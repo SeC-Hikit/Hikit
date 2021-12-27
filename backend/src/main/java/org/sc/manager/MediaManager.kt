@@ -65,13 +65,27 @@ class MediaManager @Autowired constructor(
                                     originalFileName,
                                     authHelper.username
                             ),
-                            false
+                            false,
+                            emptyList()
                     )
             )
             logger.info("save Media originalFileName: $originalFileName to $pathToSavedFile in instance: ${authHelper.instance}, realm: ${authHelper.realm}")
+
+            deleteTempMedia(tempFile)
+
             return mediaDAO.getById(save.first().id).map { mediaMapper.mediaToDto(it) }
         }
+
+
         return emptyList()
+    }
+
+    private fun deleteTempMedia(tempFile: Path) {
+        val file = tempFile.toFile()
+        val delete = file.delete()
+        if (!delete) {
+            logger.info("The temp file '${file.absolutePath}' could not be deleted")
+        }
     }
 
     fun getExtensionFromName(name: String): String {
@@ -108,7 +122,7 @@ class MediaManager @Autowired constructor(
     private fun makeFileName(fileExtension: String) =
             Date().time.toString() + "." + fileExtension
 
-    fun getMediaNotGenerated(): FindIterable<Document> = mediaDAO.mediaNotGenerated
+    fun getUncompressedMedia(): FindIterable<Document> = mediaDAO.mediaNotGenerated
 
     fun updateCompressed(media: Media) {
         val updateCompressed = mediaDAO.updateCompressed(media)

@@ -1,0 +1,1 @@
+db.getCollection("core.Media").updateMany({}, {$set : { "resolutions": []}} )

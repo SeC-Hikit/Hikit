@@ -31,7 +31,8 @@ public class MediaMapper implements Mapper<Media> {
                 document.getString(Media.MIME),
                 document.getLong(Media.FILE_SIZE),
                 fileDetailsMapper.mapToObject(document.get(Media.RECORD_DETAILS, Document.class)),
-                document.getBoolean(Media.IS_COMPRESSED));
+                document.getBoolean(Media.IS_COMPRESSED),
+                document.getList(Media.RESOLUTIONS, String.class));
     }
 
     @Override
@@ -45,6 +46,7 @@ public class MediaMapper implements Mapper<Media> {
                 .append(Media.MIME, object.getMime())
                 .append(Media.FILE_SIZE, object.getFileSize())
                 .append(Media.RECORD_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
-                .append(Media.IS_COMPRESSED, object.isCompressed());
+                .append(Media.IS_COMPRESSED, object.isCompressed())
+                .append(Media.RESOLUTIONS, object.getResolutions());
     }
 }

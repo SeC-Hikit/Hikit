@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +21,7 @@ public class Media {
     public static final String FILE_SIZE = "fileSize";
     public static final String RECORD_DETAILS = "recordDetails";
     public static final String IS_COMPRESSED = "isCompressed";
+    public static final String RESOLUTIONS = "resolutions";
 
     private String id;
     private Date creationDate;
@@ -30,5 +32,6 @@ public class Media {
     private Long fileSize;
     private FileDetails fileDetails;
     private boolean isCompressed;
+    private List<String> resolutions;
 
 }
