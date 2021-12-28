@@ -55,7 +55,7 @@ public class CompressImageJob {
     }
 
     @Scheduled(cron = "0 */5 0-8 * * *")
-    public void doGenerateImages() {
+    public void doCompressImages() {
 
         int elaboratedImages = 0;
 
