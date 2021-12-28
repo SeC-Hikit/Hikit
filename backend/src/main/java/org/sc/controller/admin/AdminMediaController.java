@@ -1,6 +1,7 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.jetbrains.annotations.NotNull;
 import org.sc.common.rest.MediaDto;
 import org.sc.common.rest.response.MediaResponse;
 import org.sc.configuration.AppProperties;
@@ -67,12 +68,7 @@ public class AdminMediaController {
         final String originalFileName = file.getOriginalFilename();
         final String extension = mediaManager.getExtensionFromName(originalFileName);
         final Path tempFile = Files.createTempFile(uploadDir.toPath(), "", extension);
-        final Set<String> validationErrors =
-                generalValidator.validateFileName(originalFileName);
-        try (final InputStream input = file.getInputStream()) {
-            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
-        }
-        validationErrors.addAll(generalValidator.validate(tempFile.toFile()));
+        final Set<String> validationErrors = getValidationErrors(file, originalFileName, tempFile);
 
         if (validationErrors.isEmpty()) {
             final List<MediaDto> saveResult = mediaManager.save(originalFileName, tempFile);
@@ -98,5 +94,16 @@ public class AdminMediaController {
         return mediaResponseHelper
                 .constructResponse(Collections.emptySet(), medias, mediaManager.count(),
                         org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+    }
+
+    @NotNull
+    private Set<String> getValidationErrors(MultipartFile file, String originalFileName, Path tempFile) throws IOException {
+        final Set<String> validationErrors =
+                generalValidator.validateFileName(originalFileName);
+        try (final InputStream input = file.getInputStream()) {
+            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+        validationErrors.addAll(generalValidator.validate(tempFile.toFile()));
+        return validationErrors;
     }
 }
