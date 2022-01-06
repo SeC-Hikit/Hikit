@@ -31,7 +31,7 @@ public class PlaceMapper implements Mapper<Place> {
     public Place mapToObject(final Document document) {
         LOGGER.trace("mapToObject Document: {} ", document);
         return new Place(
-                document.getString(Place.ID),
+                document.get(Place.ID).toString(),
                 document.getString(Place.NAME),
                 document.getString(Place.DESCRIPTION),
                 document.getList(Place.TAGS, String.class),
