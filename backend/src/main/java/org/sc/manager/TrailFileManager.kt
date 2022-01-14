@@ -125,7 +125,7 @@ class TrailFileManager @Autowired constructor(
                                 .author("S&C - $creator")
                                 .name(trail.code).time(trail.lastUpdate.toInstant()).build()
                 ).build()
-        gpxFileHandlerHelper.writeToFile(gpx, pathToGpxStoredFiles.resolve(trail.code + ".gpx"))
+        gpxFileHandlerHelper.writeToFile(gpx, pathToGpxStoredFiles.resolve(getFilename(trail) + ".gpx"))
     }
 
     fun writeTrailToKml(trail: TrailDto) {
@@ -134,12 +134,12 @@ class TrailFileManager @Autowired constructor(
         val lineString: LineString = LineString().withAltitudeMode(AltitudeMode.ABSOLUTE)
         trail.coordinates.forEach { lineString.addToCoordinates(it.longitude, it.latitude, it.altitude) }
         kml.createAndSetDocument().createAndAddPlacemark().withGeometry(lineString)
-        kml.marshal(pathToKmlStoredFiles.resolve(trail.code + ".kml").toFile())
+        kml.marshal(pathToKmlStoredFiles.resolve(getFilename(trail) + ".kml").toFile())
     }
 
     fun writeTrailToPdf(trail: TrailDto, places: List<PlaceDto>, lastMaintenance: List<MaintenanceDto>,
                         reportedOpenIssues: List<AccessibilityNotificationDto>) {
-        val pathname = pathToPdfStoredFiles.resolve(trail.code + ".pdf")
+        val pathname = pathToPdfStoredFiles.resolve(getFilename(trail) + ".pdf")
         pdfFileHandlerHelper.exportPdf(trail, places, lastMaintenance, reportedOpenIssues, pathname)
         logger.info("Exported pdf for trail with 'id' ${trail.id} in path: $pathname")
     }
@@ -177,6 +177,8 @@ class TrailFileManager @Autowired constructor(
     fun deleteRawTrail(filename: String) {
         Files.delete(File(makePathToSavedFile(filename)).toPath())
     }
+
+    private fun getFilename(trail: TrailDto) = trail.code + "_" + trail.id
 
     private fun findUploadedFilesWithMissingNames(uploadedFiles: List<MultipartFile>)
             : List<MultipartFile> = uploadedFiles.filter { it.originalFilename == null }
