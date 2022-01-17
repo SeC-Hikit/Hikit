@@ -18,6 +18,7 @@ public class Media {
     public static final String FILENAME = "fileName";
     public static final String FILE_URL = "fileUrl";
     public static final String MIME = "mime";
+    public static final String EXTENSION = "extension";
     public static final String FILE_SIZE = "fileSize";
     public static final String RECORD_DETAILS = "recordDetails";
     public static final String IS_COMPRESSED = "isCompressed";
@@ -27,6 +28,7 @@ public class Media {
     private Date creationDate;
     private String name;
     private String fileName;
+    private String extension;
     private String fileUrl;
     private String mime;
     private Long fileSize;

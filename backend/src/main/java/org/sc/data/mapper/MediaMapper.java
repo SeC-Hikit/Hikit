@@ -12,7 +12,7 @@ public interface MediaMapper {
     default MediaDto mediaToDto(final Media media) {
         final FileDetails recordDetails = media.getFileDetails();
         return new MediaDto(media.getCreationDate(), media.getId(), media.getName(),
-                media.getFileName(), media.getFileUrl(),
+                media.getFileName(), media.getExtension(), media.getFileUrl(),
                 media.getResolutions(),
                 media.getMime(), media.getFileSize(),
                 new FileDetailsDto(recordDetails.getUploadedOn(), recordDetails.getUploadedBy(),

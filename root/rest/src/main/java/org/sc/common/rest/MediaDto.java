@@ -13,6 +13,7 @@ public class MediaDto {
     private String id;
     private String name;
     private String fileName;
+    private String extension;
     private String fileUrl;
     private List<String> resolutionSuffixes;
     private String mime;

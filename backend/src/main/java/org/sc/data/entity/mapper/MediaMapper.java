@@ -27,6 +27,7 @@ public class MediaMapper implements Mapper<Media> {
                 document.getDate(Media.CREATION_DATE),
                 document.getString(Media.NAME),
                 document.getString(Media.FILENAME),
+                document.getString(Media.EXTENSION),
                 document.getString(Media.FILE_URL),
                 document.getString(Media.MIME),
                 document.getLong(Media.FILE_SIZE),
@@ -42,6 +43,7 @@ public class MediaMapper implements Mapper<Media> {
                 .append(Media.CREATION_DATE, object.getCreationDate())
                 .append(Media.NAME, object.getName())
                 .append(Media.FILENAME, object.getFileName())
+                .append(Media.EXTENSION, object.getExtension())
                 .append(Media.FILE_URL, object.getFileUrl())
                 .append(Media.MIME, object.getMime())
                 .append(Media.FILE_SIZE, object.getFileSize())

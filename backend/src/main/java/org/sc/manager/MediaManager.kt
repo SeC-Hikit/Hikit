@@ -42,8 +42,9 @@ class MediaManager @Autowired constructor(
         val fileMimeType = mediaProbeUtil.getFileMimeType(tempFile.toFile(), originalFileName)
         val fileExtension = mediaProbeUtil.getFileExtensionFromMimeType(fileMimeType)
 
-        val fileName = makeFileName(fileExtension)
-        val pathToSavedFile = makePathToSavedFile(fileName)
+        val name = Date().time.toString()
+        val fileName = makeFileName(name, fileExtension)
+        val pathToSavedFile = makePathToSavedFile(name)
         val saveFile = saveFile(tempFile, fileName)
 
         if (hasFileBeenSaved(saveFile)) {
@@ -53,7 +54,8 @@ class MediaManager @Autowired constructor(
                             null,
                             Date(),
                             originalFileName,
-                            fileName,
+                            name,
+                            fileExtension,
                             pathToSavedFile,
                             fileMimeType,
                             Files.size(tempFile),
@@ -119,8 +121,8 @@ class MediaManager @Autowired constructor(
     private fun makePathToSavedFile(fileName: String) =
             MediaController.PREFIX + "/" + MEDIA_MID + "/" + fileName
 
-    private fun makeFileName(fileExtension: String) =
-            Date().time.toString() + "." + fileExtension
+    private fun makeFileName(fileName: String, fileExtension: String) =
+             fileName + "." + fileExtension
 
     fun getUncompressedMedia(): FindIterable<Document> = mediaDAO.mediaNotGenerated
 
