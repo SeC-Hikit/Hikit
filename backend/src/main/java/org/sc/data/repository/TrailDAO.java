@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
@@ -72,12 +73,6 @@ public class TrailDAO {
 
     public List<Trail> getTrailById(final String id,
                                     final TrailSimplifierLevel trailSimplifierLevel) {
-        //if level=
-        //if (level.equals(TrailSimplifierLevel.LOW.toString())){
-        //return toTrailsList(collection.find(new Document(Trail.ID, id)));
-        // }
-        //else if....
-        //return toTrailsList(collection.find(new Document(Trail.ID, id)));
         return toTrailsList(collection.find(new Document(Trail.ID, id)), trailSimplifierLevel);
     }
 
@@ -113,13 +108,25 @@ public class TrailDAO {
 
     public List<TrailPreview> getTrailPreviews(final int skip, final int limit, final String realm) {
 
-        final Bson filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
+        final Document filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
 
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
 
-        return toTrailsPreviewList(collection.aggregate(Arrays.asList(filter, project, aLimit, aSkip)));
+        return toTrailsPreviewList(collection.aggregate(Arrays.asList(match(filter), project, aLimit, aSkip)));
+    }
+
+    public List<TrailPreview> findPreviewsByCode(final String code, final int skip,
+                                     final int limit, final String realm) {
+        final Document codeFilter = getLikeEndFilter(Trail.CODE, code);
+        final Document realmFilter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
+        final Bson project = getTrailPreviewProjection();
+        final Bson aLimit = Aggregates.limit(limit);
+        final Bson aSkip = Aggregates.skip(skip);
+        return toTrailsPreviewList(collection.aggregate(
+                Arrays.asList(match(codeFilter),
+                match(realmFilter), project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> trailPreviewById(final String id) {
@@ -224,12 +231,16 @@ public class TrailDAO {
                 .map(t-> trailLevelMapper.mapToObject(t, trailSimplifierLevel)).collect(toList());
     }
 
-    private Bson getRealmFilter(final String realm) {
-        return match(new Document(REALM_STRUCT, realm));
+    private Document getRealmFilter(final String realm) {
+        return new Document(REALM_STRUCT, realm);
     }
 
-    private Bson getNoFilter() {
-        return match(new Document(REALM_STRUCT, new Document($NOT_EQUAL, "")));
+    private Document getNoFilter() {
+        return new Document(REALM_STRUCT, new Document($NOT_EQUAL, ""));
+    }
+
+    private Document getLikeEndFilter(String fieldName, String valueToConcatenate) {
+        return new Document(fieldName, getStartNameMatchPattern(valueToConcatenate));
     }
 
     private Bson getTrailPreviewProjection() {
@@ -252,5 +263,10 @@ public class TrailDAO {
     private List<Double> resolveVertex(Coordinates2D bottomLeft, Coordinates2D topRight) {
         return Arrays.asList(bottomLeft.getLongitude(),
                 topRight.getLatitude());
+    }
+
+
+    public long countTotalByCode(final String code) {
+        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code));
     }
 }

@@ -8,6 +8,7 @@ import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public class MongoConstants {
     public static final int ASCENDING_ORDER = 1;
@@ -61,6 +62,11 @@ public class MongoConstants {
                                 GEO_COORDINATES, Arrays.asList(longitude, latitude)
                         )).append($_MAX_M_DISTANCE_FILTER, distance)
         );
+    }
+
+    @NotNull
+    public static Pattern getStartNameMatchPattern(final String name) {
+        return Pattern.compile("^" + name + ".*", Pattern.CASE_INSENSITIVE);
     }
 
     public static void logBson(Document document) {

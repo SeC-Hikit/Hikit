@@ -21,6 +21,14 @@ class TrailPreviewManager @Autowired constructor(
     ): List<TrailPreviewDto> =
         trailDAO.getTrailPreviews(skip, limit, realm).map { trailPreviewMapper.map(it) }
 
+    fun findPreviewsByCode(
+            code: String,
+            skip: Int,
+            limit: Int,
+            realm: String
+    ): List<TrailPreviewDto> =
+            trailDAO.findPreviewsByCode(code, skip, limit, realm).map { trailPreviewMapper.map(it) }
+
     fun getRawPreviews(skip: Int, limit: Int): List<TrailPreviewDto> =
         trailRawDAO.get(skip, limit).map { trailPreviewMapper.map(it) }
 
@@ -28,5 +36,6 @@ class TrailPreviewManager @Autowired constructor(
         .map { trailPreviewMapper.map(it) }
 
     fun countPreview(): Long = trailDAO.countTrail()
+    fun countFindingByCode(code: String): Long = trailDAO.countTotalByCode(code)
     fun countRaw(): Long = trailRawDAO.count()
 }

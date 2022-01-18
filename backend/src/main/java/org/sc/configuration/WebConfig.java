@@ -36,7 +36,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-
         registry.addResourceHandler(MediaController.PREFIX + "/" + MediaManager.MEDIA_MID + "/**")
                 .addResourceLocations("file:" + fileManagementUtil.getMediaStoragePath())
                 .setCachePeriod(appProperties.getResourcesCachePeriod())

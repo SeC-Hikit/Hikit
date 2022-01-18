@@ -65,4 +65,16 @@ public class TrailPreviewController {
                 .constructResponse(emptySet(), trailManager.getPreviewById(id),
                         trailManager.countPreview(), Constants.ZERO, Constants.ONE);
     }
+
+    @Operation(summary = "Find trail preview by trail code")
+    @GetMapping("/find/code/{code}")
+    public TrailPreviewResponse findByTrailCode(@PathVariable String code,
+                                                @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                                @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                                                @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+        controllerPagination.checkSkipLim(skip, limit);
+        return trailPreviewResponseHelper
+                .constructResponse(emptySet(), trailManager.findPreviewsByCode(code, skip, limit, realm),
+                        trailManager.countFindingByCode(code), skip, limit);
+    }
 }
