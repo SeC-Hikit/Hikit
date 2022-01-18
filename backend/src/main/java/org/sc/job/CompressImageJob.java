@@ -57,8 +57,7 @@ public class CompressImageJob {
         this.fileManagementUtil = fileManagementUtil;
     }
 
-//    @Scheduled(cron = "0 */5 0-8 * * *")
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "0 */5 0-8 * * *")
     public void doCompressImages() {
 
         int elaboratedImages = 0;
