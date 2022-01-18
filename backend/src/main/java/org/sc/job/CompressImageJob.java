@@ -57,7 +57,8 @@ public class CompressImageJob {
         this.fileManagementUtil = fileManagementUtil;
     }
 
-    @Scheduled(cron = "0 */5 0-8 * * *")
+//    @Scheduled(cron = "0 */5 0-8 * * *")
+    @Scheduled(cron = "* * * * * *")
     public void doCompressImages() {
 
         int elaboratedImages = 0;
@@ -67,7 +68,7 @@ public class CompressImageJob {
         while (hasUncompressImageAndBelowThreshold(elaboratedImages)) {
 
             final Media media = mapper.mapToObject(mediaManager.getUncompressedMedia().iterator().next());
-            final String resolvedFileAddress = fileManagementUtil.getMediaStoragePath() + media.getFileName();
+            final String resolvedFileAddress = fileManagementUtil.getMediaStoragePath() + getFileName(media);
             final File file = new File(resolvedFileAddress);
             final Resolution[] resolutionValues = Resolution.values();
 
@@ -114,6 +115,10 @@ public class CompressImageJob {
 
         LOGGER.info(DONE_COMPRESSION_JOB);
 
+    }
+
+    private String getFileName(final Media media) {
+        return media.getFileName() + "." + media.getExtension();
     }
 
     private void updateDbOnCompress(Media media, Resolution[] resolutionValues) {
