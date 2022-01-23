@@ -9,7 +9,7 @@ import org.sc.data.model.Media;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface MediaMapper {
-    default MediaDto mediaToDto(final Media media) {
+    default MediaDto map(final Media media) {
         final FileDetails recordDetails = media.getFileDetails();
         return new MediaDto(media.getCreationDate(), media.getId(), media.getName(),
                 media.getFileName(), media.getExtension(), media.getFileUrl(),

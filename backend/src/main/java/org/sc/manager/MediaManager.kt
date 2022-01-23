@@ -75,7 +75,7 @@ class MediaManager @Autowired constructor(
 
             deleteTempMedia(tempFile)
 
-            return mediaDAO.getById(save.first().id).map { mediaMapper.mediaToDto(it) }
+            return mediaDAO.getById(save.first().id).map { mediaMapper.map(it) }
         }
 
 
@@ -98,14 +98,14 @@ class MediaManager @Autowired constructor(
         return ""
     }
 
-    fun getById(id: String) = mediaDAO.getById(id).map { mediaMapper.mediaToDto(it) }
+    fun getById(id: String) = mediaDAO.getById(id).map { mediaMapper.map(it) }
 
     fun doesMediaExist(id: String) = getById(id).isNotEmpty()
 
     fun deleteById(id: String): List<MediaDto> {
         poiDAO.unlinkMediaByAllPoi(id)
         trailDAO.unlinkMediaByAllTrails(id)
-        return mediaDAO.deleteById(id).map { mediaMapper.mediaToDto(it) }
+        return mediaDAO.deleteById(id).map { mediaMapper.map(it) }
     }
 
     fun count(): Long = mediaDAO.count()
@@ -134,7 +134,14 @@ class MediaManager @Autowired constructor(
         }
 
     }
+    fun getMedia(
+            skip: Int,
+            limit: Int,
+            realm: String
+    ): List<MediaDto> =
+            mediaDAO.getMedia(skip, limit, realm).map { mediaMapper.map(it) }
 
+    fun countMedia(filter: String): Long = mediaDAO.countMedia(filter)
 }
 
 
