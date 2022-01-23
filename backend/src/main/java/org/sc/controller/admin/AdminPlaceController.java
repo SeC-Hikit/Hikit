@@ -78,13 +78,13 @@ public class AdminPlaceController {
     @Operation(summary = "Add place")
     @PutMapping
     public PlaceResponse create(@RequestBody PlaceDto place) {
-        Set<String> errors = generalValidator.validate(place);
+        final Set<String> errors = generalValidator.validate(place);
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),
                     placeManager.count(), ZERO, ONE);
         }
-        List<PlaceDto> placeDtoList = placeManager.create(place);
+        final List<PlaceDto> placeDtoList = placeManager.create(place);
         return placeResponseHelper.constructResponse(emptySet(),
                 placeDtoList,
                 placeManager.count(), ZERO, ONE);
