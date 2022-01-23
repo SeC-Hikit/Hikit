@@ -36,12 +36,12 @@ import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class MediaDAO {
+
     private static final Logger LOGGER = getLogger(MediaDAO.class);
+    public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
     private final MediaMapper mapper;
-    public static final String NO_FILTERING = "*";
-    public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
 
     @Autowired
     public MediaDAO(final DataSource dataSource,
