@@ -13,7 +13,7 @@ Currently, the library supports accessibility-notifications, user reports, maint
 After cloning the repo, simply run `mvn install -f root/pom.xml`.
 
 ### Deployment Build
-To incude all dependencies in a uber-jar, run `mvn install -P package`.
+To incude all dependencies in a portable uber-jar, run `mvn install -P package`.
 
 ### Test
 There are two main types of tests written to address the S&C QA: unit test and integration test.
