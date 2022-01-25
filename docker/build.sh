@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build -t 'sec/backend-1.2' .
+docker build -t 'sec/backend-2.0-SNAPSHOT' .
