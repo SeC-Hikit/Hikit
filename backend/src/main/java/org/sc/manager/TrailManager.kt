@@ -84,7 +84,7 @@ class TrailManager @Autowired constructor(
 
     fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.addTrailIdToPlace(placeRef.placeId, id, placeRef.coordinates)
+        placeDAO.linkTrailToPlace(placeRef.placeId, id, placeRef.coordinates)
         return linkedTrail.map { trailMapper.map(it) }
     }
 

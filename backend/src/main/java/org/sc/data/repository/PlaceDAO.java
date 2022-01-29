@@ -86,8 +86,8 @@ public class PlaceDAO {
         return places;
     }
 
-    public void addTrailIdToPlace(final String id,
-                                  final String trailId, CoordinatesDto trailCoordinates) {
+    public List<Place> linkTrailToPlace(final String id,
+                                 final String trailId, CoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
                 new Document(ADD_TO_SET, new Document(Place.CROSSING,
                         trailId))
@@ -95,9 +95,10 @@ public class PlaceDAO {
                         .append($PUSH, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
                                 CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
         );
+        return getById(id);
     }
 
-    public void removeTrailFromPlace(final String id,
+    public List<Place> removeTrailFromPlace(final String id,
                                      final String trailId,
                                      final Coordinates coordinates) {
 
@@ -111,10 +112,7 @@ public class PlaceDAO {
 
         final List<Place> byId = getById(id);
         LOGGER.info("removeTrailFromPlace Places: {}, for id: {}, trailId: {}, coordinates: {}", byId, id, trailId, coordinates);
-        if (byId.isEmpty()) {
-            return;
-        }
-        deleteOrphanPlaceWhenNoMoreTrailsUseIt(byId.stream().findFirst().get(), coordinates);
+        return byId;
     }
 
     public List<Place> update(final Place place) {

@@ -65,16 +65,16 @@ class PlaceManager @Autowired constructor(
     fun unlinkMedia(placeId: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<PlaceDto> =
         placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
 
-    fun removeTrailFromPlaces(placeId: String, trailId: String,
-                              trailCoordinates: CoordinatesDto) {
-        placeDao.removeTrailFromPlace(placeId, trailId, trailCoordinates)
-    }
+    fun unlinkTrailFromPlace(linkedPlaceDto: LinkedPlaceDto) : List<PlaceDto> =
+        placeDao.removeTrailFromPlace(linkedPlaceDto.placeId,
+                linkedPlaceDto.trailId,
+                linkedPlaceDto.coordinatesDto)
+                .map { placeMapper.map(it) }
 
-    fun linkTrailToPlace(placeId: String,
-                         trailId: String,
-                         trailCoordinates: CoordinatesDto) {
-        placeDao.addTrailIdToPlace(placeId, trailId, trailCoordinates)
-    }
+    fun linkTrailToPlace(linkedPlaceDto: LinkedPlaceDto) : List<PlaceDto> =
+        placeDao.linkTrailToPlace(linkedPlaceDto.placeId,
+                linkedPlaceDto.trailId, linkedPlaceDto.coordinatesDto).map { placeMapper.map(it) }
+
 
     private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
         CoordinatesWithAltitude(

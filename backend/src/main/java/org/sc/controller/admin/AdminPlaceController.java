@@ -1,11 +1,11 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.sc.common.rest.LinkedPlaceDto;
 import org.sc.common.rest.LinkedMediaDto;
 import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.UnLinkeMediaRequestDto;
 import org.sc.common.rest.response.PlaceResponse;
-import org.sc.controller.Constants;
 import org.sc.controller.response.PlaceResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.PlaceManager;
@@ -115,6 +115,34 @@ public class AdminPlaceController {
                     placeManager.count(), ZERO, ONE);
         }
         final List<PlaceDto> placeDtoList = placeManager.update(place);
+        return placeResponseHelper.constructResponse(emptySet(),
+                placeDtoList, placeManager.count(), ZERO, ONE);
+    }
+
+    @Operation(summary = "Link trail to place")
+    @PutMapping("/link/trail")
+    public PlaceResponse linkTrailToPlace(@RequestBody LinkedPlaceDto linkedPlaceDto) {
+        final Set<String> errors = generalValidator.validate(linkedPlaceDto);
+        if (!errors.isEmpty()) {
+            return placeResponseHelper.constructResponse(errors,
+                    emptyList(),
+                    placeManager.count(), ZERO, ONE);
+        }
+        final List<PlaceDto> placeDtoList = placeManager.linkTrailToPlace(linkedPlaceDto);
+        return placeResponseHelper.constructResponse(emptySet(),
+                placeDtoList, placeManager.count(), ZERO, ONE);
+    }
+
+    @Operation(summary = "Remove trail reference from place")
+    @PutMapping("/unlink/trail")
+    public PlaceResponse unLinkTrailToPlace(@RequestBody LinkedPlaceDto linkedPlaceDto) {
+        final Set<String> errors = generalValidator.validate(linkedPlaceDto);
+        if (!errors.isEmpty()) {
+            return placeResponseHelper.constructResponse(errors,
+                    emptyList(),
+                    placeManager.count(), ZERO, ONE);
+        }
+        final List<PlaceDto> placeDtoList = placeManager.unlinkTrailFromPlace(linkedPlaceDto);
         return placeResponseHelper.constructResponse(emptySet(),
                 placeDtoList, placeManager.count(), ZERO, ONE);
     }
