@@ -24,7 +24,8 @@ public class PlaceRefMapper implements Mapper<PlaceRef> {
         LOGGER.trace("mapToObject Document: {} ", document);
         return new PlaceRef(document.getString(PlaceRef.NAME),
                 coordinatesMapper.mapToObject(document.get(PlaceRef.COORDINATES, Document.class)),
-                document.getString(PlaceRef.PLACE_ID));
+                document.getString(PlaceRef.PLACE_ID),
+                document.getList(PlaceRef.ENCOUNTERED_TRAIL_IDS, String.class));
     }
 
     @Override
@@ -32,6 +33,7 @@ public class PlaceRefMapper implements Mapper<PlaceRef> {
         LOGGER.trace("mapToDocument PlaceRef: {} ", object);
         return new Document(PlaceRef.NAME, object.getName())
                 .append(PlaceRef.PLACE_ID, object.getPlaceId())
+                .append(PlaceRef.ENCOUNTERED_TRAIL_IDS, object.getEncounteredTrailIds())
                 .append(PlaceRef.COORDINATES, coordinatesMapper.mapToDocument(object.getCoordinates()));
     }
 }

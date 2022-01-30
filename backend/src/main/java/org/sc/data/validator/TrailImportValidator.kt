@@ -41,8 +41,6 @@ class TrailImportValidator @Autowired constructor (
             errors.add(minLocationBoundaryError)
         }
 
-        errors.addAll(request.locations.flatMap { placeRefValidator.validate(it) })
-
         if(request.coordinates == null || request.coordinates.isEmpty()) errors.add(emptyListPointError)
         if(request.coordinates.size < minGeoPoints) errors.add(tooFewPointsError)
         request.coordinates.map { coordsValidatorTrail.validate(it) }

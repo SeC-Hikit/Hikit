@@ -16,6 +16,7 @@ public class TrailImportDto {
     private final PlaceRefDto startLocation;
     private final PlaceRefDto endLocation;
     private final List<PlaceRefDto> locations;
+    private final List<PlaceRefDto> crossways;
     private final TrailClassification classification;
     private final String country;
     private final List<TrailCoordinatesDto> coordinates;

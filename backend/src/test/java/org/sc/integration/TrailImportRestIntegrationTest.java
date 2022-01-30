@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
+import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailStatus;
 import org.sc.processor.TrailSimplifierLevel;
@@ -60,7 +62,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     );
     public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
             singletonList(new PlaceRefDto(EXPECTED_NAME,
-                    INTERMEDIATE_EXPECTED_COORDINATE_DTO, EXPECTED_PLACE_ID_INTERMEDIATE));
+                    INTERMEDIATE_EXPECTED_COORDINATE_DTO, EXPECTED_PLACE_ID_INTERMEDIATE, emptyList()));
 
     // FileDetails
     public static final String ANY_FILENAME = "001xBO.gpx";
@@ -86,7 +88,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
         trailResponse = adminTrailController.importTrail(trailImportDto);
     }
 
@@ -101,7 +103,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailResponse getTrail = trailController.get(0, 0, REALM, TrailSimplifierLevel.FULL);
+        TrailResponse getTrail = trailController.get(0, 1, REALM, TrailSimplifierLevel.FULL);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);
@@ -121,10 +123,10 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
         assertThat(adminTrailController).isNotNull();
     }
 
-//    @After
-//    public void setDown() {
-//        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
-//    }
+    @After
+    public void setDown() {
+        IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
+    }
 
     private void assertFirtElement(TrailDto firstElement) {
         assertThat(firstElement.getCode()).isEqualTo(EXPECTED_TRAIL_ID);
@@ -136,28 +138,30 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     }
 
-    static TrailImportDto createThreePointsTrailImport(AdminPlaceController placeController) {
+    static TrailImportDto createThreePointsTrailImportWithNoCrossways(AdminPlaceController placeController) {
         PlaceResponse firstPlace = placeController.create(START_CORRECT_PLACE_DTO);
         PlaceResponse addedPlace = placeController.create(CORRECT_PLACE_DTO);
         PlaceResponse lastPlace = placeController.create(END_CORRECT_PLACE_DTO);
         assertThat(firstPlace.getContent()).isNotEmpty();
         assertThat(addedPlace.getContent()).isNotEmpty();
         assertThat(lastPlace.getContent()).isNotEmpty();
-        return makeCorrectTrailDtoForImport(firstPlace.getContent().get(0).getId(),
-                addedPlace.getContent().get(0).getId(),
-                lastPlace.getContent().get(0).getId());
-    }
 
-    public static TrailImportDto makeCorrectTrailDtoForImport(String startPlaceId, String placeId, String endPlaceId) {
-        PlaceRefDto placeStartRef = new PlaceRefDto(EXPECTED_NAME,
-                START_EXPECTED_COORDINATE_DTO, startPlaceId);
-        PlaceRefDto endPlaceRef = new PlaceRefDto(EXPECTED_NAME,
-                END_EXPECTED_COORDINATE_DTO, endPlaceId);
-        LOCATION_REFS = Arrays.asList(placeStartRef, new PlaceRefDto(EXPECTED_NAME,
-                INTERMEDIATE_EXPECTED_COORDINATE_DTO, placeId), endPlaceRef);
+        PlaceDto createdFirstPlace = firstPlace.getContent().get(0);
+        PlaceRefDto placeStartRef = new PlaceRefDto(createdFirstPlace.getName(),
+                createdFirstPlace.getCoordinates().get(0), createdFirstPlace.getId(), emptyList());
+
+        PlaceDto createdLastPlace = lastPlace.getContent().get(0);
+        PlaceRefDto placeFinalRef = new PlaceRefDto(createdLastPlace.getName(),
+                createdLastPlace.getCoordinates().get(0), createdLastPlace.getId(), emptyList());
+
+        PlaceDto intermediatePlace = addedPlace.getContent().get(0);
+
+        LOCATION_REFS = Arrays.asList(placeStartRef, new PlaceRefDto(intermediatePlace.getName(),
+                intermediatePlace.getCoordinates().get(0), intermediatePlace.getId(), emptyList()), placeFinalRef);
+
 
         return new TrailImportDto(EXPECTED_TRAIL_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,
-                ANY_OFFICIAL_ETA, placeStartRef, endPlaceRef, LOCATION_REFS,
+                ANY_OFFICIAL_ETA, placeStartRef, placeFinalRef, LOCATION_REFS, emptyList(),
                 EXPECTED_TRAIL_CLASSIFICATION, EXPECTED_COUNTRY,
                 EXPECTED_TRAIL_COORDINATES, REALM, IS_VARIANT, EXPECTED_TERRITORIAL_DIVISION, emptyList(), EXPECTED_DATE,
                 IMPORTED_FILE_DETAILS,

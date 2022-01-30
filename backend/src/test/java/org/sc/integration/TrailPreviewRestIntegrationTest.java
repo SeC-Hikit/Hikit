@@ -19,9 +19,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Date;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sc.integration.ImportTrailIT.END_CORRECT_PLACE_DTO;
+import static org.sc.integration.ImportTrailIT.START_CORRECT_PLACE_DTO;
 import static org.sc.integration.TrailImportRestIntegrationTest.LOCATION_REFS;
 
 @RunWith(SpringRunner.class)
@@ -49,7 +49,7 @@ public class TrailPreviewRestIntegrationTest {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
         trailResponse = adminTrailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }

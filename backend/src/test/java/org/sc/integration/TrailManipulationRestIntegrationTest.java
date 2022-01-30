@@ -117,14 +117,14 @@ public class TrailManipulationRestIntegrationTest {
                 new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
-                any_fountain.getContent().get(0).getId());
+                any_fountain.getContent().get(0).getId(), Collections.emptyList());
         PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
-                another_fountain.getContent().get(0).getId());
+                another_fountain.getContent().get(0).getId(), Collections.emptyList());
 
         TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
                 startPlace,
                 endPlace,
-                Arrays.asList(startPlace, endPlace), TrailClassification.E, "Italy",
+                Arrays.asList(startPlace, endPlace), Collections.emptyList(), TrailClassification.E, "Italy",
                 trailRawDto.getCoordinates(), "CAI Bologna",
                 false, "Ovest", Collections.emptyList(),
                 new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
@@ -169,14 +169,14 @@ public class TrailManipulationRestIntegrationTest {
                 new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
-                any_fountain.getContent().get(0).getId());
+                any_fountain.getContent().get(0).getId(), Collections.emptyList());
         PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
-                another_fountain.getContent().get(0).getId());
+                another_fountain.getContent().get(0).getId(), Collections.emptyList());
 
         TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
                 startPlace,
                 endPlace,
-                Arrays.asList(startPlace, endPlace), TrailClassification.E, "Italy",
+                Arrays.asList(startPlace, endPlace), Collections.emptyList(), TrailClassification.E, "Italy",
                 trailRawDto.getCoordinates(), "CAI Bologna",
                 false, "Ovest", Collections.emptyList(),
                 new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
@@ -230,14 +230,14 @@ public class TrailManipulationRestIntegrationTest {
                 new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0),
-                any_start_waterfall.getContent().get(0).getId());
+                any_start_waterfall.getContent().get(0).getId(), Collections.emptyList());
         PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new CoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0),
-                any_end_bivouac.getContent().get(0).getId());
+                any_end_bivouac.getContent().get(0).getId(), Collections.emptyList());
 
         TrailImportDto trail2Import = new TrailImportDto("ABC 2", "Any trail 2", "Any desc 2", 15,
                 startPlace2,
                 endPlace2,
-                Arrays.asList(startPlace2, endPlace2), TrailClassification.EE, "Italy",
+                Arrays.asList(startPlace2, endPlace2), Collections.emptyList(), TrailClassification.EE, "Italy",
                 importedTrail033.getCoordinates(), "CAI Bologna",
                 false, "Ovest", Collections.emptyList(),
                 new Date(), importedTrail033.getFileDetails(), TrailStatus.PUBLIC);
@@ -264,7 +264,7 @@ public class TrailManipulationRestIntegrationTest {
         // Trail ID + PlaceRef used for adding/removing
         String trailId = createdTrailResponse.getContent().get(0).getId();
         PlaceRefDto placeRefDto = new PlaceRefDto(anotherPlaceName, new CoordinatesDto(latitude, longitude, altitude),
-                anotherPlaceResponse.getContent().get(0).getId());
+                anotherPlaceResponse.getContent().get(0).getId(), Collections.emptyList());
 
         // ADD PLACE TO TRAIL
         TrailResponse trailResponse = adminTrailController.addPlaceToTrail(trailId,
@@ -314,14 +314,14 @@ public class TrailManipulationRestIntegrationTest {
                 new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
-                any_fountain.getContent().get(0).getId());
+                any_fountain.getContent().get(0).getId(), Collections.emptyList());
         PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
-                another_fountain.getContent().get(0).getId());
+                another_fountain.getContent().get(0).getId(), Collections.emptyList());
 
         TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
                 startPlace,
                 endPlace,
-                Arrays.asList(startPlace, endPlace), TrailClassification.E, "Italy",
+                Arrays.asList(startPlace, endPlace), Collections.emptyList(), TrailClassification.E, "Italy",
                 trailRawDto.getCoordinates(), "CAI Bologna",
                 false, "Ovest", Collections.emptyList(),
                 new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
@@ -356,14 +356,14 @@ public class TrailManipulationRestIntegrationTest {
                 new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0),
-                any_start_waterfall.getContent().get(0).getId());
+                any_start_waterfall.getContent().get(0).getId(), Collections.emptyList());
         PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new CoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0),
-                any_end_bivouac.getContent().get(0).getId());
+                any_end_bivouac.getContent().get(0).getId(), Collections.emptyList());
 
         TrailImportDto trail2Import = new TrailImportDto("ABC 2", "Any trail 2", "Any desc 2", 15,
                 startPlace2,
                 endPlace2,
-                Arrays.asList(startPlace2, endPlace2), TrailClassification.EE, "Italy",
+                Arrays.asList(startPlace2, endPlace2), Collections.emptyList(), TrailClassification.EE, "Italy",
                 importedTrail033.getCoordinates(), "CAI Bologna",
                 false, "Ovest", Collections.emptyList(),
                 new Date(), importedTrail033.getFileDetails(), TrailStatus.PUBLIC);
@@ -407,13 +407,13 @@ public class TrailManipulationRestIntegrationTest {
 
         // Adding the two places references
         PlaceRefDto expected035PlaceRefDto = new PlaceRefDto("Crocevia con 033", intersectingPlace.getCoordinates().get(0),
-                intersectingPlaceId);
+                intersectingPlaceId, Collections.emptyList());
 
         TrailResponse addedPlaceToTrailResponse = adminTrailController.addPlaceToTrail(importedTrail035Id,
                 expected035PlaceRefDto);
 
         PlaceRefDto expected033PlaceRefDto = new PlaceRefDto("Crocevia con 035", intersectingPlace.getCoordinates().get(0),
-                intersectingPlaceId);
+                intersectingPlaceId, Collections.emptyList());
 
         TrailResponse addedPlaceToTrailResponse2 = adminTrailController.addPlaceToTrail(importedTrail033ImportId,
                 expected033PlaceRefDto);
@@ -451,14 +451,14 @@ public class TrailManipulationRestIntegrationTest {
                 new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
-                any_fountain.getContent().get(0).getId());
+                any_fountain.getContent().get(0).getId(), Collections.emptyList());
         PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
-                another_fountain.getContent().get(0).getId());
+                another_fountain.getContent().get(0).getId(), Collections.emptyList());
 
         TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
                 startPlace,
                 endPlace,
-                Arrays.asList(startPlace, endPlace), TrailClassification.E, "Italy",
+                Arrays.asList(startPlace, endPlace), Collections.emptyList(), TrailClassification.E, "Italy",
                 trailRawDto.getCoordinates(), "CAI Bologna",
                 false, "Ovest", Collections.emptyList(),
                 new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
@@ -493,14 +493,14 @@ public class TrailManipulationRestIntegrationTest {
                 new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0),
-                any_start_waterfall.getContent().get(0).getId());
+                any_start_waterfall.getContent().get(0).getId(), Collections.emptyList());
         PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new CoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0),
-                any_end_bivouac.getContent().get(0).getId());
+                any_end_bivouac.getContent().get(0).getId(), Collections.emptyList());
 
         TrailImportDto trail2Import = new TrailImportDto("ABC 2", "Any trail 2", "Any desc 2", 15,
                 startPlace2,
                 endPlace2,
-                Arrays.asList(startPlace2, endPlace2), TrailClassification.EE, "Italy",
+                Arrays.asList(startPlace2, endPlace2), Collections.emptyList(), TrailClassification.EE, "Italy",
                 importedTrail033.getCoordinates(), "CAI Bologna",
                 false, "Ovest", Collections.emptyList(),
                 new Date(), importedTrail033.getFileDetails(), TrailStatus.PUBLIC);
@@ -544,13 +544,13 @@ public class TrailManipulationRestIntegrationTest {
 
         // Adding the two places references
         PlaceRefDto expected035PlaceRefDto = new PlaceRefDto("Crocevia con 033", intersectingPlace.getCoordinates().get(0),
-                intersectingPlaceId);
+                intersectingPlaceId, Collections.emptyList());
 
         TrailResponse addedPlaceToTrailResponse = adminTrailController.addPlaceToTrail(importedTrail035Id,
                 expected035PlaceRefDto);
 
         PlaceRefDto expected033PlaceRefDto = new PlaceRefDto("Crocevia con 035", intersectingPlace.getCoordinates().get(0),
-                intersectingPlaceId);
+                intersectingPlaceId, Collections.emptyList());
 
         TrailResponse addedPlaceToTrailResponse2 = adminTrailController.addPlaceToTrail(importedTrail033ImportId,
                 expected033PlaceRefDto);

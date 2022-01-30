@@ -2,7 +2,6 @@ package org.sc.data.entity.mapper;
 
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.sc.data.model.FileDetails;
 import org.sc.data.model.RecordDetails;
 import org.springframework.stereotype.Component;
 

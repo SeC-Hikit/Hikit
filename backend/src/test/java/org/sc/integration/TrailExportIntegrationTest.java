@@ -3,7 +3,6 @@ package org.sc.integration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.sc.Main;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityReportResponse;
 import org.sc.common.rest.response.TrailResponse;
@@ -49,7 +48,7 @@ public class TrailExportIntegrationTest {
     @Before
     public void setup() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
         trailResponse = trailController.importTrail(trailImportDto);
     }
 

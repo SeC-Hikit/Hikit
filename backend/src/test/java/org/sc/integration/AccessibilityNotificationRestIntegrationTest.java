@@ -57,7 +57,7 @@ public class AccessibilityNotificationRestIntegrationTest {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
         trailResponse = trailController.importTrail(trailImportDto);
         id = trailResponse.getContent().get(0).getId();
         Date reportDate = new Date();

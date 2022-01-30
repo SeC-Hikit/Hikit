@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -88,12 +90,12 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         String placeId = returnedPlaceDto.getId();
 
         // Import trail
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(adminPlaceController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(adminPlaceController);
         TrailResponse importedResponse = adminTrailController.importTrail(trailImportDto);
         String trailId = importedResponse.getContent().get(0).getId();
 
         TrailResponse addPlaceToTrailResponse = adminTrailController.addPlaceToTrail(trailId,
-                new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId));
+                new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId, Collections.emptyList()));
 
         assertThat(addPlaceToTrailResponse.getStatus()).isEqualTo(Status.OK);
         TrailResponse trailResponse = trailController.getByPlaceId(placeId, LEVEL, 0, 10);

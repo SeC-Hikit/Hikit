@@ -51,7 +51,7 @@ public class MediaRestIntegrationTest  {
     @Before
     public void setUp(){
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(adminPlaceController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(adminPlaceController);
         trailResponse = trailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }

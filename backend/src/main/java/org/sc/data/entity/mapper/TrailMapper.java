@@ -177,7 +177,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     }
 
     private String getCoordinatesFieldName(final TrailSimplifierLevel level) {
-        LOGGER.info("getCoordinatesFieldName TrailSimplifierLevel: {}", level);
+        LOGGER.trace("getCoordinatesFieldName TrailSimplifierLevel: {}", level);
         switch (level) {
             case LOW:
                 return Trail.COORDINATES_LOW;

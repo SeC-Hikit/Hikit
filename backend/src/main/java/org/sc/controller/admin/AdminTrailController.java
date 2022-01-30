@@ -135,12 +135,12 @@ public class AdminTrailController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailResponse importTrail(@RequestBody TrailImportDto request) {
         final Set<String> errors = generalValidator.validate(request);
-        if (errors.isEmpty()) {
-            List<TrailDto> savedTrail = trailImporterManager.save(request);
-            return trailResponseHelper.constructResponse(emptySet(), savedTrail, trailManager.count(),
+        if (!errors.isEmpty()) {
+            return trailResponseHelper.constructResponse(errors, emptyList(), trailManager.count(),
                     ZERO, ONE);
         }
-        return trailResponseHelper.constructResponse(errors, emptyList(), trailManager.count(),
+        final List<TrailDto> savedTrail = trailImporterManager.save(request);
+        return trailResponseHelper.constructResponse(emptySet(), savedTrail, trailManager.count(),
                 ZERO, ONE);
     }
 

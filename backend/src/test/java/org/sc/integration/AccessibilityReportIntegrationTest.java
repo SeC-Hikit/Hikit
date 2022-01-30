@@ -69,7 +69,7 @@ public class AccessibilityReportIntegrationTest {
     @Before
     public void setup() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
 
         trailResponse = trailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();

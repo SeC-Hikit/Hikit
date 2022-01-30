@@ -109,7 +109,7 @@ class TrailFileManager @Autowired constructor(
     }
 
     fun writeTrailToOfficialGpx(trail: TrailDto) {
-        logger.info("Writing GPX trail for trail with 'id' ${trail.id}")
+        logger.info("Writing GPX trail for trail with id '${trail.id}'")
         val creator = "S&C_$VERSION"
         val gpx = GPX.builder(creator)
                 .addTrack { track ->
@@ -129,7 +129,7 @@ class TrailFileManager @Autowired constructor(
     }
 
     fun writeTrailToKml(trail: TrailDto) {
-        logger.info("Writing KML for trail with 'id' ${trail.id}")
+        logger.info("Writing KML for trail with id '${trail.id}'")
         val kml = Kml()
         val lineString: LineString = LineString().withAltitudeMode(AltitudeMode.ABSOLUTE)
         trail.coordinates.forEach { lineString.addToCoordinates(it.longitude, it.latitude, it.altitude) }

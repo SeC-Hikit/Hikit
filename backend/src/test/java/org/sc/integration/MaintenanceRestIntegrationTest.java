@@ -10,7 +10,6 @@ import org.sc.controller.MaintenanceController;
 import org.sc.controller.admin.AdminMaintenanceController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
-import org.sc.data.model.Maintenance;
 import org.sc.data.model.TrailClassification;
 import org.sc.common.rest.response.MaintenanceResponse;
 import org.sc.configuration.DataSource;
@@ -75,9 +74,9 @@ public class MaintenanceRestIntegrationTest {
 
     @Before
     public void setUp() {
-//        IntegrationUtils.clearCollections(dataSource);
+        IntegrationUtils.clearCollections(dataSource);
 
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
         TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
         importedTrailId = trailResponse.getContent().get(0).getId();
 

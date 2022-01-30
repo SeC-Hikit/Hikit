@@ -2,10 +2,8 @@ package org.sc.manager
 
 import org.sc.common.rest.*
 import org.sc.configuration.auth.AuthFacade
-import org.sc.data.mapper.PlaceRefMapper
-import org.sc.data.mapper.TrailCoordinatesMapper
-import org.sc.data.mapper.TrailMapper
-import org.sc.data.mapper.TrailRawMapper
+import org.sc.configuration.auth.AuthHelper
+import org.sc.data.mapper.*
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
@@ -27,8 +25,8 @@ class TrailImporterService @Autowired constructor(
         private val maintenanceManager: MaintenanceManager,
         private val trailsStatsCalculator: TrailsStatsCalculator,
         private val trailDatasetVersionDao: TrailDatasetVersionDao,
-        private val placeMapper: PlaceRefMapper,
         private val trailCoordinatesMapper: TrailCoordinatesMapper,
+        private val coordinatesMapper: CoordinatesMapper,
         private val trailRawMapper: TrailRawMapper,
         private val trailRawDao: TrailRawDAO,
         private val trailMapper: TrailMapper,
@@ -53,24 +51,44 @@ class TrailImporterService @Autowired constructor(
 
         val createdOn = Date()
 
+        // Create places in case they did not exist
         val authHelper = authFacade.authHelper
+
+        logger.info("Creating or retrieving places for trail import...")
+
+        val placesLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.locations, authHelper)
+        val trailCrosswaysFromLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.crossways, authHelper)
+
+        logger.info("Reordering places in memory...")
         val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
+        val placesInOrder: List<PlaceRef> =
+                getSortedIntermediateLocations(importingTrail.coordinates,
+                        placesLocations.map { PlaceRef(it.name, coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) },
+                        trailCrosswaysFromLocations.map { PlaceRef(it.name, coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) }
+                )
+
+        logger.info("Simplifying trail data...")
+        val simplifyLowQuality = trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW)
+        val simplifyMediumQuality = trailSimplifier.simplify(coordinates, TrailSimplifierLevel.MEDIUM)
+        val simplifyHighQuality = trailSimplifier.simplify(coordinates, TrailSimplifierLevel.HIGH)
+
+        logger.info("Saving the trail...")
         val trail = Trail.builder()
                 .name(importingTrail.name)
-                .startLocation(importingTrail.locations.map { placeMapper.map(it) }.first())
-                .endLocation(importingTrail.locations.map { placeMapper.map(it) }.last())
+                .startLocation(placesInOrder.first())
+                .endLocation(placesInOrder.last())
                 .description(importingTrail.description)
                 .officialEta(importingTrail.officialEta)
                 .code(importingTrail.code)
                 .variant(importingTrail.isVariant)
-                .locations(getConsistentLocations(importingTrail))
+                .locations(placesInOrder)
                 .classification(importingTrail.classification)
                 .country(importingTrail.country)
                 .statsTrailMetadata(statsTrailMetadata)
                 .coordinates(coordinates)
-                .coordinatesLow(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW))
-                .coordinatesMedium(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.MEDIUM))
-                .coordinatesHigh(trailSimplifier.simplify(coordinates, TrailSimplifierLevel.HIGH))
+                .coordinatesLow(simplifyLowQuality)
+                .coordinatesMedium(simplifyMediumQuality)
+                .coordinatesHigh(simplifyHighQuality)
                 .lastUpdate(createdOn)
                 .maintainingSection(importingTrail.maintainingSection)
                 .territorialDivision(importingTrail.territorialDivision)
@@ -103,13 +121,31 @@ class TrailImporterService @Autowired constructor(
                 .build()
 
         val savedTrailAsList = trailsManager.save(trail)
-        val trailSaved = savedTrailAsList.first()
+        if(savedTrailAsList.isEmpty()) {
+            logger.warn("Something went wrong with saving trail data, rolling back...")
+            // TODO rollback
 
+        }
+
+        val trailSaved = savedTrailAsList.first()
+        logger.info("Linking places to trail...")
+        updatePlacesWithSavedTrail(trailSaved)
+
+        logger.info("Generating static resources for trail...")
         updateResourcesForTrail(trailSaved)
 
+        logger.info("Updating trail set version...")
         trailDatasetVersionDao.increaseVersion()
 
+        logger.info("Done importing trail.")
         return savedTrailAsList
+    }
+
+    private fun updatePlacesWithSavedTrail(trailSaved: TrailDto) {
+        trailSaved.locations.map {
+            logger.info("Connecting place with Id '${it.placeId}' to newly created trail with Id '${trailSaved.id}'")
+            trailsManager.linkPlace(trailSaved.id, it)
+        }
     }
 
     fun updateResourcesForTrail(savedTrail: TrailDto) {
@@ -193,10 +229,32 @@ class TrailImporterService @Autowired constructor(
 
     fun countTrailRaw() = trailRawDao.count()
 
-    private fun getConsistentLocations(importingTrail: TrailImportDto) =
+    private fun getLocationsWithInMemChangesFromPlacesRef(elements: List<PlaceRefDto>, authHelper: AuthHelper): List<PlaceDto> =
+            elements.map {
+                if (it.placeId.isEmpty()) {
+                    val created = placeManager.create(PlaceDto(null, it.name, "",
+                            emptyList(), emptyList(), emptyList(), it.encounteredTrailIds,
+                            RecordDetailsDto(Date(),
+                                    authHelper.username,
+                                    authHelper.instance,
+                                    authHelper.realm))).first()
+                    created.coordinates = created.coordinates.plus(it.coordinates)
+                    created.crossingTrailIds = it.encounteredTrailIds
+                    created
+                } else {
+                    val valueReturned = placeManager.getById(it.placeId).first()
+                    valueReturned.coordinates = valueReturned.coordinates.plus(it.coordinates)
+                    valueReturned.crossingTrailIds = it.encounteredTrailIds
+                    valueReturned
+                }
+            }
+
+    private fun getSortedIntermediateLocations(coordinates: List<TrailCoordinatesDto>,
+                                               otherPlaces: List<PlaceRef>,
+                                               trailCrosswaysFromLocations: List<PlaceRef>): List<PlaceRef> =
             sortLocationsByTrailCoordinates(
-                    importingTrail.coordinates,
-                    importingTrail.locations.map { placeMapper.map(it) })
+                    coordinates,
+                    otherPlaces.plus(trailCrosswaysFromLocations))
 
     private fun sortLocationsByTrailCoordinates(
             coordinates: List<TrailCoordinatesDto>,
