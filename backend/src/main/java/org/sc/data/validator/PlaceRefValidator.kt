@@ -15,13 +15,10 @@ class PlaceRefValidator @Autowired constructor(
     override fun validate(request: PlaceRefDto): Set<String> {
         val errors = mutableSetOf<String>();
 
-        if (StringUtils.isBlank(request.name)) {
+        if (request.name == null || request.name.trim().isBlank()) {
             errors.add(String.format(ValidatorUtils.emptyFieldError, "Name"))
         }
         errors.addAll(trailCoordinatesCreationValidator.validate(request.coordinates))
-        if (!placeManager.doesItExist(request.placeId)) {
-            errors.add("Place with id:'${request.placeId}' does not exist")
-        }
         return errors
     }
 }

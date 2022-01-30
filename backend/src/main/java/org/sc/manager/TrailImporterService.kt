@@ -63,8 +63,10 @@ class TrailImporterService @Autowired constructor(
         val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
         val placesInOrder: List<PlaceRef> =
                 getSortedIntermediateLocations(importingTrail.coordinates,
-                        placesLocations.map { PlaceRef(it.name, coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) },
-                        trailCrosswaysFromLocations.map { PlaceRef(it.name, coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) }
+                        placesLocations.map { PlaceRef(it.name,
+                                coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) },
+                        trailCrosswaysFromLocations.map { PlaceRef(it.name,
+                                coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) }
                 )
 
         logger.info("Simplifying trail data...")
@@ -233,7 +235,7 @@ class TrailImporterService @Autowired constructor(
             elements.map {
                 if (it.placeId.isEmpty()) {
                     val created = placeManager.create(PlaceDto(null, it.name, "",
-                            emptyList(), emptyList(), emptyList(), it.encounteredTrailIds,
+                            emptyList(), emptyList(), listOf(it.coordinates), it.encounteredTrailIds,
                             RecordDetailsDto(Date(),
                                     authHelper.username,
                                     authHelper.instance,

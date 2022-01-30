@@ -1,6 +1,5 @@
 package org.sc.data.validator
 
-import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.PlaceDto
 import org.sc.data.validator.trail.TrailExistenceValidator
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +22,7 @@ class PlaceValidator @Autowired constructor(
         listOfErrorMessages.addAll(request.crossingTrailIds.flatMap { trailExistenceValidator.validate(it) })
         if(request.coordinates.isEmpty())listOfErrorMessages.add(noCoords)
         listOfErrorMessages.addAll(request.coordinates.flatMap { trailCoordinatesCreationValidator.validate(it) })
-        if (isEmpty(request.name)) listOfErrorMessages.add(noNameError)
+        if (request.name == null || request.name.trim().isEmpty()) listOfErrorMessages.add(noNameError)
         return listOfErrorMessages
     }
 
