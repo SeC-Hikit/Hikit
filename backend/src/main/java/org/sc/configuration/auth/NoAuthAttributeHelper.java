@@ -57,6 +57,11 @@ public class NoAuthAttributeHelper implements AuthHelper {
         return getAttribute(UserAttribute.realm);
     }
 
+    @Override
+    public AuthData getAuthData() {
+        return new AuthData(getUsername(), getRealm(), getInstance());
+    }
+
     private UserToAttributes constructUserToAttributes(final AppProperties appProperties) {
         final String securityDisabledUserRoles = appProperties.getSecurityDisabledUserRoles();
         final String[] userAndRoles = securityDisabledUserRoles.split(USER_DIVIDER);

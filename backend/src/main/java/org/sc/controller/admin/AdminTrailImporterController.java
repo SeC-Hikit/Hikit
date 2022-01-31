@@ -3,6 +3,8 @@ package org.sc.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
+import org.sc.configuration.auth.AuthData;
+import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.manager.TrailFileManager;
 import org.sc.manager.TrailImporterService;
@@ -39,6 +41,7 @@ public class AdminTrailImporterController {
     private final TrailRawResponseHelper trailRawResponseHelper;
     private final FileProbeUtil fileProbeUtil;
     private final GpxFileHandlerHelper gpxFileHandlerHelper;
+    private final AuthFacade authFacade;
 
 
     @Autowired
@@ -46,12 +49,14 @@ public class AdminTrailImporterController {
                                         final TrailImporterService trailManagementManager,
                                         final TrailRawResponseHelper trailRawResponseHelper,
                                         final FileProbeUtil fileProbeUtil,
-                                        final GpxFileHandlerHelper gpxFileHandlerHelper) {
+                                        final GpxFileHandlerHelper gpxFileHandlerHelper,
+                                        final AuthFacade authFacade) {
         this.trailFileManager = trailFileManager;
         this.trailManagementManager = trailManagementManager;
         this.fileProbeUtil = fileProbeUtil;
         this.trailRawResponseHelper = trailRawResponseHelper;
         this.gpxFileHandlerHelper = gpxFileHandlerHelper;
+        this.authFacade = authFacade;
     }
 
     @Operation(summary = "Read and import one GPX trail file")
@@ -70,6 +75,8 @@ public class AdminTrailImporterController {
     }
 
     private TrailRawResponse processUploadedFiles(final List<MultipartFile> files) {
+        final AuthData authData = authFacade.getAuthHelper().getAuthData();
+
         final Map<String, Optional<Path>> originalFileNamesToTempPaths
                 = trailFileManager.getGPXFilesTempPathList(files);
 
@@ -104,7 +111,7 @@ public class AdminTrailImporterController {
                     final String uniqueFileName = trailFileManager.makeUniqueFileName(originalFilename);
                     final Path rawGpxPath = trailFileManager.saveRawGpx(uniqueFileName, originalFileNamesToExistingPaths.get(originalFilename));
                     return trailFileManager
-                            .getTrailRawModel(uniqueFileName, originalFilename, rawGpxPath);
+                            .getTrailRawModel(uniqueFileName, originalFilename, rawGpxPath, authData);
                 }).collect(toList());
 
         final List<TrailRawDto> savedTrails = trailRawDtos.stream().map(

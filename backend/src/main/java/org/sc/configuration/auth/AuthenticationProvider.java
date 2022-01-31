@@ -1,8 +1,8 @@
 package org.sc.configuration.auth;
 
-import org.springframework.security.core.Authentication;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 
 public interface AuthenticationProvider {
-    Authentication getAuth();
+    KeycloakAuthenticationToken getAuth();
 
 }

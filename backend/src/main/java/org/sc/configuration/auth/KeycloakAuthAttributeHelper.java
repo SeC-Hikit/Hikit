@@ -3,6 +3,8 @@ package org.sc.configuration.auth;
 import org.apache.logging.log4j.Logger;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
 import org.sc.configuration.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,34 +32,24 @@ public class KeycloakAuthAttributeHelper implements AuthHelper {
         this.appProperties = appProperties;
     }
 
-    public String getUsername(){
-        final Object principal = authProvider.getAuth().getPrincipal();
-        if(principal instanceof KeycloakPrincipal) {
-            final KeycloakPrincipal<KeycloakSecurityContext> kp =
-                    (KeycloakPrincipal<KeycloakSecurityContext>) principal;
-            return kp.getKeycloakSecurityContext().getToken().getPreferredUsername();
-        }
-        throw new IllegalStateException();
+    public String getUsername() {
+        final KeycloakAuthenticationToken auth = authProvider.getAuth();
+        final AccessToken token = auth.getAccount().getKeycloakSecurityContext().getToken();
+        return token.getPreferredUsername();
     }
 
-    public String getAttribute(UserAttribute userAttribute) {
-        final Object principal = authProvider.getAuth().getPrincipal();
-        if(principal instanceof KeycloakPrincipal) {
-            final KeycloakPrincipal<KeycloakSecurityContext> kp =
-                    (KeycloakPrincipal<KeycloakSecurityContext>) principal;
-            final IDToken token = kp.getKeycloakSecurityContext().getToken();
-
-            final Map<String, Object> claims = token.getOtherClaims();
-
-            final String userAttributeName = userAttribute.name();
-            if (claims.containsKey(userAttributeName)) {
-                return String.valueOf(claims.get(userAttributeName));
-            }
-            LOGGER.warn(String.format("User '%s', does not contain claim '%s'", token.getName(), userAttributeName));
-            return "";
+    public String getAttribute(final UserAttribute userAttribute) {
+        final KeycloakAuthenticationToken auth = authProvider.getAuth();
+        final AccessToken token = auth.getAccount().getKeycloakSecurityContext().getToken();
+        final Map<String, Object> claims = token.getOtherClaims();
+        final String userAttributeName = userAttribute.name();
+        if (claims.containsKey(userAttributeName)) {
+            return String.valueOf(claims.get(userAttributeName));
         }
-        LOGGER.error("principal {} not an instance of KeycloakPrincipal", principal);
-        throw new IllegalStateException();
+        throw new SecurityException(
+                String.format("User '%s', does not contain claim '%s'", token.getName(), userAttributeName
+                )
+        );
     }
 
     @Override
@@ -68,6 +60,11 @@ public class KeycloakAuthAttributeHelper implements AuthHelper {
     @Override
     public String getRealm() {
         return getAttribute(UserAttribute.realm);
+    }
+
+    @Override
+    public AuthData getAuthData() {
+        return new AuthData(getUsername(), getRealm(), getInstance());
     }
 
 }

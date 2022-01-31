@@ -33,8 +33,12 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     public static final String PROTECTED_CONTEXT = "/admin/**";
     public static final String AUTHENTICATION_IS_DISABLED_MESSAGE = "Authentication is disabled";
 
+    final AppProperties appProperties;
+
     @Autowired
-    AppProperties appProperties;
+    public SecurityConfig(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
 
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.

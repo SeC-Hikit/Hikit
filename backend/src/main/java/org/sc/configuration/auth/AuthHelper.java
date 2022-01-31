@@ -5,4 +5,7 @@ public interface AuthHelper {
     String getAttribute(UserAttribute attribute);
     String getInstance();
     String getRealm();
+
+    AuthData getAuthData();
+
 }

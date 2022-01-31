@@ -17,6 +17,7 @@ import org.sc.processor.GpxFileHandlerHelper
 import org.sc.processor.TrailsStatsCalculator
 import org.sc.processor.pdf.PdfFileHelper
 import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.configuration.auth.AuthData
 import org.sc.util.FileManagementUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -40,7 +41,6 @@ class TrailFileManager @Autowired constructor(
         private val trailCoordinatesMapper: TrailCoordinatesMapper,
         private val fileManagementUtil: FileManagementUtil,
         private val fileNameValidator: FileNameValidator,
-        private val authFacade: AuthFacade,
         appProps: AppProperties
 ) {
 
@@ -72,7 +72,7 @@ class TrailFileManager @Autowired constructor(
         throw IllegalStateException()
     }
 
-    fun getTrailRawModel(uniqueFileName: String, originalFilename: String, tempFile: Path): TrailRawDto {
+    fun getTrailRawModel(uniqueFileName: String, originalFilename: String, tempFile: Path, authData: AuthData): TrailRawDto {
         val gpx = gpxFileHandlerHelper.readFromFile(tempFile)
         val track = gpx.tracks.first()
         val segment = track.segments.first()
@@ -95,7 +95,6 @@ class TrailFileManager @Autowired constructor(
             )
         }
 
-        val authHelper = authFacade.authHelper
         return TrailRawDto(
                 "",
                 track.name.orElse(emptyDefaultString),
@@ -103,8 +102,8 @@ class TrailFileManager @Autowired constructor(
                 trailCoordinatesMapper.map(trailCoordinates.first()),
                 trailCoordinatesMapper.map(trailCoordinates.last()),
                 trailCoordinates.map { trailCoordinatesMapper.map(it) },
-                FileDetailsDto(Date(), authHelper.username, authHelper.instance,
-                        authHelper.realm, uniqueFileName, originalFilename, authHelper.username)
+                FileDetailsDto(Date(), authData.username, authData.instance,
+                        authData.realm, uniqueFileName, originalFilename, authData.username)
         )
     }
 
