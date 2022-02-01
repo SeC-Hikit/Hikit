@@ -5,6 +5,7 @@ import org.sc.configuration.AppProperties;
 import org.sc.data.auth.UserToAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -15,11 +16,9 @@ import java.util.stream.Stream;
 import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Service
-@Qualifier(NoAuthAttributeHelper.NO_AUTH_BEAN)
+@ConditionalOnProperty(value = "security.enabled", havingValue = "false")
 public class NoAuthAttributeHelper implements AuthHelper {
     private static final Logger LOGGER = getLogger(NoAuthAttributeHelper.class);
-
-    public static final String NO_AUTH_BEAN = "NO_AUTH_BEAN";
 
     public static final String USER_DIVIDER = ";";
     public static final String USER_ATTRIBUTES_DIVIDER = "/";

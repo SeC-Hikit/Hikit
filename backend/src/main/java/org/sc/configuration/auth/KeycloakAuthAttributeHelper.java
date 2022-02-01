@@ -9,6 +9,7 @@ import org.keycloak.representations.IDToken;
 import org.sc.configuration.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
 import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Service
-@Qualifier(KeycloakAuthAttributeHelper.KEYCLOAK_BEAN)
+@ConditionalOnProperty(value = "security.enabled", havingValue = "true")
 public class KeycloakAuthAttributeHelper implements AuthHelper {
     private static final Logger LOGGER = getLogger(KeycloakAuthAttributeHelper.class);
 
