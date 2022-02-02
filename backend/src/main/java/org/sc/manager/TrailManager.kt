@@ -48,17 +48,20 @@ class TrailManager @Autowired constructor(
         trailDAO.getTrailByPlaceId(code, page, limit, level).map { trailMapper.map(it) }
 
     fun delete(id: String): List<TrailDto> {
+        val deletedTrailInMem = trailDAO.delete(id)
+        deleteAllTrailLocationsReferencesInPlaces(deletedTrailInMem.first())
         val deletedMaintenance = maintenanceDAO.deleteByTrailId(id)
         val deletedAccessibilityNotification = accessibilityNotificationDAO.deleteByTrailId(id)
-        val deletedTrailInMem = trailDAO.delete(id)
-        deletedTrailInMem.forEach { trail ->
-            trail.locations.forEach {
-                placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.coordinates)
-            }
-        }
         logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, " +
                 "deleted notifications: $deletedAccessibilityNotification" + ",")
         return deletedTrailInMem.map { trailMapper.map(it) }
+    }
+
+    private fun deleteAllTrailLocationsReferencesInPlaces(trail: Trail) {
+        trail.locations.forEach {
+            placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.coordinates)
+            trailDAO.propagatePlaceRemovalFromRefs(it.placeId, trail.id);
+        }
     }
 
     fun save(trail: Trail): List<TrailDto> {
@@ -82,9 +85,9 @@ class TrailManager @Autowired constructor(
 
     fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, TrailSimplifierLevel.LOW).isNotEmpty()
 
-    fun linkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
-        val linkedTrail = trailDAO.linkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.linkTrailToPlace(placeRef.placeId, id, placeRef.coordinates)
+    fun linkPlace(trailId: String, placeRef: PlaceRefDto): List<TrailDto> {
+        val linkedTrail = trailDAO.linkPlace(trailId, placeRefMapper.map(placeRef))
+        placeDAO.linkTrailToPlace(placeRef.placeId, trailId, placeRef.coordinates)
         return linkedTrail.map { trailMapper.map(it) }
     }
 

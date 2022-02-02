@@ -59,14 +59,21 @@ class TrailImporterService @Autowired constructor(
         val placesLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.locations, authHelper)
         val trailCrosswaysFromLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.crossways, authHelper)
 
+        // TODO: trailCrossways ->
+        //  filter the ones that refer to other trails - then add place references to those too
+
         logger.info("Reordering places in memory...")
         val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
         val placesInOrder: List<PlaceRef> =
                 getSortedIntermediateLocations(importingTrail.coordinates,
-                        placesLocations.map { PlaceRef(it.name,
-                                coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) },
-                        trailCrosswaysFromLocations.map { PlaceRef(it.name,
-                                coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds) }
+                        placesLocations.map {
+                            PlaceRef(it.name,
+                                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
+                        },
+                        trailCrosswaysFromLocations.map {
+                            PlaceRef(it.name,
+                                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
+                        }
                 )
 
         logger.info("Simplifying trail data...")
@@ -123,12 +130,13 @@ class TrailImporterService @Autowired constructor(
                 .build()
 
         val savedTrailAsList = trailsManager.save(trail)
-        if(savedTrailAsList.isEmpty()) {
+        if (savedTrailAsList.isEmpty()) {
             logger.warn("Something went wrong with saving trail data, rolling back...")
             // TODO rollback
 
         }
 
+        // TODO: execute this on a different thread
         val trailSaved = savedTrailAsList.first()
         logger.info("Linking places to trail...")
         updatePlacesWithSavedTrail(trailSaved)
@@ -147,6 +155,14 @@ class TrailImporterService @Autowired constructor(
         trailSaved.locations.map {
             logger.info("Connecting place with Id '${it.placeId}' to newly created trail with Id '${trailSaved.id}'")
             trailsManager.linkPlace(trailSaved.id, it)
+            it.encounteredTrailIds.filter { encounteredTrail -> encounteredTrail.equals(trailSaved.id) }
+                    .forEach { encounteredTrailNotTrailSaved ->
+                        run {
+                            logger.info("Connecting also place with Id '${it.placeId}' " +
+                                    "to other existing trail with Id '${encounteredTrailNotTrailSaved}'")
+                            trailsManager.linkPlace(encounteredTrailNotTrailSaved, it)
+                        }
+                    }
         }
     }
 
@@ -233,7 +249,7 @@ class TrailImporterService @Autowired constructor(
 
     private fun getLocationsWithInMemChangesFromPlacesRef(elements: List<PlaceRefDto>, authHelper: AuthHelper): List<PlaceDto> =
             elements.map {
-                if (it.placeId.isEmpty()) {
+                if (it.placeId == null || it.placeId.isEmpty()) {
                     val created = placeManager.create(PlaceDto(null, it.name, "",
                             emptyList(), emptyList(), listOf(it.coordinates), it.encounteredTrailIds,
                             RecordDetailsDto(Date(),
@@ -260,8 +276,7 @@ class TrailImporterService @Autowired constructor(
 
     private fun sortLocationsByTrailCoordinates(
             coordinates: List<TrailCoordinatesDto>,
-            locations: List<PlaceRef>
-    ): List<PlaceRef> =
+            locations: List<PlaceRef>): List<PlaceRef> =
             // for each location, check closest trail Coordinate distance
             locations.sortedWith(compareBy { pr ->
                 val closestCoordinatePoint: TrailCoordinatesDto? =

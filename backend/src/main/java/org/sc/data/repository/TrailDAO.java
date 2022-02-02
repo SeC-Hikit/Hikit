@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
@@ -37,6 +38,7 @@ public class TrailDAO {
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
     public static final String NO_FILTERING = "*";
     public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
+    public static final String POSITIONAL_OPERATOR = ".$[].";
 
 
     private final MongoCollection<Document> collection;
@@ -118,7 +120,7 @@ public class TrailDAO {
     }
 
     public List<TrailPreview> findPreviewsByCode(final String code, final int skip,
-                                     final int limit, final String realm) {
+                                                 final int limit, final String realm) {
         final Document codeFilter = getLikeEndFilter(Trail.CODE, code);
         final Document realmFilter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
@@ -126,7 +128,7 @@ public class TrailDAO {
         final Bson aSkip = Aggregates.skip(skip);
         return toTrailsPreviewList(collection.aggregate(
                 Arrays.asList(match(codeFilter),
-                match(realmFilter), project, aLimit, aSkip)));
+                        match(realmFilter), project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> trailPreviewById(final String id) {
@@ -216,6 +218,15 @@ public class TrailDAO {
                 update);
     }
 
+    public void propagatePlaceRemovalFromRefs(String placeId, String trailId) {
+        LOGGER.trace("Propagating trail locations removal");
+        collection.updateMany(new Document(Trail.LOCATIONS + "." + PlaceRef.PLACE_ID, placeId),
+                new Document($PULL, new Document(
+                        Trail.LOCATIONS + POSITIONAL_OPERATOR + PlaceRef.ENCOUNTERED_TRAIL_IDS, trailId
+                ))
+        );
+    }
+
     public long countTrail() {
         return collection.countDocuments();
     }
@@ -228,7 +239,7 @@ public class TrailDAO {
     private List<Trail> toTrailsList(final Iterable<Document> documents,
                                      final TrailSimplifierLevel trailSimplifierLevel) {
         return StreamSupport.stream(documents.spliterator(), false)
-                .map(t-> trailLevelMapper.mapToObject(t, trailSimplifierLevel)).collect(toList());
+                .map(t -> trailLevelMapper.mapToObject(t, trailSimplifierLevel)).collect(toList());
     }
 
     private Document getRealmFilter(final String realm) {
@@ -265,8 +276,8 @@ public class TrailDAO {
                 topRight.getLatitude());
     }
 
-
     public long countTotalByCode(final String code) {
         return collection.countDocuments(getLikeEndFilter(Trail.CODE, code));
     }
+
 }
