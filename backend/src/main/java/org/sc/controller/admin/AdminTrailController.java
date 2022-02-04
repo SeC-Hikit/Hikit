@@ -48,7 +48,7 @@ public class AdminTrailController {
         errors.addAll(generalValidator.validate(placeRefDto));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedPlaceResultDtos =
-                    trailManager.linkPlace(id, placeRefDto);
+                    trailManager.linkTrailToPlace(id, placeRefDto);
             return trailResponseHelper.constructResponse(errors, linkedPlaceResultDtos,
                     trailManager.count(),
                     ONE, ONE);

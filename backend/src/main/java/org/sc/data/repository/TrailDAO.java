@@ -1,6 +1,5 @@
 package org.sc.data.repository;
 
-import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.mongodb.client.model.Aggregates.match;
@@ -71,6 +71,10 @@ public class TrailDAO {
                 new Document(Trail.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
         return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit),
                 TrailSimplifierLevel.LOW);
+    }
+
+    public List<TrailPreview> getTrailPreviewById(final String id) {
+        return toTrailsPreviewList(collection.find(new Document(Trail.ID, id)));
     }
 
     public List<Trail> getTrailById(final String id,
@@ -147,7 +151,7 @@ public class TrailDAO {
     public List<Trail> linkMedia(final String id,
                                  final LinkedMedia linkMedia) {
         collection.updateOne(new Document(Trail.ID, id),
-                new Document(ADD_TO_SET, new Document(Trail.MEDIA,
+                new Document($ADD_TO_SET, new Document(Trail.MEDIA,
                         linkedMediaMapper.mapToDocument(linkMedia))));
         return getTrailById(id, TrailSimplifierLevel.LOW);
     }
@@ -197,9 +201,9 @@ public class TrailDAO {
         return toTrailsList(foundTrails, level);
     }
 
-    public List<Trail> linkPlace(String id, PlaceRef placeRef) {
+    public List<Trail> linkGivenTrailToPlace(String id, PlaceRef placeRef) {
         collection.updateOne(new Document(Trail.ID, id),
-                new Document(ADD_TO_SET, new Document(Trail.LOCATIONS,
+                new Document($ADD_TO_SET, new Document(Trail.LOCATIONS,
                         placeRefMapper.mapToDocument(placeRef))));
         return getTrailById(id, TrailSimplifierLevel.LOW);
     }
@@ -227,11 +231,27 @@ public class TrailDAO {
         );
     }
 
+    public void linkAllExistingTrailConnectionWithNewTrailId(String placeId, String trailId) {
+        LOGGER.trace(String.format("Connecting trail with trailID='%s', with placeId='%s'", trailId, placeId));
+        collection.updateMany(new Document(PLACE_ID_IN_LOCATIONS, trailId),
+                new Document($ADD_TO_SET,
+                        new Document(Trail.LOCATIONS + "." + PlaceRef.ENCOUNTERED_TRAIL_IDS, trailId)));
+    }
+
+    public void updatePlacesRefsByTrailId(final String trailId,
+                                          final List<PlaceRef> reorderedPlaces) {
+        collection.updateOne(new Document(Trail.ID, trailId),
+                new Document(Trail.LOCATIONS,
+                        reorderedPlaces.stream()
+                                .map(placeRefMapper::mapToDocument)
+                                .collect(Collectors.toList())));
+    }
+
     public long countTrail() {
         return collection.countDocuments();
     }
 
-    private List<TrailPreview> toTrailsPreviewList(final AggregateIterable<Document> documents) {
+    private List<TrailPreview> toTrailsPreviewList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false)
                 .map(trailPreviewMapper::mapToObject).collect(toList());
     }
@@ -279,5 +299,6 @@ public class TrailDAO {
     public long countTotalByCode(final String code) {
         return collection.countDocuments(getLikeEndFilter(Trail.CODE, code));
     }
+
 
 }

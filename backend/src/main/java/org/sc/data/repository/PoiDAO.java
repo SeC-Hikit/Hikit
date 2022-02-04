@@ -17,7 +17,6 @@ import org.sc.data.model.Poi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.print.Doc;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -137,7 +136,7 @@ public class PoiDAO {
 
     public List<Poi> linkMedia(final String id,
                                final LinkedMedia linkMedia) {
-        collection.updateOne(new Document(Poi.OBJECT_ID, id), new Document(ADD_TO_SET,
+        collection.updateOne(new Document(Poi.OBJECT_ID, id), new Document($ADD_TO_SET,
                 new Document(Poi.MEDIA, linkedMediaMapper.mapToDocument(linkMedia))));
         return getById(id);
     }

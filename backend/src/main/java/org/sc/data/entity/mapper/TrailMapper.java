@@ -134,7 +134,6 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)))
                 .status(getStatus(doc))
                 .build();
-
     }
 
     private Document getGeoLineValue(Trail object) {

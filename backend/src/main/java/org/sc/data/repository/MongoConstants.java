@@ -28,7 +28,7 @@ public class MongoConstants {
     public static final String SKIP = "$skip";
     public static final String $PULL = "$pull";
     public static final String $PUSH = "$push";
-    public static final String ADD_TO_SET = "$addToSet";
+    public static final String $ADD_TO_SET = "$addToSet";
     public static final String RESOLVED_COORDINATES = "coordinates";
     public static final String $_MAX_M_DISTANCE_FILTER = "$maxDistance";
     public static final String $_MIN_DISTANCE_FILTER = "$minDistance";

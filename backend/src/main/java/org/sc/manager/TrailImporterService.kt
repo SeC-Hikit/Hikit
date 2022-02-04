@@ -3,11 +3,11 @@ package org.sc.manager
 import org.sc.common.rest.*
 import org.sc.configuration.auth.AuthFacade
 import org.sc.configuration.auth.AuthHelper
+import org.sc.data.geo.TrailPlacesAligner
 import org.sc.data.mapper.*
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
-import org.sc.processor.DistanceProcessor
 import org.sc.processor.TrailSimplifier
 import org.sc.processor.TrailSimplifierLevel
 import org.sc.processor.TrailsStatsCalculator
@@ -27,6 +27,7 @@ class TrailImporterService @Autowired constructor(
         private val trailDatasetVersionDao: TrailDatasetVersionDao,
         private val trailCoordinatesMapper: TrailCoordinatesMapper,
         private val coordinatesMapper: CoordinatesMapper,
+        private val trailPlacesAligner: TrailPlacesAligner,
         private val trailRawMapper: TrailRawMapper,
         private val trailRawDao: TrailRawDAO,
         private val trailMapper: TrailMapper,
@@ -59,21 +60,22 @@ class TrailImporterService @Autowired constructor(
         val placesLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.locations, authHelper)
         val trailCrosswaysFromLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.crossways, authHelper)
 
-        // TODO: trailCrossways ->
-        //  filter the ones that refer to other trails - then add place references to those too
-
         logger.info("Reordering places in memory...")
         val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
+        val otherPlacesRefs = placesLocations.map {
+            PlaceRef(it.name,
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
+        }
+        val trailCrosswaysFromLocationsRefs = trailCrosswaysFromLocations.map {
+            PlaceRef(it.name,
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
+        }
+        val locations = otherPlacesRefs.plus(trailCrosswaysFromLocationsRefs)
+        val trailCoords = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
         val placesInOrder: List<PlaceRef> =
-                getSortedIntermediateLocations(importingTrail.coordinates,
-                        placesLocations.map {
-                            PlaceRef(it.name,
-                                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
-                        },
-                        trailCrosswaysFromLocations.map {
-                            PlaceRef(it.name,
-                                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
-                        }
+                trailPlacesAligner.sortLocationsByTrailCoordinates(
+                        trailCoords,
+                        locations
                 )
 
         logger.info("Simplifying trail data...")
@@ -154,13 +156,13 @@ class TrailImporterService @Autowired constructor(
     private fun updatePlacesWithSavedTrail(trailSaved: TrailDto) {
         trailSaved.locations.map {
             logger.info("Connecting place with Id '${it.placeId}' to newly created trail with Id '${trailSaved.id}'")
-            trailsManager.linkPlace(trailSaved.id, it)
+            trailsManager.linkTrailToPlace(trailSaved.id, it)
             it.encounteredTrailIds.filter { encounteredTrail -> encounteredTrail.equals(trailSaved.id) }
                     .forEach { encounteredTrailNotTrailSaved ->
                         run {
                             logger.info("Connecting also place with Id '${it.placeId}' " +
                                     "to other existing trail with Id '${encounteredTrailNotTrailSaved}'")
-                            trailsManager.linkPlace(encounteredTrailNotTrailSaved, it)
+                            trailsManager.linkTrailToPlace(encounteredTrailNotTrailSaved, it)
                         }
                     }
         }
@@ -179,7 +181,7 @@ class TrailImporterService @Autowired constructor(
         val removedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
         val addedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
         removedPlacesOnTrail.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
-        addedPlacesOnTrail.forEach { trailsManager.linkPlace(trailDto.id, it) }
+        addedPlacesOnTrail.forEach { trailsManager.linkTrailToPlace(trailDto.id, it) }
 
         val removedMediaOnTrail = trailToUpdate.mediaList.filterNot { trailDto.mediaList.contains(it) }
         val addedMediaOnTrail = trailDto.mediaList.filterNot { trailToUpdate.mediaList.contains(it) }
@@ -223,7 +225,7 @@ class TrailImporterService @Autowired constructor(
             // DRAFT -> PUBLIC
         } else {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.PUBLIC}""")
-            trailDto.locations.forEach { trailsManager.linkPlace(trailDto.id, it) }
+            trailDto.locations.forEach { trailsManager.linkTrailToPlace(trailDto.id, it) }
         }
         trailToUpdate.status = trailDto.status
         return trailsManager.update(trailMapper.map(trailToUpdate))
@@ -266,24 +268,4 @@ class TrailImporterService @Autowired constructor(
                     valueReturned
                 }
             }
-
-    private fun getSortedIntermediateLocations(coordinates: List<TrailCoordinatesDto>,
-                                               otherPlaces: List<PlaceRef>,
-                                               trailCrosswaysFromLocations: List<PlaceRef>): List<PlaceRef> =
-            sortLocationsByTrailCoordinates(
-                    coordinates,
-                    otherPlaces.plus(trailCrosswaysFromLocations))
-
-    private fun sortLocationsByTrailCoordinates(
-            coordinates: List<TrailCoordinatesDto>,
-            locations: List<PlaceRef>): List<PlaceRef> =
-            // for each location, check closest trail Coordinate distance
-            locations.sortedWith(compareBy { pr ->
-                val closestCoordinatePoint: TrailCoordinatesDto? =
-                        coordinates.minByOrNull { DistanceProcessor.distanceBetweenPoints(pr.coordinates, it) }
-
-                val distance = closestCoordinatePoint!!.distanceFromTrailStart +
-                        DistanceProcessor.distanceBetweenPoints(closestCoordinatePoint, pr.coordinates)
-                distance
-            })
 }

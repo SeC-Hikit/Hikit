@@ -11,7 +11,7 @@ import org.sc.data.validator.trail.TrailExistenceValidator
 import org.sc.manager.MaintenanceManager
 import java.util.*
 
-class MaintenanceValidatorTest {
+internal class MaintenanceValidatorTest {
 
     @Test
     fun `validation shall pass when all data correct`() {

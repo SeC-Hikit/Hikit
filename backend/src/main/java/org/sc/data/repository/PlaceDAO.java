@@ -27,8 +27,6 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.model.CoordinatesWithAltitude.LAT_INDEX;
-import static org.sc.data.model.CoordinatesWithAltitude.LONG_INDEX;
 import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
@@ -90,7 +88,7 @@ public class PlaceDAO {
     public List<Place> linkTrailToPlace(final String id,
                                  final String trailId, CoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
-                new Document(ADD_TO_SET, new Document(Place.CROSSING,
+                new Document($ADD_TO_SET, new Document(Place.CROSSING,
                         trailId))
                         .append($PUSH, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
                         .append($PUSH, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
@@ -150,7 +148,7 @@ public class PlaceDAO {
     public List<Place> addMediaToPlace(final String placeId,
                                        final LinkedMedia map) {
         collection.updateOne(new Document(Place.ID, placeId),
-                new Document(ADD_TO_SET,
+                new Document($ADD_TO_SET,
                         new Document(Place.MEDIA_IDS,
                                 map.getId())));
         return getById(placeId);
