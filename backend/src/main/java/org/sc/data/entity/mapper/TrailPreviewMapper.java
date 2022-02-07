@@ -38,7 +38,7 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
                 doc.getString(Trail.ID),
                 doc.getString(Trail.CODE),
                 getClassification(doc),
-                getLocations(doc, Trail.LOCATIONS),
+                getLocations(doc),
                 getPos(doc, Trail.START_POS),
                 getPos(doc, Trail.FINAL_POS),
                 fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)),
@@ -58,9 +58,8 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
         return placeMapper.mapToObject(pos);
     }
 
-    private List<PlaceRef> getLocations(final Document doc,
-                                        final String fieldName) {
-        final List<Document> pos = doc.getList(fieldName, Document.class);
+    private List<PlaceRef> getLocations(final Document doc) {
+        final List<Document> pos = doc.getList(Trail.LOCATIONS, Document.class);
         return pos.stream().map(placeMapper::mapToObject).collect(Collectors.toList());
     }
 

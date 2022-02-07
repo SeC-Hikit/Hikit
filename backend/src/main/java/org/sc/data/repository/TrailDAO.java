@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
@@ -38,7 +36,8 @@ public class TrailDAO {
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
     public static final String NO_FILTERING = "*";
     public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
-    public static final String POSITIONAL_OPERATOR = ".$[].";
+    public static final String POSITIONAL_EVERY_OPERATOR = ".$[].";
+    public static final String POSITIONAL_OPERATOR = ".$";
 
 
     private final MongoCollection<Document> collection;
@@ -201,11 +200,10 @@ public class TrailDAO {
         return toTrailsList(foundTrails, level);
     }
 
-    public List<Trail> linkGivenTrailToPlace(String id, PlaceRef placeRef) {
+    public void linkGivenTrailToPlace(String id, PlaceRef placeRef) {
         collection.updateOne(new Document(Trail.ID, id),
                 new Document($ADD_TO_SET, new Document(Trail.LOCATIONS,
                         placeRefMapper.mapToDocument(placeRef))));
-        return getTrailById(id, TrailSimplifierLevel.LOW);
     }
 
     public List<Trail> unLinkPlace(String id, PlaceRef placeRef) {
@@ -226,25 +224,25 @@ public class TrailDAO {
         LOGGER.trace("Propagating trail locations removal");
         collection.updateMany(new Document(Trail.LOCATIONS + "." + PlaceRef.PLACE_ID, placeId),
                 new Document($PULL, new Document(
-                        Trail.LOCATIONS + POSITIONAL_OPERATOR + PlaceRef.ENCOUNTERED_TRAIL_IDS, trailId
+                        Trail.LOCATIONS + POSITIONAL_EVERY_OPERATOR + PlaceRef.ENCOUNTERED_TRAIL_IDS, trailId
                 ))
         );
     }
 
     public void linkAllExistingTrailConnectionWithNewTrailId(String placeId, String trailId) {
         LOGGER.trace(String.format("Connecting trail with trailID='%s', with placeId='%s'", trailId, placeId));
-        collection.updateMany(new Document(PLACE_ID_IN_LOCATIONS, trailId),
+        collection.updateMany(new Document(PLACE_ID_IN_LOCATIONS, placeId),
                 new Document($ADD_TO_SET,
-                        new Document(Trail.LOCATIONS + "." + PlaceRef.ENCOUNTERED_TRAIL_IDS, trailId)));
+                        new Document(Trail.LOCATIONS + POSITIONAL_OPERATOR + "." + PlaceRef.ENCOUNTERED_TRAIL_IDS, trailId)));
     }
 
     public void updatePlacesRefsByTrailId(final String trailId,
                                           final List<PlaceRef> reorderedPlaces) {
         collection.updateOne(new Document(Trail.ID, trailId),
-                new Document(Trail.LOCATIONS,
+                new Document($_SET, new Document(Trail.LOCATIONS,
                         reorderedPlaces.stream()
                                 .map(placeRefMapper::mapToDocument)
-                                .collect(Collectors.toList())));
+                                .collect(Collectors.toList()))));
     }
 
     public long countTrail() {
@@ -279,6 +277,7 @@ public class TrailDAO {
                 include(Trail.CLASSIFICATION),
                 include(Trail.CYCLO),
                 include(Trail.STATUS),
+                include(Trail.LOCATIONS),
                 include(Trail.RECORD_DETAILS),
                 include(Trail.LAST_UPDATE_DATE),
                 include(Trail.CODE),

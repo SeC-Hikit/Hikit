@@ -141,7 +141,7 @@ class TrailImporterService @Autowired constructor(
         // TODO: execute this on a different thread
         val trailSaved = savedTrailAsList.first()
         logger.info("Linking places to trail...")
-        updatePlacesWithSavedTrail(trailSaved)
+        populatePlacesWithTrailData(trailSaved)
 
         logger.info("Generating static resources for trail...")
         updateResourcesForTrail(trailSaved)
@@ -153,7 +153,7 @@ class TrailImporterService @Autowired constructor(
         return savedTrailAsList
     }
 
-    private fun updatePlacesWithSavedTrail(trailSaved: TrailDto) {
+    private fun populatePlacesWithTrailData(trailSaved: TrailDto) {
         trailSaved.locations.map {
             logger.info("Connecting place with Id '${it.placeId}' to newly created trail with Id '${trailSaved.id}'")
             trailsManager.linkTrailToPlace(trailSaved.id, it)
@@ -221,11 +221,11 @@ class TrailImporterService @Autowired constructor(
         // Turn PUBLIC -> DRAFT
         if (isSwitchingToDraft(trailDto, trailToUpdate)) {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.DRAFT}""")
-            trailToUpdate.locations.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
+            trailsManager.deleteAllTrailLocationsReferencesInPlaces(trailDto.id)
             // DRAFT -> PUBLIC
         } else {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.PUBLIC}""")
-            trailDto.locations.forEach { trailsManager.linkTrailToPlace(trailDto.id, it) }
+            populatePlacesWithTrailData(trailDto)
         }
         trailToUpdate.status = trailDto.status
         return trailsManager.update(trailMapper.map(trailToUpdate))

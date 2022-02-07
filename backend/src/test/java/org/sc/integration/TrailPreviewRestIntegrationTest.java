@@ -65,8 +65,8 @@ public class TrailPreviewRestIntegrationTest {
     private void assertAll(TrailPreviewDto firstResult) {
         assertThat(firstResult.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
         assertThat(firstResult.getCode()).isEqualTo(TrailImportRestIntegrationTest.EXPECTED_TRAIL_ID);
-        assertThat(firstResult.getStartPos()).isEqualTo(LOCATION_REFS.get(0));
-        assertThat(firstResult.getFinalPos()).isEqualTo(LOCATION_REFS.get(2));
+        assertThat(firstResult.getStartPos().getPlaceId()).isEqualTo(LOCATION_REFS.get(0).getPlaceId());
+        assertThat(firstResult.getFinalPos().getPlaceId()).isEqualTo(LOCATION_REFS.get(2).getPlaceId());
     }
 
     @Test

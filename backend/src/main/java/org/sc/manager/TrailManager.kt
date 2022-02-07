@@ -51,8 +51,8 @@ class TrailManager @Autowired constructor(
             trailDAO.getTrailByPlaceId(code, page, limit, level).map { trailMapper.map(it) }
 
     fun delete(id: String): List<TrailDto> {
+        deleteAllTrailLocationsReferencesInPlaces(id)
         val deletedTrailInMem = trailDAO.delete(id)
-        deleteAllTrailLocationsReferencesInPlaces(deletedTrailInMem.first())
         val deletedMaintenance = maintenanceDAO.deleteByTrailId(id)
         val deletedAccessibilityNotification = accessibilityNotificationDAO.deleteByTrailId(id)
         logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, " +
@@ -60,7 +60,8 @@ class TrailManager @Autowired constructor(
         return deletedTrailInMem.map { trailMapper.map(it) }
     }
 
-    private fun deleteAllTrailLocationsReferencesInPlaces(trail: Trail) {
+    fun deleteAllTrailLocationsReferencesInPlaces(trailId: String) {
+        val trail = getPreviewById(trailId).first();
         trail.locations.forEach {
             placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.coordinates)
             trailDAO.propagatePlaceRemovalFromRefs(it.placeId, trail.id);
@@ -89,13 +90,17 @@ class TrailManager @Autowired constructor(
     fun doesTrailExist(id: String): Boolean = trailDAO.getTrailById(id, TrailSimplifierLevel.LOW).isNotEmpty()
 
     fun linkTrailToPlace(targetTrailId: String, placeRef: PlaceRefDto): List<TrailDto> {
-        val linkedTrail = trailDAO.linkGivenTrailToPlace(targetTrailId, placeRefMapper.map(placeRef))
+
+        val isPlaceAlreadyInTrail = trailDAO.getTrailPreviewById(targetTrailId).first().locations.map { it.placeId }.contains(placeRef.placeId)
+        if(!isPlaceAlreadyInTrail){
+            trailDAO.linkGivenTrailToPlace(targetTrailId, placeRefMapper.map(placeRef))
+        }
         val linkedPlace = placeDAO.linkTrailToPlace(placeRef.placeId, targetTrailId, placeRef.coordinates)
         val place = linkedPlace.first()
         ensureLinkingTrailToExistingCrosswayReferences(place, targetTrailId)
         ensureCreatingNewCrosswayReferences(place, targetTrailId, placeRef)
 
-        return linkedTrail.map { trailMapper.map(it) }
+        return getById(targetTrailId, TrailSimplifierLevel.LOW)
     }
 
     private fun ensureLinkingTrailToExistingCrosswayReferences(place: Place, targetTrailId: String) {
