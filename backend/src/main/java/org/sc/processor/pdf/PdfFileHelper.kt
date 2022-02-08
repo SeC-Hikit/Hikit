@@ -4,6 +4,7 @@ import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
+import org.apache.tika.io.IOUtils
 import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.data.model.*
@@ -97,14 +98,16 @@ class PdfFileHelper {
         val title = Paragraph(getTitle(trail.code), hugeBold)
 
         val secLogoResource = javaClass.classLoader.getResource(MEDIA_PATH + File.separator + SEC_LOGO)
-        val path: Path = Paths.get(secLogoResource!!.toURI())
-        val imgSec = Image.getInstance(path.toAbsolutePath().toString())
+        val openStream = secLogoResource!!.openStream()
+        val toByteArray = IOUtils.toByteArray(openStream)
+        val imgSec = Image.getInstance(toByteArray)
         imgSec.scaleAbsolute(SEC_LOGO_WIDTH, COMMON_MARGIN)
         imgSec.spacingAfter = COMMON_MARGIN
 
         val caiLogoResource = javaClass.classLoader.getResource(MEDIA_PATH + File.separator + SEC_LOGO)
-        val pathToCaiLogoSlim: Path = Paths.get(caiLogoResource!!.toURI())
-        val imgCAI = Image.getInstance(pathToCaiLogoSlim.toAbsolutePath().toString())
+        val openStreamCaiLogo = caiLogoResource!!.openStream()
+        val caiLogotoByteArray = IOUtils.toByteArray(openStreamCaiLogo)
+        val imgCAI = Image.getInstance(caiLogotoByteArray)
         imgCAI.scaleAbsolute(CAI_LOGO_SQUARE_SIZE, CAI_LOGO_SQUARE_SIZE)
 
         val topTable = PdfPTable(COLUMN_NUMBER)
