@@ -8,6 +8,7 @@ import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.data.model.*
 import org.springframework.stereotype.Component
+import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -96,12 +97,12 @@ class PdfFileHelper {
         val date = Paragraph(getGeneratedOnString(), summaryFont)
         val title = Paragraph(getTitle(trail.code), hugeBold)
 
-        val path: Path = Paths.get(ClassLoader.getSystemResource("$MEDIA_PATH/$SEC_LOGO").toURI())
+        val path: Path = Paths.get(ClassLoader.getSystemResource(MEDIA_PATH + File.separator + SEC_LOGO).toURI())
         val imgSec = Image.getInstance(path.toAbsolutePath().toString())
         imgSec.scaleAbsolute(SEC_LOGO_WIDTH, COMMON_MARGIN)
         imgSec.spacingAfter = COMMON_MARGIN
 
-        val pathToCaiLogoSlim: Path = Paths.get(ClassLoader.getSystemResource("$MEDIA_PATH/$CAI_LOGO").toURI())
+        val pathToCaiLogoSlim: Path = Paths.get(ClassLoader.getSystemResource(MEDIA_PATH + File.separator + CAI_LOGO).toURI())
         val imgCAI = Image.getInstance(pathToCaiLogoSlim.toAbsolutePath().toString())
         imgCAI.scaleAbsolute(CAI_LOGO_SQUARE_SIZE, CAI_LOGO_SQUARE_SIZE)
 

@@ -46,7 +46,7 @@ public class TrailRawDAO {
     public List<TrailRaw> deleteById(final String id) {
         List<TrailRaw> byIdInMemory = getById(id);
         collection.deleteOne(new Document(TrailRaw.ID, id));
-        LOGGER.info("delete TrailRaws: {} for id: {}", byIdInMemory, id);
+        LOGGER.info("delete TrailRaws with ID: {}", id);
         return byIdInMemory;
     }
 
