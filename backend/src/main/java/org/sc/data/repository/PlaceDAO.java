@@ -27,13 +27,12 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.model.CoordinatesWithAltitude.LAT_INDEX;
-import static org.sc.data.model.CoordinatesWithAltitude.LONG_INDEX;
 import static org.sc.data.repository.MongoConstants.*;
 
 @Repository
 public class PlaceDAO {
     private static final Logger LOGGER = getLogger(PlaceDAO.class);
+    public static final int ONE = 1;
 
     private final MongoCollection<Document> collection;
     private final PlaceMapper placeMapper;
@@ -89,7 +88,7 @@ public class PlaceDAO {
     public List<Place> linkTrailToPlace(final String id,
                                  final String trailId, CoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
-                new Document(ADD_TO_SET, new Document(Place.CROSSING,
+                new Document($ADD_TO_SET, new Document(Place.CROSSING,
                         trailId))
                         .append($PUSH, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
                         .append($PUSH, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
@@ -98,20 +97,28 @@ public class PlaceDAO {
         return getById(id);
     }
 
-    public List<Place> removeTrailFromPlace(final String id,
+    public List<Place> removeTrailFromPlace(final String placeId,
                                      final String trailId,
                                      final Coordinates coordinates) {
 
-        collection.updateOne(new Document(Place.ID, id),
+        collection.updateOne(new Document(Place.ID, placeId),
                 new Document($PULL, new Document(Place.CROSSING,
                         trailId)));
 
-        collection.updateOne(new Document(Place.ID, id),
-                new Document($PULL, new Document(Place.COORDINATES,
-                        coordinatesMapper.mapToDocument(coordinates))));
+        final List<Place> afterChange = getById(placeId);
 
-        final List<Place> byId = getById(id);
-        LOGGER.info("removeTrailFromPlace Places: {}, for id: {}, trailId: {}, coordinates: {}", byId, id, trailId, coordinates);
+        if(afterChange.isEmpty()) { throw new IllegalStateException(); }
+        boolean areManyCoordinatesPresent =
+                afterChange.stream().findFirst()
+                        .get().getCoordinates().size() > ONE;
+        if(areManyCoordinatesPresent) {
+            collection.updateOne(new Document(Place.ID, placeId),
+                    new Document($PULL, new Document(Place.COORDINATES,
+                            coordinatesMapper.mapToDocument(coordinates))));
+        }
+
+        final List<Place> byId = getById(placeId);
+        LOGGER.info("removeTrailFromPlace Places: {}, for placeId: {}, trailId: {}, coordinates: {}", byId, placeId, trailId, coordinates);
         return byId;
     }
 
@@ -141,7 +148,7 @@ public class PlaceDAO {
     public List<Place> addMediaToPlace(final String placeId,
                                        final LinkedMedia map) {
         collection.updateOne(new Document(Place.ID, placeId),
-                new Document(ADD_TO_SET,
+                new Document($ADD_TO_SET,
                         new Document(Place.MEDIA_IDS,
                                 map.getId())));
         return getById(placeId);
@@ -167,20 +174,6 @@ public class PlaceDAO {
 
     public long count() {
         return collection.countDocuments();
-    }
-
-    private void deleteOrphanPlaceWhenNoMoreTrailsUseIt(Place place, Coordinates trailCoordinates) {
-        final List<List<Double>> collect = place.getPoints().getCoordinates2D().stream().filter(p ->
-                (p.get(LONG_INDEX) != trailCoordinates.getLongitude() &&
-                        p.get(LAT_INDEX) != trailCoordinates.getLatitude())).collect(toList());
-        LOGGER.info("deleteOrphanPlaceWhenNoMoreTrailsUseIt collect {} retrieved for Place: {}, Coordinates: {}", collect, place, trailCoordinates);
-        // Mongo DB does not support empty GeoJSON multi point arrays
-        if(collect.isEmpty()) {
-            place.setPoints(new MultiPointCoords2D(Collections.singletonList(Arrays.asList(0.0, 0.0))));
-        } else {
-            place.setPoints(new MultiPointCoords2D(collect));
-        }
-        collection.findOneAndReplace(new Document(Place.ID, place.getId()), placeMapper.mapToDocument(place));
     }
 
     private List<Place> toPlaceList(final Iterable<Document> documents) {

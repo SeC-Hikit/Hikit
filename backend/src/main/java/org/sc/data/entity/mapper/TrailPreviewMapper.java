@@ -6,6 +6,9 @@ import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Component
@@ -15,12 +18,15 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
     private final PlaceRefMapper placeMapper;
     private final FileDetailsMapper fileDetailsMapper;
     private final CycloMapper cycloMapper;
+    private final PlaceRefMapper placeRefMapper;
 
     @Autowired
     public TrailPreviewMapper(final PlaceRefMapper placeMapper,
                               final FileDetailsMapper fileDetailsMapper,
-                              final CycloMapper cycloMapper) {
+                              final CycloMapper cycloMapper,
+                              final PlaceRefMapper placeRefMapper) {
         this.placeMapper = placeMapper;
+        this.placeRefMapper = placeRefMapper;
         this.fileDetailsMapper = fileDetailsMapper;
         this.cycloMapper = cycloMapper;
     }
@@ -32,6 +38,7 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
                 doc.getString(Trail.ID),
                 doc.getString(Trail.CODE),
                 getClassification(doc),
+                getLocations(doc),
                 getPos(doc, Trail.START_POS),
                 getPos(doc, Trail.FINAL_POS),
                 fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)),
@@ -49,6 +56,11 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
                             final String fieldName) {
         final Document pos = doc.get(fieldName, Document.class);
         return placeMapper.mapToObject(pos);
+    }
+
+    private List<PlaceRef> getLocations(final Document doc) {
+        final List<Document> pos = doc.getList(Trail.LOCATIONS, Document.class);
+        return pos.stream().map(placeMapper::mapToObject).collect(Collectors.toList());
     }
 
     private TrailStatus getStatus(Document doc) {
