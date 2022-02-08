@@ -15,7 +15,6 @@ import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.math.roundToInt
 
 @Component
@@ -97,12 +96,14 @@ class PdfFileHelper {
         val date = Paragraph(getGeneratedOnString(), summaryFont)
         val title = Paragraph(getTitle(trail.code), hugeBold)
 
-        val path: Path = Paths.get(ClassLoader.getSystemResource(MEDIA_PATH + File.separator + SEC_LOGO).toURI())
+        val secLogoResource = javaClass.classLoader.getResource(MEDIA_PATH + File.separator + SEC_LOGO)
+        val path: Path = Paths.get(secLogoResource!!.toURI())
         val imgSec = Image.getInstance(path.toAbsolutePath().toString())
         imgSec.scaleAbsolute(SEC_LOGO_WIDTH, COMMON_MARGIN)
         imgSec.spacingAfter = COMMON_MARGIN
 
-        val pathToCaiLogoSlim: Path = Paths.get(ClassLoader.getSystemResource(MEDIA_PATH + File.separator + CAI_LOGO).toURI())
+        val caiLogoResource = javaClass.classLoader.getResource(MEDIA_PATH + File.separator + SEC_LOGO)
+        val pathToCaiLogoSlim: Path = Paths.get(caiLogoResource!!.toURI())
         val imgCAI = Image.getInstance(pathToCaiLogoSlim.toAbsolutePath().toString())
         imgCAI.scaleAbsolute(CAI_LOGO_SQUARE_SIZE, CAI_LOGO_SQUARE_SIZE)
 
