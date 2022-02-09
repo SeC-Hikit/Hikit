@@ -138,13 +138,20 @@ class TrailImporterService @Autowired constructor(
 
         }
 
-        // TODO: execute this on a different thread
         val trailSaved = savedTrailAsList.first()
         logger.info("Linking places to trail...")
         populatePlacesWithTrailData(trailSaved)
 
         logger.info("Generating static resources for trail...")
         updateResourcesForTrail(trailSaved)
+
+        val relatedTrails = trailSaved.locations.flatMap { it.encounteredTrailIds }
+        logger.info("Ri-generating static resources for related trail(s) ${relatedTrails}...")
+        relatedTrails
+                .filter { it != trailSaved.id }
+                .flatMap { trailsManager.getById(it, TrailSimplifierLevel.LOW) }
+                .forEach{ generatePdfFile(it) }
+
 
         logger.info("Updating trail set version...")
         trailDatasetVersionDao.increaseVersion()
@@ -168,10 +175,10 @@ class TrailImporterService @Autowired constructor(
         }
     }
 
-    fun updateResourcesForTrail(savedTrail: TrailDto) {
-        trailFileManager.writeTrailToOfficialGpx(savedTrail)
-        trailFileManager.writeTrailToKml(savedTrail)
-        generatePdfFile(savedTrail)
+    fun updateResourcesForTrail(targetTrail: TrailDto) {
+        trailFileManager.writeTrailToOfficialGpx(targetTrail)
+        trailFileManager.writeTrailToKml(targetTrail)
+        generatePdfFile(targetTrail)
     }
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {
