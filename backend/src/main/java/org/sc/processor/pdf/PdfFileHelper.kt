@@ -104,7 +104,7 @@ class PdfFileHelper {
         imgSec.scaleAbsolute(SEC_LOGO_WIDTH, COMMON_MARGIN)
         imgSec.spacingAfter = COMMON_MARGIN
 
-        val caiLogoResource = javaClass.classLoader.getResource(MEDIA_PATH + File.separator + SEC_LOGO)
+        val caiLogoResource = javaClass.classLoader.getResource(MEDIA_PATH + File.separator + CAI_LOGO)
         val openStreamCaiLogo = caiLogoResource!!.openStream()
         val caiLogotoByteArray = IOUtils.toByteArray(openStreamCaiLogo)
         val imgCAI = Image.getInstance(caiLogotoByteArray)
