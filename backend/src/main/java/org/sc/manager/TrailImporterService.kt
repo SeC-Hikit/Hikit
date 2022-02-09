@@ -60,8 +60,11 @@ class TrailImporterService @Autowired constructor(
         val placesLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.locations, authHelper)
         val trailCrosswaysFromLocations: List<PlaceDto> = getLocationsWithInMemChangesFromPlacesRef(importingTrail.crossways, authHelper)
 
-        logger.info("Reordering places in memory...")
-        val coordinates = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
+        logger.info("Calculating point distances...")
+        val coordinates = importingTrail.coordinates.map { it ->
+            TrailCoordinates(it.latitude, it.longitude, it.altitude,
+                    trailsStatsCalculator.calculateLengthFromTo(importingTrail.coordinates, it)) }
+
         val otherPlacesRefs = placesLocations.map {
             PlaceRef(it.name,
                     coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
@@ -71,10 +74,11 @@ class TrailImporterService @Autowired constructor(
                     coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
         }
         val locations = otherPlacesRefs.plus(trailCrosswaysFromLocationsRefs)
-        val trailCoords = importingTrail.coordinates.map { trailCoordinatesMapper.map(it) }
+
+        logger.info("Reordering places in memory...")
         val placesInOrder: List<PlaceRef> =
                 trailPlacesAligner.sortLocationsByTrailCoordinates(
-                        trailCoords,
+                        coordinates,
                         locations
                 )
 

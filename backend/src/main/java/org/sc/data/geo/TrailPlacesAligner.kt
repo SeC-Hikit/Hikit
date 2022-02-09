@@ -21,10 +21,6 @@ class TrailPlacesAligner @Autowired constructor(
             sortLocationsByTrailCoordinates(coordinates.map { trailCoordinatesMapper.map(it) },
                     locations.map { locationRefMapper.map(it) })
 
-    // For each location, AND
-    // For each coordinates in the list, check the smallest distance from the location. Keep the index.
-    //
-
      fun sortLocationsByTrailCoordinates(
              coordinates: List<TrailCoordinates>,
              locations: List<PlaceRef>): List<PlaceRef> =
@@ -32,9 +28,6 @@ class TrailPlacesAligner @Autowired constructor(
             locations.map { pr ->
                 val closestCoordinatePoint: TrailCoordinates? =
                         coordinates.minByOrNull { DistanceProcessor.distanceBetweenPoints(pr.coordinates, it) }
-
-//                val distance = closestCoordinatePoint!!.distanceFromTrailStart +
-//                        DistanceProcessor.distanceBetweenPoints(closestCoordinatePoint, pr.coordinates)
                 pr to closestCoordinatePoint!!.distanceFromTrailStart
             }.sortedWith(compareBy { it.second }).map { it.first }
 
