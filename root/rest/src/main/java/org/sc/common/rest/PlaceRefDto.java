@@ -2,6 +2,7 @@ package org.sc.common.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 

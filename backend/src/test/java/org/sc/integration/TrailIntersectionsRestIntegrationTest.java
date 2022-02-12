@@ -45,7 +45,6 @@ public class TrailIntersectionsRestIntegrationTest {
     public static final String TRAIL_001BO_IMPORT_FILENAME = "001BO.gpx";
 
     public static final int ANY_OFFICIAL_ETA = 15;
-    public static final String CROCEVIA_NAME = "crocevia";
     public static final String ANY_MAINTAINING_SECTION = "CAI Bologna";
 
     @Autowired
@@ -110,7 +109,7 @@ public class TrailIntersectionsRestIntegrationTest {
                 new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
 
 
-        TrailResponse trail001aBOResp = ensureImport(trailImport001aBODto);
+        TrailResponse trail001aBOResp = importTrail(trailImport001aBODto);
         TrailDto trail001aBOImported = trail001aBOResp.getContent().get(0);
 
         // Now, use the trail raw coordinates to find intersection trail
@@ -211,6 +210,104 @@ public class TrailIntersectionsRestIntegrationTest {
     }
 
     @Test
+    public void shallCreatTrailThenAddAnotherOneWithStartingPlaceMatchingCrossway() {
+
+        TrailRawResponse trail001aBoResp = trailRawController.getById(trail001aBOImport.getContent().stream().findFirst().get().getId());
+        assertThat(trail001aBoResp.getContent().size()).isEqualTo(1);
+        TrailRawDto trailRawDto = trail001aBoResp.getContent().get(0);
+
+
+        // Create first trail 001BO
+        TrailRawResponse trail001BOResp = trailRawController.getById(trail001BOImport.getContent().stream().findFirst().get().getId());
+        TrailRawDto trail001BORawDto = trail001BOResp.getContent().get(0);
+
+        PlaceRefDto startPlaceRef2Castiglione = new PlaceRefDto("Start place 2",
+                new CoordinatesDto(trail001BORawDto.getStartPos().getLatitude(), trail001BORawDto.getStartPos().getLongitude(), trail001BORawDto.getStartPos().getAltitude()),
+                "", Collections.emptyList());
+        PlaceRefDto endPlaceRef2Balinello = new PlaceRefDto("End place 2", new CoordinatesDto(trail001BORawDto.getFinalPos().getLatitude(), trail001BORawDto.getFinalPos().getLongitude(), trail001BORawDto.getFinalPos().getAltitude()),
+                "", Collections.emptyList());
+
+        // Castiglione -> Balinello di Sopra
+        TrailImportDto trailImport2Dto = new TrailImportDto("001BO", "Any trail", "Any desc", ANY_OFFICIAL_ETA,
+                startPlaceRef2Castiglione,
+                endPlaceRef2Balinello,
+                Arrays.asList(startPlaceRef2Castiglione, endPlaceRef2Balinello),
+                Collections.emptyList(),
+                TrailClassification.E, "Italy",
+                trail001BORawDto.getCoordinates(),
+                ANY_MAINTAINING_SECTION,
+                false, "Ovest", Collections.emptyList(),
+                new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
+
+        TrailResponse trailImportResponse = adminTrailController.importTrail(trailImport2Dto);
+        TrailDto trail001BOImported = trailImportResponse.getContent().get(0);
+        assertThat(trailImportResponse.getContent().size()).isEqualTo(1);
+
+        // 001aBO: goes from CROCEVIA -> MONTE BADUCCO
+        String startPlaceAndCrossway = "Start place (and crossway)";
+        String endPlace = "End place";
+
+        PlaceRefDto startPlaceCrocevia = new PlaceRefDto(startPlaceAndCrossway, new CoordinatesDto(44.134603, 11.122528, 1035.0),
+                "", Collections.singletonList(trail001BOImported.getId()));
+        PlaceRefDto endPlaceMonteBaducco = new PlaceRefDto(endPlace, new CoordinatesDto(44.1389435, 11.1356351, 765.0),
+                "", Collections.emptyList());
+
+        List<PlaceRefDto> crosswaySingleton = Collections.singletonList(startPlaceCrocevia);
+            TrailImportDto trailImport001aBODto = new TrailImportDto("001aBO", "Any trail", "Any desc", 15,
+                startPlaceCrocevia,
+                endPlaceMonteBaducco,
+                Arrays.asList(startPlaceCrocevia, endPlaceMonteBaducco),
+                crosswaySingleton, TrailClassification.E, "Italy",
+                trailRawDto.getCoordinates(),
+                "CAI Bologna",
+                false, "Ovest", Collections.emptyList(),
+                new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
+
+        TrailResponse trail001aBOResp = importTrail(trailImport001aBODto);
+        TrailDto trail001aBOImported = trail001aBOResp.getContent().get(0);
+
+        TrailDto firstImportedTrails = getById(trail001BOImported.getId()).getContent().get(0);
+        TrailDto secondImportedTrail = getById(trail001aBOImported.getId()).getContent().get(0);
+
+        assertThat(secondImportedTrail.getLocations().size()).isEqualTo(2);
+
+        // Getting the placeId
+        List<String> placeIds = firstImportedTrails.getLocations().stream().map(PlaceRefDto::getPlaceId).collect(Collectors.toList());
+        List<PlaceResponse> collect = placeIds.stream().map(placeController::get).collect(Collectors.toList());
+        List<PlaceDto> crossways = collect.stream().map(PlaceResponse::getContent)
+                .flatMap(Collection::stream)
+                .filter(p -> p.getName().equals(startPlaceAndCrossway))
+                .collect(Collectors.toList());
+
+        assertThat(crossways.size()).isEqualTo(1);
+        PlaceDto crossway = crossways.get(0);
+
+        // CROSSWAY PLACE, must contain FIRST and SECOND TRAIL IDs
+        assertThat(crossway.getCrossingTrailIds().contains(secondImportedTrail.getId())).isTrue();
+        assertThat(crossway.getCrossingTrailIds().contains(firstImportedTrails.getId())).isTrue();
+
+        // FIRST TRAIL, must contain second trail ID in crossway place
+        final List<PlaceRefDto> mustExist2PlaceRef = firstImportedTrails.getLocations()
+                .stream().filter((location) ->
+                        location.getEncounteredTrailIds().contains(secondImportedTrail.getId()))
+                .collect(Collectors.toList());
+
+        assertThat(mustExist2PlaceRef.size()).isEqualTo(1);
+
+        // SECOND TRAIL, must contain first trail ID in crossway place
+        final List<PlaceRefDto> mustExistPlaceRef = secondImportedTrail.getLocations()
+                .stream().filter((location) ->
+                        location.getEncounteredTrailIds().contains(firstImportedTrails.getId()))
+                .collect(Collectors.toList());
+
+        // Place add with trail ID of another trail shall contain reference.
+        assertThat(mustExistPlaceRef.size()).isEqualTo(1);
+
+        this.trail001BO = firstImportedTrails;
+        this.trail001aBO = secondImportedTrail;
+    }
+
+    @Test
     public void deleteOneShallRemoveAllReferences() {
         shallCreateTrail_addAnotherOneWithIntersectionAndCheckDataIntegration();
 
@@ -291,7 +388,7 @@ public class TrailIntersectionsRestIntegrationTest {
         return trailController.getById(trailId, TrailSimplifierLevel.LOW);
     }
 
-    private TrailResponse ensureImport(TrailImportDto trailImportDto) {
+    private TrailResponse importTrail(TrailImportDto trailImportDto) {
         TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
         assertThat(trailResponse.getContent().size()).isEqualTo(1);
         return trailResponse;
