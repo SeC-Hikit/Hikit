@@ -278,7 +278,7 @@ class TrailImporterService @Autowired constructor(
                                         authHelper: AuthHelper): List<PlaceDto> =
             elements.map {
 
-                val isPlaceNotPresentOnSystem = it.placeId == null || it.placeId.isEmpty()
+                val isPlaceNotPresentOnSystem = it.placeId == null || it.placeId.trim().isEmpty()
 
                 if (isPlaceNotPresentOnSystem) {
                     val matchingPreviouslySubmittedCrossway =
