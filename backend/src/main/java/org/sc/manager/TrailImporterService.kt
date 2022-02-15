@@ -37,7 +37,7 @@ class TrailImporterService @Autowired constructor(
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private val maxDistanceForPlaceAssociation = 50
+    private val maxDistanceForPlaceAssociation_m = 50
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
             trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
@@ -315,7 +315,7 @@ class TrailImporterService @Autowired constructor(
                     .filter { otherPlaceSubmitted -> otherPlaceSubmitted.name == it.name }
                     .filter { otherPlaceSubmitted ->
                         otherPlaceSubmitted.coordinates.any { placeSubmittedCoordinate ->
-                            DistanceProcessor.distanceBetweenPoints(placeSubmittedCoordinate, it.coordinates) <= maxDistanceForPlaceAssociation
+                            DistanceProcessor.distanceBetweenPoints(placeSubmittedCoordinate, it.coordinates) <= maxDistanceForPlaceAssociation_m
                         }
                     }
 }

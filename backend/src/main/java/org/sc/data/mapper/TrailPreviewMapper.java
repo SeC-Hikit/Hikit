@@ -15,6 +15,7 @@ public interface TrailPreviewMapper {
     @Mapping(target = "bikeData", ignore = true, defaultValue = "false")
     @Mapping(target = "classification", ignore = true, defaultValue = "UNCLASSIFIED")
     @Mapping(target = "code", ignore = true)
+    @Mapping(target = "locations", ignore = true)
     @Mapping(target = "trailStatus", ignore = true, defaultValue = "RAW")
     @Mapping(target = "finalPos.name", ignore = true)
     @Mapping(target = "startPos.name", ignore = true)
