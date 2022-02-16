@@ -2,6 +2,7 @@ package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.adapter.AltitudeServiceAdapter;
+import org.sc.common.rest.Coordinates2DDto;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.GeoToolManager;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,11 +38,22 @@ public class GeoToolsController {
     public CoordinatesDto geoLocateTrail(@RequestParam double latitude,
                                          @RequestParam double longitude) {
         final Set<String> errors = generalValidator.validate(new CoordinatesDto(latitude, longitude));
-        if(!errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             return new CoordinatesDto();
         }
         final double altitudeByLongLat = geoToolManager.getAltitudeByLongLat(latitude, longitude);
         return new CoordinatesDto(latitude, longitude, altitudeByLongLat);
+    }
+
+    @Operation(summary = "Find polyline point elevations")
+    @GetMapping("/altitude")
+    public List<CoordinatesDto> getAltitudeTrail(@RequestBody List<Coordinates2DDto> coordinatesDtoList) {
+        final Set<String> errors = coordinatesDtoList.stream().map(generalValidator::validate)
+                .flatMap(Collection::stream).collect(Collectors.toSet());
+        if (!errors.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return coordinatesDtoList.stream().map(it -> geoToolManager.getCoordinateByLongLat(it.getLatitude(), it.getLongitude())).collect(Collectors.toList());
     }
 
     @Operation(summary = "Find coordinates distance")
@@ -48,7 +61,7 @@ public class GeoToolsController {
     public Double radialDistance(@RequestBody List<CoordinatesDto> coordinatesDtoList) {
         final Set<String> errors = coordinatesDtoList.stream().map(generalValidator::validate)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
-        if(!errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             return (double) 0;
         }
         return geoToolManager.getDistanceBetweenCoordinates(coordinatesDtoList);

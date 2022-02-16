@@ -13,6 +13,9 @@ class GeoToolManager @Autowired constructor(private val altitudeService : Altitu
     fun getAltitudeByLongLat(latitude: Double, longitude: Double) =
             altitudeService.getAltitudeByLongLat(latitude, longitude)
 
+    fun getCoordinateByLongLat(latitude: Double, longitude: Double): CoordinatesDto =
+            CoordinatesDto(latitude, longitude,altitudeService.getAltitudeByLongLat(latitude, longitude))
+
     fun getDistanceBetweenCoordinates(coords: List<CoordinatesDto>) : Double =
             trailsStatsCalculator.calculateTrailLength(coords)
 }
