@@ -58,9 +58,9 @@ class TrailsStatsCalculator {
 
     fun calculateLengthFromTo(coordinates: List<Coordinates>, coordinate: Coordinates): Int {
         return coordinates.filterIndexed { index, _ -> index < coordinates.indexOf(coordinate) }
-            .mapIndexed { index: Int, coord: Coordinates -> toEntry(index, coord, coordinates) }
-            .map { DistanceProcessor.distanceBetweenPoints(it.first, it.second).roundToInt() }
-            .sum()
+                .mapIndexed { index: Int, coord: Coordinates -> toEntry(index, coord, coordinates) }
+                .map { DistanceProcessor.distanceBetweenPoints(it.first, it.second).roundToInt() }
+                .sum()
     }
 
     fun calculateEta(coordinates: List<Coordinates>): Double {
@@ -69,43 +69,45 @@ class TrailsStatsCalculator {
         return (trailDistance / averageTravelSpeed) * MINUTES_IN_HOUR
     }
 
-    private fun calculateAverageTravelSpeed(coordinates: List<Coordinates>) =
-        coordinates
-            .filterIndexed { index, _ -> index != coordinates.lastIndex }
-            .mapIndexed { index: Int, CoordinatesDto: Coordinates -> toEntry(index, CoordinatesDto, coordinates) }
-            .map { calculateSpeedForSegment(it) }
-            .sum() / (coordinates.size - 1)
+    private fun calculateAverageTravelSpeed(coordinates: List<Coordinates>): Double =
+            coordinates
+                    .filterIndexed { index, _ -> index != coordinates.lastIndex }
+                    .mapIndexed { index: Int, CoordinatesDto: Coordinates -> toEntry(index, CoordinatesDto, coordinates) }
+                    .sumOf { calculateSpeedForSegment(it) } / (coordinates.size - 1)
 
-    private fun calculateSpeedForSegment(it: Pair<Coordinates, Coordinates>) =
-        AVERAGE_SPEED_ON_FLAT_TERRAIN * exp(
-            -3.5 * abs(
-                (getDifferenceInAltitude(it.first, it.second) / 1000) /
-                        (DistanceProcessor.distanceBetweenPoints(it.first, it.second) / 1000) + 0.05
-            )
+    private fun calculateSpeedForSegment(it: Pair<Coordinates, Coordinates>): Double {
+        val distanceBetweenPoints = DistanceProcessor.distanceBetweenPoints(it.first, it.second)
+        val electedDistance = if (distanceBetweenPoints > 0) distanceBetweenPoints else 1.0
+        return AVERAGE_SPEED_ON_FLAT_TERRAIN * exp(
+                -3.5 * abs(
+                        (getDifferenceInAltitude(it.first, it.second) / 1000) /
+                                (electedDistance / 1000) + 0.05
+                )
         )
+    }
 
     private fun getDifferenceInAltitude(currentPoint: Coordinates, nextPoint: Coordinates) =
-        nextPoint.altitude - currentPoint.altitude
+            nextPoint.altitude - currentPoint.altitude
 
     private fun toEntry(index: Int, trailCoordinates: Coordinates, coordinates: List<Coordinates>)
             : Pair<Coordinates, Coordinates> = Pair(trailCoordinates, coordinates[index + 1])
 
     private fun getFall(currentPoint: Coordinates, nextPoint: Coordinates) =
-        getAbsDifferenceInAltitude(nextPoint, currentPoint)
+            getAbsDifferenceInAltitude(nextPoint, currentPoint)
 
     private fun getRise(currentPoint: Coordinates, nextPoint: Coordinates) =
-        getAbsDifferenceInAltitude(currentPoint, nextPoint)
+            getAbsDifferenceInAltitude(currentPoint, nextPoint)
 
     private fun getAbsDifferenceInAltitude(currentPoint: Coordinates, nextPoint: Coordinates) =
-        abs(nextPoint.altitude - currentPoint.altitude)
+            abs(nextPoint.altitude - currentPoint.altitude)
 
     private fun isRise(
-        currentPoint: Coordinates,
-        nextPoint: Coordinates
+            currentPoint: Coordinates,
+            nextPoint: Coordinates
     ) = currentPoint.altitude < nextPoint.altitude
 
     private fun isFall(
-        currentPoint: Coordinates,
-        nextPoint: Coordinates
+            currentPoint: Coordinates,
+            nextPoint: Coordinates
     ): Boolean = currentPoint.altitude > nextPoint.altitude
 }

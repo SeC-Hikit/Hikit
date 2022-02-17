@@ -44,13 +44,20 @@ class TrailImporterService @Autowired constructor(
                     .first()
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
+        logger.info("Enforcing point calculation...")
+
+        val coordinates = importingTrail.coordinates.map {
+            TrailCoordinates(it.latitude, it.longitude, it.altitude,
+                    trailsStatsCalculator.calculateLengthFromTo(importingTrail.coordinates, it))
+        }
+
         val statsTrailMetadata = StatsTrailMetadata(
-                trailsStatsCalculator.calculateTotRise(importingTrail.coordinates),
-                trailsStatsCalculator.calculateTotFall(importingTrail.coordinates),
-                trailsStatsCalculator.calculateEta(importingTrail.coordinates),
-                trailsStatsCalculator.calculateTrailLength(importingTrail.coordinates),
-                trailsStatsCalculator.calculateHighestPlace(importingTrail.coordinates),
-                trailsStatsCalculator.calculateLowestPlace(importingTrail.coordinates)
+                trailsStatsCalculator.calculateTotRise(coordinates),
+                trailsStatsCalculator.calculateTotFall(coordinates),
+                trailsStatsCalculator.calculateEta(coordinates),
+                trailsStatsCalculator.calculateTrailLength(coordinates),
+                trailsStatsCalculator.calculateHighestPlace(coordinates),
+                trailsStatsCalculator.calculateLowestPlace(coordinates)
         )
 
         val createdOn = Date()
@@ -66,12 +73,6 @@ class TrailImporterService @Autowired constructor(
                 trailCrosswaysFromLocations,
                 importingTrail.locations,
                 authHelper)
-
-        logger.info("Calculating point distances...")
-        val coordinates = importingTrail.coordinates.map {
-            TrailCoordinates(it.latitude, it.longitude, it.altitude,
-                    trailsStatsCalculator.calculateLengthFromTo(importingTrail.coordinates, it))
-        }
 
         val otherPlacesRefs = placesLocations.map {
             PlaceRef(it.name,

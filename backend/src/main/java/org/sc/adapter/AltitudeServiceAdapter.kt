@@ -43,9 +43,8 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
         val result : MutableList<Double> = mutableListOf()
 
-        for(chunk in coordinatesChunks) {
-
-           val coordinateAltitudeList = callAltitudeWithExponentialBackoff(chunk, ALTITUDE_CALL_RETRIES)
+        coordinatesChunks.forEach { chunk ->
+            val coordinateAltitudeList = callAltitudeWithExponentialBackoff(chunk, ALTITUDE_CALL_RETRIES)
 
             if(chunk.size == coordinateAltitudeList.size) {
                 result.addAll(coordinateAltitudeList)

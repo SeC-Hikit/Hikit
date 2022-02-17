@@ -1,10 +1,14 @@
 package org.sc.util;
 
 import com.goebl.simplify.Point;
+import io.jenetics.jpx.GPX;
+import io.jenetics.jpx.Track;
+import io.jenetics.jpx.TrackSegment;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GpsReadUtils {
 
@@ -12,9 +16,9 @@ public class GpsReadUtils {
         double x;
         double y;
 
-        private MyPoint(double x, double y) {
-            this.x = x;
-            this.y = y;
+        private MyPoint(double lat, double lon) {
+            this.x = lat;
+            this.y = lon;
         }
 
         @Override
@@ -45,6 +49,14 @@ public class GpsReadUtils {
             return true;
         }
 
+    }
+
+    public static Point[] readGpxPoints(String filename) throws IOException {
+        GPX read = GPX.read("src/test/resources" + filename);
+        Track trackSegments = read.getTracks().get(0);
+        TrackSegment segment = trackSegments.getSegments().get(0);
+        return segment.getPoints().stream().map(t -> new MyPoint(t.getLatitude().doubleValue(),
+                t.getLongitude().doubleValue())).toArray(MyPoint[]::new);
     }
 
     public static Point[] readPoints(String fileName) throws Exception {

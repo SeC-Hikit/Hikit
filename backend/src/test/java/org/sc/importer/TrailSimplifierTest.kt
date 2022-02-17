@@ -34,6 +34,18 @@ class TrailSimplifierTest {
     }
 
     @Test
+    fun `simplify a very large coordinate list extracted from gpx file`() {
+        val readPoints = GpsReadUtils.readGpxPoints("/points/gps-monterenzio.gpx")
+        val trailCoordinates = readPoints.mapIndexed { index, point ->
+            TrailCoordinates(point.y, point.x, 0.0, index)
+        }
+        Assert.assertEquals(1995, trailCoordinates.size)
+        val simplifier = TrailSimplifier().simplify(trailCoordinates, TrailSimplifierLevel.HIGH)
+        Assert.assertEquals(992, simplifier.size)
+    }
+
+
+    @Test
     fun `do not simplify a small coordinate list extracted from via Emilia`() {
         val point1 = TrailCoordinates(44.49441503350789, 11.342670749165524, 10.1, 1)
         val point2 = TrailCoordinates(44.49702, 11.33780, 10.1, 2)

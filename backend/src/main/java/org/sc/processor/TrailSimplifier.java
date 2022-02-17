@@ -21,7 +21,7 @@ public class TrailSimplifier {
     public static final boolean IS_DOUGLAS_PECKER_ALGORITHM = true;
 
     public List<TrailCoordinates> simplify(List<TrailCoordinates> allCoordinates,
-                                           TrailSimplifierLevel compressionLevel){
+                                           TrailSimplifierLevel compressionLevel) {
 
         // create an instance of the simplifier (empty array needed by List.toArray)
         final TrailCoordinates[] trailCoordinates = new TrailCoordinates[allCoordinates.size()];
@@ -34,18 +34,19 @@ public class TrailSimplifier {
         //float tolerance = 2f;
         float tolerance = 0f;
 
-        if( compressionLevel == TrailSimplifierLevel.LOW) {
+        if (compressionLevel == TrailSimplifierLevel.LOW) {
             tolerance = SUPER_LOW_Q_TOLERANCE;
-        } else if( compressionLevel == TrailSimplifierLevel.MEDIUM) {
+        } else if (compressionLevel == TrailSimplifierLevel.MEDIUM) {
             tolerance = LOW_Q_TOLERANCE;
-        } else if( compressionLevel == TrailSimplifierLevel.HIGH) {
-           tolerance = MEDIUM_Q_TOLERANCE;
+        } else if (compressionLevel == TrailSimplifierLevel.HIGH) {
+            tolerance = MEDIUM_Q_TOLERANCE;
         }
 
         // run simplification process
         final TrailCoordinates[] lessPoints = simplify.simplify(trailCoordinates, tolerance, IS_DOUGLAS_PECKER_ALGORITHM);
         return Arrays.stream(lessPoints).filter(Objects::nonNull).collect(Collectors.toList());
     }
+
     private static final PointExtractor<TrailCoordinates> latLngPointExtractor = new PointExtractor<TrailCoordinates>() {
         @Override
         public double getX(TrailCoordinates trailCoordinates) {
@@ -57,7 +58,6 @@ public class TrailSimplifier {
             return trailCoordinates.getLatitude() * POSITIVE_SCALAR;
         }
     };
-
 
 
 }

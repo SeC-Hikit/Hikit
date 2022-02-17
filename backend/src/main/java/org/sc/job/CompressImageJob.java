@@ -63,7 +63,7 @@ public class CompressImageJob {
 
         int elaboratedImages = 0;
 
-        LOGGER.info(format(STARTING_COMPRESSION_JOB, imageBatchSize));
+        LOGGER.trace(format(STARTING_COMPRESSION_JOB, imageBatchSize));
 
         while (hasUncompressImageAndBelowThreshold(elaboratedImages)) {
 
@@ -114,7 +114,7 @@ public class CompressImageJob {
             }
         }
 
-        LOGGER.info(DONE_COMPRESSION_JOB);
+        LOGGER.trace(DONE_COMPRESSION_JOB);
 
     }
 
