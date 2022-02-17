@@ -29,7 +29,7 @@ class CoordinatesValidator : Validator<CoordinatesDto> {
         return errors
     }
 
-    fun validate(request: Coordinates2DDto): Set<String> {
+    fun validate2D (request: Coordinates2DDto): Set<String> {
         val errors = mutableSetOf<String>()
         val validateLongitude = validateCoordinates(request.longitude, CoordDimension.LONGITUDE)
         if (validateLongitude.isNotEmpty()) errors.add(validateLongitude)

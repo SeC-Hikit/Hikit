@@ -46,7 +46,7 @@ public class GeoToolsController {
     }
 
     @Operation(summary = "Find polyline point elevations")
-    @GetMapping("/altitude")
+    @GetMapping("/polyline_altitude")
     public List<CoordinatesDto> getAltitudeTrail(@RequestBody List<Coordinates2DDto> coordinatesDtoList) {
         final Set<String> errors = coordinatesDtoList.stream().map(generalValidator::validate)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
