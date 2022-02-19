@@ -39,6 +39,7 @@ class GeneralValidator @Autowired constructor(
     fun validate(acd: AccessibilityNotificationDto): Set<String> = accessibilityValidator.validate(acd)
     fun validate(tpl: LinkedPlaceDto): Set<String> = linkedPlaceValidator.validate(tpl)
     fun validate(cor: CoordinatesDto): Set<String> = coordinatesValidator.validate(cor)
+    fun validate(cor: Coordinates2DDto): Set<String> = coordinatesValidator.validate2D(cor)
     fun validate(kv: KeyValueDto): Set<String> = keyValValidator.validate(kv)
     fun validate(lm: LinkedMediaDto): Set<String> = linkedMediaValidator.validate(lm)
     fun validate(md: MaintenanceDto): Set<String> = maintenanceValidator.validate(md)

@@ -1,6 +1,8 @@
 package org.sc.data.validator
 
+import org.sc.common.rest.Coordinates2DDto
 import org.sc.common.rest.CoordinatesDto
+import org.sc.data.model.Coordinates2D
 import org.springframework.stereotype.Component
 
 @Component
@@ -24,8 +26,15 @@ class CoordinatesValidator : Validator<CoordinatesDto> {
         if (validateLongitude.isNotEmpty()) errors.add(validateLongitude)
         val validateLatitude = validateCoordinates(request.latitude, CoordDimension.LATITUDE)
         if (validateLatitude.isNotEmpty()) errors.add(validateLatitude)
-        val validateAltitude = validateCoordinates(request.latitude, CoordDimension.LATITUDE)
-        if (validateAltitude.isNotEmpty()) errors.add(validateLatitude)
+        return errors
+    }
+
+    fun validate2D (request: Coordinates2DDto): Set<String> {
+        val errors = mutableSetOf<String>()
+        val validateLongitude = validateCoordinates(request.longitude, CoordDimension.LONGITUDE)
+        if (validateLongitude.isNotEmpty()) errors.add(validateLongitude)
+        val validateLatitude = validateCoordinates(request.latitude, CoordDimension.LATITUDE)
+        if (validateLatitude.isNotEmpty()) errors.add(validateLatitude)
         return errors
     }
 
