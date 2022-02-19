@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
+import org.sc.common.rest.TrailDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
@@ -47,6 +49,8 @@ public class TrailDAO {
     private final Mapper<TrailPreview> trailPreviewMapper;
     private final LinkedMediaMapper linkedMediaMapper;
     private final PlaceRefMapper placeRefMapper;
+    private final CycloMapper cycloMapper;
+
 
     @Autowired
     public TrailDAO(final DataSource dataSource,
@@ -54,13 +58,14 @@ public class TrailDAO {
                     final SelectiveArgumentMapper<Trail> trailLevelMapper,
                     final LinkedMediaMapper linkedMediaMapper,
                     final TrailPreviewMapper trailPreviewMapper,
-                    final PlaceRefMapper placeRefMapper) {
+                    final PlaceRefMapper placeRefMapper, CycloMapper cycloMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
         this.trailLevelMapper = trailLevelMapper;
         this.linkedMediaMapper = linkedMediaMapper;
         this.trailPreviewMapper = trailPreviewMapper;
         this.placeRefMapper = placeRefMapper;
+        this.cycloMapper = cycloMapper;
     }
 
     public List<Trail> getTrails(int skip, int limit,
@@ -300,4 +305,20 @@ public class TrailDAO {
     }
 
 
+    @NotNull
+    public List<Trail> update(@NotNull Trail trail) {
+        collection.updateOne(
+                new Document(Trail.ID, trail.getId()),
+                new Document($_SET,
+                        new Document(Trail.DESCRIPTION, trail.getDescription()).append(Trail.CODE, trail.getCode())
+                                .append(Trail.CLASSIFICATION, trail.getClassification().toString())
+                                .append(Trail.COUNTRY, trail.getCountry())
+                                .append(Trail.MEDIA, trail.getMediaList())
+                                .append(Trail.STATUS, trail.getStatus().toString())
+                                .append(Trail.CYCLO, cycloMapper.mapToDocument(trail.getCycloDetails()))
+                                .append(Trail.NAME, trail.getName())
+                                .append(Trail.TERRITORIAL_CARED_BY, trail.getTerritorialDivision())
+                ));
+        return getTrailById(trail.getId(), TrailSimplifierLevel.LOW);
+    }
 }

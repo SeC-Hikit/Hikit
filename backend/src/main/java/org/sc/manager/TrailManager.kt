@@ -73,7 +73,7 @@ class TrailManager @Autowired constructor(
     }
 
     fun update(trail: Trail): List<TrailDto> {
-        return trailDAO.upsert(trail).map { trailMapper.map(it) }
+        return trailDAO.update(trail).map { trailMapper.map(it) };
     }
 
     fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto): List<TrailDto> {

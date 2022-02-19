@@ -148,7 +148,7 @@ public class AdminTrailController {
     @PutMapping("/update")
     public TrailResponse updateTrail(@RequestBody TrailDto trailDto) {
         final Set<String> errors = generalValidator.validate(trailDto);
-        errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
+        errors.addAll(generalValidator. validateUpdateTrail(trailDto.getId()));
 
         if (errors.isEmpty()) {
             List<TrailDto> updatedTrail = trailImporterManager.updateTrail(trailDto);
