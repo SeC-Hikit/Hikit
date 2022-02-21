@@ -225,7 +225,7 @@ class TrailImporterService @Autowired constructor(
         trailToUpdate.locations = trailDto.locations
         trailToUpdate.classification = trailDto.classification
         trailToUpdate.country = trailDto.country
-        trailToUpdate.lastUpdate = Date()
+        trailToUpdate.lastUpdate = trailDto.lastUpdate
         trailToUpdate.maintainingSection = trailDto.maintainingSection
         trailToUpdate.territorialDivision = trailDto.territorialDivision
         trailToUpdate.cycloDetails = trailDto.cycloDetails

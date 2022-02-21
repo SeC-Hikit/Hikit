@@ -313,6 +313,8 @@ public class TrailDAO {
                         new Document(Trail.DESCRIPTION, trail.getDescription()).append(Trail.CODE, trail.getCode())
                                 .append(Trail.CLASSIFICATION, trail.getClassification().toString())
                                 .append(Trail.COUNTRY, trail.getCountry())
+                                .append(Trail.OFFICIAL_ETA, trail.getOfficialEta())
+                                .append(Trail.LAST_UPDATE_DATE, trail.getLastUpdate())
                                 .append(Trail.MEDIA, trail.getMediaList())
                                 .append(Trail.STATUS, trail.getStatus().toString())
                                 .append(Trail.CYCLO, cycloMapper.mapToDocument(trail.getCycloDetails()))
