@@ -82,9 +82,9 @@ public class TrailDAO {
     public List<TrailMapping> getTrailsMappings(int skip, int limit, final String realm) {
         final Document realmFilter = getFilter(realm);
         return toTrailsMappingList(collection.find(realmFilter)
-                        .projection(new Document(Trail.ID, 1)
-                                .append(Trail.CODE, 1)
-                                .append(Trail.NAME, 1))
+                .projection(new Document(Trail.ID, ONE)
+                        .append(Trail.CODE, ONE)
+                        .append(Trail.NAME, ONE))
                 .skip(skip).limit(limit));
     }
 
