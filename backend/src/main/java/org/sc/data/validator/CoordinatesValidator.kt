@@ -2,7 +2,6 @@ package org.sc.data.validator
 
 import org.sc.common.rest.Coordinates2DDto
 import org.sc.common.rest.CoordinatesDto
-import org.sc.data.model.Coordinates2D
 import org.springframework.stereotype.Component
 
 @Component

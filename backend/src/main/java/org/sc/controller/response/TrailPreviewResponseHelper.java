@@ -2,7 +2,9 @@ package org.sc.controller.response;
 
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailDto;
+import org.sc.common.rest.TrailMappingDto;
 import org.sc.common.rest.TrailPreviewDto;
+import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.Constants;
@@ -33,6 +35,20 @@ public class TrailPreviewResponseHelper {
                     Constants.ONE, limit, totalCount);
         }
         return new TrailPreviewResponse(Status.OK, errors, dtos,
+                controllerPagination.getCurrentPage(skip, limit),
+                controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
+    }
+
+    public TrailMappingResponse constructMappingResponse(Set<String> errors,
+                                                  List<TrailMappingDto> dtos,
+                                                  long totalCount,
+                                                  int skip,
+                                                  int limit) {
+        if (!errors.isEmpty()) {
+            return new TrailMappingResponse(Status.ERROR, errors, dtos, 1L,
+                    Constants.ONE, limit, totalCount);
+        }
+        return new TrailMappingResponse(Status.OK, errors, dtos,
                 controllerPagination.getCurrentPage(skip, limit),
                 controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
     }

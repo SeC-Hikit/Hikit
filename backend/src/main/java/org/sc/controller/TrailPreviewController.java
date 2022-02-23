@@ -1,16 +1,12 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.Status;
-import org.sc.common.rest.TrailPreviewDto;
+import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.manager.TrailPreviewManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
@@ -44,7 +40,18 @@ public class TrailPreviewController {
         controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
                 .constructResponse(emptySet(), trailManager.getPreviews(skip, limit, realm),
-                        trailManager.countPreview(), skip, limit);
+                        trailManager.countPreviewByRealm(realm), skip, limit);
+    }
+
+    @Operation(summary = "Retrieve trail ID/Code mapping")
+    @GetMapping("/map")
+    public TrailMappingResponse getTrailMapping(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                                @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                                                @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+        controllerPagination.checkSkipLim(skip, limit);
+        return trailPreviewResponseHelper
+                .constructMappingResponse(emptySet(), trailManager.getMappings(skip, limit, realm),
+                        trailManager.countPreviewByRealm(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve RAW trail previews")

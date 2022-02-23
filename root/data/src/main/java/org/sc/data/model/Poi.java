@@ -9,8 +9,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class Poi {
-    public static final String OBJECT_ID = "_id";
     public static final String COLLECTION_NAME = "core.Poi";
+
+    public static final String OBJECT_ID = "_id";
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
     public static final String TAGS = "tags";

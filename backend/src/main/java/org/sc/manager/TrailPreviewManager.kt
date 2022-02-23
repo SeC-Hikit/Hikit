@@ -1,6 +1,8 @@
 package org.sc.manager
 
+import org.sc.common.rest.TrailMappingDto
 import org.sc.common.rest.TrailPreviewDto
+import org.sc.data.mapper.TrailMappingMapper
 import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.repository.TrailDAO
 import org.sc.data.repository.TrailRawDAO
@@ -10,9 +12,18 @@ import org.springframework.stereotype.Component
 @Component
 class TrailPreviewManager @Autowired constructor(
     private val trailPreviewMapper: TrailPreviewMapper,
+    private val trailMappingMapper: TrailMappingMapper,
     private val trailDAO: TrailDAO,
     private val trailRawDAO: TrailRawDAO
 ) {
+
+    fun getMappings(
+            skip: Int,
+            limit: Int,
+            realm: String
+    ): List<TrailMappingDto> =
+            trailDAO.getTrailsMappings(skip, limit, realm)
+                    .map { trailMappingMapper.map(it) }
 
     fun getPreviews(
         skip: Int,
@@ -36,6 +47,7 @@ class TrailPreviewManager @Autowired constructor(
         .map { trailPreviewMapper.map(it) }
 
     fun countPreview(): Long = trailDAO.countTrail()
+    fun countPreviewByRealm(realm: String): Long = trailDAO.countTrailByRealm(realm)
     fun countFindingByCode(code: String): Long = trailDAO.countTotalByCode(code)
     fun countRaw(): Long = trailRawDAO.count()
 }

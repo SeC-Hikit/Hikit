@@ -8,7 +8,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
-import org.sc.common.rest.TrailDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
@@ -47,6 +46,7 @@ public class TrailDAO {
     private final Mapper<Trail> trailMapper;
     private final SelectiveArgumentMapper<Trail> trailLevelMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
+    private final Mapper<TrailMapping> trailMappingMapper;
     private final LinkedMediaMapper linkedMediaMapper;
     private final PlaceRefMapper placeRefMapper;
     private final CycloMapper cycloMapper;
@@ -56,12 +56,15 @@ public class TrailDAO {
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
                     final SelectiveArgumentMapper<Trail> trailLevelMapper,
+                    final Mapper<TrailMapping> trailMappingMapper,
                     final LinkedMediaMapper linkedMediaMapper,
                     final TrailPreviewMapper trailPreviewMapper,
-                    final PlaceRefMapper placeRefMapper, CycloMapper cycloMapper) {
+                    final PlaceRefMapper placeRefMapper,
+                    final CycloMapper cycloMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
         this.trailLevelMapper = trailLevelMapper;
+        this.trailMappingMapper = trailMappingMapper;
         this.linkedMediaMapper = linkedMediaMapper;
         this.trailPreviewMapper = trailPreviewMapper;
         this.placeRefMapper = placeRefMapper;
@@ -71,10 +74,18 @@ public class TrailDAO {
     public List<Trail> getTrails(int skip, int limit,
                                  final TrailSimplifierLevel trailSimplifierLevel,
                                  final String realm) {
-        final Document realmFilter = !realm.equals(NO_FILTERING) ? new Document() :
-                new Document(Trail.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
+        final Document realmFilter = getFilter(realm);
         return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit),
-                TrailSimplifierLevel.LOW);
+                trailSimplifierLevel);
+    }
+
+    public List<TrailMapping> getTrailsMappings(int skip, int limit, final String realm) {
+        final Document realmFilter = getFilter(realm);
+        return toTrailsMappingList(collection.find(realmFilter)
+                        .projection(new Document(Trail.ID, 1)
+                                .append(Trail.CODE, 1)
+                                .append(Trail.NAME, 1))
+                .skip(skip).limit(limit));
     }
 
     public List<TrailPreview> getTrailPreviewById(final String id) {
@@ -254,9 +265,18 @@ public class TrailDAO {
         return collection.countDocuments();
     }
 
+    public long countTrailByRealm(final String realm) {
+        return collection.countDocuments(getRealmFilter(realm));
+    }
+
     private List<TrailPreview> toTrailsPreviewList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false)
                 .map(trailPreviewMapper::mapToObject).collect(toList());
+    }
+
+    private List<TrailMapping> toTrailsMappingList(FindIterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(trailMappingMapper::mapToObject).collect(toList());
     }
 
     private List<Trail> toTrailsList(final Iterable<Document> documents,
@@ -295,16 +315,6 @@ public class TrailDAO {
         ));
     }
 
-    private List<Double> resolveVertex(Coordinates2D bottomLeft, Coordinates2D topRight) {
-        return Arrays.asList(bottomLeft.getLongitude(),
-                topRight.getLatitude());
-    }
-
-    public long countTotalByCode(final String code) {
-        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code));
-    }
-
-
     @NotNull
     public List<Trail> update(@NotNull Trail trail) {
         collection.updateOne(
@@ -323,4 +333,21 @@ public class TrailDAO {
                 ));
         return getTrailById(trail.getId(), TrailSimplifierLevel.LOW);
     }
+
+    private List<Double> resolveVertex(Coordinates2D bottomLeft, Coordinates2D topRight) {
+        return Arrays.asList(bottomLeft.getLongitude(),
+                topRight.getLatitude());
+    }
+
+    @NotNull
+    private Document getFilter(String realm) {
+        return realm.equals(NO_FILTERING) ? new Document() :
+                new Document(Trail.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
+    }
+
+    public long countTotalByCode(final String code) {
+        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code));
+    }
+
+
 }
