@@ -1,21 +1,22 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.sc.common.rest.TrailMappingDto;
 import org.sc.common.rest.TrailRawDto;
+import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.configuration.auth.AuthData;
 import org.sc.configuration.auth.AuthFacade;
+import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.controller.response.TrailRawResponseHelper;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailFileManager;
 import org.sc.manager.TrailImporterService;
 import org.sc.processor.GpxFileHandlerHelper;
 import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -37,26 +38,43 @@ public class AdminTrailImporterController {
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
     private final TrailFileManager trailFileManager;
-    private final TrailImporterService trailManagementManager;
+    private final TrailImporterService trailImporterService;
     private final TrailRawResponseHelper trailRawResponseHelper;
+    private TrailPreviewResponseHelper trailPreviewResponseHelper;
     private final FileProbeUtil fileProbeUtil;
     private final GpxFileHandlerHelper gpxFileHandlerHelper;
+    private GeneralValidator generalValidator;
     private final AuthFacade authFacade;
 
 
     @Autowired
     public AdminTrailImporterController(final TrailFileManager trailFileManager,
-                                        final TrailImporterService trailManagementManager,
+                                        final TrailImporterService trailImporterService,
                                         final TrailRawResponseHelper trailRawResponseHelper,
+                                        final TrailPreviewResponseHelper trailResponseHelper,
                                         final FileProbeUtil fileProbeUtil,
                                         final GpxFileHandlerHelper gpxFileHandlerHelper,
+                                        final GeneralValidator generalValidator,
                                         final AuthFacade authFacade) {
         this.trailFileManager = trailFileManager;
-        this.trailManagementManager = trailManagementManager;
+        this.trailImporterService = trailImporterService;
+        this.trailPreviewResponseHelper = trailResponseHelper;
         this.fileProbeUtil = fileProbeUtil;
         this.trailRawResponseHelper = trailRawResponseHelper;
         this.gpxFileHandlerHelper = gpxFileHandlerHelper;
+        this.generalValidator = generalValidator;
         this.authFacade = authFacade;
+    }
+
+    @Operation(summary = "Returns mappings for trails that match the trail coordinates")
+    @PostMapping("/check")
+    public TrailMappingResponse checkMatchingTrails(@RequestBody final TrailRawDto trailDto) {
+        final Set<String> validateErrors = generalValidator.validate(trailDto);
+        if(validateErrors.isEmpty()) {
+            final List<TrailMappingDto> dtos = trailImporterService.mappingMatchingTrail(trailDto);
+            return trailPreviewResponseHelper.constructMappingResponse(emptySet(), dtos, dtos.size(), 0, Integer.MAX_VALUE);
+        }
+        return trailPreviewResponseHelper.constructMappingResponse(validateErrors, emptyList(), 0, 0, Integer.MAX_VALUE);
     }
 
     @Operation(summary = "Read and import one GPX trail file")
@@ -82,7 +100,7 @@ public class AdminTrailImporterController {
 
         if (originalFileNamesToTempPaths.isEmpty()) {
             return trailRawResponseHelper.constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
-                    trailManagementManager.countTrailRaw(),
+                    trailImporterService.countTrailRaw(),
                     ZERO, ONE);
         }
 
@@ -115,7 +133,7 @@ public class AdminTrailImporterController {
                 }).collect(toList());
 
         final List<TrailRawDto> savedTrails = trailRawDtos.stream().map(
-                trailManagementManager::saveRaw
+                trailImporterService::saveRaw
         ).collect(toList());
 
         final int size = savedTrails.size();

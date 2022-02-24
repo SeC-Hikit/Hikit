@@ -11,10 +11,7 @@ import org.sc.common.rest.CoordinatesDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.CoordinatesMapper;
 import org.sc.data.entity.mapper.PlaceMapper;
-import org.sc.data.model.Coordinates;
-import org.sc.data.model.LinkedMedia;
-import org.sc.data.model.MultiPointCoords2D;
-import org.sc.data.model.Place;
+import org.sc.data.model.*;
 import org.sc.util.coordinates.CoordinatesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -86,7 +83,7 @@ public class PlaceDAO {
     }
 
     public List<Place> linkTrailToPlace(final String id,
-                                 final String trailId, CoordinatesDto trailCoordinates) {
+                                        final String trailId, CoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(Place.ID, id),
                 new Document($ADD_TO_SET, new Document(Place.CROSSING,
                         trailId))
@@ -98,8 +95,8 @@ public class PlaceDAO {
     }
 
     public List<Place> removeTrailFromPlace(final String placeId,
-                                     final String trailId,
-                                     final Coordinates coordinates) {
+                                            final String trailId,
+                                            final Coordinates coordinates) {
 
         collection.updateOne(new Document(Place.ID, placeId),
                 new Document($PULL, new Document(Place.CROSSING,
@@ -107,11 +104,13 @@ public class PlaceDAO {
 
         final List<Place> afterChange = getById(placeId);
 
-        if(afterChange.isEmpty()) { throw new IllegalStateException(); }
+        if (afterChange.isEmpty()) {
+            throw new IllegalStateException();
+        }
         boolean areManyCoordinatesPresent =
                 afterChange.stream().findFirst()
                         .get().getCoordinates().size() > ONE;
-        if(areManyCoordinatesPresent) {
+        if (areManyCoordinatesPresent) {
             collection.updateOne(new Document(Place.ID, placeId),
                     new Document($PULL, new Document(Place.COORDINATES,
                             coordinatesMapper.mapToDocument(coordinates))));
@@ -128,8 +127,16 @@ public class PlaceDAO {
             throw new IllegalStateException();
         }
         final Document doc = placeMapper.mapToDocument(place);
-        Document created = upsertItem(doc, place.getId());
-        return Collections.singletonList(placeMapper.mapToObject(created));
+
+        collection.updateOne(
+                new Document(Place.ID, place.getId()),
+                new Document($_SET,
+                        new Document(Place.DESCRIPTION, place.getDescription())
+                                .append(Place.TAGS, place.getTags())
+                                .append(Place.NAME, place.getName())
+                )
+        );
+        return getById(place.getId());
     }
 
     private Document upsertItem(final Document doc,
@@ -165,8 +172,8 @@ public class PlaceDAO {
     public List<Place> getNear(double longitude, double latitude,
                                double distance, int skip, int limit) {
         return toPlaceList(collection.find(
-                new Document(Place.POINTS,
-                        getPointNearSearchQuery(longitude, latitude, distance)))
+                        new Document(Place.POINTS,
+                                getPointNearSearchQuery(longitude, latitude, distance)))
                 .skip(skip)
                 .limit(limit)
         );
