@@ -68,7 +68,7 @@ public class AdminTrailImporterController {
 
     @Operation(summary = "Returns mappings for trails that match the trail coordinates")
     @PostMapping("/check")
-    public TrailMappingResponse checkMatchingTrails(final TrailRawDto trailDto) {
+    public TrailMappingResponse checkMatchingTrails(@RequestBody final TrailRawDto trailDto) {
         final Set<String> validateErrors = generalValidator.validate(trailDto);
         if(validateErrors.isEmpty()) {
             final List<TrailMappingDto> dtos = trailImporterService.mappingMatchingTrail(trailDto);

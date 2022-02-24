@@ -54,9 +54,7 @@ class GeneralValidator @Autowired constructor(
     fun validate(td: TrailRawDto): Set<String> = trailRawValidator.validate(td)
     fun validate(poi: PoiDto): Set<String> = poiValidator.validate(poi)
     fun validate(geoLine: GeoLineDto): Set<String> = geoLineValidator.validate(geoLine)
-
     fun validateFileName(fn: String): Set<String> = fileNameValidator.validate(fn)
-
     fun validateAcc(id: String): Set<String> = accessibilityValidator.validateUpdateRequest(id)
     fun validateReportAcc(id: String): Set<String> = accessibilityReportValidator.validateUpdateRequest(id)
     fun validateUpdateMedia(id: String): Set<String> = mediaExistenceValidator.validateDeleteRequest(id)

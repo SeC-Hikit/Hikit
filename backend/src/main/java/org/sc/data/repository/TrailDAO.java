@@ -339,8 +339,8 @@ public class TrailDAO {
     public List<TrailMapping> getByStartEndPoint(final double startLatitude, final double startLongitude,
                                                  final double endLatitude, final double endLongitude) {
         final FindIterable<Document> documents = collection.find(
-                new Document(START_POS_COORDINATES, Arrays.asList(startLatitude, startLongitude))
-                .append(FINAL_POS_COORDINATES, Arrays.asList(endLatitude, endLongitude)));
+                new Document(START_POS_COORDINATES, Arrays.asList(startLongitude, startLatitude))
+                .append(FINAL_POS_COORDINATES, Arrays.asList(endLongitude, endLatitude)));
 
         return toTrailsMappingList(documents);
     }
