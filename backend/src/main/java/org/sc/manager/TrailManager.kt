@@ -30,6 +30,7 @@ class TrailManager @Autowired constructor(
         private val placeRefMapper: PlaceRefMapper,
         private val coordinatesMapper: CoordinatesMapper,
         private val trailIntersectionMapper: TrailIntersectionMapper,
+        private val trailMappingMapper: TrailMappingMapper,
         private val trailPlacesAligner: TrailPlacesAligner,
         private val altitudeService: AltitudeServiceAdapter
 ) {
@@ -106,6 +107,10 @@ class TrailManager @Autowired constructor(
     private fun ensureLinkingTrailToExistingCrosswayReferences(place: Place, targetTrailId: String) {
         trailDAO.linkAllExistingTrailConnectionWithNewTrailId(place.id, targetTrailId);
     }
+
+    fun getByMatchingStartEndPoint(startPos: TrailCoordinatesDto, finalPos: TrailCoordinatesDto) : List<TrailMappingDto> =
+        trailDAO.getByStartEndPoint(startPos.latitude, startPos.longitude, finalPos.latitude, finalPos.longitude).map { trailMappingMapper.map(it) };
+
 
     private fun ensureCreatingNewCrosswayReferences(place: Place,
                                                     trailId: String,

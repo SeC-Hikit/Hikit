@@ -12,6 +12,7 @@ import java.io.File
 
 @Component
 class GeneralValidator @Autowired constructor(
+    private val trailRawValidator: TrailRawValidator,
     private val accessibilityValidator: AccessibilityValidator,
     private val coordinatesValidator: CoordinatesValidator,
     private val fileNameValidator: FileNameValidator,
@@ -50,6 +51,7 @@ class GeneralValidator @Autowired constructor(
     fun validate(tcd: TrailCoordinatesDto): Set<String> = trailCoordinatesValidator.validate(tcd)
     fun validate(ti: TrailImportDto): Set<String> = trailImportValidator.validate(ti)
     fun validate(td: TrailDto): Set<String> = trailUpdateValidator.validate(td)
+    fun validate(td: TrailRawDto): Set<String> = trailRawValidator.validate(td)
     fun validate(poi: PoiDto): Set<String> = poiValidator.validate(poi)
     fun validate(geoLine: GeoLineDto): Set<String> = geoLineValidator.validate(geoLine)
 

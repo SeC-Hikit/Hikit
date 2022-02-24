@@ -39,6 +39,8 @@ public class TrailDAO {
     public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
     public static final String POSITIONAL_EVERY_OPERATOR = ".$[].";
     public static final String POSITIONAL_OPERATOR = ".$";
+    public static final String START_POS_COORDINATES = Trail.START_POS + "." + PlaceRef.COORDINATES + "." + PlaceRef.COORDINATES;
+    public static final String FINAL_POS_COORDINATES = Trail.FINAL_POS + "." + PlaceRef.COORDINATES + "." + PlaceRef.COORDINATES;
 
 
     private final MongoCollection<Document> collection;
@@ -333,6 +335,16 @@ public class TrailDAO {
                 ));
         return getTrailById(trail.getId(), TrailSimplifierLevel.LOW);
     }
+
+    public List<TrailMapping> getByStartEndPoint(final double startLatitude, final double startLongitude,
+                                                 final double endLatitude, final double endLongitude) {
+        final FindIterable<Document> documents = collection.find(
+                new Document(START_POS_COORDINATES, Arrays.asList(startLatitude, startLongitude))
+                .append(FINAL_POS_COORDINATES, Arrays.asList(endLatitude, endLongitude)));
+
+        return toTrailsMappingList(documents);
+    }
+
 
     private List<Double> resolveVertex(Coordinates2D bottomLeft, Coordinates2D topRight) {
         return Arrays.asList(bottomLeft.getLongitude(),

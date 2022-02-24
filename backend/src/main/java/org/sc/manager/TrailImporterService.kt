@@ -1,6 +1,7 @@
 package org.sc.manager
 
 import org.sc.common.rest.*
+import org.sc.common.rest.response.TrailMappingResponse
 import org.sc.configuration.auth.AuthFacade
 import org.sc.configuration.auth.AuthHelper
 import org.sc.data.geo.TrailPlacesAligner
@@ -192,6 +193,10 @@ class TrailImporterService @Autowired constructor(
         }
     }
 
+    fun mappingMatchingTrail(targetTrailRaw: TrailRawDto): List<TrailMappingDto> {
+        return trailsManager.getByMatchingStartEndPoint(targetTrailRaw.startPos, targetTrailRaw.finalPos);
+    }
+
     fun updateResourcesForTrail(targetTrail: TrailDto) {
         trailFileManager.writeTrailToOfficialGpx(targetTrail)
         trailFileManager.writeTrailToKml(targetTrail)
@@ -265,14 +270,13 @@ class TrailImporterService @Autowired constructor(
         trailFileManager.writeTrailToPdf(trailSaved, places, listOfNotNull(lastMaintenance), openIssues)
     }
 
+    fun countTrailRaw() = trailRawDao.count()
+
     private fun isSwitchingToDraft(
             trailDto: TrailDto,
             trailToUpdate: TrailDto
     ) = trailDto.status == TrailStatus.DRAFT &&
             trailToUpdate.status == TrailStatus.PUBLIC
-
-    fun countTrailRaw() = trailRawDao.count()
-
 
     private fun getLocationFromPlaceRef(otherPlacesBeingSaved: List<PlaceDto>,
                                         elements: List<PlaceRefDto>,

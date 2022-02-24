@@ -61,7 +61,6 @@ class PlaceManager @Autowired constructor(
     fun linkMedia(placeId: String, linkedMediaRequest: LinkedMediaDto): List<PlaceDto> =
         placeDao.addMediaToPlace(placeId, linkedMediaMapper.map(linkedMediaRequest)).map { placeMapper.map(it) }
 
-
     fun unlinkMedia(placeId: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<PlaceDto> =
         placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
 
