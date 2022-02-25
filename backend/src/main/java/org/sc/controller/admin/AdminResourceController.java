@@ -6,10 +6,8 @@ import org.sc.common.rest.GenerateRequestDto;
 import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.response.ResourceGeneratorResponse;
 import org.sc.configuration.AppProperties;
-import org.sc.data.model.Trail;
-import org.sc.data.repository.TrailDAO;
-import org.sc.manager.TrailFileManager;
-import org.sc.manager.TrailImporterService;
+import org.sc.service.ResourceService;
+import org.sc.service.TrailImporterService;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
 import org.slf4j.Logger;
@@ -39,21 +37,34 @@ public class AdminResourceController {
 
     private static final AtomicBoolean isMigrationRunning = new AtomicBoolean();
 
+    private final ResourceService resourceService;
     private final TrailImporterService trailImporterService;
     private final TrailManager trailManager;
     private final AppProperties appProperties;
 
     @Autowired
     public AdminResourceController(final TrailManager trailManager,
+                                   final ResourceService resourceService,
                                    final TrailImporterService trailImporterService,
                                    final AppProperties appProperties) {
         this.trailManager = trailManager;
+        this.resourceService = resourceService;
         this.trailImporterService = trailImporterService;
         this.appProperties = appProperties;
     }
 
+    @Operation(summary = "Get the status")
+    @PostMapping(path = "/status",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResourceGeneratorResponse getGenerationResourceStatus() {
+        if (resourceService.isJobRunning().get()) {
+            return new ResourceGeneratorResponse(BatchStatus.BUSY);
+        }
+        return new ResourceGeneratorResponse(BatchStatus.OK);
+    }
+
     @Operation(summary = "Generate all resources belonging to this instance")
-    @GetMapping(path = "/regenerate",
+    @PostMapping(path = "/regenerate/all",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResourceGeneratorResponse generateResource() {
         if (isMigrationRunning.get()) {

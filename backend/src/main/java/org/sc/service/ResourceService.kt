@@ -1,0 +1,56 @@
+package org.sc.service
+
+import org.sc.common.rest.TrailDto
+import org.sc.manager.*
+import org.sc.processor.TrailSimplifierLevel
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import java.util.concurrent.atomic.AtomicBoolean
+
+@Service
+class ResourceService @Autowired constructor(
+        private val trailManager: TrailManager,
+        private val resourceManager: ResourceManager,
+        private val maintenanceManager: MaintenanceManager,
+        private val accessibilityNotificationManager: AccessibilityNotificationManager,
+        private val placeManager: PlaceManager,
+        private val trailFileManager: TrailFileManager) {
+
+    val isJobRunning = AtomicBoolean(false)
+
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    fun execute() {
+        if (!isJobRunning.get()) {
+            logger.trace("Resource generation Job is not running. Executing...")
+            isJobRunning.set(true)
+            generateResources()
+            logger.trace("Resource generation Job completed.")
+            isJobRunning.set(false)
+        }
+        logger.trace("Previous resource generation job is still running...")
+    }
+
+    private fun generateResources() {
+        val entries = resourceManager.getTrailEntries()
+        val distinctEntries = entries.distinctBy { it.targetingTrail }
+        distinctEntries.forEach {
+            val targetTrail = trailManager.getById(it.targetingTrail, TrailSimplifierLevel.LOW).first()
+            logger.trace("Ri-generating resource for trail with id: $targetTrail")
+            generatePdfFile(targetTrail)
+        }
+        resourceManager.deleteEntries(entries)
+    }
+
+    private fun generatePdfFile(trailSaved: TrailDto) {
+        val trailId = trailSaved.id
+        val places = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
+        val maintenancesByTrailId = maintenanceManager.getPastMaintenanceForTrailId(trailId, 0, Int.MAX_VALUE)
+        val lastMaintenance = maintenancesByTrailId.maxBy { it.date }
+        val openIssues = accessibilityNotificationManager.getUnresolvedByTrailId(trailId, 0, Int.MAX_VALUE)
+        logger.info("Generating PDF file for trail '$trailId'")
+        trailFileManager.writeTrailToPdf(trailSaved, places, listOfNotNull(lastMaintenance), openIssues)
+    }
+
+}

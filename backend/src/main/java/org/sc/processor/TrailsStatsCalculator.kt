@@ -53,8 +53,8 @@ class TrailsStatsCalculator {
         return totalTrailDistance
     }
 
-    fun calculateHighestPlace(coordinates: List<Coordinates>): Double = coordinates.maxOf { it.altitude }
-    fun calculateLowestPlace(coordinates: List<Coordinates>): Double = coordinates.minOf { it.altitude }
+    fun calculateHighestPlace(coordinates: List<Coordinates>): Double = coordinates.maxBy { it.altitude }!!.altitude
+    fun calculateLowestPlace(coordinates: List<Coordinates>): Double = coordinates.minBy { it.altitude }!!.altitude
 
     fun calculateLengthFromTo(coordinates: List<Coordinates>, coordinate: Coordinates): Int {
         return coordinates.filterIndexed { index, _ -> index < coordinates.indexOf(coordinate) }
@@ -73,7 +73,7 @@ class TrailsStatsCalculator {
             coordinates
                     .filterIndexed { index, _ -> index != coordinates.lastIndex }
                     .mapIndexed { index: Int, CoordinatesDto: Coordinates -> toEntry(index, CoordinatesDto, coordinates) }
-                    .sumOf { calculateSpeedForSegment(it) } / (coordinates.size - 1)
+                    .sumByDouble { calculateSpeedForSegment(it) } / (coordinates.size - 1)
 
     private fun calculateSpeedForSegment(it: Pair<Coordinates, Coordinates>): Double {
         val distanceBetweenPoints = DistanceProcessor.distanceBetweenPoints(it.first, it.second)

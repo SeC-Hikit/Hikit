@@ -27,7 +27,7 @@ class TrailPlacesAligner @Autowired constructor(
             // for each location, check closest trail Coordinate distance
             locations.map { pr ->
                 val closestCoordinatePoint: TrailCoordinates? =
-                        coordinates.minByOrNull { DistanceProcessor.distanceBetweenPoints(pr.coordinates, it) }
+                        coordinates.minBy { DistanceProcessor.distanceBetweenPoints(pr.coordinates, it) }
                 pr to closestCoordinatePoint!!.distanceFromTrailStart
             }.sortedWith(compareBy { it.second }).map { it.first }
 

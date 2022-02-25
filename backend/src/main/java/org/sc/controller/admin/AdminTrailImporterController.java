@@ -11,7 +11,7 @@ import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailFileManager;
-import org.sc.manager.TrailImporterService;
+import org.sc.service.TrailImporterService;
 import org.sc.processor.GpxFileHandlerHelper;
 import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,20 +3,27 @@ package org.sc.service
 import org.sc.adapter.mail.impl.AccessibilityReportMailAdapter
 import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityReportDto
+import org.sc.configuration.auth.AuthHelper
 import org.sc.manager.AccessibilityNotificationManager
 import org.sc.manager.AccessibilityReportManager
+import org.sc.manager.ResourceManager
 import org.sc.manager.TrailManager
+import org.sc.manager.regeneration.RegenerationActionType
 import org.sc.processor.TrailSimplifierLevel
+import org.sc.manager.regeneration.RegenerationEntryType
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.util.*
 
-@Component
+@Service
 class AccessibilityReportService @Autowired constructor(
         private val accessibilityReportManager: AccessibilityReportManager,
         private val trailManager: TrailManager,
         private val accessibilityNotificationManager: AccessibilityNotificationManager,
-        private val accessibilityReportMailAdapter: AccessibilityReportMailAdapter) {
+        private val accessibilityReportMailAdapter: AccessibilityReportMailAdapter,
+        private val resourceManager: ResourceManager,
+        private val authHelper: AuthHelper
+) {
 
     fun byId(id: String): List<AccessibilityReportDto> =
             accessibilityReportManager.byId(id)
@@ -63,11 +70,25 @@ class AccessibilityReportService @Autowired constructor(
         if (createdNotification.isEmpty()) {
             throw IllegalStateException()
         }
-        reportDto.issueId = createdNotification.first().id
+        val createdReport = createdNotification.first()
+        reportDto.issueId = createdReport.id
+        resourceManager.addEntry(
+                createdReport.trailId, RegenerationEntryType.ACCESSIBILITY_ISSUE,
+                createdReport.id, authHelper.username, RegenerationActionType.CREATE)
         return update(reportDto)
     }
 
-    fun delete(id: String): List<AccessibilityReportDto> = accessibilityReportManager.delete(id)
+    fun delete(id: String): List<AccessibilityReportDto> {
+        val deletedReports = accessibilityReportManager.delete(id)
+        // TODO: move this to Service
+        val deletedReport = deletedReports.first()
+        resourceManager.addEntry(deletedReport.trailId,
+                RegenerationEntryType.ACCESSIBILITY_ISSUE,
+                deletedReport.id, authHelper.username,
+                RegenerationActionType.DELETE)
+        return deletedReports
+    }
+
     fun count(): Long = accessibilityReportManager.count()
     fun count(realm: String): Long = accessibilityReportManager.count(realm)
     fun countUpgraded(realm: String): Long = accessibilityReportManager.countUpgraded(realm)

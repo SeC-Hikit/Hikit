@@ -5,7 +5,7 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
-import org.sc.manager.TrailImporterService;
+import org.sc.service.TrailImporterService;
 import org.sc.manager.TrailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

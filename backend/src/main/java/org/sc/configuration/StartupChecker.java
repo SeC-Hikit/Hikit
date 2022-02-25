@@ -45,7 +45,8 @@ public class StartupChecker {
         configureDir(fileManagementUtil.getTrailKmlStoragePath(), "Could not create trail/kml folder");
         configureDir(fileManagementUtil.getTrailPdfStoragePath(), "Could not create trail/pdf folder");
 
-        instanceRegister.register(appProperties.getInstanceId(),
+        instanceRegister.register(
+                appProperties.getInstanceId(),
                 appProperties.getInstanceRealm(),
                 appProperties.getInstanceHostname(),
                 appProperties.getPort());
@@ -63,7 +64,7 @@ public class StartupChecker {
     private void configureIndexes() {
         LOGGER.info("Ensuring DB indexes existence");
 
-        MongoDatabase db = dataSource.getDB();
+        final MongoDatabase db = dataSource.getDB();
         final String pointGeoIndex = db.getCollection(Place.COLLECTION_NAME)
                 .createIndex(Indexes.geo2dsphere(Place.POINTS));
         final String trailGeoIndex = db.getCollection(Trail.COLLECTION_NAME)
