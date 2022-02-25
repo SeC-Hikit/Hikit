@@ -18,7 +18,7 @@ class ResourceManager constructor(private val resourceDao: ResourceDao,
     fun addEntry(targetTrailId: String, entryCausingRegeneration: RegenerationEntryType,
                  entryId: String, user: String, action: RegenerationActionType): List<ResourceEntry> {
         return resourceDao.insert(ResourceEntry("", appProperties.instanceId,
-                entryCausingRegeneration.name, entryId, targetTrailId, Date(), user))
+                entryCausingRegeneration.name, entryId, targetTrailId, action.name, Date(), user))
     }
 
     fun getTrailEntries(): List<ResourceEntry> {

@@ -11,11 +11,9 @@ object GeoCalculator {
     private val geometryFactory = GeometryFactory()
 
     fun getOuterSquareForCoordinates(coordinates2D: List<Coordinates2D>): CoordinatesRectangle {
-        val topRight = Coordinates2D(coordinates2D.maxBy { it.longitude }!!.longitude,
-                coordinates2D.minBy { it.latitude }!!.latitude)
-        val bottomLeft = Coordinates2D(coordinates2D.minBy { it.longitude }!!.longitude,
-                coordinates2D.minBy { it.latitude }!!.latitude)
-         return CoordinatesRectangle(bottomLeft,topRight)
+        val topRight = Coordinates2D(coordinates2D.maxOf { it.longitude }, coordinates2D.maxOf { it.latitude })
+        val bottomLeft = Coordinates2D(coordinates2D.minOf { it.longitude }, coordinates2D.minOf { it.latitude })
+        return CoordinatesRectangle(bottomLeft,topRight)
     }
 
     fun areSegmentsIntersecting(subjectSegment: List<Coordinates2D>, foundSegment: GeoLineString): Boolean {

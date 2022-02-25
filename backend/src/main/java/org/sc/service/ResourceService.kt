@@ -23,7 +23,7 @@ class ResourceService @Autowired constructor(
 
     fun execute() {
         if (!isJobRunning.get()) {
-            logger.trace("Resource generation Job is not running. Executing...")
+            logger.info("Resource generation Job is not running. Executing...")
             isJobRunning.set(true)
             generateResources()
             logger.trace("Resource generation Job completed.")
@@ -40,6 +40,7 @@ class ResourceService @Autowired constructor(
             logger.trace("Ri-generating resource for trail with id: $targetTrail")
             generatePdfFile(targetTrail)
         }
+        logger.info("Resolved n.${distinctEntries.size} entries for processing")
         resourceManager.deleteEntries(entries)
     }
 
@@ -47,7 +48,7 @@ class ResourceService @Autowired constructor(
         val trailId = trailSaved.id
         val places = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
         val maintenancesByTrailId = maintenanceManager.getPastMaintenanceForTrailId(trailId, 0, Int.MAX_VALUE)
-        val lastMaintenance = maintenancesByTrailId.maxBy { it.date }
+        val lastMaintenance = maintenancesByTrailId.maxByOrNull { it.date }!!
         val openIssues = accessibilityNotificationManager.getUnresolvedByTrailId(trailId, 0, Int.MAX_VALUE)
         logger.info("Generating PDF file for trail '$trailId'")
         trailFileManager.writeTrailToPdf(trailSaved, places, listOfNotNull(lastMaintenance), openIssues)

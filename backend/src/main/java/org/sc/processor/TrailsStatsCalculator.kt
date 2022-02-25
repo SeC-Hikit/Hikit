@@ -53,8 +53,8 @@ class TrailsStatsCalculator {
         return totalTrailDistance
     }
 
-    fun calculateHighestPlace(coordinates: List<Coordinates>): Double = coordinates.maxBy { it.altitude }!!.altitude
-    fun calculateLowestPlace(coordinates: List<Coordinates>): Double = coordinates.minBy { it.altitude }!!.altitude
+    fun calculateHighestPlace(coordinates: List<Coordinates>): Double = coordinates.maxOf { it.altitude }
+    fun calculateLowestPlace(coordinates: List<Coordinates>): Double = coordinates.minOf { it.altitude }
 
     fun calculateLengthFromTo(coordinates: List<Coordinates>, coordinate: Coordinates): Int {
         return coordinates.filterIndexed { index, _ -> index < coordinates.indexOf(coordinate) }

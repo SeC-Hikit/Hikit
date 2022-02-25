@@ -9,6 +9,7 @@ import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
 import org.sc.manager.*
+import org.sc.manager.regeneration.RegenerationActionType
 import org.sc.processor.DistanceProcessor
 import org.sc.processor.TrailSimplifier
 import org.sc.processor.TrailSimplifierLevel
@@ -168,7 +169,7 @@ class TrailImporterService @Autowired constructor(
                 .flatMap { trailsManager.getById(it, TrailSimplifierLevel.LOW) }
                 .forEach {
                     resourceManager.addEntry(it.id, RegenerationEntryType.TRAIL,
-                            trailSaved.id, authHelper.username)
+                            trailSaved.id, authHelper.username, RegenerationActionType.CREATE)
                 }
 
 
@@ -242,7 +243,7 @@ class TrailImporterService @Autowired constructor(
 
         val updateTrailId = update.first().id
         resourceManager.addEntry(updateTrailId, RegenerationEntryType.TRAIL,
-                updateTrailId, authFacade.authHelper.username)
+                updateTrailId, authFacade.authHelper.username, RegenerationActionType.UPDATE)
 
         return update
     }

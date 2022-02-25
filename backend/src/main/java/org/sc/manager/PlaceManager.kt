@@ -108,6 +108,3 @@ class PlaceManager @Autowired constructor(
 
     fun count(): Long = placeDao.count()
 }
-
-
-}
