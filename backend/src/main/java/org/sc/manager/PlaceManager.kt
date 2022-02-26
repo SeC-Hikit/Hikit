@@ -7,25 +7,28 @@ import org.sc.data.mapper.PlaceMapper
 import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
 import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.manager.regeneration.RegenerationActionType
+import org.sc.manager.regeneration.RegenerationEntryType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
 class PlaceManager @Autowired constructor(
-    private val placeDao: PlaceDAO,
-    private val placeMapper: PlaceMapper,
-    private val trailManager: TrailManager,
-    private val linkedMediaMapper: LinkedMediaMapper,
-    private val altitudeServiceAdapter: AltitudeServiceAdapter,
-    private val authFacade: AuthFacade
+        private val placeDao: PlaceDAO,
+        private val placeMapper: PlaceMapper,
+        private val trailManager: TrailManager,
+        private val linkedMediaMapper: LinkedMediaMapper,
+        private val altitudeServiceAdapter: AltitudeServiceAdapter,
+        private val resourceManager: ResourceManager,
+        private val authFacade: AuthFacade
 ) {
 
     fun getPaginated(skip: Int, limit: Int): List<PlaceDto> =
-        placeDao.get(skip, limit).map { placeMapper.map(it) }
+            placeDao.get(skip, limit).map { placeMapper.map(it) }
 
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int): List<PlaceDto> =
-        placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
+            placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
 
     fun getNearPoint(longitude: Double, latitude: Double, distance: Double,
                      skip: Int, limit: Int): List<PlaceDto> =
@@ -34,55 +37,74 @@ class PlaceManager @Autowired constructor(
     fun doesItExist(id: String) = getById(id).isNotEmpty()
 
     fun getById(id: String): List<PlaceDto> =
-        placeDao.getById(id).map { placeMapper.map(it) }
+            placeDao.getById(id).map { placeMapper.map(it) }
 
     fun create(place: PlaceDto): List<PlaceDto> {
         val mapCreation = placeMapper.mapCreation(place)
         mapCreation.recordDetails = RecordDetails(
-            Date(),
-            authFacade.authHelper.username,
-            authFacade.authHelper.instance,
-            authFacade.authHelper.realm
+                Date(),
+                authFacade.authHelper.username,
+                authFacade.authHelper.instance,
+                authFacade.authHelper.realm
         )
         mapCreation.coordinates = ensureCorrectElevation(mapCreation)
-        return placeDao.create(mapCreation).map { placeMapper.map(it) }
+
+        // TODO: move to service
+        val createdPlace = placeDao.create(mapCreation).first()
+        createdPlace.crossingTrailIds.forEach {
+            resourceManager.addEntry(it, RegenerationEntryType.PLACE,
+                    createdPlace.id, authFacade.authHelper.username,
+                    RegenerationActionType.CREATE)
+        }
+        return listOf(placeMapper.map(createdPlace))
     }
 
-   fun deleteById(placeId: String): List<PlaceDto> {
+    fun deleteById(placeId: String): List<PlaceDto> {
         trailManager.removePlaceRefFromTrails(placeId)
-        return placeDao.delete(placeId).map { placeMapper.map(it) }
+        val deletedPlace = placeDao.delete(placeId).first()
+        deletedPlace.crossingTrailIds.forEach {
+            resourceManager.addEntry(it, RegenerationEntryType.PLACE,
+                    deletedPlace.id, authFacade.authHelper.username,
+                    RegenerationActionType.DELETE)
+        }
+        return listOf(placeMapper.map(deletedPlace))
     }
 
-    fun update(place: PlaceDto): List<PlaceDto> = placeDao.update(placeMapper.map(place)).map { placeMapper.map(it) }
+    fun update(place: PlaceDto): List<PlaceDto> {
+        val update = placeDao.update(placeMapper.map(place)).first()
+        update.crossingTrailIds.forEach {
+            resourceManager.addEntry(it, RegenerationEntryType.PLACE,
+                    update.id, authFacade.authHelper.username,
+                    RegenerationActionType.UPDATE)
+        }
+        return listOf(placeMapper.map(update))
+    }
 
     fun doesPlaceExist(id: String): Boolean =
-        getById(id).isNotEmpty()
+            getById(id).isNotEmpty()
 
     fun linkMedia(placeId: String, linkedMediaRequest: LinkedMediaDto): List<PlaceDto> =
-        placeDao.addMediaToPlace(placeId, linkedMediaMapper.map(linkedMediaRequest)).map { placeMapper.map(it) }
+            placeDao.addMediaToPlace(placeId, linkedMediaMapper.map(linkedMediaRequest)).map { placeMapper.map(it) }
 
     fun unlinkMedia(placeId: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<PlaceDto> =
-        placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
+            placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
 
-    fun unlinkTrailFromPlace(linkedPlaceDto: LinkedPlaceDto) : List<PlaceDto> =
-        placeDao.removeTrailFromPlace(linkedPlaceDto.placeId,
-                linkedPlaceDto.trailId,
-                linkedPlaceDto.coordinatesDto)
-                .map { placeMapper.map(it) }
+    fun unlinkTrailFromPlace(linkedPlaceDto: LinkedPlaceDto): List<PlaceDto> =
+            placeDao.removeTrailFromPlace(linkedPlaceDto.placeId,
+                    linkedPlaceDto.trailId,
+                    linkedPlaceDto.coordinatesDto)
+                    .map { placeMapper.map(it) }
 
-    fun linkTrailToPlace(linkedPlaceDto: LinkedPlaceDto) : List<PlaceDto> =
-        placeDao.linkTrailToPlace(linkedPlaceDto.placeId,
-                linkedPlaceDto.trailId, linkedPlaceDto.coordinatesDto).map { placeMapper.map(it) }
-
+    fun linkTrailToPlace(linkedPlaceDto: LinkedPlaceDto): List<PlaceDto> =
+            placeDao.linkTrailToPlace(linkedPlaceDto.placeId,
+                    linkedPlaceDto.trailId, linkedPlaceDto.coordinatesDto).map { placeMapper.map(it) }
 
     private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
         CoordinatesWithAltitude(
-            it.latitude, it.longitude,
-            altitudeServiceAdapter.getAltitudeByLongLat(it.latitude, it.longitude)
+                it.latitude, it.longitude,
+                altitudeServiceAdapter.getAltitudeByLongLat(it.latitude, it.longitude)
         )
     }
 
     fun count(): Long = placeDao.count()
-
-
 }

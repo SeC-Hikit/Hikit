@@ -2,27 +2,11 @@ package org.sc.job;
 
 import org.apache.logging.log4j.Logger;
 import org.sc.configuration.AppProperties;
-import org.sc.data.entity.mapper.MediaMapper;
-import org.sc.data.model.Media;
-import org.sc.manager.MediaManager;
+import org.sc.service.ResourceService;
 import org.sc.util.FileManagementUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.logging.log4j.LogManager.getLogger;
@@ -31,6 +15,8 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 public class ResourceUpdaterJob {
     private static final Logger LOGGER = getLogger(ResourceUpdaterJob.class);
 
+    private static final int MAX_NUMBER_OF_TRAILS_PROCESSED = 10;
+
     private static final String STARTING_COMPRESSION_JOB = "Going to run reosurce updater job (batch size: %s)...";
     private static final String DONE_COMPRESSION_JOB = "Done with resource updater job.";
     private static final String COMPRESSION_PROGRESS = "Compressed image %s of batch with size %s...";
@@ -38,99 +24,25 @@ public class ResourceUpdaterJob {
     private static final String COMPRESSION_FILENAME_DONE_PROGRESS = "Done Processing image '%s'...";
     private static final String COMPRESSION_BUT_NO_DELETION = "Done compressing, but could not delete '%s'...";
 
-    private final MediaMapper mapper;
-    private final MediaManager mediaManager;
     private final FileManagementUtil fileManagementUtil;
+    private ResourceService resourceService;
     private final int imageBatchSize;
 
     @Autowired
-    public ResourceUpdaterJob(final MediaManager mediaManager,
-                              final MediaMapper mapper,
+    public ResourceUpdaterJob(final ResourceService resourceService,
                               final AppProperties appProperties,
                               final FileManagementUtil fileManagementUtil) {
-        this.mediaManager = mediaManager;
-        this.mapper = mapper;
+        this.resourceService = resourceService;
         this.imageBatchSize = appProperties.getJobImageBatchSize();
         this.fileManagementUtil = fileManagementUtil;
     }
 
-    @Scheduled(cron = "0 */5 0-8 * * *")
-    public void doCompressImages() {
-
-        int elaboratedImages = 0;
-
+    @Scheduled(cron = "0 */1 * * * *")
+    public void doRegenerateResources() {
         LOGGER.trace(format(STARTING_COMPRESSION_JOB, imageBatchSize));
-
-        while (hasUncompressImageAndBelowThreshold(elaboratedImages)) {
-
-            final Media media = mapper.mapToObject(mediaManager.getUncompressedMedia().iterator().next());
-            final String resolvedFileAddress = fileManagementUtil.getMediaStoragePath() + getFileName(media);
-            final File file = new File(resolvedFileAddress);
-            final Resolution[] resolutionValues = Resolution.values();
-
-            try {
-                final BufferedImage originalImage = ImageIO.read(file);
-                final String mime = media.getMime();
-                LOGGER.info(format(COMPRESSION_FILENAME_PROGRESS, resolvedFileAddress));
-                for (Resolution resolution : resolutionValues) {
-
-                    final File compressedImageFile = new File(generateCompressedFileUrl(resolvedFileAddress, resolution.getSuffix()));
-
-                    try (OutputStream os = new FileOutputStream(compressedImageFile);
-                         ImageOutputStream ios = ImageIO.createImageOutputStream(os)) {
-
-                        final Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType(mime);
-                        final ImageWriter writer = writers.next();
-
-                        writer.setOutput(ios);
-
-                        final ImageWriteParam param = writer.getDefaultWriteParam();
-                        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                        param.setCompressionQuality(resolution.getCompressionQuality());
-
-                        BufferedImage scaledImage = resolution.getScalingAlgorithm().scale(originalImage);
-                        IIOImage iioImage = new IIOImage(scaledImage, null, null);
-                        writer.write(null, iioImage, param);
-                        writer.dispose();
-                    }
-                }
-                LOGGER.info(format(COMPRESSION_FILENAME_DONE_PROGRESS, resolvedFileAddress));
-                LOGGER.info(format(COMPRESSION_PROGRESS, elaboratedImages, imageBatchSize));
-                updateDbOnCompress(media, resolutionValues);
-
-                final boolean delete = file.delete();
-                if (!delete) {
-                    LOGGER.error(format(COMPRESSION_BUT_NO_DELETION, resolvedFileAddress));
-                }
-
-                elaboratedImages++;
-
-            } catch (IOException e) {
-                LOGGER.error("Exception when compressing image {}", media.getFileUrl(), e);
-            }
-        }
-
+        resourceService.execute();
         LOGGER.trace(DONE_COMPRESSION_JOB);
 
-    }
-
-    private String getFileName(final Media media) {
-        return media.getFileName() + "." + media.getExtension();
-    }
-
-    private void updateDbOnCompress(Media media, Resolution[] resolutionValues) {
-        media.setResolutions(Arrays.stream(resolutionValues)
-                .map(Resolution::getSuffix).collect(Collectors.toList()));
-        mediaManager.updateCompressed(media);
-    }
-
-    private boolean hasUncompressImageAndBelowThreshold(int elaboratedImages) {
-        return mediaManager.getUncompressedMedia().iterator().hasNext() && elaboratedImages <= imageBatchSize;
-    }
-
-    protected String generateCompressedFileUrl(String fileUrl, String resolution) {
-        final int lastDotIndex = fileUrl.lastIndexOf('.');
-        return fileUrl.substring(0, lastDotIndex) + resolution + fileUrl.substring(lastDotIndex);
     }
 
 }

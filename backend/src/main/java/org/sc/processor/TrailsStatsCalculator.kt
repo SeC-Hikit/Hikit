@@ -73,7 +73,7 @@ class TrailsStatsCalculator {
             coordinates
                     .filterIndexed { index, _ -> index != coordinates.lastIndex }
                     .mapIndexed { index: Int, CoordinatesDto: Coordinates -> toEntry(index, CoordinatesDto, coordinates) }
-                    .sumOf { calculateSpeedForSegment(it) } / (coordinates.size - 1)
+                    .sumByDouble { calculateSpeedForSegment(it) } / (coordinates.size - 1)
 
     private fun calculateSpeedForSegment(it: Pair<Coordinates, Coordinates>): Double {
         val distanceBetweenPoints = DistanceProcessor.distanceBetweenPoints(it.first, it.second)

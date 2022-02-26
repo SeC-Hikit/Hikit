@@ -9,7 +9,7 @@ import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
-import org.sc.manager.TrailImporterService;
+import org.sc.service.TrailImporterService;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;

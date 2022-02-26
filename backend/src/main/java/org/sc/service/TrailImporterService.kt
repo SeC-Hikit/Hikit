@@ -1,7 +1,6 @@
-package org.sc.manager
+package org.sc.service
 
 import org.sc.common.rest.*
-import org.sc.common.rest.response.TrailMappingResponse
 import org.sc.configuration.auth.AuthFacade
 import org.sc.configuration.auth.AuthHelper
 import org.sc.data.geo.TrailPlacesAligner
@@ -9,10 +8,13 @@ import org.sc.data.mapper.*
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
+import org.sc.manager.*
+import org.sc.manager.regeneration.RegenerationActionType
 import org.sc.processor.DistanceProcessor
 import org.sc.processor.TrailSimplifier
 import org.sc.processor.TrailSimplifierLevel
 import org.sc.processor.TrailsStatsCalculator
+import org.sc.manager.regeneration.RegenerationEntryType
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -24,8 +26,7 @@ class TrailImporterService @Autowired constructor(
         private val trailsManager: TrailManager,
         private val trailFileManager: TrailFileManager,
         private val placeManager: PlaceManager,
-        private val accessibilityNotificationManager: AccessibilityNotificationManager,
-        private val maintenanceManager: MaintenanceManager,
+        private val resourceManager: ResourceManager,
         private val trailsStatsCalculator: TrailsStatsCalculator,
         private val trailDatasetVersionDao: TrailDatasetVersionDao,
         private val coordinatesMapper: CoordinatesMapper,
@@ -166,7 +167,10 @@ class TrailImporterService @Autowired constructor(
         relatedTrails
                 .filter { it != trailSaved.id }
                 .flatMap { trailsManager.getById(it, TrailSimplifierLevel.LOW) }
-                .forEach { generatePdfFile(it) }
+                .forEach {
+                    resourceManager.addEntry(it.id, RegenerationEntryType.TRAIL,
+                            trailSaved.id, authHelper.username, RegenerationActionType.CREATE)
+                }
 
 
         logger.info("Updating trail set version...")
@@ -200,7 +204,7 @@ class TrailImporterService @Autowired constructor(
     fun updateResourcesForTrail(targetTrail: TrailDto) {
         trailFileManager.writeTrailToOfficialGpx(targetTrail)
         trailFileManager.writeTrailToKml(targetTrail)
-        generatePdfFile(targetTrail)
+
     }
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {
@@ -235,9 +239,13 @@ class TrailImporterService @Autowired constructor(
         trailToUpdate.territorialDivision = trailDto.territorialDivision
         trailToUpdate.cycloDetails = trailDto.cycloDetails
 
-        generatePdfFile(trailToUpdate)
+        val update = trailsManager.update(trailMapper.map(trailToUpdate))
 
-        return trailsManager.update(trailMapper.map(trailToUpdate))
+        val updateTrailId = update.first().id
+        resourceManager.addEntry(updateTrailId, RegenerationEntryType.TRAIL,
+                updateTrailId, authFacade.authHelper.username, RegenerationActionType.UPDATE)
+
+        return update
     }
 
     fun switchToStatus(trailDto: TrailDto): List<TrailDto> {
@@ -258,16 +266,6 @@ class TrailImporterService @Autowired constructor(
         }
         trailToUpdate.status = trailDto.status
         return trailsManager.update(trailMapper.map(trailToUpdate))
-    }
-
-    private fun generatePdfFile(trailSaved: TrailDto) {
-        val trailId = trailSaved.id
-        val places = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
-        val maintenancesByTrailId = maintenanceManager.getPastMaintenanceForTrailId(trailId, 0, Int.MAX_VALUE)
-        val lastMaintenance = maintenancesByTrailId.maxByOrNull { it.date }
-        val openIssues = accessibilityNotificationManager.getUnresolvedByTrailId(trailId, 0, Int.MAX_VALUE)
-        logger.info("""Generating PDF file for trail '$trailId'""")
-        trailFileManager.writeTrailToPdf(trailSaved, places, listOfNotNull(lastMaintenance), openIssues)
     }
 
     fun countTrailRaw() = trailRawDao.count()

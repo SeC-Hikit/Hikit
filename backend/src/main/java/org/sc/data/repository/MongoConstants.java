@@ -49,6 +49,7 @@ public class MongoConstants {
     public static final String GEO_LINE_STRING = "LineString";
     public static final String GEO_COORDINATES = "coordinates";
 
+    public static final Object DESCENDING_ORDER = -1;
     public static final FindOneAndReplaceOptions UPSERT_OPTIONS = new FindOneAndReplaceOptions().upsert(true)
             .returnDocument(ReturnDocument.AFTER);
 

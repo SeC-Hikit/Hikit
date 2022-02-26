@@ -84,7 +84,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler.version>8</maven-compiler.version>
         <javaruntime.version>1.8</javaruntime.version>
-        <kotlin.version>1.4.31</kotlin.version>
+        <kotlin.version>1.6.0</kotlin.version>
         <jpx.version>1.7.0</jpx.version>
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <junit.version>4.13.1</junit.version>
