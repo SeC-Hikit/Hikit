@@ -36,9 +36,14 @@ class ResourceService @Autowired constructor(
         val entries = resourceManager.getTrailEntries()
         val distinctEntries = entries.distinctBy { it.targetingTrail }
         distinctEntries.forEach {
-            val targetTrail = trailManager.getById(it.targetingTrail, TrailSimplifierLevel.LOW).first()
-            logger.trace("Ri-generating resource for trail with id: $targetTrail")
-            generatePdfFile(targetTrail)
+            val trailList = trailManager.getById(it.targetingTrail, TrailSimplifierLevel.LOW)
+            if(trailList.isNotEmpty()) {
+                val targetTrail = trailList.first()
+                logger.trace("Ri-generating resource for trail with id: $targetTrail")
+                generatePdfFile(targetTrail)
+            }
+            logger.trace("Trail '${it.targetingTrail}' seems be removed while waiting for jobs to complete. Skipping...")
+
         }
         logger.info("Resolved n.${distinctEntries.size} entries for processing")
         resourceManager.deleteEntries(entries)
