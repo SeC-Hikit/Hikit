@@ -45,8 +45,6 @@ public class PoiMapper implements Mapper<Poi> {
                 getLinkedMediaMapper(document),
                 document.getList(Poi.TRAIL_CODES, String.class),
                 getCoordinatesWithAltitude(document),
-                document.getDate(Poi.CREATED_ON),
-                document.getDate(Poi.LAST_UPDATE_ON),
                 document.getList(Poi.EXTERNAL_RESOURCES, String.class),
                 getKeyVals(document),
                 recordDetailsMapper.mapToObject(document.get(Poi.RECORD_DETAILS, Document.class)));
@@ -65,8 +63,6 @@ public class PoiMapper implements Mapper<Poi> {
                         .collect(toList()))
                 .append(Poi.TRAIL_CODES, poi.getTrailIds())
                 .append(Poi.TRAIL_COORDINATES, coordinatesMapper.mapToDocument(poi.getCoordinates()))
-                .append(Poi.CREATED_ON, poi.getCreatedOn())
-                .append(Poi.LAST_UPDATE_ON, poi.getLastUpdatedOn())
                 .append(Poi.EXTERNAL_RESOURCES, poi.getExternalResources())
                 .append(Poi.RECORD_DETAILS, poi.getRecordDetails())
                 .append(Poi.KEY_VAL, poi.getKeyVal().stream()

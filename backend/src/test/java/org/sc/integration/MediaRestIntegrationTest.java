@@ -139,7 +139,7 @@ public class MediaRestIntegrationTest  {
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(trailId),
-                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_COORDINATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
         List<KeyValueDto> expectedKeyVal = Collections.singletonList(savedKeyValue);

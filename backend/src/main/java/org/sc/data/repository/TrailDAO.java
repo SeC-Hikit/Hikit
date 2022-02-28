@@ -186,24 +186,21 @@ public class TrailDAO {
             final int skip, final int limit, final TrailSimplifierLevel level) {
         final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
         final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
-        final FindIterable<Document> foundTrails = collection.find(
-                new Document(Trail.GEO_LINE,
-                        new Document($_GEO_INTERSECT,
-                                new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
-                                        .append(GEO_COORDINATES,
-                                                Collections.singletonList(
-                                                        Arrays.asList(
-                                                                geoSquare.getBottomLeft().getAsList(),
-                                                                resolvedTopLeftVertex,
-                                                                geoSquare.getTopRight().getAsList(),
-                                                                resolvedBottomRightVertex,
-                                                                geoSquare.getBottomLeft().getAsList()
-                                                        )
-                                                )
-                                        ))))).skip(skip).limit(limit);
+        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit, resolvedTopLeftVertex, resolvedBottomRightVertex);
         LOGGER.trace("findTrailWithinGeoSquare geoSquare: {}, skip: {}, limit: {}, level: {}, resolvedTopLeftVertex: {}, resolvedBottomRightVertex: {}",
                 geoSquare, skip, limit, level, resolvedTopLeftVertex, resolvedBottomRightVertex);
         return toTrailsList(foundTrails, level);
+    }
+
+    public List<TrailMapping> findTrailMappingWithinGeoSquare(
+            final CoordinatesRectangle geoSquare,
+            final int skip, final int limit) {
+        final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
+        final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
+        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit,
+                resolvedTopLeftVertex, resolvedBottomRightVertex)
+                .projection(new Document(Trail.ID, ONE).append(Trail.CODE, ONE).append(Trail.NAME, ONE));
+        return toTrailMappingList(foundTrails);
     }
 
     public List<Trail> findTrailPerfectlyContainedInGeoSquare(
@@ -276,6 +273,11 @@ public class TrailDAO {
                 .map(trailPreviewMapper::mapToObject).collect(toList());
     }
 
+    private List<TrailMapping> toTrailMappingList(FindIterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(trailMappingMapper::mapToObject).collect(toList());
+    }
+
     private List<TrailMapping> toTrailsMappingList(FindIterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false)
                 .map(trailMappingMapper::mapToObject).collect(toList());
@@ -297,6 +299,25 @@ public class TrailDAO {
 
     private Document getLikeEndFilter(String fieldName, String valueToConcatenate) {
         return new Document(fieldName, getStartNameMatchPattern(valueToConcatenate));
+    }
+
+    @NotNull
+    private FindIterable<Document> foundTrailsWithinSquare(CoordinatesRectangle geoSquare, int skip, int limit, List<Double> resolvedTopLeftVertex, List<Double> resolvedBottomRightVertex) {
+        return collection.find(
+                new Document(Trail.GEO_LINE,
+                        new Document($_GEO_INTERSECT,
+                                new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
+                                        .append(GEO_COORDINATES,
+                                                Collections.singletonList(
+                                                        Arrays.asList(
+                                                                geoSquare.getBottomLeft().getAsList(),
+                                                                resolvedTopLeftVertex,
+                                                                geoSquare.getTopRight().getAsList(),
+                                                                resolvedBottomRightVertex,
+                                                                geoSquare.getBottomLeft().getAsList()
+                                                        )
+                                                )
+                                        ))))).skip(skip).limit(limit);
     }
 
     private Bson getTrailPreviewProjection() {
@@ -340,7 +361,7 @@ public class TrailDAO {
                                                  final double endLatitude, final double endLongitude) {
         final FindIterable<Document> documents = collection.find(
                 new Document(START_POS_COORDINATES, Arrays.asList(startLongitude, startLatitude))
-                .append(FINAL_POS_COORDINATES, Arrays.asList(endLongitude, endLatitude)));
+                        .append(FINAL_POS_COORDINATES, Arrays.asList(endLongitude, endLatitude)));
 
         return toTrailsMappingList(documents);
     }

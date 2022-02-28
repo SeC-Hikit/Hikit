@@ -20,8 +20,6 @@ public class PoiDto {
     private List<LinkedMediaDto> mediaList;
     private List<String> trailIds;
     private CoordinatesDto coordinates;
-    private Date createdOn;
-    private Date lastUpdatedOn;
     private List<String> externalResources;
     private List<KeyValueDto> keyVal;
     private RecordDetailsDto recordDetails;

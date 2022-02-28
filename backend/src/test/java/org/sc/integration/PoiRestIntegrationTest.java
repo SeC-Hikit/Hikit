@@ -70,8 +70,9 @@ public class PoiRestIntegrationTest {
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
-                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, new RecordDetailsDto(new Date(), "AnyUser", "SeC-Bo-123", authHelper.getAuthHelper().getRealm())));
+                EXPECTED_COORDINATE,
+                EXPECTED_EXTERNAL_RESOURCES,
+                EXPECTED_KEY_VALS, new RecordDetailsDto(new Date(), "AnyUser", "SeC-Bo-123", authHelper.getAuthHelper().getRealm())));
     }
 
     @Test
@@ -149,7 +150,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
-                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_COORDINATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
         PoiResponse getPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
@@ -172,7 +173,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
-                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_COORDINATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
         PoiResponse getPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
@@ -186,7 +187,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
-                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_COORDINATE,
                 EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
 
         PoiResponse getAgainPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
@@ -215,7 +216,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_TAGS, EXPECTED_MACRO_TYPE,
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
-                EXPECTED_COORDINATE, EXPECTED_DATE, EXPECTED_DATE,
+                EXPECTED_COORDINATE,
                 EXPECTED_EXTERNAL_RESOURCES, expectedKeyVals, null));
 
         PoiResponse getPoi = poiController.get(0, 3, NO_FILTERING_TOKEN);
@@ -249,8 +250,6 @@ public class PoiRestIntegrationTest {
     private void assertGetFirstElement(PoiDto firstElement) {
         assertThat(firstElement.getId()).isEqualTo(EXPECTED_ID);
         assertThat(firstElement.getName()).isEqualTo(EXPECTED_NAME);
-        assertThat(firstElement.getCreatedOn()).isEqualTo(EXPECTED_DATE);
-        assertThat(firstElement.getLastUpdatedOn()).isEqualTo(EXPECTED_DATE);
         assertThat(firstElement.getCoordinates()).isEqualTo(EXPECTED_COORDINATE);
         assertThat(firstElement.getMacroType()).isEqualTo(EXPECTED_MACRO_TYPE);
         assertThat(firstElement.getMicroType()).isEqualTo(EXPECTED_MICRO_TYPES);

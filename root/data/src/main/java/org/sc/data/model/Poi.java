@@ -20,8 +20,6 @@ public class Poi {
     public static final String MEDIA = "media";
     public static final String TRAIL_CODES = "trailIds";
     public static final String TRAIL_COORDINATES = "trailCoordinates";
-    public static final String CREATED_ON = "createdOn";
-    public static final String LAST_UPDATE_ON = "lastUpdateOn";
     public static final String EXTERNAL_RESOURCES = "externalResources";
     public static final String KEY_VAL = "kvps";
     public static final String RECORD_DETAILS = "recordDetails";
@@ -35,8 +33,6 @@ public class Poi {
     private List<LinkedMedia> mediaList;
     private List<String> trailIds;
     private CoordinatesWithAltitude coordinates;
-    private Date createdOn;
-    private Date lastUpdatedOn;
     private List<String> externalResources;
     private List<KeyVal> keyVal;
     private RecordDetails recordDetails;

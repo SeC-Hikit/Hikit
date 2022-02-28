@@ -3,11 +3,14 @@ package org.sc.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailIntersectionDto;
+import org.sc.common.rest.TrailMappingDto;
 import org.sc.common.rest.geo.GeoLineDto;
 import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.TrailIntersectionResponse;
+import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.response.TrailIntersectionHelper;
+import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailManager;
@@ -34,18 +37,21 @@ public class GeoTrailController {
     private final TrailResponseHelper trailResponseHelper;
     private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
+    private final TrailPreviewResponseHelper trailPreviewRespHelper;
 
     @Autowired
     public GeoTrailController(final TrailManager trailManager,
                               final GeneralValidator generalValidator,
                               final TrailIntersectionHelper trailIntersectionHelper,
                               final TrailResponseHelper trailResponseHelper,
+                              final TrailPreviewResponseHelper trailPreviewResponseHelper,
                               final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
         this.trailIntersectionHelper = trailIntersectionHelper;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
         this.controllerPagination = controllerPagination;
+        this.trailPreviewRespHelper = trailPreviewResponseHelper;
     }
 
     @Operation(summary = "Find all existing trail intersections for a given multi-coordinate line")
@@ -63,7 +69,7 @@ public class GeoTrailController {
         return trailIntersectionHelper.constructResponse(emptySet(), intersections, intersections.size(), skip, limit);
     }
 
-    @Operation(summary = "Find geo-located trails within a defined polygon")
+    @Operation(summary = "Find geo-located trails within a defined rectangle")
     @PostMapping("/locate")
     public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto,
                                         @RequestParam(defaultValue = "MEDIUM") TrailSimplifierLevel level) {
@@ -79,4 +85,17 @@ public class GeoTrailController {
         return trailResponseHelper.constructResponse(errors, emptyList(),
                 Constants.ZERO, Constants.ZERO, Constants.ONE);
     }
+
+    @Operation(summary = "Find geo-located trails mapping IDs within a defined rectangle")
+    @PostMapping("/locate-id")
+    public TrailMappingResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto){
+
+        final Set<String> errors = generalValidator.validate(rectangleDto);
+
+        final List<TrailMappingDto> foundTrailMappings = trailManager.findTrailMappingsWithinRectangle(rectangleDto);
+
+
+        return trailPreviewRespHelper.constructMappingResponse(errors, foundTrailMappings, 0L, 0, 0);
+    }
+
 }
