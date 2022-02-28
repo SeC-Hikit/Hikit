@@ -18,10 +18,11 @@ import org.sc.manager.regeneration.RegenerationEntryType
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.util.*
 
 
-@Component
+@Service
 class TrailImporterService @Autowired constructor(
         private val trailsManager: TrailManager,
         private val trailFileManager: TrailFileManager,

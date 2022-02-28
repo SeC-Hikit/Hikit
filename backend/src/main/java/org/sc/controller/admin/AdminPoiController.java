@@ -38,7 +38,7 @@ public class AdminPoiController {
     }
 
     @Operation(summary = "Create a POI")
-    @PutMapping
+    @PostMapping
     public PoiResponse create(@RequestBody PoiDto poiDto) {
         final Set<String> errors = generalValidator.validate(poiDto);
         if (errors.isEmpty()) {
@@ -50,7 +50,7 @@ public class AdminPoiController {
     }
 
     @Operation(summary = "Update a POI")
-    @PostMapping
+    @PutMapping
     public PoiResponse update(@RequestBody PoiDto poiDto) {
         final Set<String> errors = generalValidator.validate(poiDto);
         errors.addAll(generalValidator.validateUpdatePoi(poiDto.getId()));

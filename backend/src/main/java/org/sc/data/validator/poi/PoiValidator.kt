@@ -31,10 +31,6 @@ class PoiValidator @Autowired constructor(
     override fun validate(request: PoiDto): Set<String> {
         val errors = mutableSetOf<String>()
         if(isEmpty(request.name)) { errors.add(String.format(ValidatorUtils.emptyFieldError, Poi.NAME)) }
-        if(request.createdOn == null) { String.format(dateInFutureError, Poi.CREATED_ON) }
-        if(request.createdOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.CREATED_ON))
-        if(request.lastUpdatedOn == null) { String.format(dateInFutureError, Poi.LAST_UPDATE_ON) }
-        if(request.lastUpdatedOn.after(Date())) errors.add(String.format(dateInFutureError, Poi.LAST_UPDATE_ON))
         request.trailIds.forEach {
             errors.addAll(trailExistenceValidator.validate(it))
         }

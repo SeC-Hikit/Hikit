@@ -168,6 +168,12 @@ class TrailManager @Autowired constructor(
         return trails.map { trailMapper.map(it) }
     }
 
+    fun findTrailMappingsWithinRectangle(rectangleDto: RectangleDto): List<TrailMappingDto> {
+        val trailMappings = trailDAO.findTrailMappingWithinGeoSquare(
+                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100)
+        return trailMappings.map { trailMappingMapper.map(it) }
+    }
+
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
         val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates)
         val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
