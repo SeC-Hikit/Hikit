@@ -1,6 +1,7 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailIntersectionDto;
 import org.sc.common.rest.TrailMappingDto;
@@ -91,11 +92,12 @@ public class GeoTrailController {
     public TrailMappingResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto){
 
         final Set<String> errors = generalValidator.validate(rectangleDto);
-
-        final List<TrailMappingDto> foundTrailMappings = trailManager.findTrailMappingsWithinRectangle(rectangleDto);
-
-
-        return trailPreviewRespHelper.constructMappingResponse(errors, foundTrailMappings, 0L, 0, 0);
+        if(!errors.isEmpty()) {
+            return new TrailMappingResponse(Status.ERROR, errors, emptyList(), 1L,
+                    Constants.ONE, 0, 100);
+        }
+        final List<TrailMappingDto> dtos = trailManager.findTrailMappingsWithinRectangle(rectangleDto);
+        return trailPreviewRespHelper.constructMappingResponse(errors, dtos, dtos.size(), 0, 100);
     }
 
 }

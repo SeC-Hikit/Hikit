@@ -44,10 +44,6 @@ public class TrailPreviewResponseHelper {
                                                   long totalCount,
                                                   int skip,
                                                   int limit) {
-        if (!errors.isEmpty()) {
-            return new TrailMappingResponse(Status.ERROR, errors, dtos, 1L,
-                    Constants.ONE, limit, totalCount);
-        }
         return new TrailMappingResponse(Status.OK, errors, dtos,
                 controllerPagination.getCurrentPage(skip, limit),
                 controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);
