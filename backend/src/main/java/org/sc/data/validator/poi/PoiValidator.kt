@@ -25,11 +25,12 @@ class PoiValidator @Autowired constructor(
 ) : Validator<PoiDto> {
 
     companion object {
-        const val dateInFutureError = "The provided date for field '%s' is in the future"
+        const val blankIdError = "ID blank not accepted"
     }
 
     override fun validate(request: PoiDto): Set<String> {
         val errors = mutableSetOf<String>()
+        if(request.id != null && request.id.isBlank()) { errors.add(blankIdError) }
         if(isEmpty(request.name)) { errors.add(String.format(ValidatorUtils.emptyFieldError, Poi.NAME)) }
         request.trailIds.forEach {
             errors.addAll(trailExistenceValidator.validate(it))

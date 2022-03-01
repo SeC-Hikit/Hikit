@@ -53,7 +53,7 @@ class ResourceService @Autowired constructor(
         val trailId = trailSaved.id
         val places = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
         val maintenancesByTrailId = maintenanceManager.getPastMaintenanceForTrailId(trailId, 0, Int.MAX_VALUE)
-        val lastMaintenance = maintenancesByTrailId.maxByOrNull { it.date }!!
+        val lastMaintenance = maintenancesByTrailId.maxByOrNull { it.date }
         val openIssues = accessibilityNotificationManager.getUnresolvedByTrailId(trailId, 0, Int.MAX_VALUE)
         logger.info("Generating PDF file for trail '$trailId'")
         trailFileManager.writeTrailToPdf(trailSaved, places, listOfNotNull(lastMaintenance), openIssues)
