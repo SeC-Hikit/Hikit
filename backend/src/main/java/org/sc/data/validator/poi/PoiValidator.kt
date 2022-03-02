@@ -1,5 +1,6 @@
 package org.sc.data.validator.poi
 
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.isEmpty
 import org.sc.common.rest.PoiDto
 import org.sc.data.model.Poi
@@ -10,7 +11,6 @@ import org.sc.data.validator.ValidatorUtils
 import org.sc.data.validator.auth.AuthRealmValidator
 import org.sc.data.validator.trail.TrailExistenceValidator
 import org.sc.manager.PoiManager
-import org.sc.manager.TrailManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -44,6 +44,9 @@ class PoiValidator @Autowired constructor(
     }
 
     fun validateExistenceAndAuth(id: String): Set<String> {
+        if(isEmpty(id)) {
+            mutableSetOf(String.format(ValidatorUtils.notExistingItem, "POI", id))
+        }
         val errors = mutableSetOf<String>()
         val byId = poiManager.getPoiByID(id)
         if (byId.isEmpty()) {

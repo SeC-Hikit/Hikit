@@ -11,10 +11,8 @@ import org.sc.data.model.Poi;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface PoiMapper {
 
-    @Mapping(source = "id", target = "id")
     PoiDto poiToPoiDto(Poi poi);
 
-    @Mapping(source = "id", target = "id")
     Poi map(PoiDto poi);
 
     KeyValueDto keyValueToDto(KeyVal keyVal);

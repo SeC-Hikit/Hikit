@@ -74,6 +74,11 @@ class PoiManager @Autowired constructor(
     fun create(poiDto: PoiDto): List<PoiDto> {
         val fromDto = poiDtoMapper.map(poiDto)
         val authHelper = authFacade.authHelper
+
+        fromDto.keyVal = fromDto.keyVal.distinctBy { it.key.lowercase() }
+        fromDto.microType = fromDto.microType.distinct()
+        fromDto.trailIds = fromDto.trailIds.distinct()
+
         fromDto.recordDetails = RecordDetails(Date(),
                 authHelper.username,
                 authHelper.instance,
