@@ -42,6 +42,15 @@ public class AccessibilityNotificationController {
         return new CountResponse(Status.OK, emptySet(), new CountDto(count));
     }
 
+    @Operation(summary = "Retrieve notification by id")
+    @GetMapping("/{id}")
+    public AccessibilityResponse getById(
+            @PathVariable String id) {
+        List<AccessibilityNotificationDto> dtos = accessibilityNotManager.byId(id);
+        return accessibilityIssueResponseHelper.constructResponse(emptySet(),
+                dtos, dtos.size(), 0, 1);
+    }
+
     @Operation(summary = "Retrieve solved notifications")
     @GetMapping("/solved")
     public AccessibilityResponse getSolved(

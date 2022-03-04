@@ -5,7 +5,6 @@ import org.sc.common.rest.LinkedMediaDto;
 import org.sc.common.rest.PoiDto;
 import org.sc.common.rest.UnLinkeMediaRequestDto;
 import org.sc.common.rest.response.PoiResponse;
-import org.sc.controller.Constants;
 import org.sc.controller.response.PoiResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.PoiManager;
@@ -42,7 +41,7 @@ public class AdminPoiController {
     public PoiResponse create(@RequestBody PoiDto poiDto) {
         final Set<String> errors = generalValidator.validate(poiDto);
         if (errors.isEmpty()) {
-            return poiResponseHelper.constructResponse(emptySet(), poiManager.create(poiDto),
+            return poiResponseHelper.constructResponse(emptySet(), poiManager.upsert(poiDto),
                     poiManager.count(), ZERO, ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),
@@ -55,7 +54,7 @@ public class AdminPoiController {
         final Set<String> errors = generalValidator.validate(poiDto);
         errors.addAll(generalValidator.validateUpdatePoi(poiDto.getId()));
         if (errors.isEmpty()) {
-            return poiResponseHelper.constructResponse(emptySet(), poiManager.create(poiDto),
+            return poiResponseHelper.constructResponse(emptySet(), poiManager.upsert(poiDto),
                     poiManager.count(), ZERO, ONE);
         }
         return poiResponseHelper.constructResponse(errors, emptyList(),

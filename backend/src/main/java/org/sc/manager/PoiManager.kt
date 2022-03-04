@@ -71,7 +71,7 @@ class PoiManager @Autowired constructor(
         return poiByID
     }
 
-    fun create(poiDto: PoiDto): List<PoiDto> {
+    fun upsert(poiDto: PoiDto): List<PoiDto> {
         val fromDto = poiDtoMapper.map(poiDto)
         val authHelper = authFacade.authHelper
 
