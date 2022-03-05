@@ -103,7 +103,9 @@ public class TrailDAO {
                                          final int page,
                                          final int limit,
                                          final TrailSimplifierLevel trailSimplifierLevel) {
-        return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id)).skip(page).limit(limit),
+        return toTrailsList(collection.find(new Document(PLACE_ID_IN_LOCATIONS, id))
+                        .skip(page)
+                        .limit(limit),
                 trailSimplifierLevel);
     }
 

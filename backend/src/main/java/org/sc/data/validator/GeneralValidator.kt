@@ -23,6 +23,7 @@ class GeneralValidator @Autowired constructor(
     private val mediaExistenceValidator: MediaExistenceValidator,
     private val mediaFileValidator: MediaFileValidator,
     private val placeExistenceValidator: PlaceExistenceValidator,
+    private val placeDeleteValidator: PlaceDeleteValidator,
     private val placeRefValidator: PlaceRefValidator,
     private val placeValidator: PlaceValidator,
     private val pointGeolocationValidatorDto: PointGeolocationValidatorDto,
@@ -59,6 +60,7 @@ class GeneralValidator @Autowired constructor(
     fun validateReportAcc(id: String): Set<String> = accessibilityReportValidator.validateUpdateRequest(id)
     fun validateUpdateMedia(id: String): Set<String> = mediaExistenceValidator.validateDeleteRequest(id)
     fun validateUpdatePlace(id: String): Set<String> = placeExistenceValidator.validatePlace(id)
+    fun validateDeletePlace(id: String): Set<String> = placeDeleteValidator.validate(id)
     fun validateUpdatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
     fun validateUpdateTrail(id: String): Set<String> = trailExistenceValidator.validateExistenceAndRealm(id)
     fun validateUpdateMaintenance(id: String): Set<String> = maintenanceValidator.validateExistenceAndRealm(id)

@@ -77,7 +77,7 @@ public class TrailController {
     @Operation(summary = "Retrieve trail by place ID")
     @GetMapping("/place/{id}")
     public TrailResponse getByPlaceId(@PathVariable String id,
-                                      @RequestParam(defaultValue = "low") String level,
+                                      @RequestParam(defaultValue = "LOW") String level,
                                       @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                       @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         controllerPagination.checkSkipLim(skip, limit);
