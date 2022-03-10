@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.*;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 import static org.sc.controller.Constants.ONE;
@@ -103,10 +102,16 @@ public class AccessibilityReportController {
     }
 
     @Operation(summary = "Validate newly created reports")
-    @GetMapping("/validate/{validationId}")
+    @PutMapping("/validate/{validationId}")
     public AccessibilityReportResponse validate(
             @PathVariable String validationId) {
         List<AccessibilityReportDto> values = accessService.validate(validationId);
+        if(values.isEmpty()) {
+            return accessibilityIssueResponseHelper.constructResponse(
+                    singleton("No report found to validate"),
+                    values, 0, 0, 1);
+
+        }
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 values, values.size(), 0, values.size());
     }

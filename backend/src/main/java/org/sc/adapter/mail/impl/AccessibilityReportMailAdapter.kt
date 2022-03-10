@@ -32,7 +32,9 @@ class AccessibilityReportMailAdapter @Autowired constructor(private val mailAdap
         mailAdapter.send(subject, body, targetEmailAddress)
     }
 
-    private fun resolveActivationMessage(reportDate: Date, realm: String, trailCode: String, trailId: String, description: String, activationLink: String) =
+    private fun resolveActivationMessage(reportDate: Date, realm: String,
+                                         trailCode: String, trailId: String,
+                                         description: String, activationLink: String) =
             String.format(message, mailAdapter.dateFormatter.format(reportDate),
                     realm, trailCode, trailId, description,
                     activationLink, activationLink)
