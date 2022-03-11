@@ -183,10 +183,13 @@ public class TrailDAO {
 
     public List<Trail> findTrailWithinGeoSquare(
             final CoordinatesRectangle geoSquare,
-            final int skip, final int limit, final TrailSimplifierLevel level) {
+            final int skip,
+            final int limit,
+            final TrailSimplifierLevel level,
+            final boolean isDraftTrailVisible) {
         final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
         final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
-        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit, resolvedTopLeftVertex, resolvedBottomRightVertex);
+        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit, resolvedTopLeftVertex, resolvedBottomRightVertex, isDraftTrailVisible);
         LOGGER.trace("findTrailWithinGeoSquare geoSquare: {}, skip: {}, limit: {}, level: {}, resolvedTopLeftVertex: {}, resolvedBottomRightVertex: {}",
                 geoSquare, skip, limit, level, resolvedTopLeftVertex, resolvedBottomRightVertex);
         return toTrailsList(foundTrails, level);
@@ -198,7 +201,7 @@ public class TrailDAO {
         final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
         final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
         final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit,
-                resolvedTopLeftVertex, resolvedBottomRightVertex)
+                resolvedTopLeftVertex, resolvedBottomRightVertex, true)
                 .projection(new Document(Trail.ID, ONE).append(Trail.CODE, ONE).append(Trail.NAME, ONE));
         return toTrailMappingList(foundTrails);
     }
@@ -302,9 +305,19 @@ public class TrailDAO {
     }
 
     @NotNull
-    private FindIterable<Document> foundTrailsWithinSquare(CoordinatesRectangle geoSquare, int skip, int limit, List<Double> resolvedTopLeftVertex, List<Double> resolvedBottomRightVertex) {
-        return collection.find(
-                new Document(Trail.GEO_LINE,
+    private FindIterable<Document> foundTrailsWithinSquare(CoordinatesRectangle geoSquare, int skip, int limit, List<Double> resolvedTopLeftVertex, List<Double> resolvedBottomRightVertex, boolean isDraftTrailVisible) {
+        List<String> filter = Collections.emptyList();
+        if (isDraftTrailVisible) {
+            //array (public draft)
+            filter=Arrays.asList("public","draft");
+        }
+        else {
+            //array (public)
+            filter=Arrays.asList("public");
+        }
+
+            return collection.find(
+                new Document(Trail.STATUS, filter).append(Trail.GEO_LINE,
                         new Document($_GEO_INTERSECT,
                                 new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
                                         .append(GEO_COORDINATES,

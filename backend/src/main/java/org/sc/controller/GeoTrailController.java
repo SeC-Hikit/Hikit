@@ -73,12 +73,12 @@ public class GeoTrailController {
     @Operation(summary = "Find geo-located trails within a defined rectangle")
     @PostMapping("/locate")
     public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto,
-                                        @RequestParam(defaultValue = "MEDIUM") TrailSimplifierLevel level) {
+                                        @RequestParam(defaultValue = "MEDIUM") TrailSimplifierLevel level, @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
 
         final Set<String> errors = generalValidator.validate(rectangleDto);
 
         if (errors.isEmpty()) {
-            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto, level);
+            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto, level, isDraftTrailVisible);
             return trailResponseHelper.constructResponse(emptySet(), foundTrails,
                     foundTrails.size(), Constants.ZERO, Constants.ONE);
         }

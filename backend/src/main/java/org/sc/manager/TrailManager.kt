@@ -162,9 +162,13 @@ class TrailManager @Autowired constructor(
         trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
 
-    fun findTrailsWithinRectangle(rectangleDto: RectangleDto, level: TrailSimplifierLevel): List<TrailDto> {
+    fun findTrailsWithinRectangle(
+        rectangleDto: RectangleDto,
+        level: TrailSimplifierLevel,
+        isDraftTrailVisible: Boolean
+    ): List<TrailDto> {
         val trails = trailDAO.findTrailWithinGeoSquare(
-                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level)
+                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level, isDraftTrailVisible)
         return trails.map { trailMapper.map(it) }
     }
 
@@ -177,7 +181,7 @@ class TrailManager @Autowired constructor(
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
         val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates)
         val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
-                TrailSimplifierLevel.FULL)
+                TrailSimplifierLevel.FULL, true)
 
         return foundTrailsWithinGeoSquare.filter {
             GeoCalculator.areSegmentsIntersecting(
