@@ -305,32 +305,34 @@ public class TrailDAO {
     }
 
     @NotNull
-    private FindIterable<Document> foundTrailsWithinSquare(CoordinatesRectangle geoSquare, int skip, int limit, List<Double> resolvedTopLeftVertex, List<Double> resolvedBottomRightVertex, boolean isDraftTrailVisible) {
-        List<String> filter = Collections.emptyList();
-        if (isDraftTrailVisible) {
-            //array (public draft)
-            filter=Arrays.asList("public","draft");
-        }
-        else {
-            //array (public)
-            filter=Arrays.asList("public");
-        }
-
-            return collection.find(
-                new Document(Trail.STATUS, filter).append(Trail.GEO_LINE,
-                        new Document($_GEO_INTERSECT,
-                                new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
-                                        .append(GEO_COORDINATES,
-                                                Collections.singletonList(
-                                                        Arrays.asList(
-                                                                geoSquare.getBottomLeft().getAsList(),
-                                                                resolvedTopLeftVertex,
-                                                                geoSquare.getTopRight().getAsList(),
-                                                                resolvedBottomRightVertex,
-                                                                geoSquare.getBottomLeft().getAsList()
+    private FindIterable<Document> foundTrailsWithinSquare(final CoordinatesRectangle geoSquare,
+                                                           final int skip,
+                                                           final int limit,
+                                                           final List<Double> resolvedTopLeftVertex,
+                                                           final List<Double> resolvedBottomRightVertex,
+                                                           final boolean isDraftTrailVisible) {
+        final List<String> statusFilter = isDraftTrailVisible ?
+                Arrays.asList(TrailStatus.PUBLIC.name(),
+                        TrailStatus.DRAFT.name()) :
+                Collections.singletonList(
+                        TrailStatus.PUBLIC.name());
+        return collection.find(
+                new Document(Trail.STATUS,
+                        new Document($_IN, statusFilter))
+                        .append(Trail.GEO_LINE,
+                                new Document($_GEO_INTERSECT,
+                                        new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
+                                                .append(GEO_COORDINATES,
+                                                        Collections.singletonList(
+                                                                Arrays.asList(
+                                                                        geoSquare.getBottomLeft().getAsList(),
+                                                                        resolvedTopLeftVertex,
+                                                                        geoSquare.getTopRight().getAsList(),
+                                                                        resolvedBottomRightVertex,
+                                                                        geoSquare.getBottomLeft().getAsList()
+                                                                )
                                                         )
-                                                )
-                                        ))))).skip(skip).limit(limit);
+                                                ))))).skip(skip).limit(limit);
     }
 
     private Bson getTrailPreviewProjection() {
