@@ -12,6 +12,7 @@ import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
 import org.sc.data.model.*;
+import org.sc.data.repository.helper.StatusFilterHelper;
 import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,7 @@ import java.util.stream.StreamSupport;
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.*;
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
@@ -46,6 +48,7 @@ public class TrailDAO {
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
+    private final StatusFilterHelper statusFilterHelper;
     private final SelectiveArgumentMapper<Trail> trailLevelMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
     private final Mapper<TrailMapping> trailMappingMapper;
@@ -57,6 +60,7 @@ public class TrailDAO {
     @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
+                    final StatusFilterHelper statusFilterHelper,
                     final SelectiveArgumentMapper<Trail> trailLevelMapper,
                     final Mapper<TrailMapping> trailMappingMapper,
                     final LinkedMediaMapper linkedMediaMapper,
@@ -65,6 +69,7 @@ public class TrailDAO {
                     final CycloMapper cycloMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.statusFilterHelper = statusFilterHelper;
         this.trailLevelMapper = trailLevelMapper;
         this.trailMappingMapper = trailMappingMapper;
         this.linkedMediaMapper = linkedMediaMapper;
@@ -141,15 +146,18 @@ public class TrailDAO {
     }
 
     public List<TrailPreview> findPreviewsByCode(final String code, final int skip,
-                                                 final int limit, final String realm) {
+                                                 final int limit, final String realm,
+                                                 final boolean isDraftTrailVisible) {
+        final List<String> inStatusFilter = statusFilterHelper.getInFilter(isDraftTrailVisible);
         final Document codeFilter = getLikeEndFilter(Trail.CODE, code);
+        final Bson statusFilter = in(Trail.STATUS, inStatusFilter);
         final Document realmFilter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
         return toTrailsPreviewList(collection.aggregate(
                 Arrays.asList(match(codeFilter),
-                        match(realmFilter), project, aLimit, aSkip)));
+                        match(realmFilter), statusFilter, project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> trailPreviewById(final String id) {
@@ -311,14 +319,10 @@ public class TrailDAO {
                                                            final List<Double> resolvedTopLeftVertex,
                                                            final List<Double> resolvedBottomRightVertex,
                                                            final boolean isDraftTrailVisible) {
-        final List<String> statusFilter = isDraftTrailVisible ?
-                Arrays.asList(TrailStatus.PUBLIC.name(),
-                        TrailStatus.DRAFT.name()) :
-                Collections.singletonList(
-                        TrailStatus.PUBLIC.name());
+        final List<String> inStatusFilter = statusFilterHelper.getInFilter(isDraftTrailVisible);
         return collection.find(
                 new Document(Trail.STATUS,
-                        new Document($_IN, statusFilter))
+                        new Document($_IN, inStatusFilter))
                         .append(Trail.GEO_LINE,
                                 new Document($_GEO_INTERSECT,
                                         new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
@@ -393,8 +397,9 @@ public class TrailDAO {
                 new Document(Trail.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
     }
 
-    public long countTotalByCode(final String code) {
-        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code));
+    public long countTotalByCode(final String code, boolean isDraftTrailVisible) {
+        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code)
+                .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
 

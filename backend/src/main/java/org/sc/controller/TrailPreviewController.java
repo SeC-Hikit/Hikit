@@ -36,7 +36,8 @@ public class TrailPreviewController {
     @GetMapping
     public TrailPreviewResponse getTrailPreviews(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                  @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-                                                 @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+                                                 @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
+                                                 @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
                 .constructResponse(emptySet(), trailManager.getPreviews(skip, limit, realm),
@@ -78,10 +79,11 @@ public class TrailPreviewController {
     public TrailPreviewResponse findByTrailCode(@PathVariable String code,
                                                 @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-                                                @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+                                                @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
+                                                @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
-                .constructResponse(emptySet(), trailManager.findPreviewsByCode(code, skip, limit, realm),
-                        trailManager.countFindingByCode(code), skip, limit);
+                .constructResponse(emptySet(), trailManager.findPreviewsByCode(code, skip, limit, realm, isDraftTrailVisible),
+                        trailManager.countFindingByCode(code, isDraftTrailVisible), skip, limit);
     }
 }
