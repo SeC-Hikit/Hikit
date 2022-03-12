@@ -51,11 +51,11 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
     public static final CoordinatesDto START_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
 
-    public static final TrailCoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436081, 11.315625, 250.0, 0);
+    public static final TrailCoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436081, 11.315625, 250.0, 1);
     public static final CoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436081, 11.315625, 250.0);
 
     // End Pos coordinates
-    public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 50);
+    public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 19478);
     public static final CoordinatesDto END_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
     public static final List<TrailCoordinatesDto> EXPECTED_TRAIL_COORDINATES = Arrays.asList(
             START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
