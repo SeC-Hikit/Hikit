@@ -103,7 +103,8 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailResponse getTrail = trailController.get(0, 1, REALM, TrailSimplifierLevel.FULL);
+        TrailResponse getTrail = trailController.get(0, 1, REALM,
+                TrailSimplifierLevel.FULL, true);
         TrailDto firstElement = getTrail.getContent().get(0);
         assertThat(getTrail.getContent().size()).isEqualTo(1);
         assertFirtElement(firstElement);

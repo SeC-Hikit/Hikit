@@ -40,19 +40,20 @@ public class TrailPreviewController {
                                                  @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
-                .constructResponse(emptySet(), trailManager.getPreviews(skip, limit, realm),
-                        trailManager.countPreviewByRealm(realm), skip, limit);
+                .constructResponse(emptySet(), trailManager.getPreviews(skip, limit, realm, isDraftTrailVisible),
+                        trailManager.countPreviewByRealm(realm, isDraftTrailVisible), skip, limit);
     }
 
     @Operation(summary = "Retrieve trail ID/Code mapping")
     @GetMapping("/map")
     public TrailMappingResponse getTrailMapping(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-                                                @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+                                                @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
+                                                @RequestParam(required = false, defaultValue = "false") boolean isDraftTrailVisible) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
-                .constructMappingResponse(emptySet(), trailManager.getMappings(skip, limit, realm),
-                        trailManager.countPreviewByRealm(realm), skip, limit);
+                .constructMappingResponse(emptySet(), trailManager.getMappings(skip, limit, realm, isDraftTrailVisible),
+                        trailManager.countPreviewByRealm(realm, isDraftTrailVisible), skip, limit);
     }
 
     @Operation(summary = "Retrieve RAW trail previews")

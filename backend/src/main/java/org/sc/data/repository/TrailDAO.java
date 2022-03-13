@@ -80,15 +80,22 @@ public class TrailDAO {
 
     public List<Trail> getTrails(int skip, int limit,
                                  final TrailSimplifierLevel trailSimplifierLevel,
-                                 final String realm) {
+                                 final String realm,
+                                 final boolean isDraftTrailVisible) {
         final Document realmFilter = getFilter(realm);
-        return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit),
+        return toTrailsList(collection.find(realmFilter
+                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
+                        .skip(skip).limit(limit),
                 trailSimplifierLevel);
     }
 
-    public List<TrailMapping> getTrailsMappings(int skip, int limit, final String realm) {
+    // TODO: add tests on this
+    public List<TrailMapping> getTrailsMappings(int skip, int limit,
+                                                final String realm,
+                                                boolean isDraftTrailVisible) {
         final Document realmFilter = getFilter(realm);
-        return toTrailsMappingList(collection.find(realmFilter)
+        return toTrailsMappingList(collection.find(realmFilter
+                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
                 .projection(new Document(Trail.ID, ONE)
                         .append(Trail.CODE, ONE)
                         .append(Trail.NAME, ONE))
@@ -128,36 +135,43 @@ public class TrailDAO {
                 new Document(Trail.ID, existingOrNewObjectId),
                 trailDocument, UPSERT_OPTIONS);
         if (updateResult == null) {
-            LOGGER.error("upsert updateResult is null for Trail: {}, existingOrNewObjectId: {}", trailRequest, existingOrNewObjectId);
+            LOGGER.error("upsert updateResult is null for Trail: {}, existingOrNewObjectId: {}",
+                    trailRequest, existingOrNewObjectId);
             throw new IllegalStateException();
         }
         return Collections.singletonList(trailMapper.mapToObject(updateResult));
     }
 
-    public List<TrailPreview> getTrailPreviews(final int skip, final int limit, final String realm) {
-
+    public List<TrailPreview> getTrailPreviews(final int skip, final int limit, final String realm, boolean isDraftTrailVisible) {
+        final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
         final Document filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
 
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
 
-        return toTrailsPreviewList(collection.aggregate(Arrays.asList(match(filter), project, aLimit, aSkip)));
+        return toTrailsPreviewList(
+                collection.aggregate(
+                        Arrays.asList(
+                                match(filter),
+                                match(statusFilter),
+                                project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> findPreviewsByCode(final String code, final int skip,
                                                  final int limit, final String realm,
                                                  final boolean isDraftTrailVisible) {
-        final List<String> inStatusFilter = statusFilterHelper.getInFilter(isDraftTrailVisible);
+        final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
         final Document codeFilter = getLikeEndFilter(Trail.CODE, code);
-        final Bson statusFilter = in(Trail.STATUS, inStatusFilter);
         final Document realmFilter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
         return toTrailsPreviewList(collection.aggregate(
                 Arrays.asList(match(codeFilter),
-                        match(realmFilter), statusFilter, project, aLimit, aSkip)));
+                        match(statusFilter),
+                        match(realmFilter),
+                        project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> trailPreviewById(final String id) {
@@ -275,8 +289,9 @@ public class TrailDAO {
         return collection.countDocuments();
     }
 
-    public long countTrailByRealm(final String realm) {
-        return collection.countDocuments(getRealmFilter(realm));
+    public long countTrailByRealm(final String realm, boolean isDraftTrailVisible) {
+        return collection.countDocuments(getRealmFilter(realm)
+                .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
     private List<TrailPreview> toTrailsPreviewList(final Iterable<Document> documents) {
@@ -355,6 +370,12 @@ public class TrailDAO {
                         new Document("$arrayElemAt",
                                 Arrays.asList(DOLLAR + Trail.LOCATIONS, -1)))
         ));
+    }
+
+    private Bson getBsonAggregateStatusInFilter(boolean isDraftTrailVisible) {
+        final List<String> inStatusFilter =
+                statusFilterHelper.getInFilter(isDraftTrailVisible);
+        return in(Trail.STATUS, inStatusFilter);
     }
 
     @NotNull
