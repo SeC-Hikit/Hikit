@@ -71,7 +71,8 @@ public class TrailPreviewRestIntegrationTest {
 
     @Test
     public void getPaged_shouldFindOne() {
-        TrailPreviewResponse response = controller.getTrailPreviews(0, 1, ANY_REALM);
+        TrailPreviewResponse response = controller
+                .getTrailPreviews(0, 1, ANY_REALM, true);
         assertThat(response.getContent().size()).isEqualTo(1);
         TrailPreviewDto firstResult = response.getContent().get(0);
         assertAll(firstResult);

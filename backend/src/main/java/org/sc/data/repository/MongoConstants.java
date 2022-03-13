@@ -24,6 +24,7 @@ public class MongoConstants {
     public static final String $_GEOMETRY = "$geometry";
     public static final String NEAR_OPERATOR = "near";
     public static final String $_SET = "$set";
+    public static final String $_IN = "$in";
     public static final String LIMIT = "$limit";
     public static final String SKIP = "$skip";
     public static final String $PULL = "$pull";

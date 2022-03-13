@@ -76,7 +76,7 @@ public class AdminResourceController {
 
                 final List<TrailDto> trails = trailManager.get(0,
                         Integer.MAX_VALUE, TrailSimplifierLevel.FULL,
-                        appProperties.getInstanceRealm());
+                        appProperties.getInstanceRealm(), true);
                 doExport(trails);
                 isMigrationRunning.set(false);
             });

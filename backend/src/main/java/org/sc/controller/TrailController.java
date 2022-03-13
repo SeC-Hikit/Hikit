@@ -56,11 +56,12 @@ public class TrailController {
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
             @RequestParam(required = false, defaultValue = "*") String realm,
-            @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level) {
+            @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level,
+            @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailResponseHelper
                 .constructResponse(Collections.emptySet(), trailManager.
-                                get(skip, limit, level, realm),
+                                get(skip, limit, level, realm, isDraftTrailVisible),
                         trailManager.count(), skip, limit);
     }
 

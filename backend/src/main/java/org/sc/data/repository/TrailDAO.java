@@ -12,6 +12,7 @@ import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
 import org.sc.data.model.*;
+import org.sc.data.repository.helper.StatusFilterHelper;
 import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,7 @@ import java.util.stream.StreamSupport;
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.*;
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
@@ -46,6 +48,7 @@ public class TrailDAO {
     private final MongoCollection<Document> collection;
 
     private final Mapper<Trail> trailMapper;
+    private final StatusFilterHelper statusFilterHelper;
     private final SelectiveArgumentMapper<Trail> trailLevelMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
     private final Mapper<TrailMapping> trailMappingMapper;
@@ -57,6 +60,7 @@ public class TrailDAO {
     @Autowired
     public TrailDAO(final DataSource dataSource,
                     final TrailMapper trailMapper,
+                    final StatusFilterHelper statusFilterHelper,
                     final SelectiveArgumentMapper<Trail> trailLevelMapper,
                     final Mapper<TrailMapping> trailMappingMapper,
                     final LinkedMediaMapper linkedMediaMapper,
@@ -65,6 +69,7 @@ public class TrailDAO {
                     final CycloMapper cycloMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
         this.trailMapper = trailMapper;
+        this.statusFilterHelper = statusFilterHelper;
         this.trailLevelMapper = trailLevelMapper;
         this.trailMappingMapper = trailMappingMapper;
         this.linkedMediaMapper = linkedMediaMapper;
@@ -75,15 +80,22 @@ public class TrailDAO {
 
     public List<Trail> getTrails(int skip, int limit,
                                  final TrailSimplifierLevel trailSimplifierLevel,
-                                 final String realm) {
+                                 final String realm,
+                                 final boolean isDraftTrailVisible) {
         final Document realmFilter = getFilter(realm);
-        return toTrailsList(collection.find(realmFilter).skip(skip).limit(limit),
+        return toTrailsList(collection.find(realmFilter
+                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
+                        .skip(skip).limit(limit),
                 trailSimplifierLevel);
     }
 
-    public List<TrailMapping> getTrailsMappings(int skip, int limit, final String realm) {
+    // TODO: add tests on this
+    public List<TrailMapping> getTrailsMappings(int skip, int limit,
+                                                final String realm,
+                                                boolean isDraftTrailVisible) {
         final Document realmFilter = getFilter(realm);
-        return toTrailsMappingList(collection.find(realmFilter)
+        return toTrailsMappingList(collection.find(realmFilter
+                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
                 .projection(new Document(Trail.ID, ONE)
                         .append(Trail.CODE, ONE)
                         .append(Trail.NAME, ONE))
@@ -125,25 +137,33 @@ public class TrailDAO {
                 new Document(Trail.ID, existingOrNewObjectId),
                 trailDocument, UPSERT_OPTIONS);
         if (updateResult == null) {
-            LOGGER.error("upsert updateResult is null for Trail: {}, existingOrNewObjectId: {}", trailRequest, existingOrNewObjectId);
+            LOGGER.error("upsert updateResult is null for Trail: {}, existingOrNewObjectId: {}",
+                    trailRequest, existingOrNewObjectId);
             throw new IllegalStateException();
         }
         return Collections.singletonList(trailMapper.mapToObject(updateResult));
     }
 
-    public List<TrailPreview> getTrailPreviews(final int skip, final int limit, final String realm) {
-
+    public List<TrailPreview> getTrailPreviews(final int skip, final int limit, final String realm, boolean isDraftTrailVisible) {
+        final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
         final Document filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
 
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
 
-        return toTrailsPreviewList(collection.aggregate(Arrays.asList(match(filter), project, aLimit, aSkip)));
+        return toTrailsPreviewList(
+                collection.aggregate(
+                        Arrays.asList(
+                                match(filter),
+                                match(statusFilter),
+                                project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> findPreviewsByCode(final String code, final int skip,
-                                                 final int limit, final String realm) {
+                                                 final int limit, final String realm,
+                                                 final boolean isDraftTrailVisible) {
+        final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
         final Document codeFilter = getLikeEndFilter(Trail.CODE, code);
         final Document realmFilter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
         final Bson project = getTrailPreviewProjection();
@@ -151,7 +171,9 @@ public class TrailDAO {
         final Bson aSkip = Aggregates.skip(skip);
         return toTrailsPreviewList(collection.aggregate(
                 Arrays.asList(match(codeFilter),
-                        match(realmFilter), project, aLimit, aSkip)));
+                        match(statusFilter),
+                        match(realmFilter),
+                        project, aLimit, aSkip)));
     }
 
     public List<TrailPreview> trailPreviewById(final String id) {
@@ -185,10 +207,13 @@ public class TrailDAO {
 
     public List<Trail> findTrailWithinGeoSquare(
             final CoordinatesRectangle geoSquare,
-            final int skip, final int limit, final TrailSimplifierLevel level) {
+            final int skip,
+            final int limit,
+            final TrailSimplifierLevel level,
+            final boolean isDraftTrailVisible) {
         final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
         final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
-        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit, resolvedTopLeftVertex, resolvedBottomRightVertex);
+        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit, resolvedTopLeftVertex, resolvedBottomRightVertex, isDraftTrailVisible);
         LOGGER.trace("findTrailWithinGeoSquare geoSquare: {}, skip: {}, limit: {}, level: {}, resolvedTopLeftVertex: {}, resolvedBottomRightVertex: {}",
                 geoSquare, skip, limit, level, resolvedTopLeftVertex, resolvedBottomRightVertex);
         return toTrailsList(foundTrails, level);
@@ -200,7 +225,7 @@ public class TrailDAO {
         final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
         final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
         final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit,
-                resolvedTopLeftVertex, resolvedBottomRightVertex)
+                resolvedTopLeftVertex, resolvedBottomRightVertex, true)
                 .projection(new Document(Trail.ID, ONE).append(Trail.CODE, ONE).append(Trail.NAME, ONE));
         return toTrailMappingList(foundTrails);
     }
@@ -266,8 +291,9 @@ public class TrailDAO {
         return collection.countDocuments();
     }
 
-    public long countTrailByRealm(final String realm) {
-        return collection.countDocuments(getRealmFilter(realm));
+    public long countTrailByRealm(final String realm, boolean isDraftTrailVisible) {
+        return collection.countDocuments(getRealmFilter(realm)
+                .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
     private List<TrailPreview> toTrailsPreviewList(final Iterable<Document> documents) {
@@ -304,22 +330,30 @@ public class TrailDAO {
     }
 
     @NotNull
-    private FindIterable<Document> foundTrailsWithinSquare(CoordinatesRectangle geoSquare, int skip, int limit, List<Double> resolvedTopLeftVertex, List<Double> resolvedBottomRightVertex) {
+    private FindIterable<Document> foundTrailsWithinSquare(final CoordinatesRectangle geoSquare,
+                                                           final int skip,
+                                                           final int limit,
+                                                           final List<Double> resolvedTopLeftVertex,
+                                                           final List<Double> resolvedBottomRightVertex,
+                                                           final boolean isDraftTrailVisible) {
+        final List<String> inStatusFilter = statusFilterHelper.getInFilter(isDraftTrailVisible);
         return collection.find(
-                new Document(Trail.GEO_LINE,
-                        new Document($_GEO_INTERSECT,
-                                new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
-                                        .append(GEO_COORDINATES,
-                                                Collections.singletonList(
-                                                        Arrays.asList(
-                                                                geoSquare.getBottomLeft().getAsList(),
-                                                                resolvedTopLeftVertex,
-                                                                geoSquare.getTopRight().getAsList(),
-                                                                resolvedBottomRightVertex,
-                                                                geoSquare.getBottomLeft().getAsList()
+                new Document(Trail.STATUS,
+                        new Document($_IN, inStatusFilter))
+                        .append(Trail.GEO_LINE,
+                                new Document($_GEO_INTERSECT,
+                                        new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)
+                                                .append(GEO_COORDINATES,
+                                                        Collections.singletonList(
+                                                                Arrays.asList(
+                                                                        geoSquare.getBottomLeft().getAsList(),
+                                                                        resolvedTopLeftVertex,
+                                                                        geoSquare.getTopRight().getAsList(),
+                                                                        resolvedBottomRightVertex,
+                                                                        geoSquare.getBottomLeft().getAsList()
+                                                                )
                                                         )
-                                                )
-                                        ))))).skip(skip).limit(limit);
+                                                ))))).skip(skip).limit(limit);
     }
 
     private Bson getTrailPreviewProjection() {
@@ -338,6 +372,12 @@ public class TrailDAO {
                         new Document("$arrayElemAt",
                                 Arrays.asList(DOLLAR + Trail.LOCATIONS, -1)))
         ));
+    }
+
+    private Bson getBsonAggregateStatusInFilter(boolean isDraftTrailVisible) {
+        final List<String> inStatusFilter =
+                statusFilterHelper.getInFilter(isDraftTrailVisible);
+        return in(Trail.STATUS, inStatusFilter);
     }
 
     @NotNull
@@ -380,8 +420,9 @@ public class TrailDAO {
                 new Document(Trail.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
     }
 
-    public long countTotalByCode(final String code) {
-        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code));
+    public long countTotalByCode(final String code, boolean isDraftTrailVisible) {
+        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code)
+                .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
 

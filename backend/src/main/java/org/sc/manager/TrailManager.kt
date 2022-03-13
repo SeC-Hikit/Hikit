@@ -42,7 +42,8 @@ class TrailManager @Autowired constructor(
             count: Int,
             trailSimplifierLevel: TrailSimplifierLevel,
             realm: String,
-    ): List<TrailDto> = trailDAO.getTrails(page, count, trailSimplifierLevel, realm)
+            isDraftTrailVisible: Boolean,
+    ): List<TrailDto> = trailDAO.getTrails(page, count, trailSimplifierLevel, realm, isDraftTrailVisible)
             .map { trailMapper.map(it) }
 
     fun getById(id: String, level: TrailSimplifierLevel): List<TrailDto> =
@@ -93,7 +94,7 @@ class TrailManager @Autowired constructor(
     fun linkTrailToPlace(targetTrailId: String, placeRef: PlaceRefDto): List<TrailDto> {
 
         val isPlaceAlreadyInTrail = trailDAO.getTrailPreviewById(targetTrailId).first().locations.map { it.placeId }.contains(placeRef.placeId)
-        if(!isPlaceAlreadyInTrail){
+        if (!isPlaceAlreadyInTrail) {
             trailDAO.linkGivenTrailToPlace(targetTrailId, placeRefMapper.map(placeRef))
         }
         val linkedPlace = placeDAO.linkTrailToPlace(placeRef.placeId, targetTrailId, placeRef.coordinates)
@@ -108,8 +109,8 @@ class TrailManager @Autowired constructor(
         trailDAO.linkAllExistingTrailConnectionWithNewTrailId(place.id, targetTrailId);
     }
 
-    fun getByMatchingStartEndPoint(startPos: TrailCoordinatesDto, finalPos: TrailCoordinatesDto) : List<TrailMappingDto> =
-        trailDAO.getByStartEndPoint(startPos.latitude, startPos.longitude, finalPos.latitude, finalPos.longitude).map { trailMappingMapper.map(it) };
+    fun getByMatchingStartEndPoint(startPos: TrailCoordinatesDto, finalPos: TrailCoordinatesDto): List<TrailMappingDto> =
+            trailDAO.getByStartEndPoint(startPos.latitude, startPos.longitude, finalPos.latitude, finalPos.longitude).map { trailMappingMapper.map(it) };
 
 
     private fun ensureCreatingNewCrosswayReferences(place: Place,
@@ -162,9 +163,13 @@ class TrailManager @Autowired constructor(
         trailDAO.unlinkPlaceFromAllTrails(placeId)
     }
 
-    fun findTrailsWithinRectangle(rectangleDto: RectangleDto, level: TrailSimplifierLevel): List<TrailDto> {
+    fun findTrailsWithinRectangle(
+            rectangleDto: RectangleDto,
+            level: TrailSimplifierLevel,
+            isDraftTrailVisible: Boolean
+    ): List<TrailDto> {
         val trails = trailDAO.findTrailWithinGeoSquare(
-                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level)
+                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level, isDraftTrailVisible)
         return trails.map { trailMapper.map(it) }
     }
 
@@ -177,7 +182,7 @@ class TrailManager @Autowired constructor(
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
         val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates)
         val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
-                TrailSimplifierLevel.FULL)
+                TrailSimplifierLevel.FULL, true)
 
         return foundTrailsWithinGeoSquare.filter {
             GeoCalculator.areSegmentsIntersecting(

@@ -82,7 +82,7 @@ public class GeoTrailRestIntegrationTest {
         createAndAssertTrail();
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.15928920022217, 44.13998529867459),
-                new Coordinates2D(11.156454500448556, 44.138395199458394)), LEVEL);
+                new Coordinates2D(11.156454500448556, 44.138395199458394)), LEVEL, true);
 
         assertThat(trailResponse.getContent()).asList().isNotEmpty();
         assertThat(trailResponse.getContent().get(0).getId()).isEqualTo(importedId);
@@ -93,7 +93,7 @@ public class GeoTrailRestIntegrationTest {
         createAndAssertTrail();
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.074260, 44.513351),
-                new Coordinates2D(11.184882, 44.589685)), LEVEL);
+                new Coordinates2D(11.184882, 44.589685)), LEVEL, true);
 
         assertThat(trailResponse.getContent()).asList().isEmpty();
     }
@@ -103,7 +103,7 @@ public class GeoTrailRestIntegrationTest {
         createAndAssertTrail();
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.154664, 44.138261),
-                new Coordinates2D(11.160095, 44.139004)), LEVEL);
+                new Coordinates2D(11.160095, 44.139004)), LEVEL, true);
 
         assertThat(trailResponse.getContent()).asList().isNotEmpty();
         assertThat(trailResponse.getContent().get(0).getId()).isEqualTo(importedId);
@@ -116,7 +116,7 @@ public class GeoTrailRestIntegrationTest {
 
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(11.12780418, 44.13472887),
-                new Coordinates2D(11.14989416, 44.12174993)), LEVEL);
+                new Coordinates2D(11.14989416, 44.12174993)), LEVEL, true);
 
         assertThat(trailResponse.getContent()).asList().isNotEmpty();
         assertThat(trailResponse.getContent()).asList().size().isEqualTo(2);
@@ -131,7 +131,7 @@ public class GeoTrailRestIntegrationTest {
 
         TrailResponse trailResponse = geoTrailController.geoLocateTrail(new RectangleDto(
                 new Coordinates2D(10.75034053, 44.28359988),
-                new Coordinates2D(12.04720300, 44.58065428)), LEVEL);
+                new Coordinates2D(12.04720300, 44.58065428)), LEVEL, true);
 
         assertThat(trailResponse.getContent()).asList().isEmpty();
         assertThat(trailResponse.getStatus()).isEqualTo(Status.ERROR);
