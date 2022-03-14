@@ -66,7 +66,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getSolved(final int skip,
                                                      final int limit) {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION,
-                new Document(EXISTS_PARAM, true))).skip(skip).limit(limit));
+                new Document($NOT_EQUAL, ""))).skip(skip).limit(limit));
     }
 
     public List<AccessibilityNotification> getByTrailId(final String trailId) {
