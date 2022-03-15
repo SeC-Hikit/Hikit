@@ -22,7 +22,6 @@ class AccessibilityReportValidator @Autowired constructor(
         const val emailNotValid = "Field 'mail' is not valid"
         const val noParamSpecifiedError = "Empty field '%s'"
         const val noTrailError = "Trail with id '%s', does not exist"
-        const val dateInFutureError = "Date field with value '%s' is in the future"
         val emailRegex: Pattern = compile("^[A-Za-z](.*)([@])(.+)(\\.)(.+)")
     }
 
@@ -52,9 +51,6 @@ class AccessibilityReportValidator @Autowired constructor(
         if (isEmpty(request.description)) {
             errors.add(String.format(noParamSpecifiedError, "Description"))
         }
-
-        if (request.reportDate == null || request.reportDate.after(Date()))
-            errors.add(String.format(dateInFutureError, request.reportDate.toString()))
 
         return errors
     }

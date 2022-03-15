@@ -97,7 +97,8 @@ class AccessibilityReportService @Autowired constructor(
 
     private fun getNotificationFromReport(reportDto: AccessibilityReportDto): AccessibilityNotificationDto {
         val now = Date()
-        return AccessibilityNotificationDto(null, reportDto.description, reportDto.trailId, now, now, true, "", reportDto.coordinates, null)
+        return AccessibilityNotificationDto(null, reportDto.description, reportDto.trailId, now, now,
+                true, "", reportDto.coordinates, null)
     }
 
 }

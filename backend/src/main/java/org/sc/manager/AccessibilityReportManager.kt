@@ -35,6 +35,7 @@ class AccessibilityReportManager @Autowired constructor(
 
     fun create(accessibilityNotificationCreation: AccessibilityReportDto, instance: String, realm: String): List<AccessibilityReportDto> {
         val mapped = accessibilityMapper.map(accessibilityNotificationCreation)
+        mapped.reportDate = Date()
         mapped.recordDetails = RecordDetails(
                 Date(),
                 accessibilityNotificationCreation.email,
