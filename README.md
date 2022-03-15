@@ -6,7 +6,7 @@ Currently, the library supports accessibility-notifications, user reports, maint
 
 ## Build
 ### Prerequisites
-- JDK 8
+- JDK 11
 - Maven 3
 
 ### Development build
