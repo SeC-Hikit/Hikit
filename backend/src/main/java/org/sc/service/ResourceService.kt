@@ -23,7 +23,7 @@ class ResourceService @Autowired constructor(
 
     fun execute() {
         if (!isJobRunning.get()) {
-            logger.info("Resource generation Job is not running. Executing...")
+            logger.trace("Resource generation Job is not running. Executing...")
             isJobRunning.set(true)
             generateResources()
             logger.trace("Resource generation Job completed.")
@@ -45,7 +45,7 @@ class ResourceService @Autowired constructor(
             logger.trace("Trail '${it.targetingTrail}' seems be removed while waiting for jobs to complete. Skipping...")
 
         }
-        logger.info("Resolved n.${distinctEntries.size} entries for processing")
+        logger.trace("Resolved n.${distinctEntries.size} entries for processing")
         resourceManager.deleteEntries(entries)
     }
 

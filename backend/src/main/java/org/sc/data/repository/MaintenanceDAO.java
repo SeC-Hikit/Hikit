@@ -13,6 +13,7 @@ import org.sc.data.model.Maintenance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -38,26 +39,29 @@ public class MaintenanceDAO {
     }
 
     public List<Maintenance> getFuture(final int from,
-                                       final int to) {
+                                       final int to,
+                                       final LocalDate date) {
         return toMaintenanceList(collection.find(
-                new Document(Maintenance.DATE, new Document("$gt", new Date())))
+                        new Document(Maintenance.DATE, new Document("$gt", date)))
                 .skip(from).limit(to));
     }
 
-    public List<Maintenance> getPast(final int from,
-                                     final int to) {
+    public List<Maintenance> getPastDate(final int from,
+                                         final int to,
+                                         final LocalDate date) {
         return toMaintenanceList(collection.find(
-                new Document(Maintenance.DATE, new Document("$lt", new Date())))
+                        new Document(Maintenance.DATE, new Document("$lt", date)))
                 .sort(new Document(Maintenance.DATE, -1))
                 .skip(from).limit(to));
     }
 
     public List<Maintenance> getPastForTrailCode(final String trailId,
                                                  final int from,
-                                                 final int to) {
+                                                 final int to,
+                                                 final LocalDate date) {
         return toMaintenanceList(collection.find(
-                new Document(Maintenance.DATE, new Document("$lt", new Date()))
-                        .append(Maintenance.TRAIL_ID, trailId))
+                        new Document(Maintenance.DATE, new Document("$lt", date))
+                                .append(Maintenance.TRAIL_ID, trailId))
                 .sort(new Document(Maintenance.DATE, -1))
                 .skip(from).limit(to));
     }

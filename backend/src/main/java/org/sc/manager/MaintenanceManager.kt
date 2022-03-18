@@ -9,6 +9,7 @@ import org.sc.manager.regeneration.RegenerationActionType
 import org.sc.manager.regeneration.RegenerationEntryType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.util.*
 
 @Component
@@ -20,8 +21,8 @@ class MaintenanceManager @Autowired constructor(
 ) {
 
     fun getFuture(page: Int, count: Int): List<MaintenanceDto> =
-            maintenanceDao.getFuture(page, count).map { maintenanceMapper.map(it) }
-
+            maintenanceDao.getFuture(page, count, getTomorrowDate().toLocalDate())
+                    .map { maintenanceMapper.map(it) }
 
     fun getById(id: String): List<MaintenanceDto> {
         return maintenanceDao.getById(id).map { maintenanceMapper.map(it) }
@@ -32,10 +33,13 @@ class MaintenanceManager @Autowired constructor(
     }
 
     fun getPast(page: Int, count: Int): List<MaintenanceDto> =
-            maintenanceDao.getPast(page, count).map { maintenanceMapper.map(it) }
+            maintenanceDao.getPastDate(page, count, getTomorrowDate().toLocalDate())
+                    .map { maintenanceMapper.map(it) }
 
     fun getPastMaintenanceForTrailId(trailCode: String, page: Int, count: Int): List<MaintenanceDto> =
-            maintenanceDao.getPastForTrailCode(trailCode, page, count).map { maintenanceMapper.map(it) }
+            maintenanceDao.getPastForTrailCode(trailCode, page, count,
+                    getTomorrowDate().toLocalDate())
+                    .map { maintenanceMapper.map(it) }
 
     fun create(request: MaintenanceDto): List<MaintenanceDto> {
         val authHelper = authFacade.authHelper
@@ -69,10 +73,12 @@ class MaintenanceManager @Autowired constructor(
         return delete.map { maintenanceMapper.map(it) }
     }
 
-    fun countMaintenance(): Long = maintenanceDao.countMaintenance()
 
+    fun countMaintenance(): Long = maintenanceDao.countMaintenance()
     fun countPastMaintenance(): Long = maintenanceDao.countPastMaintenance()
     fun countFutureMaintenance(): Long = maintenanceDao.countFutureMaintenance()
+
+    private fun getTomorrowDate() = LocalDate.now().plusDays(1).atStartOfDay()
 
 
 }

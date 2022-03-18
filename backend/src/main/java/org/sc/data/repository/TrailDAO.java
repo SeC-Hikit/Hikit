@@ -292,7 +292,8 @@ public class TrailDAO {
     }
 
     public long countTrailByRealm(final String realm, boolean isDraftTrailVisible) {
-        return collection.countDocuments(getRealmFilter(realm)
+        return collection.countDocuments(
+                realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm)
                 .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
