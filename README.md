@@ -1,6 +1,6 @@
 # S&C - Sentieri e Cartografia
-S&C represents a community effort into create a service that manages high level geo and meta data related to trails.
-It is intended to provide trail support teams (like the [CAI](https://www.cai.it/) ones) with a rich API to update and maintain a trail library, while making this data available to users.
+S&C is a collaborative service that manages high level geo and meta data related to trails.
+It is intended to provide trail support teams (like the [CAI](https://www.cai.it/) ones) with a rich set of features to update and maintain a trail library, while making this data available to users.
 
 Currently, the library supports accessibility-notifications, user reports, maintenance planning, generic/specific POIs and other features all linked with trails.
 
