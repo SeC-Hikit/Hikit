@@ -14,6 +14,7 @@ import java.util.Set;
 
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(TrailRawController.PREFIX)
@@ -37,7 +38,8 @@ public class TrailRawController {
     @GetMapping
     public TrailRawResponse get(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm
     ) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailRawResponseHelper

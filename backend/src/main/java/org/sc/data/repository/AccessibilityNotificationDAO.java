@@ -11,8 +11,6 @@ import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
 import org.sc.data.model.AccessibilityNotification;
-import org.sc.data.model.Maintenance;
-import org.sc.data.model.Place;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +22,6 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoConstants.$NOT_EQUAL;
-import static org.sc.data.repository.MongoConstants.EXISTS_PARAM;
 
 @Repository
 public class AccessibilityNotificationDAO {
@@ -42,7 +39,7 @@ public class AccessibilityNotificationDAO {
     }
 
     public List<AccessibilityNotification> getUnresolved(final int skip,
-                                                         final int limit) {
+                                                         final int limit, String realm) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityNotification.RESOLUTION, ""))
                 .skip(skip)
@@ -56,7 +53,7 @@ public class AccessibilityNotificationDAO {
                 .skip(skip).limit(limit));
     }
 
-    public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit) {
+    public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit, String realm) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityNotification.TRAIL_ID, id)
                         .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, null)))
@@ -64,7 +61,7 @@ public class AccessibilityNotificationDAO {
     }
 
     public List<AccessibilityNotification> getSolved(final int skip,
-                                                     final int limit) {
+                                                     final int limit, String realm) {
         return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION,
                 new Document($NOT_EQUAL, ""))).skip(skip).limit(limit));
     }

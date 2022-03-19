@@ -15,6 +15,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(PlaceController.PREFIX)
@@ -37,10 +38,11 @@ public class PlaceController {
     @Operation(summary = "Retrieve places")
     @GetMapping
     public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+                             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                             @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return constructResponse(emptySet(),
-                placeManager.getPaginated(skip, limit), placeManager.count(), skip, limit);
+                placeManager.getPaginated(skip, limit, realm), placeManager.countByRealm(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve place by ID")
@@ -56,11 +58,12 @@ public class PlaceController {
     @GetMapping("/name/{name}")
     public PlaceResponse getLikeNameOrTags(@PathVariable String name,
                                            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+                                           @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                                           @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return constructResponse(emptySet(),
-                placeManager.getLikeNameOrTags(name, skip, limit),
-                placeManager.count(), skip, limit);
+                placeManager.getLikeNameOrTags(name, skip, limit, realm),
+                placeManager.countByNameOrTags(name, realm), skip, limit);
     }
 
     @Operation(summary = "Geo-locate places based on their location and a given radius range, specified in meters")

@@ -32,7 +32,8 @@ public class POIController {
     @Autowired
     public POIController(final PoiManager poiManager,
                          final GeneralValidator generalValidator,
-                         final PoiResponseHelper poiResponseHelper,final ControllerPagination controllerPagination) {
+                         final PoiResponseHelper poiResponseHelper,
+                         final ControllerPagination controllerPagination) {
         this.poiManager = poiManager;
         this.generalValidator = generalValidator;
         this.poiResponseHelper = poiResponseHelper;

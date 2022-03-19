@@ -20,18 +20,18 @@ class AccessibilityNotificationManager @Autowired constructor(
     fun byId(id: String): List<AccessibilityNotificationDto> =
         accessibilityDAO.getById(id).map { accessibilityMapper.map(it) }
 
-    fun getSolved(skip: Int, limit: Int): List<AccessibilityNotificationDto> {
-        val solved = accessibilityDAO.getSolved(skip, limit)
+    fun getSolved(skip: Int, limit: Int, realm: String): List<AccessibilityNotificationDto> {
+        val solved = accessibilityDAO.getSolved(skip, limit, realm)
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getResolvedByTrailId(trailId: String, skip: Int, limit: Int): List<AccessibilityNotificationDto> {
-        val solved = accessibilityDAO.getResolvedByTrailId(trailId, skip, limit)
+    fun getResolvedByTrailId(trailId: String, skip: Int, limit: Int, realm: String): List<AccessibilityNotificationDto> {
+        val solved = accessibilityDAO.getResolvedByTrailId(trailId, skip, limit, realm)
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun getUnresolved(skip: Int, limit: Int): List<AccessibilityNotificationDto> {
-        val unresolved = accessibilityDAO.getUnresolved(skip, limit)
+    fun getUnresolved(skip: Int, limit: Int, realm: String): List<AccessibilityNotificationDto> {
+        val unresolved = accessibilityDAO.getUnresolved(skip, limit, realm)
         return unresolved.map { accessibilityMapper.map(it) }
     }
 
@@ -59,10 +59,10 @@ class AccessibilityNotificationManager @Autowired constructor(
             .map { accessibilityMapper.map(it) }
     }
 
-    fun count(): Long = accessibilityDAO.countAccessibility()
+    fun count(realm: String): Long = accessibilityDAO.countAccessibility()
     fun countSolved(): Long = accessibilityDAO.countSolved()
-    fun countNotSolved(): Long = accessibilityDAO.countNotSolved()
-    fun countSolvedForTrailId(trailId: String): Long = accessibilityDAO.countSolvedForTrailId(trailId)
+    fun countNotSolved(realm: String): Long = accessibilityDAO.countNotSolved()
+    fun countSolvedForTrailId(id: String, trailId: String): Long = accessibilityDAO.countSolvedForTrailId(trailId)
     fun countNotSolvedForTrailId(trailId: String): Long = accessibilityDAO.countNotSolvedForTrailId(trailId)
 
 }

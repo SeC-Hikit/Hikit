@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -117,22 +118,22 @@ public class PlaceIntegrationTest extends ImportTrailIT {
 
     @Test
     public void shouldRetrieveItBackByProvidingAHint() {
-        PlaceResponse placeResponse = placeController.getLikeNameOrTags("A mag", 0, 10);
+        PlaceResponse placeResponse = placeController.getLikeNameOrTags("A mag", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(false);
         PlaceDto returnedPlaceDto = placeResponse.getContent().get(0);
         assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
 
-        placeResponse = placeController.getLikeNameOrTags("a", 0, 10);
+        placeResponse = placeController.getLikeNameOrTags("a", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(false);
         returnedPlaceDto = placeResponse.getContent().get(0);
         assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
 
-        placeResponse = placeController.getLikeNameOrTags("A", 0, 10);
+        placeResponse = placeController.getLikeNameOrTags("A", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(false);
         returnedPlaceDto = placeResponse.getContent().get(0);
         assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
 
-        placeResponse = placeController.getLikeNameOrTags("B", 0, 10);
+        placeResponse = placeController.getLikeNameOrTags("B", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(true);
     }
 

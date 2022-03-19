@@ -24,10 +24,10 @@ class PlaceManager @Autowired constructor(
         private val authFacade: AuthFacade
 ) {
 
-    fun getPaginated(skip: Int, limit: Int): List<PlaceDto> =
+    fun getPaginated(skip: Int, limit: Int, realm: String): List<PlaceDto> =
             placeDao.get(skip, limit).map { placeMapper.map(it) }
 
-    fun getLikeNameOrTags(name: String, skip: Int, limit: Int): List<PlaceDto> =
+    fun getLikeNameOrTags(name: String, skip: Int, limit: Int, realm: String): List<PlaceDto> =
             placeDao.getLikeName(name, skip, limit).map { placeMapper.map(it) }
 
     fun getNearPoint(longitude: Double, latitude: Double, distance: Double,
@@ -107,4 +107,8 @@ class PlaceManager @Autowired constructor(
     }
 
     fun count(): Long = placeDao.count()
+    fun countByRealm(realm: String): Long = placeDao.count()
+    fun countByNameOrTags(name: String, realm: String): Long {
+        TODO("Not yet implemented")
+    }
 }

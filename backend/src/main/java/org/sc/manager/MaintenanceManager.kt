@@ -20,7 +20,7 @@ class MaintenanceManager @Autowired constructor(
         private val authFacade: AuthFacade
 ) {
 
-    fun getFuture(page: Int, count: Int): List<MaintenanceDto> =
+    fun getFuture(page: Int, count: Int, realm: String): List<MaintenanceDto> =
             maintenanceDao.getFuture(page, count, getTomorrowDate().toLocalDate())
                     .map { maintenanceMapper.map(it) }
 
@@ -32,7 +32,7 @@ class MaintenanceManager @Autowired constructor(
         return maintenanceDao.getByTrailId(id).map { maintenanceMapper.map(it) }
     }
 
-    fun getPast(page: Int, count: Int): List<MaintenanceDto> =
+    fun getPast(page: Int, count: Int, realm: String): List<MaintenanceDto> =
             maintenanceDao.getPastDate(page, count, getTomorrowDate().toLocalDate())
                     .map { maintenanceMapper.map(it) }
 
@@ -74,9 +74,9 @@ class MaintenanceManager @Autowired constructor(
     }
 
 
-    fun countMaintenance(): Long = maintenanceDao.countMaintenance()
-    fun countPastMaintenance(): Long = maintenanceDao.countPastMaintenance()
-    fun countFutureMaintenance(): Long = maintenanceDao.countFutureMaintenance()
+    fun countMaintenance(realm: String): Long = maintenanceDao.countMaintenance()
+    fun countPastMaintenance(realm: String): Long = maintenanceDao.countPastMaintenance()
+    fun countFutureMaintenance(realm: String): Long = maintenanceDao.countFutureMaintenance()
 
     private fun getTomorrowDate() = LocalDate.now().plusDays(1).atStartOfDay()
 
