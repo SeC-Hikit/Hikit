@@ -5,6 +5,7 @@ import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.sc.common.rest.CoordinatesDto;
@@ -24,12 +25,13 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.repository.MongoConstants.*;
+import static org.sc.data.repository.MongoUtils.*;
 
 @Repository
 public class PlaceDAO {
     private static final Logger LOGGER = getLogger(PlaceDAO.class);
     public static final int ONE = 1;
+    public static final String DB_REALM_STRUCTURE_SELECTOR = Place.RECORD_DETAILS + DOT + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
     private final PlaceMapper placeMapper;
@@ -45,20 +47,28 @@ public class PlaceDAO {
     }
 
     @NotNull
-    public List<Place> get(int page, int count) {
-        return toPlaceList(collection.find(new Document()).skip(page).limit(count));
+    public List<Place> get(int page, int count, String realm) {
+        return toPlaceList(collection.find(
+                        MongoUtils.getRealmConditionalFilter(realm,
+                                DB_REALM_STRUCTURE_SELECTOR))
+                .skip(page).limit(count));
     }
 
     public List<Place> getById(final String id) {
         return toPlaceList(collection.find(new Document(Place.ID, id)));
     }
 
-    public List<Place> getLikeName(final String name, int page, int count) {
-        Document filter = new Document(MongoConstants.OR, Arrays.asList(
-                new Document(Place.NAME, getStartNameMatchPattern(name)),
-                new Document(Place.TAGS, getStartNameMatchPattern(name))
-        ));
+    public List<Place> getLikeName(final String name, int page, int count, String realm) {
+        final Bson filter =
+                getLikeNameFilter(name, realm);
         return toPlaceList(collection.find(filter).skip(page).limit(count));
+    }
+
+    private Bson getLikeNameFilter(String name, String realm) {
+        return MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                .append(MongoUtils.OR, Arrays.asList(
+                        new Document(Place.NAME, getStartNameMatchPattern(name)),
+                        new Document(Place.TAGS, getStartNameMatchPattern(name))));
     }
 
     @NotNull
@@ -126,7 +136,6 @@ public class PlaceDAO {
             LOGGER.error("update null id for Place: {}", place);
             throw new IllegalStateException();
         }
-        final Document doc = placeMapper.mapToDocument(place);
 
         collection.updateOne(
                 new Document(Place.ID, place.getId()),
@@ -183,7 +192,18 @@ public class PlaceDAO {
         return collection.countDocuments();
     }
 
+    public long count(String realm) {
+        return collection.countDocuments(
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+        );
+    }
+
+    public long count(String name, String realm) {
+        return collection.countDocuments(getLikeNameFilter(name, realm));
+    }
+
     private List<Place> toPlaceList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false).map(placeMapper::mapToObject).collect(toList());
     }
+
 }

@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(TrailController.PREFIX)
@@ -55,7 +56,7 @@ public class TrailController {
     public TrailResponse get(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
             @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-            @RequestParam(required = false, defaultValue = "*") String realm,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
             @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level,
             @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
         controllerPagination.checkSkipLim(skip, limit);

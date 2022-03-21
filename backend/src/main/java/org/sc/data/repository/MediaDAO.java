@@ -9,15 +9,11 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.sc.common.rest.MediaDto;
 import org.sc.configuration.DataSource;
-import org.sc.data.entity.mapper.Mapper;
-import org.sc.data.entity.mapper.TrailPreviewMapper;
 import org.sc.data.model.FileDetails;
 import org.sc.data.model.Media;
 import org.sc.data.entity.mapper.MediaMapper;
 import org.sc.data.model.Trail;
-import org.sc.data.model.TrailPreview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -32,13 +28,13 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.model.Media.IS_COMPRESSED;
 import static org.sc.data.model.Media.RESOLUTIONS;
-import static org.sc.data.repository.MongoConstants.*;
+import static org.sc.data.repository.MongoUtils.*;
 
 @Repository
 public class MediaDAO {
 
     private static final Logger LOGGER = getLogger(MediaDAO.class);
-    public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
+    public static final String REALM_STRUCT = Media.RECORD_DETAILS + DOT + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
     private final MediaMapper mapper;
@@ -100,7 +96,7 @@ public class MediaDAO {
     }
 
     public List<Media> getMedia(final int skip, final int limit, final String realm) {
-        final Document filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
+        final Document filter = MongoUtils.getRealmConditionalFilter(realm, REALM_STRUCT);
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
         return toMediaList(collection.aggregate(Arrays.asList(match(filter), aLimit, aSkip)));
@@ -112,17 +108,10 @@ public class MediaDAO {
     }
 
     public long countMedia(final String realm) {
-        final Document filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
+        final Document filter = MongoUtils.getRealmConditionalFilter(realm, REALM_STRUCT);
         return collection.countDocuments(filter);
     }
 
-    private Document getRealmFilter(final String realm) {
-        return new Document(REALM_STRUCT, realm);
-    }
-
-    private Document getNoFilter() {
-        return new Document(REALM_STRUCT, new Document($NOT_EQUAL, ""));
-    }
 
 
 

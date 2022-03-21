@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,8 +34,6 @@ public class MaintenanceRestIntegrationTest {
     private static final String EXPECTED_NAME = "ANY";
     private static final String EXPECTED_NAME_2 = "ANY_2";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
-    public static final String EXPECTED_TRAIL_CODE = "125BO";
-    public static final String EXPECTED_TRAIL_CODE_FUTURE = "126BO";
 
     private static Date EXPECTED_DATE_IN_FUTURE() {
         Calendar c = Calendar.getInstance();
@@ -88,27 +87,27 @@ public class MaintenanceRestIntegrationTest {
 
     @Test
     public void getPast_shouldFindOne() {
-        MaintenanceResponse response = maintenanceController.getPastMaintenance(0, 2);
+        MaintenanceResponse response = maintenanceController.getPastMaintenance(0, 2, NO_FILTERING_TOKEN);
         assertThat(response.getContent().size()).isEqualTo(1);
         assertThat(response.getContent().get(0).getTrailId()).isEqualTo(importedTrailId);
     }
 
     @Test
     public void getFuture_shouldFindOne() {
-        MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2);
+        MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2, NO_FILTERING_TOKEN);
         assertThat(response.getContent().size()).isEqualTo(1);
         assertThat(response.getContent().get(0).getTrailId()).isEqualTo(importedTrailId);
     }
 
     @Test
     public void delete() {
-        MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2);
+        MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2, NO_FILTERING_TOKEN);
         String id = response.getContent().get(0).getId();
 
         MaintenanceResponse maintenanceResponse = adminMaintenanceController.deleteMaintenance(id);
         assertThat(maintenanceResponse.getContent().get(0).getId()).isEqualTo(id);
 
-        MaintenanceResponse responseAfterSecondCall = maintenanceController.getFutureMaintenance(0, 2);
+        MaintenanceResponse responseAfterSecondCall = maintenanceController.getFutureMaintenance(0, 2, NO_FILTERING_TOKEN);
         Assert.assertTrue(responseAfterSecondCall.getContent().isEmpty());
     }
 

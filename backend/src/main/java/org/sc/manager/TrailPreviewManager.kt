@@ -53,7 +53,7 @@ class TrailPreviewManager @Autowired constructor(
     fun countPreview(): Long = trailDAO.countTrail()
     fun countPreviewByRealm(realm: String, isDraftTrailVisible: Boolean): Long =
             trailDAO.countTrailByRealm(realm, isDraftTrailVisible)
-    fun countFindingByCode(code: String, isDraftTrailVisible: Boolean): Long =
-            trailDAO.countTotalByCode(code, isDraftTrailVisible)
+    fun countFindingByCode(realm: String, code: String, isDraftTrailVisible: Boolean): Long =
+            trailDAO.countTotalByCode(realm, code, isDraftTrailVisible)
     fun countRaw(): Long = trailRawDAO.count()
 }

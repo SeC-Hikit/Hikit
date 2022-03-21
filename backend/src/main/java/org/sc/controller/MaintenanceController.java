@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(MaintenanceController.PREFIX)
@@ -43,22 +44,24 @@ public class MaintenanceController {
     @GetMapping("/future")
     public MaintenanceResponse getFutureMaintenance(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return maintenanceResponseHelper
-                .constructResponse(emptySet(), maintenanceManager.getFuture(skip, limit),
-                        maintenanceManager.countFutureMaintenance(), skip, limit);
+                .constructResponse(emptySet(), maintenanceManager.getFuture(skip, limit, realm),
+                        maintenanceManager.countFutureMaintenance(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve all past maintenance")
     @GetMapping("/past")
     public MaintenanceResponse getPastMaintenance(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return maintenanceResponseHelper
-                .constructResponse(emptySet(), maintenanceManager.getPast(skip, limit),
-                        maintenanceManager.countFutureMaintenance(), skip, limit);
+                .constructResponse(emptySet(), maintenanceManager.getPast(skip, limit, realm),
+                        maintenanceManager.countFutureMaintenance(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve past maintenance by trail ID")
@@ -75,22 +78,25 @@ public class MaintenanceController {
 
     @Operation(summary = "Count all past maintenance")
     @GetMapping("/past/count")
-    public CountResponse getCountPast() {
-        final long count = maintenanceManager.countPastMaintenance();
+    public CountResponse getCountPast(
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+        final long count = maintenanceManager.countPastMaintenance(realm);
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
     @Operation(summary = "Count all future maintenance")
     @GetMapping("/future/count")
-    public CountResponse getCountFuture() {
-        final long count = maintenanceManager.countFutureMaintenance();
+    public CountResponse getCountFuture(
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+        final long count = maintenanceManager.countFutureMaintenance(realm);
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 
     @Operation(summary = "Count all maintenance")
     @GetMapping("/count")
-    public CountResponse getCount() {
-        final long count = maintenanceManager.countMaintenance();
+    public CountResponse getCount(
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+        final long count = maintenanceManager.countMaintenance(realm);
         return new CountResponse(Status.OK, Collections.emptySet(), new CountDto(count));
     }
 }

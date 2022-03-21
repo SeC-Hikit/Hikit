@@ -1,6 +1,5 @@
 package org.sc.integration;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,14 +26,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
 public class PlaceIntegrationTest extends ImportTrailIT {
 
-    private static final String EXPECTED_DESCRIPTION = "<p>ANY_DESCRIPTION</p>";
-    public static final List<String> TAGS = Arrays.asList("Magic", "Place");
     public static final String LEVEL = TrailSimplifierLevel.FULL.toString();
 
     @Autowired
@@ -117,22 +115,22 @@ public class PlaceIntegrationTest extends ImportTrailIT {
 
     @Test
     public void shouldRetrieveItBackByProvidingAHint() {
-        PlaceResponse placeResponse = placeController.getLikeNameOrTags("A mag", 0, 10);
+        PlaceResponse placeResponse = placeController.getLikeNameOrTags("A mag", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(false);
         PlaceDto returnedPlaceDto = placeResponse.getContent().get(0);
         assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
 
-        placeResponse = placeController.getLikeNameOrTags("a", 0, 10);
+        placeResponse = placeController.getLikeNameOrTags("a", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(false);
         returnedPlaceDto = placeResponse.getContent().get(0);
         assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
 
-        placeResponse = placeController.getLikeNameOrTags("A", 0, 10);
+        placeResponse = placeController.getLikeNameOrTags("A", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(false);
         returnedPlaceDto = placeResponse.getContent().get(0);
         assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
 
-        placeResponse = placeController.getLikeNameOrTags("B", 0, 10);
+        placeResponse = placeController.getLikeNameOrTags("B", 0, 10, NO_FILTERING_TOKEN);
         assertThat(placeResponse.getContent().isEmpty()).isEqualTo(true);
     }
 

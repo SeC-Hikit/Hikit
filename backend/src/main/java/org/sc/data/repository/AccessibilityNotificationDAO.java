@@ -11,8 +11,7 @@ import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
 import org.sc.data.model.AccessibilityNotification;
-import org.sc.data.model.Maintenance;
-import org.sc.data.model.Place;
+import org.sc.data.model.FileDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -23,12 +22,12 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.repository.MongoConstants.$NOT_EQUAL;
-import static org.sc.data.repository.MongoConstants.EXISTS_PARAM;
+import static org.sc.data.repository.MongoUtils.*;
 
 @Repository
 public class AccessibilityNotificationDAO {
     private static final Logger LOGGER = getLogger(AccessibilityNotificationDAO.class);
+    public static final String COLLECTION_REALM_STRUCTURE = AccessibilityNotification.RECORD_DETAILS + DOT + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
 
@@ -42,9 +41,10 @@ public class AccessibilityNotificationDAO {
     }
 
     public List<AccessibilityNotification> getUnresolved(final int skip,
-                                                         final int limit) {
+                                                         final int limit, String realm) {
         return toNotificationList(collection.find(
-                new Document(AccessibilityNotification.RESOLUTION, ""))
+                MongoUtils.getRealmConditionalFilter(realm, COLLECTION_REALM_STRUCTURE)
+                        .append(AccessibilityNotification.RESOLUTION, ""))
                 .skip(skip)
                 .limit(limit));
     }
@@ -56,7 +56,7 @@ public class AccessibilityNotificationDAO {
                 .skip(skip).limit(limit));
     }
 
-    public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit) {
+    public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit, String realm) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityNotification.TRAIL_ID, id)
                         .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, null)))
@@ -64,9 +64,11 @@ public class AccessibilityNotificationDAO {
     }
 
     public List<AccessibilityNotification> getSolved(final int skip,
-                                                     final int limit) {
-        return toNotificationList(collection.find(new Document(AccessibilityNotification.RESOLUTION,
-                new Document($NOT_EQUAL, ""))).skip(skip).limit(limit));
+                                                     final int limit, String realm) {
+        return toNotificationList(collection.find(
+                MongoUtils.getRealmConditionalFilter(realm, COLLECTION_REALM_STRUCTURE)
+                        .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, "")))
+                .skip(skip).limit(limit));
     }
 
     public List<AccessibilityNotification> getByTrailId(final String trailId) {
@@ -99,7 +101,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> resolve(final AccessibilityNotificationResolutionDto accessibilityNotificationResolutionDto) {
         collection.updateOne(
                 new Document(AccessibilityNotification.ID, accessibilityNotificationResolutionDto.getId()),
-                new Document("$set", new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolutionDto.getResolution())
+                new Document($_SET, new Document(AccessibilityNotification.RESOLUTION, accessibilityNotificationResolutionDto.getResolution())
                         .append(AccessibilityNotification.RESOLUTION_DATE, accessibilityNotificationResolutionDto.getResolutionDate())));
         return getById(accessibilityNotificationResolutionDto.getId());
     }
@@ -120,8 +122,9 @@ public class AccessibilityNotificationDAO {
         return StreamSupport.stream(documents.spliterator(), false).map(mapper::mapToObject).collect(toList());
     }
 
-    public long countAccessibility() {
-        return collection.countDocuments();
+    public long countAccessibility(String realm) {
+        return collection.countDocuments(MongoUtils.getRealmConditionalFilter(realm,
+                COLLECTION_REALM_STRUCTURE));
     }
 
     public long countSolved() {
@@ -129,8 +132,10 @@ public class AccessibilityNotificationDAO {
                 new Document($NOT_EQUAL, null)));
     }
 
-    public long countNotSolved() {
-        return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION, null));
+    public long countNotSolved(String realm) {
+        return collection.countDocuments(
+                MongoUtils.getRealmConditionalFilter(realm, COLLECTION_REALM_STRUCTURE)
+                .append(AccessibilityNotification.RESOLUTION, null));
     }
 
     public long countSolvedForTrailId(final String trailId) {

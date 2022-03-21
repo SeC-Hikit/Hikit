@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -30,8 +31,6 @@ public class AccessibilityNotificationRestIntegrationTest {
 
     public static final CoordinatesDto EXPECTED_COORDINATES = new CoordinatesDto(44.436084, 11.315620, 250.0);
     public static final String ANY_SOLVED_DESC = "ANY_SOLVED_DESC";
-
-    AccessibilityNotificationDto expectedCreationDto;
 
     @Autowired
     private DataSource dataSource;
@@ -44,9 +43,6 @@ public class AccessibilityNotificationRestIntegrationTest {
 
     @Autowired
     private AdminPlaceController placeController;
-
-    @Autowired
-    private AdminTrailImporterController importController;
 
     @Autowired
     private AdminTrailController trailController;
@@ -99,7 +95,7 @@ public class AccessibilityNotificationRestIntegrationTest {
         AccessibilityResponse emptyResponse = accessibilityNotificationController.getNotSolvedByTrailId(id, 0, 1);
         Assert.assertTrue(emptyResponse.getContent().isEmpty());
 
-        AccessibilityResponse accessibilityResponse = accessibilityNotificationController.getSolvedByTrailId(id, 0, 1);
+        AccessibilityResponse accessibilityResponse = accessibilityNotificationController.getSolvedByTrailId(id, 0, 1, NO_FILTERING_TOKEN);
         assertThat(accessibilityResponse.getContent().size()).isEqualTo(1);
         AccessibilityNotificationDto resolved = resolvedResponse.getContent().get(0);
 

@@ -15,6 +15,7 @@ import static java.lang.String.format;
 import static java.util.Collections.*;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(AccessibilityNotificationController.PREFIX)
@@ -37,8 +38,9 @@ public class AccessibilityNotificationController {
 
     @Operation(summary = "Count all accessibility notifications in DB")
     @GetMapping("/count")
-    public CountResponse getCount() {
-        final long count = accessibilityNotManager.count();
+    public CountResponse getCount(
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
+        final long count = accessibilityNotManager.count(realm);
         return new CountResponse(Status.OK, emptySet(), new CountDto(count));
     }
 
@@ -55,11 +57,12 @@ public class AccessibilityNotificationController {
     @GetMapping("/solved")
     public AccessibilityResponse getSolved(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
-                accessibilityNotManager.getSolved(skip, limit),
-                accessibilityNotManager.count(), skip, limit);
+                accessibilityNotManager.getSolved(skip, limit, realm),
+                accessibilityNotManager.count(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve solved notifications by trail ID")
@@ -67,22 +70,25 @@ public class AccessibilityNotificationController {
     public AccessibilityResponse getSolvedByTrailId(
             @PathVariable String trailId,
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
-        List<AccessibilityNotificationDto> resolvedById = accessibilityNotManager.getResolvedByTrailId(trailId, skip, limit);
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
+        final List<AccessibilityNotificationDto> resolvedById =
+                accessibilityNotManager.getResolvedByTrailId(trailId, skip, limit, realm);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolvedById,
-                accessibilityNotManager.countSolvedForTrailId(trailId), skip, limit);
+                accessibilityNotManager.countSolvedForTrailId(trailId, realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve unresolved notifications")
     @GetMapping("/unresolved")
     public AccessibilityResponse getNotSolved(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
-                accessibilityNotManager.getUnresolved(skip, limit),
-                accessibilityNotManager.countNotSolved(), skip, limit);
+                accessibilityNotManager.getUnresolved(skip, limit, realm),
+                accessibilityNotManager.countNotSolved(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve unresolved notifications by trail ID")

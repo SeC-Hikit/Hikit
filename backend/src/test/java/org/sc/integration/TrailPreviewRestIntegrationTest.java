@@ -1,6 +1,9 @@
 package org.sc.integration;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.TrailImportDto;
 import org.sc.common.rest.TrailPreviewDto;
@@ -8,10 +11,10 @@ import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
-import org.sc.controller.admin.AdminTrailController;
-import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.TrailPreviewController;
 import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.data.model.Trail;
 import org.sc.data.model.TrailClassification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sc.integration.ImportTrailIT.END_CORRECT_PLACE_DTO;
-import static org.sc.integration.ImportTrailIT.START_CORRECT_PLACE_DTO;
 import static org.sc.integration.TrailImportRestIntegrationTest.LOCATION_REFS;
 
 @RunWith(SpringRunner.class)
@@ -32,17 +33,17 @@ public class TrailPreviewRestIntegrationTest {
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
     public static final String ANY_REALM = "S&C";
 
-    public TrailImportDto expectedTrailDto;
-
     @Autowired
     private DataSource dataSource;
 
     @Autowired
     AdminTrailImporterController importController;
-    @Autowired TrailPreviewController controller;
+    @Autowired
+    TrailPreviewController controller;
     @Autowired AdminPlaceController placeController;
     @Autowired TrailController trailController;
     @Autowired AdminTrailController adminTrailController;
+
     private TrailResponse trailResponse;
     private String trailId;
 
@@ -60,6 +61,16 @@ public class TrailPreviewRestIntegrationTest {
         assertThat(response.getContent().size()).isEqualTo(1);
         TrailPreviewDto firstResult = response.getContent().get(0);
         assertAll(firstResult);
+    }
+
+    @Test
+    public void getByAnotherRealm_shouldResultIntoNoFindings() {
+        TrailPreviewResponse sameRealmResponse = controller.getTrailPreviews(0, 10,
+                ANY_REALM, false);
+        assertThat(sameRealmResponse.getContent()).isNotEmpty();
+        TrailPreviewResponse anotherRealmResponse = controller.getTrailPreviews(0, 10,
+                "AnotherRealm", false);
+        assertThat(anotherRealmResponse.getContent()).isEmpty();
     }
 
     private void assertAll(TrailPreviewDto firstResult) {

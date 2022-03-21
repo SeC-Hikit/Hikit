@@ -1,12 +1,14 @@
 package org.sc.integration;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
-import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.POIController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminPoiController;
@@ -24,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -43,6 +45,7 @@ public class PoiRestIntegrationTest {
     public static final List<String> EXPECTED_TAGS = Arrays.asList("poiType", "poiType2");
     public static final KeyValueDto EXPECTED_KEYVAL = new KeyValueDto("a", "b");
     public static final List<KeyValueDto> EXPECTED_KEY_VALS = Collections.singletonList(EXPECTED_KEYVAL);
+    public static final String ANY_REALM = "ANY_REALM";
 
     @Autowired
     private DataSource dataSource;
@@ -57,8 +60,6 @@ public class PoiRestIntegrationTest {
     private AdminTrailController adminTrailController;
     private String importedTrailId;
 
-    @Autowired
-    private AuthFacade authHelper;
 
     @Before
     public void setUp() {
@@ -72,7 +73,7 @@ public class PoiRestIntegrationTest {
                 EXPECTED_MEDIA_IDS, Collections.singletonList(importedTrailId),
                 EXPECTED_COORDINATE,
                 EXPECTED_EXTERNAL_RESOURCES,
-                EXPECTED_KEY_VALS, new RecordDetailsDto(new Date(), "AnyUser", "SeC-Bo-123", authHelper.getAuthHelper().getRealm())));
+                EXPECTED_KEY_VALS, new RecordDetailsDto(new Date(), "AnyUser", "SeC-Bo-123", ANY_REALM)));
     }
 
     @Test
@@ -85,10 +86,20 @@ public class PoiRestIntegrationTest {
 
     @Test
     public void getByRealm_shouldFindOne() {
-        PoiResponse getPoi = poiController.get(0, 1, authHelper.getAuthHelper().getRealm());
+        PoiResponse getPoi = poiController.get(0, 1, ANY_REALM);
         PoiDto firstElement = getPoi.getContent().get(0);
         assertThat(getPoi.getContent().size()).isEqualTo(1);
         assertGetFirstElement(firstElement);
+    }
+
+    @Test
+    public void getByAnotherRealm_shouldFindOne() {
+        // when
+        PoiResponse getPoi = poiController.get(0, 1, "AnotherS&CRealm");
+        List<PoiDto> responseContent = getPoi.getContent();
+
+        // then
+        assertThat(responseContent).isEmpty();
     }
 
     @Test

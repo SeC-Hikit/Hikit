@@ -24,11 +24,12 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.repository.MongoConstants.*;
+import static org.sc.data.repository.MongoUtils.*;
 
 @Repository
 public class PoiDAO {
     private static final Logger LOGGER = getLogger(PoiDAO.class);
+    public static final String DB_REALM_STRUCTURE_SELECTOR = Poi.RECORD_DETAILS + DOT + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
     private final PoiMapper mapper;
@@ -49,7 +50,7 @@ public class PoiDAO {
         if (realm.equals(NO_FILTERING_TOKEN)) {
             return toPoisList(collection.find().skip(page).limit(count));
         }
-        final Document filter = new Document(Poi.RECORD_DETAILS + "." + FileDetails.REALM, realm);
+        final Document filter = new Document(Poi.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
         return toPoisList(collection.find(filter).skip(page).limit(count));
     }
 
@@ -143,14 +144,14 @@ public class PoiDAO {
 
     public List<Poi> unlinkMediaId(final String id, final String mediaId) {
         collection.updateOne(new Document(Poi.OBJECT_ID, id),
-                new Document(MongoConstants.$PULL,
+                new Document(MongoUtils.$PULL,
                         new Document(Poi.MEDIA, new Document(LinkedMedia.ID, mediaId))));
         return getById(id);
     }
 
     public void unlinkMediaByAllPoi(final String mediaId) {
         collection.updateOne(new Document(),
-                new Document(MongoConstants.$PULL, new Document(Poi.MEDIA, mediaId)));
+                new Document(MongoUtils.$PULL, new Document(Poi.MEDIA, mediaId)));
     }
 
     private List<Poi> toPoisList(final Iterable<Document> documents) {
@@ -159,6 +160,12 @@ public class PoiDAO {
 
     public long countPOI() {
         return collection.countDocuments();
+    }
+
+    public long countPOIByRealm(String realm) {
+        return collection.countDocuments(
+                MongoUtils.getRealmConditionalFilter(realm,
+                        DB_REALM_STRUCTURE_SELECTOR));
     }
 
 }

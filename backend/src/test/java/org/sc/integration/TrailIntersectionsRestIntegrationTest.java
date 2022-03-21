@@ -33,6 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 
 @RunWith(SpringRunner.class)
@@ -325,7 +326,7 @@ public class TrailIntersectionsRestIntegrationTest {
                 .flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(encounteredTrailsReloaded.contains(trail001aBO.getId())).isFalse();
 
-        PlaceResponse placeResponse = placeController.get(0, 1000);
+        PlaceResponse placeResponse = placeController.get(0, 1000, NO_FILTERING_TOKEN);
         List<String> allPlaces = placeResponse.getContent().stream().map(PlaceDto::getCrossingTrailIds).flatMap(Collection::stream).collect(Collectors.toList());
 
         assertThat(allPlaces.contains(trail001aBO.getId())).isFalse();
@@ -357,7 +358,7 @@ public class TrailIntersectionsRestIntegrationTest {
                 .flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(encounteredTrailsReloaded.contains(trail001aBO.getId())).isFalse();
 
-        PlaceResponse placeResponse = placeController.get(0, 1000);
+        PlaceResponse placeResponse = placeController.get(0, 1000, NO_FILTERING_TOKEN);
         List<String> allPlaces = placeResponse.getContent().stream().map(PlaceDto::getCrossingTrailIds).flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(allPlaces.contains(trail001aBO.getId())).isFalse();
 

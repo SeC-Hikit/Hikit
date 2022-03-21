@@ -25,6 +25,11 @@ import java.util.Date;
 public class TrailExportIntegrationTest {
 
 
+    public static final String ANY_LONG_DESC =
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
+                    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit " +
+                    "esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat " +
+                    "non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     @Autowired
     private AdminPlaceController placeController;
     @Autowired
@@ -40,10 +45,6 @@ public class TrailExportIntegrationTest {
     private DataSource dataSource;
 
     private TrailResponse trailResponse;
-    private String trailId;
-    private Date reportDate;
-    private CoordinatesDto anyTrailCoord;
-    private AccessibilityReportResponse createResponse;
 
     @Before
     public void setup() {
@@ -56,7 +57,7 @@ public class TrailExportIntegrationTest {
     public void shallGeneratePdfWithCycloDescription() {
         TrailDto trailDto = trailResponse.getContent().stream().findFirst().get();
         trailDto.setCycloDetails(new CycloDetailsDto(CycloClassification.EC, 120, new CycloFeasibilityDto(true, 10),
-                new CycloFeasibilityDto(false, 0), "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
+                new CycloFeasibilityDto(false, 0), ANY_LONG_DESC));
         adminMaintenanceController.create(new MaintenanceDto(null, new Date(), trailDto.getId(), "San Lazzaro", "", "Mario Rossi", new RecordDetailsDto()));
         trailController.updateTrail(trailDto);
     }

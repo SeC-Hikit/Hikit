@@ -22,11 +22,13 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.repository.MongoConstants.$NOT_EQUAL;
+import static org.sc.data.repository.MongoUtils.$NOT_EQUAL;
+import static org.sc.data.repository.MongoUtils.DOT;
 
 @Repository
 public class AccessibilityReportDao {
     private static final Logger LOGGER = getLogger(AccessibilityReportDao.class);
+    public static final String COLLECTION_REALM_STRUCT = AccessibilityReport.RECORD_DETAILS + DOT + RecordDetails.REALM;
 
     private final MongoCollection<Document> collection;
 
@@ -100,7 +102,7 @@ public class AccessibilityReportDao {
         LOGGER.info("update AccessibilityReports: {}, for AccessibilityReport: {}", found, accReport);
         if (found.isEmpty()) return Collections.emptyList();
         collection.updateOne(new Document(AccessibilityReport.ID, id),
-                new Document(MongoConstants.$_SET,
+                new Document(MongoUtils.$_SET,
                         new Document(AccessibilityReport.REPORT_DATE, accReport.getReportDate())
                                 .append(AccessibilityReport.TELEPHONE, accReport.getTelephone())
                                 .append(AccessibilityReport.ISSUE_ID, accReport.getIssueId())
@@ -114,7 +116,7 @@ public class AccessibilityReportDao {
         return toNotificationList(collection.find(
                         new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
                                 .append(AccessibilityReport.ISSUE_ID, ""))
-                .sort(new Document(AccessibilityReport.REPORT_DATE, MongoConstants.ASCENDING_ORDER))
+                .sort(new Document(AccessibilityReport.REPORT_DATE, MongoUtils.ASCENDING_ORDER))
                 .skip(skip)
                 .limit(limit)
         );
@@ -124,9 +126,9 @@ public class AccessibilityReportDao {
                                                         final int skip,
                                                         final int limit) {
         return toNotificationList(collection.find(
-                        new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
+                        new Document(COLLECTION_REALM_STRUCT, realm)
                                 .append(AccessibilityReport.ISSUE_ID, new Document($NOT_EQUAL, "")))
-                .sort(new Document(AccessibilityReport.REPORT_DATE, MongoConstants.ASCENDING_ORDER))
+                .sort(new Document(AccessibilityReport.REPORT_DATE, MongoUtils.ASCENDING_ORDER))
                 .skip(skip)
                 .limit(limit)
         );
@@ -134,7 +136,7 @@ public class AccessibilityReportDao {
 
     public List<String> getActivationIdById(String id) {
         return StreamSupport.stream(collection.find(new Document(AccessibilityReport.ID, id))
-                        .projection(new Document(AccessibilityReport.VALIDATION_ID, MongoConstants.ONE))
+                        .projection(new Document(AccessibilityReport.VALIDATION_ID, MongoUtils.ONE))
                         .map(entry -> entry.getString(AccessibilityReport.VALIDATION_ID)).spliterator(), false)
                 .collect(Collectors.toList());
     }
@@ -145,25 +147,25 @@ public class AccessibilityReportDao {
 
     public long countAccessibility(final String realm) {
         return collection.countDocuments(
-                new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm));
+                new Document(COLLECTION_REALM_STRUCT, realm));
     }
 
     public long countUnapgraded(final String realm) {
         return collection.countDocuments(
-                new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
+                new Document(COLLECTION_REALM_STRUCT, realm)
                         .append(AccessibilityReport.ISSUE_ID, ""));
     }
 
     public long countUpgraded(final String realm) {
         return collection.countDocuments(
-                new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
+                new Document(COLLECTION_REALM_STRUCT, realm)
                         .append(AccessibilityReport.ISSUE_ID, new Document($NOT_EQUAL, "")));
     }
 
     public List<AccessibilityReport> validate(final String validationId) {
         if (!getByValidationId(validationId).isEmpty()) {
             collection.updateOne(new Document(AccessibilityReport.VALIDATION_ID, validationId),
-                    new Document(MongoConstants.$_SET, new Document(AccessibilityReport.IS_VALID, true)));
+                    new Document(MongoUtils.$_SET, new Document(AccessibilityReport.IS_VALID, true)));
             return getByValidationId(validationId);
         }
         LOGGER.info("validate empty getByValidationId for id: {}", validationId);

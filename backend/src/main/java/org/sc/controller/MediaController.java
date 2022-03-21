@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.sc.common.rest.MediaDto;
 import org.sc.common.rest.response.MediaResponse;
-import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.controller.response.MediaResponseHelper;
 import org.sc.manager.MediaManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import java.util.List;
 import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
-import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(org.sc.controller.MediaController.PREFIX)

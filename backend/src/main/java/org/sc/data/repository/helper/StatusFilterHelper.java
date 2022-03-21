@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.sc.data.repository.MongoConstants.$_IN;
+import static org.sc.data.repository.MongoUtils.$_IN;
 
 @Component
 public class StatusFilterHelper {
