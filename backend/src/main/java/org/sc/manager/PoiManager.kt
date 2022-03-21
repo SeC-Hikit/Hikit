@@ -122,4 +122,5 @@ class PoiManager @Autowired constructor(
     }
 
     fun count(): Long = poiDAO.countPOI()
+    fun countByRealm(realm: String): Long = poiDAO.countPOIByRealm(realm)
 }

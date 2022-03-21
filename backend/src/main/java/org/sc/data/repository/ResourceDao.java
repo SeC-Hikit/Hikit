@@ -37,7 +37,7 @@ public class ResourceDao {
     public List<ResourceEntry> getByInstanceId(final String instanceId) {
         final FindIterable<Document> sort =
                 collection.find(new Document(ResourceEntry.INSTANCE_ID, instanceId))
-                        .sort(new Document(ResourceEntry.CREATED_ON, MongoConstants.DESCENDING_ORDER));
+                        .sort(new Document(ResourceEntry.CREATED_ON, MongoUtils.DESCENDING_ORDER));
 
         return toEntries(sort);
     }

@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.MaintenanceMapper;
+import org.sc.data.model.FileDetails;
 import org.sc.data.model.Maintenance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,7 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 @Repository
 public class MaintenanceDAO {
     private static final Logger LOGGER = getLogger(MaintenanceDAO.class);
+    public static final String DB_REALM_STRUCTURE_SELECTOR = Maintenance.RECORD_DETAILS + "." + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
     private final MaintenanceMapper mapper;
@@ -40,17 +42,21 @@ public class MaintenanceDAO {
 
     public List<Maintenance> getFuture(final int from,
                                        final int to,
-                                       final LocalDate date) {
+                                       final LocalDate date,
+                                       final String realm) {
         return toMaintenanceList(collection.find(
-                        new Document(Maintenance.DATE, new Document("$gt", date)))
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append(Maintenance.DATE, new Document("$gt", date)))
                 .skip(from).limit(to));
     }
 
     public List<Maintenance> getPastDate(final int from,
                                          final int to,
-                                         final LocalDate date) {
+                                         final LocalDate date,
+                                         final String realm) {
         return toMaintenanceList(collection.find(
-                        new Document(Maintenance.DATE, new Document("$lt", date)))
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append(Maintenance.DATE, new Document("$lt", date)))
                 .sort(new Document(Maintenance.DATE, -1))
                 .skip(from).limit(to));
     }
@@ -108,21 +114,27 @@ public class MaintenanceDAO {
                 new Document(Maintenance.TRAIL_ID, trailId))));
     }
 
+    public long countMaintenance(String realm) {
+        return collection.countDocuments(
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+        );
+    }
+
+    public long countPastMaintenance(String realm) {
+        return collection.countDocuments(
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append(Maintenance.DATE, new Document("$lt", new Date())));
+    }
+
+    public long countFutureMaintenance(String realm) {
+        return collection.countDocuments(
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append(Maintenance.DATE, new Document("$gt", new Date())));
+    }
+
     private List<Maintenance> toMaintenanceList(FindIterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false)
                 .collect(Collectors.toList())
                 .stream().map(mapper::mapToObject).collect(toList());
-    }
-
-    public long countMaintenance() {
-        return collection.countDocuments();
-    }
-
-    public long countPastMaintenance() {
-        return collection.countDocuments(new Document(Maintenance.DATE, new Document("$lt", new Date())));
-    }
-
-    public long countFutureMaintenance() {
-        return collection.countDocuments(new Document(Maintenance.DATE, new Document("$gt", new Date())));
     }
 }

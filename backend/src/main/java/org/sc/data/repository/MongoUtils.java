@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-public class MongoConstants {
+public class MongoUtils {
     public static final int ASCENDING_ORDER = 1;
     public static final int ONE = ASCENDING_ORDER;
 
@@ -64,6 +64,19 @@ public class MongoConstants {
                                 GEO_COORDINATES, Arrays.asList(longitude, latitude)
                         )).append($_MAX_M_DISTANCE_FILTER, distance)
         );
+    }
+
+    public static Document getRealmConditionalFilter(final String realm, final String dbRealmStructureSelector) {
+        return realm.equals(NO_FILTERING_TOKEN) ? getNoFilter(dbRealmStructureSelector) :
+                getRealmFilter(realm, dbRealmStructureSelector);
+    }
+
+    private static Document getRealmFilter(final String realm, final String dbRealmStructureSelector) {
+        return new Document(dbRealmStructureSelector, realm);
+    }
+
+    private static Document getNoFilter(final String dbRealmStructureSelector) {
+        return new Document(dbRealmStructureSelector, new Document($NOT_EQUAL, ""));
     }
 
     @NotNull

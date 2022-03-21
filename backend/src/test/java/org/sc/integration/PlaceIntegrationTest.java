@@ -1,6 +1,5 @@
 package org.sc.integration;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

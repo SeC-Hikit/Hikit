@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.TrailRawMapper;
 import org.sc.data.model.FileDetails;
-import org.sc.data.model.Trail;
 import org.sc.data.model.TrailRaw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.repository.MongoConstants.UPSERT_OPTIONS;
+import static org.sc.data.repository.MongoUtils.UPSERT_OPTIONS;
 
 @Repository
 public class TrailRawDAO {

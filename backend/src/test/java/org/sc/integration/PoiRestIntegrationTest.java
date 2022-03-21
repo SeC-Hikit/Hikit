@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

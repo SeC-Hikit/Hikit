@@ -30,19 +30,18 @@ import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.*;
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.repository.MongoConstants.*;
+import static org.sc.data.repository.MongoUtils.*;
 
 @Repository
 public class TrailDAO {
     private static final Logger LOGGER = getLogger(TrailDAO.class);
 
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
-    public static final String NO_FILTERING = "*";
-    public static final String REALM_STRUCT = Trail.RECORD_DETAILS + DOT + FileDetails.REALM;
     public static final String POSITIONAL_EVERY_OPERATOR = ".$[].";
     public static final String POSITIONAL_OPERATOR = ".$";
     public static final String START_POS_COORDINATES = Trail.START_POS + "." + PlaceRef.COORDINATES + "." + PlaceRef.COORDINATES;
     public static final String FINAL_POS_COORDINATES = Trail.FINAL_POS + "." + PlaceRef.COORDINATES + "." + PlaceRef.COORDINATES;
+    public static final String DB_REALM_STRUCTURE_SELECTOR = Trail.RECORD_DETAILS + "." + FileDetails.REALM;
 
 
     private final MongoCollection<Document> collection;
@@ -82,9 +81,10 @@ public class TrailDAO {
                                  final TrailSimplifierLevel trailSimplifierLevel,
                                  final String realm,
                                  final boolean isDraftTrailVisible) {
-        final Document realmFilter = getFilter(realm);
-        return toTrailsList(collection.find(realmFilter
-                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
+        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        return toTrailsList(collection.find(
+                realmFilter.append(Trail.STATUS,
+                        statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
                         .skip(skip).limit(limit),
                 trailSimplifierLevel);
     }
@@ -93,7 +93,7 @@ public class TrailDAO {
     public List<TrailMapping> getTrailsMappings(int skip, int limit,
                                                 final String realm,
                                                 boolean isDraftTrailVisible) {
-        final Document realmFilter = getFilter(realm);
+        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         return toTrailsMappingList(collection.find(realmFilter
                         .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
                 .projection(new Document(Trail.ID, ONE)
@@ -144,9 +144,10 @@ public class TrailDAO {
         return Collections.singletonList(trailMapper.mapToObject(updateResult));
     }
 
-    public List<TrailPreview> getTrailPreviews(final int skip, final int limit, final String realm, boolean isDraftTrailVisible) {
+    public List<TrailPreview> getTrailPreviews(final int skip, final int limit,
+                                               final String realm, boolean isDraftTrailVisible) {
         final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
-        final Document filter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
+        final Document filter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         final Bson project = getTrailPreviewProjection();
 
         final Bson aLimit = Aggregates.limit(limit);
@@ -164,8 +165,8 @@ public class TrailDAO {
                                                  final int limit, final String realm,
                                                  final boolean isDraftTrailVisible) {
         final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
-        final Document codeFilter = getLikeEndFilter(Trail.CODE, code);
-        final Document realmFilter = realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm);
+        final Document codeFilter = new Document(Trail.CODE, getStartNameMatchPattern(code));
+        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         final Bson project = getTrailPreviewProjection();
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
@@ -293,7 +294,7 @@ public class TrailDAO {
 
     public long countTrailByRealm(final String realm, boolean isDraftTrailVisible) {
         return collection.countDocuments(
-                realm.equals(NO_FILTERING_TOKEN) ? getNoFilter() : getRealmFilter(realm)
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                 .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
@@ -316,18 +317,6 @@ public class TrailDAO {
                                      final TrailSimplifierLevel trailSimplifierLevel) {
         return StreamSupport.stream(documents.spliterator(), false)
                 .map(t -> trailLevelMapper.mapToObject(t, trailSimplifierLevel)).collect(toList());
-    }
-
-    private Document getRealmFilter(final String realm) {
-        return new Document(REALM_STRUCT, realm);
-    }
-
-    private Document getNoFilter() {
-        return new Document(REALM_STRUCT, new Document($NOT_EQUAL, ""));
-    }
-
-    private Document getLikeEndFilter(String fieldName, String valueToConcatenate) {
-        return new Document(fieldName, getStartNameMatchPattern(valueToConcatenate));
     }
 
     @NotNull
@@ -409,21 +398,16 @@ public class TrailDAO {
         return toTrailsMappingList(documents);
     }
 
+    public long countTotalByCode(final String realm, final String code, boolean isDraftTrailVisible) {
+        return collection.countDocuments(
+                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append(Trail.CODE, getStartNameMatchPattern(code))
+                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
+    }
 
     private List<Double> resolveVertex(Coordinates2D bottomLeft, Coordinates2D topRight) {
         return Arrays.asList(bottomLeft.getLongitude(),
                 topRight.getLatitude());
-    }
-
-    @NotNull
-    private Document getFilter(String realm) {
-        return realm.equals(NO_FILTERING) ? new Document() :
-                new Document(Trail.RECORD_DETAILS + DOT + FileDetails.REALM, realm);
-    }
-
-    public long countTotalByCode(final String code, boolean isDraftTrailVisible) {
-        return collection.countDocuments(getLikeEndFilter(Trail.CODE, code)
-                .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
 

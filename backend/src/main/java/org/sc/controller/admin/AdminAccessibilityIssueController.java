@@ -18,7 +18,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.Collections.*;
 import static org.sc.controller.admin.Constants.PREFIX_ACCESSIBILITY;
-import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(PREFIX_ACCESSIBILITY)

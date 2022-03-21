@@ -1,20 +1,16 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.Status;
-import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.manager.TrailRawManager;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
-import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(TrailRawController.PREFIX)

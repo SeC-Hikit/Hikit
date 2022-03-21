@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
-import static org.sc.data.repository.MongoConstants.NO_FILTERING_TOKEN;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(MaintenanceController.PREFIX)

@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
+import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RestController
 @RequestMapping(POIController.PREFIX)
@@ -25,17 +26,14 @@ public class POIController {
     private final static Logger LOGGER = Logger.getLogger(POIController.class.getName());
 
     private final PoiManager poiManager;
-    private final GeneralValidator generalValidator;
     private final PoiResponseHelper poiResponseHelper;
     private final ControllerPagination controllerPagination;
 
     @Autowired
     public POIController(final PoiManager poiManager,
-                         final GeneralValidator generalValidator,
                          final PoiResponseHelper poiResponseHelper,
                          final ControllerPagination controllerPagination) {
         this.poiManager = poiManager;
-        this.generalValidator = generalValidator;
         this.poiResponseHelper = poiResponseHelper;
         this.controllerPagination = controllerPagination;
     }
@@ -51,10 +49,10 @@ public class POIController {
     @GetMapping
     public PoiResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-                           @RequestParam(required = false, defaultValue = "*") String realm) {
+                           @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiPaginated(skip, limit, realm),
-                poiManager.count(), skip, limit);
+                poiManager.countByRealm(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve POI by ID")
