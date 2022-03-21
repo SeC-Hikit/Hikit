@@ -33,8 +33,6 @@ import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 @ActiveProfiles("test")
 public class PlaceIntegrationTest extends ImportTrailIT {
 
-    private static final String EXPECTED_DESCRIPTION = "<p>ANY_DESCRIPTION</p>";
-    public static final List<String> TAGS = Arrays.asList("Magic", "Place");
     public static final String LEVEL = TrailSimplifierLevel.FULL.toString();
 
     @Autowired

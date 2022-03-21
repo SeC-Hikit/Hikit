@@ -44,7 +44,6 @@ public class MediaRestIntegrationTest  {
     @Autowired AdminTrailImporterController importController;
     @Autowired AdminTrailController trailController;
 
-    public TrailImportDto expectedTrailDto;
     private TrailResponse trailResponse;
     private String trailId;
 

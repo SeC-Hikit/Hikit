@@ -34,8 +34,6 @@ public class MaintenanceRestIntegrationTest {
     private static final String EXPECTED_NAME = "ANY";
     private static final String EXPECTED_NAME_2 = "ANY_2";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
-    public static final String EXPECTED_TRAIL_CODE = "125BO";
-    public static final String EXPECTED_TRAIL_CODE_FUTURE = "126BO";
 
     private static Date EXPECTED_DATE_IN_FUTURE() {
         Calendar c = Calendar.getInstance();
