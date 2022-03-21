@@ -1,4 +1,4 @@
-FROM openjdk:8u201-jdk-alpine3.9
+FROM openjdk:11
 
 WORKDIR ./home
 
