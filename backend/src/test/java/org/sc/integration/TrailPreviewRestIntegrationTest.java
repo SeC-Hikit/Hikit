@@ -63,6 +63,16 @@ public class TrailPreviewRestIntegrationTest {
         assertAll(firstResult);
     }
 
+    @Test
+    public void getByAnotherRealm_shouldResultIntoNoFindings() {
+        TrailPreviewResponse sameRealmResponse = controller.getTrailPreviews(0, 10,
+                ANY_REALM, false);
+        assertThat(sameRealmResponse.getContent()).isNotEmpty();
+        TrailPreviewResponse anotherRealmResponse = controller.getTrailPreviews(0, 10,
+                "AnotherRealm", false);
+        assertThat(anotherRealmResponse.getContent()).isEmpty();
+    }
+
     private void assertAll(TrailPreviewDto firstResult) {
         assertThat(firstResult.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
         assertThat(firstResult.getCode()).isEqualTo(TrailImportRestIntegrationTest.EXPECTED_TRAIL_ID);
