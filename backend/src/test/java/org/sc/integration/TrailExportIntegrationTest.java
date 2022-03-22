@@ -56,7 +56,7 @@ public class TrailExportIntegrationTest {
     @Test
     public void shallGeneratePdfWithCycloDescription() {
         TrailDto trailDto = trailResponse.getContent().stream().findFirst().get();
-        trailDto.setCycloDetails(new CycloDetailsDto(CycloClassification.EC, 120, new CycloFeasibilityDto(true, 10),
+        trailDto.setCycloDetails(new CycloDetailsDto(CycloClassification.BC_PLUS, 120, new CycloFeasibilityDto(true, 10),
                 new CycloFeasibilityDto(false, 0), ANY_LONG_DESC));
         adminMaintenanceController.create(new MaintenanceDto(null, new Date(), trailDto.getId(), "San Lazzaro", "", "Mario Rossi", new RecordDetailsDto()));
         trailController.updateTrail(trailDto);

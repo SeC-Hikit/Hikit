@@ -6,6 +6,8 @@ import org.sc.data.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 import static org.apache.logging.log4j.LogManager.getLogger;
 
 @Component
@@ -41,6 +43,8 @@ public class CycloMapper implements Mapper<CycloDetails> {
 
     private CycloClassification getClassification(Document doc) {
         final String classification = doc.getString(CycloDetails.CLASSIFICATION);
-        return CycloClassification.valueOf(classification);
+        return Arrays.stream(CycloClassification.values())
+                .filter(it->it.getClassification().equalsIgnoreCase(classification))
+                .findFirst().orElse(CycloClassification.UNCLASSIFIED);
     }
 }
