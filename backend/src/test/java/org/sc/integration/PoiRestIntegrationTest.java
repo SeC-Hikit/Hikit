@@ -251,6 +251,16 @@ public class PoiRestIntegrationTest {
     }
 
     @Test
+    public void uponTrailDeletionPoiReferencesShallBeRemoved() {
+        PoiResponse getPoiFirstCall = poiController.get(EXPECTED_ID);
+        assertThat(getPoiFirstCall.getContent().get(0).getTrailIds()).contains(importedTrailId);
+
+        adminTrailController.deleteById(importedTrailId);
+        PoiResponse result = poiController.get(EXPECTED_ID);
+        assertThat(result.getContent().get(0).getTrailIds()).isEmpty();
+    }
+
+    @Test
     public void contextLoads() {
         assertThat(adminPoiController).isNotNull();
     }

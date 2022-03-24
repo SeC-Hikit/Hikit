@@ -73,6 +73,9 @@ class MaintenanceManager @Autowired constructor(
         return delete.map { maintenanceMapper.map(it) }
     }
 
+    fun deleteByTrailId(id: String): List<MaintenanceDto> =
+            maintenanceDao.deleteByTrailId(id)
+                    .map { maintenanceMapper.map(it) }
 
     fun countMaintenance(realm: String): Long = maintenanceDao.countMaintenance(realm)
     fun countPastMaintenance(realm: String): Long = maintenanceDao.countPastMaintenance(realm)

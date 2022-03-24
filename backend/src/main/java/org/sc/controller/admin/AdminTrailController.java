@@ -7,6 +7,7 @@ import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.service.TrailImporterService;
 import org.sc.manager.TrailManager;
+import org.sc.service.TrailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,16 +25,20 @@ import static org.sc.controller.admin.Constants.PREFIX_TRAIL;
 @RequestMapping(PREFIX_TRAIL)
 public class AdminTrailController {
 
+    private final TrailService trailService;
     private final TrailManager trailManager;
     private final GeneralValidator generalValidator;
     private final TrailImporterService trailImporterManager;
     private final TrailResponseHelper trailResponseHelper;
 
     @Autowired
-    public AdminTrailController(final TrailManager trailManager,
-                                final GeneralValidator generalValidator,
-                                final TrailResponseHelper trailResponseHelper,
-                                final TrailImporterService trailImporterManager) {
+    public AdminTrailController(
+            final TrailService trailService,
+            final TrailManager trailManager,
+            final GeneralValidator generalValidator,
+            final TrailResponseHelper trailResponseHelper,
+            final TrailImporterService trailImporterManager) {
+        this.trailService = trailService;
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
@@ -119,7 +124,7 @@ public class AdminTrailController {
     public TrailResponse deleteById(@PathVariable String id) {
         final Set<String> errors = generalValidator.validateUpdateTrail(id);
         if (errors.isEmpty()) {
-            final List<TrailDto> deleted = trailManager.delete(id);
+            final List<TrailDto> deleted = trailService.deleteById(id);
             return trailResponseHelper.constructResponse(emptySet(), deleted,
                     trailManager.count(),
                     ONE, ONE);

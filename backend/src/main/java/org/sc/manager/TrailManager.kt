@@ -22,8 +22,6 @@ import java.util.logging.Logger
 @Component
 class TrailManager @Autowired constructor(
         private val trailDAO: TrailDAO,
-        private val maintenanceDAO: MaintenanceDAO,
-        private val accessibilityNotificationDAO: AccessibilityNotificationDAO,
         private val placeDAO: PlaceDAO,
         private val trailMapper: TrailMapper,
         private val linkedMediaMapper: LinkedMediaMapper,
@@ -34,8 +32,6 @@ class TrailManager @Autowired constructor(
         private val trailPlacesAligner: TrailPlacesAligner,
         private val altitudeService: AltitudeServiceAdapter
 ) {
-
-    private val logger = Logger.getLogger(TrailManager::class.java.name)
 
     fun get(
             page: Int,
@@ -52,20 +48,15 @@ class TrailManager @Autowired constructor(
     fun getByPlaceRefId(code: String, page: Int, limit: Int, level: TrailSimplifierLevel): List<TrailDto> =
             trailDAO.getTrailByPlaceId(code, page, limit, level).map { trailMapper.map(it) }
 
-    fun delete(id: String): List<TrailDto> {
-        deleteAllTrailLocationsReferencesInPlaces(id)
+    fun deleteById(id: String): List<TrailDto> {
+        propagateChangesToTrails(id)
         val deletedTrailInMem = trailDAO.delete(id)
-        val deletedMaintenance = maintenanceDAO.deleteByTrailId(id)
-        val deletedAccessibilityNotification = accessibilityNotificationDAO.deleteByTrailId(id)
-        logger.info("Purge deleting trail $id. Maintenance deleted: $deletedMaintenance, " +
-                "deleted notifications: $deletedAccessibilityNotification" + ",")
         return deletedTrailInMem.map { trailMapper.map(it) }
     }
 
-    fun deleteAllTrailLocationsReferencesInPlaces(trailId: String) {
+    fun propagateChangesToTrails(trailId: String) {
         val trail = getPreviewById(trailId).first();
         trail.locations.forEach {
-            placeDAO.removeTrailFromPlace(it.placeId, trail.id, it.coordinates)
             trailDAO.propagatePlaceRemovalFromRefs(it.placeId, trail.id);
         }
     }
@@ -150,10 +141,6 @@ class TrailManager @Autowired constructor(
 
     fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
-        placeDAO.removeTrailFromPlace(
-                placeRef.placeId, id,
-                coordinatesMapper.map(placeRef.coordinates)
-        )
         return unLinkPlace.map { trailMapper.map(it) }
     }
 
