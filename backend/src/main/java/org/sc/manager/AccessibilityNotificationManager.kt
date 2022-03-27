@@ -47,6 +47,9 @@ class AccessibilityNotificationManager @Autowired constructor(
     fun delete(objectId: String): List<AccessibilityNotificationDto> =
         accessibilityDAO.delete(objectId).map { accessibilityMapper.map(it) }
 
+    fun deleteByTrailId(id: String) {
+        accessibilityDAO.deleteByTrailId(id).map { accessibilityMapper.map(it) }
+    }
 
     fun create(accessibilityNotificationCreation: AccessibilityNotificationDto): List<AccessibilityNotificationDto> {
         val mapped = accessibilityMapper.map(accessibilityNotificationCreation)
@@ -64,5 +67,6 @@ class AccessibilityNotificationManager @Autowired constructor(
     fun countNotSolved(realm: String): Long = accessibilityDAO.countNotSolved(realm)
     fun countSolvedForTrailId(id: String, trailId: String): Long = accessibilityDAO.countSolvedForTrailId(trailId)
     fun countNotSolvedForTrailId(trailId: String): Long = accessibilityDAO.countNotSolvedForTrailId(trailId)
+
 
 }

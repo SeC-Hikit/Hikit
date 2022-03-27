@@ -1,12 +1,12 @@
 package org.sc.manager
 
+import org.sc.adapter.AltitudeServiceAdapter
 import org.sc.common.rest.*
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
 import org.sc.data.mapper.PlaceMapper
 import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
-import org.sc.adapter.AltitudeServiceAdapter
 import org.sc.manager.regeneration.RegenerationActionType
 import org.sc.manager.regeneration.RegenerationEntryType
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,8 +33,6 @@ class PlaceManager @Autowired constructor(
     fun getNearPoint(longitude: Double, latitude: Double, distance: Double,
                      skip: Int, limit: Int): List<PlaceDto> =
             placeDao.getNear(longitude, latitude, distance, skip, limit).map { placeMapper.map(it) }
-
-    fun doesItExist(id: String) = getById(id).isNotEmpty()
 
     fun getById(id: String): List<PlaceDto> =
             placeDao.getById(id).map { placeMapper.map(it) }
@@ -89,6 +87,13 @@ class PlaceManager @Autowired constructor(
     fun unlinkMedia(placeId: String, unLinkeMediaRequestDto: UnLinkeMediaRequestDto): List<PlaceDto> =
             placeDao.removeMediaFromPlace(placeId, unLinkeMediaRequestDto.id).map { placeMapper.map(it) }
 
+
+    fun unlinkTrailFromPlace(placeId: String, trailId: String, coordinates: Coordinates) {
+        placeDao.removeTrailFromPlace(placeId,
+                trailId, coordinates)
+                .map { placeMapper.map(it) }
+    }
+
     fun unlinkTrailFromPlace(linkedPlaceDto: LinkedPlaceDto): List<PlaceDto> =
             placeDao.removeTrailFromPlace(linkedPlaceDto.placeId,
                     linkedPlaceDto.trailId,
@@ -98,6 +103,12 @@ class PlaceManager @Autowired constructor(
     fun linkTrailToPlace(linkedPlaceDto: LinkedPlaceDto): List<PlaceDto> =
             placeDao.linkTrailToPlace(linkedPlaceDto.placeId,
                     linkedPlaceDto.trailId, linkedPlaceDto.coordinatesDto).map { placeMapper.map(it) }
+
+    fun deleteTrailReference(trailId: String, locationRefs: List<PlaceRefDto>) {
+        locationRefs.forEach {
+            placeDao.removeTrailFromPlace(it.placeId, trailId, it.coordinates)
+        }
+    }
 
     private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
         CoordinatesWithAltitude(

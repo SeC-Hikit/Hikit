@@ -149,6 +149,12 @@ public class PoiDAO {
         return getById(id);
     }
 
+    public void unlinkTrailId(final String trailId) {
+        collection.updateMany(new Document(),
+                new Document(MongoUtils.$PULL,
+                        new Document(Poi.TRAIL_CODES, trailId)));
+    }
+
     public void unlinkMediaByAllPoi(final String mediaId) {
         collection.updateOne(new Document(),
                 new Document(MongoUtils.$PULL, new Document(Poi.MEDIA, mediaId)));
@@ -167,5 +173,4 @@ public class PoiDAO {
                 MongoUtils.getRealmConditionalFilter(realm,
                         DB_REALM_STRUCTURE_SELECTOR));
     }
-
 }
