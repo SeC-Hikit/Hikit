@@ -121,6 +121,9 @@ class PoiManager @Autowired constructor(
         return poiDAO.unlinkMediaId(id, unLinkeMediaRequestDto.id).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
+    fun deleteTrailReference(trailId: String) = poiDAO.unlinkTrailId(trailId)
+
+
     fun count(): Long = poiDAO.countPOI()
     fun countByRealm(realm: String): Long = poiDAO.countPOIByRealm(realm)
 }

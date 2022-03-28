@@ -17,7 +17,6 @@ import org.sc.processor.TrailsStatsCalculator
 import org.sc.manager.regeneration.RegenerationEntryType
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -210,21 +209,29 @@ class TrailImporterService @Autowired constructor(
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {
 
-        val trailToUpdate = trailsManager.getById(trailDto.id, TrailSimplifierLevel.LOW).first()
+        val trailId = trailDto.id
+
+        val trailToUpdate = trailsManager.getById(trailId, TrailSimplifierLevel.LOW).first()
 
         val removedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
         val addedPlacesOnTrail = trailToUpdate.locations.filterNot { trailDto.locations.contains(it) }
-        removedPlacesOnTrail.forEach { trailsManager.unlinkPlace(trailDto.id, it) }
-        addedPlacesOnTrail.forEach { trailsManager.linkTrailToPlace(trailDto.id, it) }
+        removedPlacesOnTrail.forEach {
+            trailsManager.unlinkPlace(trailId, it)
+            placeManager.unlinkTrailFromPlace(
+                    it.placeId, trailId,
+                    coordinatesMapper.map(it.coordinates)
+            )
+        }
+        addedPlacesOnTrail.forEach { trailsManager.linkTrailToPlace(trailId, it) }
 
         val removedMediaOnTrail = trailToUpdate.mediaList.filterNot { trailDto.mediaList.contains(it) }
         val addedMediaOnTrail = trailDto.mediaList.filterNot { trailToUpdate.mediaList.contains(it) }
 
         removedMediaOnTrail.forEach {
-            trailsManager.unlinkMedia(trailDto.id, UnLinkeMediaRequestDto(it.id))
+            trailsManager.unlinkMedia(trailId, UnLinkeMediaRequestDto(it.id))
         }
         addedMediaOnTrail.forEach {
-            trailsManager.linkMedia(trailDto.id, LinkedMediaDto(it.id, it.description, it.keyVal))
+            trailsManager.linkMedia(trailId, LinkedMediaDto(it.id, it.description, it.keyVal))
         }
 
         trailToUpdate.name = trailDto.name
@@ -259,7 +266,10 @@ class TrailImporterService @Autowired constructor(
         // Turn PUBLIC -> DRAFT
         if (isSwitchingToDraft(trailDto, trailToUpdate)) {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.DRAFT}""")
-            trailsManager.deleteAllTrailLocationsReferencesInPlaces(trailDto.id)
+            trailsManager.propagateChangesToTrails(trailDto.id)
+            trailDto.locations.forEach{
+                placeManager.unlinkTrailFromPlace(it.placeId, trailDto.id, it.coordinates)
+            }
             // DRAFT -> PUBLIC
         } else {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.PUBLIC}""")

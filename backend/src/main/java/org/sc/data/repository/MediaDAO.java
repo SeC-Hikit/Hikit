@@ -10,10 +10,9 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.sc.configuration.DataSource;
+import org.sc.data.entity.mapper.MediaMapper;
 import org.sc.data.model.FileDetails;
 import org.sc.data.model.Media;
-import org.sc.data.entity.mapper.MediaMapper;
-import org.sc.data.model.Trail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.model.Media.IS_COMPRESSED;
 import static org.sc.data.model.Media.RESOLUTIONS;
-import static org.sc.data.repository.MongoUtils.*;
+import static org.sc.data.repository.MongoUtils.DOT;
 
 @Repository
 public class MediaDAO {
@@ -77,15 +76,17 @@ public class MediaDAO {
         return byId;
     }
 
-    public long count(){
+    public long count() {
         return collection.countDocuments();
     }
 
-    public FindIterable<Document> getMediaNotGenerated() {
+    public FindIterable<Document> getMediaNotGenerated(final String instanceId) {
+        Bson instanceFilter = Filters.eq(Media.RECORD_DETAILS + "." +
+                FileDetails.ON_INSTANCE, instanceId);
         Bson missingField = Filters.not(Filters.exists(IS_COMPRESSED));
         Bson notGenerated = Filters.eq(IS_COMPRESSED, false);
-
-        return collection.find(Filters.or(missingField, notGenerated));
+        return collection.find(Filters.and(instanceFilter,
+                Filters.or(missingField, notGenerated)));
     }
 
     public UpdateResult updateCompressed(final Media media) {
