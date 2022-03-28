@@ -124,7 +124,7 @@ class MediaManager @Autowired constructor(
     private fun makeFileName(fileName: String, fileExtension: String) =
              fileName + "." + fileExtension
 
-    fun getUncompressedMedia(): FindIterable<Document> = mediaDAO.mediaNotGenerated
+    fun getUncompressedMedia(instanceId: String): FindIterable<Document> = mediaDAO.getMediaNotGenerated(instanceId)
 
     fun updateCompressed(media: Media) {
         val updateCompressed = mediaDAO.updateCompressed(media)

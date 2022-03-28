@@ -35,7 +35,7 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 public class CompressImageJob {
     private static final Logger LOGGER = getLogger(CompressImageJob.class);
 
-    private static final String STARTING_COMPRESSION_JOB = "Going to run images compression job (batch size: %s)...";
+    private static final String STARTING_COMPRESSION_JOB = "Going to run images compression job for instance Id '%s' (batch size: %s)...";
     private static final String DONE_COMPRESSION_JOB = "Done with images compression job.";
     private static final String COMPRESSION_PROGRESS = "Compressed image %s of batch with size %s...";
     private static final String COMPRESSION_FILENAME_PROGRESS = "Processing image '%s'...";
@@ -45,7 +45,7 @@ public class CompressImageJob {
     private final MediaMapper mapper;
     private final MediaManager mediaManager;
     private final FileManagementUtil fileManagementUtil;
-    private final int imageBatchSize;
+    private final AppProperties appProperties;
 
     @Autowired
     public CompressImageJob(final MediaManager mediaManager,
@@ -54,20 +54,24 @@ public class CompressImageJob {
                             final FileManagementUtil fileManagementUtil) {
         this.mediaManager = mediaManager;
         this.mapper = mapper;
-        this.imageBatchSize = appProperties.getJobImageBatchSize();
+        this.appProperties = appProperties;
         this.fileManagementUtil = fileManagementUtil;
     }
 
-    @Scheduled(cron = "0 */5 0-8 * * *")
+    @Scheduled(cron = "0 */2 0-23 * * *")
     public void doCompressImages() {
 
         int elaboratedImages = 0;
 
-        LOGGER.trace(format(STARTING_COMPRESSION_JOB, imageBatchSize));
+        final int batchSize = appProperties.getJobImageBatchSize();
+        final String instanceId = appProperties.getInstanceId();
 
-        while (hasUncompressImageAndBelowThreshold(elaboratedImages)) {
+        LOGGER.trace(format(STARTING_COMPRESSION_JOB, instanceId, batchSize));
 
-            final Media media = mapper.mapToObject(mediaManager.getUncompressedMedia().iterator().next());
+        while (hasUncompressImageAndBelowThreshold(elaboratedImages, batchSize, instanceId)) {
+            final Media media = mapper.mapToObject(
+                    mediaManager.getUncompressedMedia(instanceId)
+                    .iterator().next());
             final String resolvedFileAddress = fileManagementUtil.getMediaStoragePath() + getFileName(media);
             final File file = new File(resolvedFileAddress);
             final Resolution[] resolutionValues = Resolution.values();
@@ -99,7 +103,7 @@ public class CompressImageJob {
                     }
                 }
                 LOGGER.info(format(COMPRESSION_FILENAME_DONE_PROGRESS, resolvedFileAddress));
-                LOGGER.info(format(COMPRESSION_PROGRESS, elaboratedImages, imageBatchSize));
+                LOGGER.info(format(COMPRESSION_PROGRESS, elaboratedImages, batchSize));
                 updateDbOnCompress(media, resolutionValues);
 
                 final boolean delete = file.delete();
@@ -128,8 +132,14 @@ public class CompressImageJob {
         mediaManager.updateCompressed(media);
     }
 
-    private boolean hasUncompressImageAndBelowThreshold(int elaboratedImages) {
-        return mediaManager.getUncompressedMedia().iterator().hasNext() && elaboratedImages <= imageBatchSize;
+    private boolean hasUncompressImageAndBelowThreshold(int elaboratedImages, int batchSize, String instanceId) {
+        return areUncompressedMediaPresent(instanceId) && elaboratedImages <=
+                batchSize;
+    }
+
+    private boolean areUncompressedMediaPresent(String instanceId) {
+        return mediaManager.getUncompressedMedia(instanceId)
+                .iterator().hasNext();
     }
 
     protected String generateCompressedFileUrl(String fileUrl, String resolution) {
