@@ -11,8 +11,8 @@ import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailFileManager;
-import org.sc.service.TrailImporterService;
 import org.sc.processor.GpxFileHandlerHelper;
+import org.sc.service.TrailImporterService;
 import org.sc.util.FileProbeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -99,9 +99,9 @@ public class AdminTrailImporterController {
                 = trailFileManager.getGPXFilesTempPathList(files);
 
         if (originalFileNamesToTempPaths.isEmpty()) {
-            return trailRawResponseHelper.constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
-                    trailImporterService.countTrailRaw(),
-                    ZERO, ONE);
+            return trailRawResponseHelper.
+                    constructResponse(singleton(REQUEST_CONTAINS_MISSING_NAMES_ERROR), emptyList(),
+                            ZERO, ZERO, ONE);
         }
 
         final Map<String, Path> originalFileNamesToExistingPaths = originalFileNamesToTempPaths

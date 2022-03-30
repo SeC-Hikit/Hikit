@@ -12,8 +12,8 @@ class TrailRawManager @Autowired constructor(
         private val trailRawMapper: TrailRawMapper,
         private val fileManager: TrailFileManager
 ) {
-    fun get(skip: Int, limit: Int): List<TrailRawDto> =
-            trailRawDAO.get(skip, limit).map { trailRawMapper.map(it) }
+    fun get(skip: Int, limit: Int, realm: String): List<TrailRawDto> =
+            trailRawDAO.get(skip, limit, realm).map { trailRawMapper.map(it) }
 
     fun getById(id: String): List<TrailRawDto> =
             trailRawDAO.getById(id).map { trailRawMapper.map(it) }
@@ -24,6 +24,6 @@ class TrailRawManager @Autowired constructor(
         return map;
     }
 
-    fun count(): Long =
-            trailRawDAO.count()
+    fun count(realm: String): Long =
+            trailRawDAO.count(realm)
 }

@@ -40,8 +40,8 @@ public class TrailRawController {
         controllerPagination.checkSkipLim(skip, limit);
         return trailRawResponseHelper
                 .constructResponse(Collections.emptySet(),
-                        trailRawManager.get(skip, limit),
-                        trailRawManager.count(), skip, limit);
+                        trailRawManager.get(skip, limit, realm),
+                        trailRawManager.count(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve a single raw trail")
@@ -50,7 +50,7 @@ public class TrailRawController {
         return trailRawResponseHelper
                 .constructResponse(Collections.emptySet(),
                         trailRawManager.getById(id),
-                        trailRawManager.count(),
+                        Constants.ONE,
                         Constants.ZERO, Constants.ONE);
     }
 }

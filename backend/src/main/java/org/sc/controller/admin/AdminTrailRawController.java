@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 
+import static org.sc.controller.Constants.ONE;
+import static org.sc.controller.Constants.ZERO;
 import static org.sc.controller.admin.Constants.PREFIX_RAW;
 
 @RestController
@@ -34,7 +36,6 @@ public class AdminTrailRawController {
         return trailRawResponseHelper
                 .constructResponse(Collections.emptySet(),
                         trailRawManager.deleteById(id),
-                        trailRawManager.count(),
-                        org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                        ONE, ZERO, ONE);
     }
 }

@@ -22,6 +22,7 @@ import static org.sc.data.repository.MongoUtils.UPSERT_OPTIONS;
 @Repository
 public class TrailRawDAO {
     private static final Logger LOGGER = getLogger(TrailRawDAO.class);
+    private static final String DB_REALM_STRUCTURE_SELECTOR = TrailRaw.FILE_DETAILS + "." + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
     private final TrailRawMapper trailRawMapper;
@@ -33,8 +34,9 @@ public class TrailRawDAO {
         this.trailRawMapper = placeMapper;
     }
 
-    public List<TrailRaw> get(final int skip, final int limit) {
-        return toTrailRawList(collection.find(new Document()).skip(skip).limit(limit).sort(
+    public List<TrailRaw> get(final int skip, final int limit, final String realm) {
+        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        return toTrailRawList(collection.find(new Document(realmFilter)).skip(skip).limit(limit).sort(
                 new Document(TrailRaw.FILE_DETAILS + "." + FileDetails.UPLOADED_ON, -1)));
     }
 
@@ -62,8 +64,9 @@ public class TrailRawDAO {
         return Collections.singletonList(trailRawMapper.mapToObject(upserted));
     }
 
-    public long count() {
-        return collection.countDocuments();
+    public long count(final String realm) {
+        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        return collection.countDocuments(realmFilter);
     }
 
     private List<TrailRaw> toTrailRawList(Iterable<Document> documents) {

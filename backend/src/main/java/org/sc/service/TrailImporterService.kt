@@ -279,8 +279,6 @@ class TrailImporterService @Autowired constructor(
         return trailsManager.update(trailMapper.map(trailToUpdate))
     }
 
-    fun countTrailRaw() = trailRawDao.count()
-
     private fun isSwitchingToDraft(
             trailDto: TrailDto,
             trailToUpdate: TrailDto

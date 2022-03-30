@@ -60,11 +60,12 @@ public class TrailPreviewController {
     @GetMapping("/raw")
     public TrailPreviewResponse getRawTrailPreviews(
             @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
-                .constructResponse(emptySet(), trailManager.getRawPreviews(skip, limit),
-                        trailManager.countRaw(), skip, limit);
+                .constructResponse(emptySet(), trailManager.getRawPreviews(skip, limit, realm),
+                        trailManager.countRaw(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve preview by ID")
