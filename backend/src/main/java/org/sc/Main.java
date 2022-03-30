@@ -17,7 +17,7 @@ public class Main {
 
     final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
     final static String LOGO = "\n-------------------------\n" +
-            AppProperties.APP_NAME + " v" + AppProperties.VERSION + "\n" +
+            AppProperties.APP_NAME + " v" + AppProperties.DISPLAYED_VERSION + "\n" +
             "-------------------------";
 
     @Autowired

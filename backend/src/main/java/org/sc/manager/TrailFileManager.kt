@@ -7,8 +7,7 @@ import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
 import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
-import org.sc.configuration.AppProperties.VERSION
-import org.sc.configuration.auth.AuthFacade
+import org.sc.configuration.AppProperties.DISPLAYED_VERSION
 import org.sc.data.mapper.TrailCoordinatesMapper
 import org.sc.data.model.Coordinates
 import org.sc.data.model.TrailCoordinates
@@ -109,7 +108,7 @@ class TrailFileManager @Autowired constructor(
 
     fun writeTrailToOfficialGpx(trail: TrailDto) {
         logger.info("Writing GPX trail for trail with id '${trail.id}'")
-        val creator = "S&C_$VERSION"
+        val creator = "S&C_$DISPLAYED_VERSION"
         val gpx = GPX.builder(creator)
                 .addTrack { track ->
                     track.addSegment { segment ->

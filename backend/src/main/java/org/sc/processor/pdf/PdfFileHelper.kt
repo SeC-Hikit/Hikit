@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -318,7 +317,7 @@ class PdfFileHelper {
 
     private fun addMetadata(trail: TrailDto,
                             document: Document) {
-        val authorAndCreator = """${AppProperties.APP_NAME}-${AppProperties.VERSION}"""
+        val authorAndCreator = """${AppProperties.APP_NAME}-${AppProperties.DISPLAYED_VERSION}"""
         document.addTitle(getTitle(trail.code))
         document.addAuthor(authorAndCreator)
         document.addCreator(authorAndCreator)
