@@ -15,7 +15,7 @@ import org.sc.data.model.PlaceRef
 import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError
 import java.util.*
 
-class TrailsImporterValidatorTest {
+internal class TrailsImporterValidatorTest {
 
     private val trailCoordsValidatorMock: TrailCoordinatesValidator =
             mockkClass(TrailCoordinatesValidator::class)

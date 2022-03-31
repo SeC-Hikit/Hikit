@@ -6,7 +6,7 @@ import io.mockk.mockkClass
 import org.junit.Test
 import org.sc.common.rest.geo.RectangleDto
 
-class RectangleValidatorTest {
+internal class RectangleValidatorTest {
 
     private val coordsValidatorMock: CoordinatesValidator =
             mockkClass(CoordinatesValidator::class)

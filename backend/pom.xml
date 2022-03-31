@@ -19,7 +19,7 @@
         <mongo-java-driver.version>3.12.8</mongo-java-driver.version>
         <tika-core.version>1.25</tika-core.version>
         <springdoc-openapi-ui.version>1.5.2</springdoc-openapi-ui.version>
-        <mockk.version>1.10.6</mockk.version>
+        <mockk.version>1.12.3</mockk.version>
         <itextpdf.version>5.5.10</itextpdf.version>
         <kotlinx-coroutines-core.version>1.6.0</kotlinx-coroutines-core.version>
     </properties>

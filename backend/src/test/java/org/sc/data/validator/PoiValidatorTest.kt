@@ -16,7 +16,7 @@ import org.sc.manager.PoiManager
 import org.sc.manager.TrailManager
 import java.util.*
 
-class PoiValidatorTest {
+internal class PoiValidatorTest {
 
     companion object {
         const val ANY = "ANY"
