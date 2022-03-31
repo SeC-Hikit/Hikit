@@ -115,7 +115,8 @@ public class AccessibilityReportDao {
     public List<AccessibilityReport> getUnapgradedByRealm(final String realm, final int skip, final int limit) {
         return toNotificationList(collection.find(
                         new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
-                                .append(AccessibilityReport.ISSUE_ID, ""))
+                                .append(AccessibilityReport.ISSUE_ID, "")
+                                .append(AccessibilityReport.IS_VALID, true))
                 .sort(new Document(AccessibilityReport.REPORT_DATE, MongoUtils.ASCENDING_ORDER))
                 .skip(skip)
                 .limit(limit)
