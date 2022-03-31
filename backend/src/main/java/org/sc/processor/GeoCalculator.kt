@@ -13,12 +13,12 @@ object GeoCalculator {
     fun getOuterSquareForCoordinates(coordinates2D: List<Coordinates2D>): CoordinatesRectangle {
         val topRight = Coordinates2D(coordinates2D.maxOf { it.longitude }, coordinates2D.maxOf { it.latitude })
         val bottomLeft = Coordinates2D(coordinates2D.minOf { it.longitude }, coordinates2D.minOf { it.latitude })
-        return CoordinatesRectangle(bottomLeft,topRight)
+        return CoordinatesRectangle(bottomLeft, topRight)
     }
 
     fun areSegmentsIntersecting(subjectSegment: List<Coordinates2D>, foundSegment: GeoLineString): Boolean {
-        val subjectMappedCoordinates = subjectSegment.map { Coordinate(it.longitude, it.latitude) }
-        val foundSegmentCoordinates = foundSegment.coordinates.map { Coordinate(it.longitude, it.latitude) }
+        val subjectMappedCoordinates = mapToCoords(subjectSegment)
+        val foundSegmentCoordinates = mapToCoords(foundSegment.coordinates)
         val subjectSegmentEuclidean = geometryFactory.createLineString(subjectMappedCoordinates.toTypedArray())
         val targetSegmentEuclidean = geometryFactory.createLineString(foundSegmentCoordinates.toTypedArray())
 
@@ -27,13 +27,14 @@ object GeoCalculator {
 
     fun getIntersectionPointsBetweenSegments(subjectSegment: List<Coordinates2D>, foundSegment: GeoLineString)
             : List<Coordinates2D> {
-        val subjectMappedCoordinates = subjectSegment.map { Coordinate(it.longitude, it.latitude) }
-        val foundSegmentCoordinates = foundSegment.coordinates.map { Coordinate(it.longitude, it.latitude) }
+        val subjectMappedCoordinates = mapToCoords(subjectSegment)
+        val foundSegmentCoordinates = mapToCoords(foundSegment.coordinates)
         val subjectSegmentEuclidean = geometryFactory.createLineString(subjectMappedCoordinates.toTypedArray())
         val targetSegmentEuclidean = geometryFactory.createLineString(foundSegmentCoordinates.toTypedArray())
 
         return subjectSegmentEuclidean.intersection(targetSegmentEuclidean).coordinates.map { Coordinates2D(it.x, it.y) }
     }
 
-
+    private fun mapToCoords(subjectSegment: List<Coordinates2D>) =
+            subjectSegment.map { Coordinate(it.longitude, it.latitude) }
 }
