@@ -165,7 +165,8 @@ class TrailImporterService @Autowired constructor(
         populatePlacesWithTrailData(trailSaved)
 
         logger.info("Generating static resources for trail...")
-        updateResourcesForTrail(trailSaved)
+        val targetPlaces = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
+        updateResourcesForTrail(trailSaved, targetPlaces)
 
 
         trailSaved.locations
@@ -207,10 +208,11 @@ class TrailImporterService @Autowired constructor(
         return trailsManager.getByMatchingStartEndPoint(targetTrailRaw.startPos, targetTrailRaw.finalPos);
     }
 
-    fun updateResourcesForTrail(targetTrail: TrailDto) {
+    fun updateResourcesForTrail(targetTrail: TrailDto, targetPlaces: List<PlaceDto>) {
+
         trailFileManager.writeTrailToOfficialGpx(targetTrail)
         trailFileManager.writeTrailToKml(targetTrail)
-        trailFileManager.writeTrailToPdf(targetTrail, emptyList(), emptyList(), emptyList())
+        trailFileManager.writeTrailToPdf(targetTrail, targetPlaces, emptyList(), emptyList())
     }
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {
