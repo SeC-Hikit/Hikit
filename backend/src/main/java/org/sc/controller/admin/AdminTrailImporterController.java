@@ -1,6 +1,7 @@
 package org.sc.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.apache.logging.log4j.Logger;
 import org.sc.common.rest.TrailMappingDto;
 import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailMappingResponse;
@@ -10,6 +11,7 @@ import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.data.validator.GeneralValidator;
+import org.sc.job.CompressImageJob;
 import org.sc.manager.TrailFileManager;
 import org.sc.processor.GpxFileHandlerHelper;
 import org.sc.service.TrailImporterService;
@@ -23,9 +25,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.controller.Constants.ONE;
 import static org.sc.controller.Constants.ZERO;
 import static org.sc.controller.admin.Constants.PREFIX_IMPORT;
@@ -34,6 +38,8 @@ import static org.sc.util.FileProbeUtil.GPX_MIME_TYPE;
 @RestController
 @RequestMapping(PREFIX_IMPORT)
 public class AdminTrailImporterController {
+
+    private static final Logger LOGGER = getLogger(AdminTrailImporterController.class);
 
     public static final String REQUEST_CONTAINS_MISSING_NAMES_ERROR = "File is empty";
 
@@ -112,10 +118,10 @@ public class AdminTrailImporterController {
                                 .get(path.getKey())
                                 .orElseThrow(IllegalStateException::new)));
 
+        warnOnGpxMimeMismatch(originalFileNamesToExistingPaths);
+
         final Map<String, Path> gpxValidFiles = originalFileNamesToExistingPaths
                 .entrySet().stream()
-                .filter(nameToPath -> fileProbeUtil.getFileMimeType(nameToPath.getValue().toFile(),
-                        nameToPath.getKey()).equals(GPX_MIME_TYPE))
                 .filter(nameToPath -> gpxFileHandlerHelper.canRead(nameToPath.getValue()))
                 .collect(toMap(Map.Entry::getKey,
                         path -> originalFileNamesToExistingPaths
@@ -148,6 +154,16 @@ public class AdminTrailImporterController {
 
         return trailRawResponseHelper.constructResponse(emptySet(), savedTrails, size,
                 ZERO, size);
+    }
+
+    private void warnOnGpxMimeMismatch(Map<String, Path> originalFileNamesToExistingPaths) {
+        originalFileNamesToExistingPaths
+                .entrySet()
+                .forEach(nameToPath -> {
+                    final boolean doesFileMatchXmlMime = fileProbeUtil.getFileMimeType(nameToPath.getValue().toFile(),
+                            nameToPath.getKey()).equals(GPX_MIME_TYPE);
+                    if(!doesFileMatchXmlMime) LOGGER.warn(format("File with name '%s' does not match XML mime type...", nameToPath));
+                });
     }
 
     private Set<String> findNotProcessedFiles(Set<String> initialFilenames, Set<String> savedFilenames) {
