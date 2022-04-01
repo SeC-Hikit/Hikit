@@ -1,7 +1,9 @@
 package org.sc.configuration;
 
+import org.apache.logging.log4j.Logger;
 import org.sc.controller.MediaController;
 import org.sc.controller.TrailController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.manager.MediaManager;
 import org.sc.manager.TrailFileManager;
 import org.sc.util.FileManagementUtil;
@@ -16,8 +18,12 @@ import org.springframework.web.servlet.resource.EncodedResourceResolver;
 
 import java.io.File;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    private static final Logger LOGGER = getLogger(WebConfig.class);
 
     private final FileManagementUtil fileManagementUtil;
     private final AppProperties appProperties;
@@ -36,29 +42,47 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(MediaController.PREFIX + "/" + MediaManager.MEDIA_MID + "/**")
-                .addResourceLocations("file:" + fileManagementUtil.getMediaStoragePath())
+        final String mediaEndpoint = MediaController.PREFIX + "/" + MediaManager.MEDIA_MID + "/**";
+        final String mediaStoragePath = fileManagementUtil.getMediaStoragePath();
+        registry.addResourceHandler(mediaEndpoint)
+                .addResourceLocations("file:" + mediaStoragePath)
                 .setCachePeriod(appProperties.getResourcesCachePeriod())
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver());
 
-        registry.addResourceHandler(TrailController.PREFIX + "/" + TrailFileManager.GPX_TRAIL_MID + "/**")
-                .addResourceLocations("file:" + fileManagementUtil.getTrailGpxStoragePath())
+        LOGGER.info(String.format("Media endpoint: %s -> %s", mediaEndpoint, mediaStoragePath));
+
+        final String gpxEndpoint = TrailController.PREFIX + "/" + TrailFileManager.GPX_TRAIL_MID + "/**";
+        final String trailGpxStoragePath = fileManagementUtil.getTrailGpxStoragePath();
+
+        registry.addResourceHandler(gpxEndpoint)
+                .addResourceLocations("file:" + trailGpxStoragePath)
                 .setCachePeriod(appProperties.getResourcesCachePeriod())
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver());
 
-        registry.addResourceHandler(TrailController.PREFIX + "/" + TrailFileManager.KML_TRAIL_MID + "/**")
-                .addResourceLocations("file:" + fileManagementUtil.getTrailKmlStoragePath())
+        LOGGER.info(String.format("GPX endpoint: %s -> %s", gpxEndpoint, trailGpxStoragePath));
+
+        final String kmlEndpoint = TrailController.PREFIX + "/" + TrailFileManager.KML_TRAIL_MID + "/**";
+        final String trailKmlStoragePath = fileManagementUtil.getTrailKmlStoragePath();
+
+        registry.addResourceHandler(kmlEndpoint)
+                .addResourceLocations("file:" + trailKmlStoragePath)
                 .setCachePeriod(appProperties.getResourcesCachePeriod())
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver());
 
-        registry.addResourceHandler(TrailController.PREFIX + "/" + TrailFileManager.PDF_TRAIL_MID + "/**")
-                .addResourceLocations("file:" + fileManagementUtil.getTrailPdfStoragePath())
+        LOGGER.info(String.format("KML endpoint: %s -> %s", kmlEndpoint, trailKmlStoragePath));
+
+        final String pdfEndpoint = TrailController.PREFIX + "/" + TrailFileManager.PDF_TRAIL_MID + "/**";
+        final String trailPdfStoragePath = fileManagementUtil.getTrailPdfStoragePath();
+
+        registry.addResourceHandler(pdfEndpoint)
+                .addResourceLocations("file:" + trailPdfStoragePath)
                 .setCachePeriod(appProperties.getResourcesCachePeriod())
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver());
 
+        LOGGER.info(String.format("PDF endpoint: %s -> %s", pdfEndpoint, trailPdfStoragePath));
     }
 }

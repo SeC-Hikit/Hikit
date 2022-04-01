@@ -77,7 +77,7 @@ class AccessibilityReportValidator @Autowired constructor(
 
     fun validateUpdateRequest(id: String): Set<String> {
         val errors = mutableSetOf<String>()
-        val byId = accessibilityNotificationManager.byId(id)
+        val byId = accessibilityNotificationManager.getById(id)
 
         if (byId.isEmpty()) {
             errors.add("Accessibility Report does not exist")
