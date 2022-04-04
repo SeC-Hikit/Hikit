@@ -4,17 +4,22 @@ import org.sc.common.rest.*
 import org.sc.configuration.auth.AuthFacade
 import org.sc.configuration.auth.AuthHelper
 import org.sc.data.geo.TrailPlacesAligner
-import org.sc.data.mapper.*
+import org.sc.data.mapper.CoordinatesMapper
+import org.sc.data.mapper.TrailMapper
+import org.sc.data.mapper.TrailRawMapper
 import org.sc.data.model.*
 import org.sc.data.repository.TrailDatasetVersionDao
 import org.sc.data.repository.TrailRawDAO
-import org.sc.manager.*
+import org.sc.manager.PlaceManager
+import org.sc.manager.ResourceManager
+import org.sc.manager.TrailFileManager
+import org.sc.manager.TrailManager
 import org.sc.manager.regeneration.RegenerationActionType
+import org.sc.manager.regeneration.RegenerationEntryType
 import org.sc.processor.DistanceProcessor
 import org.sc.processor.TrailSimplifier
 import org.sc.processor.TrailSimplifierLevel
 import org.sc.processor.TrailsStatsCalculator
-import org.sc.manager.regeneration.RegenerationEntryType
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -160,14 +165,15 @@ class TrailImporterService @Autowired constructor(
         populatePlacesWithTrailData(trailSaved)
 
         logger.info("Generating static resources for trail...")
-        updateResourcesForTrail(trailSaved)
+        val targetPlaces = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
+        updateResourcesForTrail(trailSaved, targetPlaces)
 
-        val relatedTrails = trailSaved.locations.flatMap { it.encounteredTrailIds }
-        logger.info("Ri-generating static resources for related trail(s) ${relatedTrails}...")
-        relatedTrails
+        trailSaved.locations
+                .flatMap { it.encounteredTrailIds }
                 .filter { it != trailSaved.id }
                 .flatMap { trailsManager.getById(it, TrailSimplifierLevel.LOW) }
                 .forEach {
+                    logger.info("Ri-generating static resources for related trail '${it.id}'...")
                     resourceManager.addEntry(it.id, RegenerationEntryType.TRAIL,
                             trailSaved.id, authHelper.username, RegenerationActionType.CREATE)
                 }
@@ -201,10 +207,10 @@ class TrailImporterService @Autowired constructor(
         return trailsManager.getByMatchingStartEndPoint(targetTrailRaw.startPos, targetTrailRaw.finalPos);
     }
 
-    fun updateResourcesForTrail(targetTrail: TrailDto) {
+    fun updateResourcesForTrail(targetTrail: TrailDto, targetPlaces: List<PlaceDto>) {
         trailFileManager.writeTrailToOfficialGpx(targetTrail)
         trailFileManager.writeTrailToKml(targetTrail)
-
+        trailFileManager.writeTrailToPdf(targetTrail, targetPlaces, emptyList(), emptyList())
     }
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {

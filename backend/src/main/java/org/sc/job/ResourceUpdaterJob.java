@@ -15,26 +15,17 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 public class ResourceUpdaterJob {
     private static final Logger LOGGER = getLogger(ResourceUpdaterJob.class);
 
-    private static final int MAX_NUMBER_OF_TRAILS_PROCESSED = 10;
-
     private static final String STARTING_COMPRESSION_JOB = "Going to run reosurce updater job (batch size: %s)...";
     private static final String DONE_COMPRESSION_JOB = "Done with resource updater job.";
-    private static final String COMPRESSION_PROGRESS = "Compressed image %s of batch with size %s...";
-    private static final String COMPRESSION_FILENAME_PROGRESS = "Processing entry '%s'...";
-    private static final String COMPRESSION_FILENAME_DONE_PROGRESS = "Done Processing image '%s'...";
-    private static final String COMPRESSION_BUT_NO_DELETION = "Done compressing, but could not delete '%s'...";
 
-    private final FileManagementUtil fileManagementUtil;
     private ResourceService resourceService;
     private final int imageBatchSize;
 
     @Autowired
     public ResourceUpdaterJob(final ResourceService resourceService,
-                              final AppProperties appProperties,
-                              final FileManagementUtil fileManagementUtil) {
+                              final AppProperties appProperties) {
         this.resourceService = resourceService;
         this.imageBatchSize = appProperties.getJobImageBatchSize();
-        this.fileManagementUtil = fileManagementUtil;
     }
 
     @Scheduled(cron = "0 */1 * * * *")

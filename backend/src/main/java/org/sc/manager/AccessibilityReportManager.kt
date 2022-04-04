@@ -16,7 +16,7 @@ class AccessibilityReportManager @Autowired constructor(
         private val stringIdGenerator: StringIdGenerator
 ) {
 
-    fun byId(id: String): List<AccessibilityReportDto> =
+    fun getById(id: String): List<AccessibilityReportDto> =
             accessibilityReportDAO.getById(id).map { accessibilityMapper.map(it) }
 
     fun getActivationIdById(id: String) : List<String> =

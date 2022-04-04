@@ -93,7 +93,7 @@ public class AdminPlaceController {
     @Operation(summary = "Delete place")
     @DeleteMapping("/{id}")
     public PlaceResponse delete(@PathVariable String id) {
-        final Set<String> errors = generalValidator.validateUpdatePlace(id);
+        final Set<String> errors = generalValidator.validateDeletePlace(id);
         if (!errors.isEmpty()) {
             return placeResponseHelper.constructResponse(errors,
                     emptyList(),

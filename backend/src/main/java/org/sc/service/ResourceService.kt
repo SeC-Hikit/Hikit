@@ -39,7 +39,7 @@ class ResourceService @Autowired constructor(
             val trailList = trailManager.getById(it.targetingTrail, TrailSimplifierLevel.LOW)
             if(trailList.isNotEmpty()) {
                 val targetTrail = trailList.first()
-                logger.trace("Ri-generating resource for trail with id: $targetTrail")
+                logger.info("Ri-generating resource for trail with id: $targetTrail")
                 generatePdfFile(targetTrail)
             }
             logger.trace("Trail '${it.targetingTrail}' seems be removed while waiting for jobs to complete. Skipping...")

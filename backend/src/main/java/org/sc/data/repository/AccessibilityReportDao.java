@@ -28,6 +28,7 @@ import static org.sc.data.repository.MongoUtils.DOT;
 @Repository
 public class AccessibilityReportDao {
     private static final Logger LOGGER = getLogger(AccessibilityReportDao.class);
+
     public static final String COLLECTION_REALM_STRUCT = AccessibilityReport.RECORD_DETAILS + DOT + RecordDetails.REALM;
 
     private final MongoCollection<Document> collection;

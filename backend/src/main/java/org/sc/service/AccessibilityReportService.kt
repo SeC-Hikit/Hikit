@@ -26,7 +26,7 @@ class AccessibilityReportService @Autowired constructor(
 ) {
 
     fun byId(id: String): List<AccessibilityReportDto> =
-            accessibilityReportManager.byId(id)
+            accessibilityReportManager.getById(id)
 
     fun getUnapgradedByRealm(realm: String, skip: Int, limit: Int): List<AccessibilityReportDto> =
             accessibilityReportManager.getUnapgradedByRealm(realm, skip, limit)
