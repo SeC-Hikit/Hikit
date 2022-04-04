@@ -3,23 +3,29 @@ package org.sc.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.BatchStatus;
 import org.sc.common.rest.GenerateRequestDto;
+import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.response.ResourceGeneratorResponse;
 import org.sc.configuration.AppProperties;
-import org.sc.service.ResourceService;
-import org.sc.service.TrailImporterService;
+import org.sc.manager.PlaceManager;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
+import org.sc.service.ResourceService;
+import org.sc.service.TrailImporterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.sc.controller.admin.Constants.PREFIX_RESOURCE;
@@ -40,16 +46,19 @@ public class AdminResourceController {
     private final ResourceService resourceService;
     private final TrailImporterService trailImporterService;
     private final TrailManager trailManager;
+    private final PlaceManager placeManager;
     private final AppProperties appProperties;
 
     @Autowired
     public AdminResourceController(final TrailManager trailManager,
                                    final ResourceService resourceService,
                                    final TrailImporterService trailImporterService,
+                                   final PlaceManager placeManager,
                                    final AppProperties appProperties) {
         this.trailManager = trailManager;
         this.resourceService = resourceService;
         this.trailImporterService = trailImporterService;
+        this.placeManager = placeManager;
         this.appProperties = appProperties;
     }
 
@@ -125,7 +134,10 @@ public class AdminResourceController {
         trails.forEach(t -> {
             final String trailId = t.getId();
             LOGGER.info(format(REGENERATE_FOR_TRAIL_ID_MESSAGE, trailId));
-            trailImporterService.updateResourcesForTrail(t);
+            final List<PlaceDto> targetPlaces = t.getLocations().stream()
+                    .map((it) -> placeManager.getById(it.getPlaceId())).flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            trailImporterService.updateResourcesForTrail(t, targetPlaces);
             LOGGER.info(format(DONE_REGENERATING_FOR_TRAIL_ID, trailId));
         });
     }

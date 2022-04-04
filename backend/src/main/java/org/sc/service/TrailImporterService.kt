@@ -168,7 +168,6 @@ class TrailImporterService @Autowired constructor(
         val targetPlaces = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
         updateResourcesForTrail(trailSaved, targetPlaces)
 
-
         trailSaved.locations
                 .flatMap { it.encounteredTrailIds }
                 .filter { it != trailSaved.id }
@@ -209,7 +208,6 @@ class TrailImporterService @Autowired constructor(
     }
 
     fun updateResourcesForTrail(targetTrail: TrailDto, targetPlaces: List<PlaceDto>) {
-
         trailFileManager.writeTrailToOfficialGpx(targetTrail)
         trailFileManager.writeTrailToKml(targetTrail)
         trailFileManager.writeTrailToPdf(targetTrail, targetPlaces, emptyList(), emptyList())
