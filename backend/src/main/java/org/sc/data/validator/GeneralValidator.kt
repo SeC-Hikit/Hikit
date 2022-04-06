@@ -61,6 +61,7 @@ class GeneralValidator @Autowired constructor(
     fun validateUpdateMedia(id: String): Set<String> = mediaExistenceValidator.validateDeleteRequest(id)
     fun validateUpdatePlace(id: String): Set<String> = placeExistenceValidator.validatePlace(id)
     fun validateDeletePlace(id: String): Set<String> = placeDeleteValidator.validate(id)
+    fun validateDeleteRawTrail(id: String): Set<String> = trailRawValidator.validateDeleteRequest(id)
     fun validateUpdatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
     fun validateUpdateTrail(id: String): Set<String> = trailExistenceValidator.validateExistenceAndRealm(id)
     fun validateUpdateMaintenance(id: String): Set<String> = maintenanceValidator.validateExistenceAndRealm(id)
