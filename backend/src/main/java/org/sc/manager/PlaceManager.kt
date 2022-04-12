@@ -113,7 +113,9 @@ class PlaceManager @Autowired constructor(
     private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
         CoordinatesWithAltitude(
                 it.latitude, it.longitude,
-                altitudeServiceAdapter.getAltitudeByLongLat(it.latitude, it.longitude)
+                altitudeServiceAdapter
+                        .getElevationsByLongLat(it.latitude, it.longitude)
+                        .first()
         )
     }
 

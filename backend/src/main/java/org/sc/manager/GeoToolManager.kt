@@ -11,10 +11,10 @@ class GeoToolManager @Autowired constructor(private val altitudeService : Altitu
                                             private val trailsStatsCalculator: TrailsStatsCalculator) {
 
     fun getAltitudeByLongLat(latitude: Double, longitude: Double) =
-            altitudeService.getAltitudeByLongLat(latitude, longitude)
+            altitudeService.getElevationsByLongLat(latitude, longitude)
 
     fun getCoordinateByLongLat(latitude: Double, longitude: Double): CoordinatesDto =
-            CoordinatesDto(latitude, longitude,altitudeService.getAltitudeByLongLat(latitude, longitude))
+            CoordinatesDto(latitude, longitude, altitudeService.getElevationsByLongLat(latitude, longitude).firstNotNullOf { 0.0 })
 
     fun getDistanceBetweenCoordinates(coords: List<CoordinatesDto>) : Double =
             trailsStatsCalculator.calculateTrailLength(coords)

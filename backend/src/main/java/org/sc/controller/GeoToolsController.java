@@ -41,7 +41,9 @@ public class GeoToolsController {
         if (!errors.isEmpty()) {
             return new CoordinatesDto();
         }
-        final double altitudeByLongLat = geoToolManager.getAltitudeByLongLat(latitude, longitude);
+        final double altitudeByLongLat = geoToolManager
+                .getAltitudeByLongLat(latitude, longitude).stream().findFirst()
+                .orElseThrow(RuntimeException::new);
         return new CoordinatesDto(latitude, longitude, altitudeByLongLat);
     }
 

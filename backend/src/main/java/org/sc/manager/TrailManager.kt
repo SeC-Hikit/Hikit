@@ -6,8 +6,6 @@ import org.sc.common.rest.geo.RectangleDto
 import org.sc.data.geo.CoordinatesRectangle
 import org.sc.data.mapper.*
 import org.sc.data.model.*
-import org.sc.data.repository.AccessibilityNotificationDAO
-import org.sc.data.repository.MaintenanceDAO
 import org.sc.data.repository.PlaceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.processor.GeoCalculator
@@ -17,7 +15,6 @@ import org.sc.data.geo.TrailPlacesAligner
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.lang.IllegalStateException
-import java.util.logging.Logger
 
 @Component
 class TrailManager @Autowired constructor(
@@ -185,7 +182,7 @@ class TrailManager @Autowired constructor(
                 coordinates, trail.geoLineString
         )
         val altitudeResultOrderedList =
-                altitudeService.getAltituteByLongLat(coordinates2D.map { coord -> Pair(coord.latitude, coord.longitude) })
+                altitudeService.getElevationsByLongLat(coordinates2D.map { coord -> Pair(coord.latitude, coord.longitude) })
 
         val coordinatesForTrail = mutableListOf<Coordinates>()
         coordinates2D.forEachIndexed { index, coord ->

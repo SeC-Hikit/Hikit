@@ -29,22 +29,27 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
     private val hostToAltitudeService : String = appProperties.altitudeServiceHost
     private val pathToServiceApi: String = "$hostToAltitudeService:$portToAltitudeService/api/v1/lookup"
 
-    fun getAltitudeByLongLat(latitude: Double,
-                             longitude: Double): Double {
+    fun getElevationsByLongLat(latitude: Double,
+                               longitude: Double): List<Double> {
         val apiGetEndpoint = "http://$pathToServiceApi?locations=$latitude,$longitude"
-        val getCall = URL(apiGetEndpoint).readText()
-        val gsonBuilder: AltitudeApiResponse = objectMapper.readValue(getCall, AltitudeApiResponse::class.java)
-        return gsonBuilder.results.first().elevation
+        return try {
+            val getCall = URL(apiGetEndpoint).readText()
+            val gsonBuilder: AltitudeApiResponse = objectMapper.readValue(getCall, AltitudeApiResponse::class.java)
+            listOf(gsonBuilder.results.first().elevation)
+        } catch (e: Exception) {
+            logger.severe("Could not connect to altitude service or read its response")
+            emptyList()
+        }
     }
 
-    fun getAltituteByLongLat(coordinates: List<Pair<Double, Double>>): List<Double> {
+    fun getElevationsByLongLat(coordinates: List<Pair<Double, Double>>): List<Double> {
 
         val coordinatesChunks = coordinates.chunked(ALTITUDE_CALL_CHUNK_SIZE)
 
         val result : MutableList<Double> = mutableListOf()
 
         coordinatesChunks.forEach { chunk ->
-            val coordinateAltitudeList = callAltitudeWithExponentialBackoff(chunk, ALTITUDE_CALL_RETRIES)
+            val coordinateAltitudeList = callAltitudeWithExponentialBackoff(chunk)
 
             if(chunk.size == coordinateAltitudeList.size) {
                 result.addAll(coordinateAltitudeList)
@@ -58,12 +63,12 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
         return result
     }
 
-    private fun callAltitudeWithExponentialBackoff(coordinates: List<Pair<Double, Double>>, retry : Int) : List<Double> {
+    private fun callAltitudeWithExponentialBackoff(coordinates: List<Pair<Double, Double>>) : List<Double> {
 
         val postData: ByteArray = buildAltitudeRequest(coordinates)
 
         var retryCounter = 1
-        while(retryCounter <= retry) {
+        while(retryCounter <= ALTITUDE_CALL_RETRIES) {
 
             try {
                 val connection = buildAltitudeRequestConnection(postData.size)
@@ -83,12 +88,12 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
                 } else {
                     retryCounter++
-                    logger.info("retrying... $retryCounter time(s)");
+                    logger.warning("retrying... $retryCounter time(s)");
                     TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
                 }
             } catch (exception: Exception) {
                 retryCounter++
-                logger.info("exception retrying... $retryCounter time(s)");
+                logger.severe("exception retrying... $retryCounter time(s)");
                 TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
             }
         }

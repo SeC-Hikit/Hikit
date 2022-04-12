@@ -76,7 +76,7 @@ class TrailFileManager @Autowired constructor(
         val track = gpx.tracks.first()
         val segment = track.segments.first()
 
-        val altitudeResultOrderedList = altitudeService.getAltituteByLongLat(segment.points.map { coord -> Pair(coord.latitude.toDegrees(), coord.longitude.toDegrees()) })
+        val altitudeResultOrderedList = altitudeService.getElevationsByLongLat(segment.points.map { coord -> Pair(coord.latitude.toDegrees(), coord.longitude.toDegrees()) })
 
         val coordinatesWithAltitude = mutableListOf<Coordinates>()
 
