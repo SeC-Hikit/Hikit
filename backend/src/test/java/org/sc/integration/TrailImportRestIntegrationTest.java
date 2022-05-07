@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
 
-    private static final String EXPECTED_PLACE_ID_INTERMEDIATE = "ANY_INTERMEDIATE";
     public static final String EXPECTED_TRAIL_ID = "123BO";
 
     private static final String EXPECTED_NAME = "ANY";
@@ -49,20 +48,14 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
     // Start POS coordinates
     public static final TrailCoordinatesDto START_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436084, 11.315620, 250.0, 0);
-    public static final CoordinatesDto START_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
 
     public static final TrailCoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.436081, 11.315625, 250.0, 1);
-    public static final CoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.436081, 11.315625, 250.0);
 
     // End Pos coordinates
     public static final TrailCoordinatesDto END_EXPECTED_COORDINATE = new TrailCoordinatesDto(44.568191623, 11.154781567, 250.0, 19478);
-    public static final CoordinatesDto END_EXPECTED_COORDINATE_DTO = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
     public static final List<TrailCoordinatesDto> EXPECTED_TRAIL_COORDINATES = Arrays.asList(
             START_EXPECTED_COORDINATE, INTERMEDIATE_EXPECTED_COORDINATE, END_EXPECTED_COORDINATE
     );
-    public static final List<PlaceRefDto> SINGLETON_LIST_OF_REF_PLACES =
-            singletonList(new PlaceRefDto(EXPECTED_NAME,
-                    INTERMEDIATE_EXPECTED_COORDINATE_DTO, EXPECTED_PLACE_ID_INTERMEDIATE, emptyList()));
 
     // FileDetails
     public static final String ANY_FILENAME = "001xBO.gpx";
@@ -73,8 +66,6 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public static final FileDetailsDto IMPORTED_FILE_DETAILS = new FileDetailsDto(EXPECTED_DATE, USER_ADMIN, INSTANCE_ID, REALM, ANY_FILENAME, ANY_FILENAME, USER_ADMIN);
 
     public static List<PlaceRefDto> LOCATION_REFS;
-
-    public TrailImportDto expectedTrailDto;
 
     @Autowired
     DataSource dataSource;
@@ -149,16 +140,16 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
 
         PlaceDto createdFirstPlace = firstPlace.getContent().get(0);
         PlaceRefDto placeStartRef = new PlaceRefDto(createdFirstPlace.getName(),
-                createdFirstPlace.getCoordinates().get(0), createdFirstPlace.getId(), emptyList());
+                createdFirstPlace.getCoordinates().get(0), createdFirstPlace.getId(), emptyList(), false);
 
         PlaceDto createdLastPlace = lastPlace.getContent().get(0);
         PlaceRefDto placeFinalRef = new PlaceRefDto(createdLastPlace.getName(),
-                createdLastPlace.getCoordinates().get(0), createdLastPlace.getId(), emptyList());
+                createdLastPlace.getCoordinates().get(0), createdLastPlace.getId(), emptyList(), false);
 
         PlaceDto intermediatePlace = addedPlace.getContent().get(0);
 
         LOCATION_REFS = Arrays.asList(placeStartRef, new PlaceRefDto(intermediatePlace.getName(),
-                intermediatePlace.getCoordinates().get(0), intermediatePlace.getId(), emptyList()), placeFinalRef);
+                intermediatePlace.getCoordinates().get(0), intermediatePlace.getId(), emptyList(), false), placeFinalRef);
 
 
         return new TrailImportDto(EXPECTED_TRAIL_ID, EXPECTED_NAME, EXPECTED_DESCRIPTION,

@@ -15,5 +15,6 @@ public class PlaceDto {
     private List<String> mediaIds;
     private List<CoordinatesDto> coordinates;
     private List<String> crossingTrailIds;
+    private boolean isDynamic;
     private RecordDetailsDto recordDetails;
 }

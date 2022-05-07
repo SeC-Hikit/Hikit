@@ -25,7 +25,8 @@ public class PlaceRefMapper implements Mapper<PlaceRef> {
         return new PlaceRef(document.getString(PlaceRef.NAME),
                 coordinatesMapper.mapToObject(document.get(PlaceRef.COORDINATES, Document.class)),
                 document.getString(PlaceRef.PLACE_ID),
-                document.getList(PlaceRef.ENCOUNTERED_TRAIL_IDS, String.class));
+                document.getList(PlaceRef.ENCOUNTERED_TRAIL_IDS, String.class),
+                document.getBoolean(PlaceRef.IS_DYNAMIC));
     }
 
     @Override
@@ -34,6 +35,7 @@ public class PlaceRefMapper implements Mapper<PlaceRef> {
         return new Document(PlaceRef.NAME, object.getName())
                 .append(PlaceRef.PLACE_ID, object.getPlaceId())
                 .append(PlaceRef.ENCOUNTERED_TRAIL_IDS, object.getEncounteredTrailIds())
-                .append(PlaceRef.COORDINATES, coordinatesMapper.mapToDocument(object.getCoordinates()));
+                .append(PlaceRef.COORDINATES, coordinatesMapper.mapToDocument(object.getCoordinates()))
+                .append(PlaceRef.IS_DYNAMIC, coordinatesMapper.mapToDocument(object.getCoordinates()));
     }
 }

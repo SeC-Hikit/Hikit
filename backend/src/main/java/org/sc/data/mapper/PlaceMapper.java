@@ -32,7 +32,7 @@ public interface PlaceMapper {
         final RecordDetailsDto recordDetails = placeDto.getRecordDetails();
         return new Place(placeDto.getId(), placeDto.getName(), placeDto.getDescription(),
                 placeDto.getTags(), placeDto.getMediaIds(), multiPointCoords2D,
-                coordinates, placeDto.getCrossingTrailIds(),
+                coordinates, placeDto.getCrossingTrailIds(), placeDto.isDynamic(),
                 new RecordDetails(recordDetails.getUploadedOn(), recordDetails.getUploadedBy(),
                         recordDetails.getOnInstance(), recordDetails.getRealm())
         );
@@ -45,7 +45,9 @@ public interface PlaceMapper {
 
         final RecordDetails recordDetails = place.getRecordDetails();
         return new PlaceDto(place.getId(), place.getName(), place.getDescription(),
-                place.getTags(), place.getMediaIds(), coordinatesWithAltitude, place.getCrossingTrailIds(),
+                place.getTags(), place.getMediaIds(), coordinatesWithAltitude,
+                place.getCrossingTrailIds(),
+                place.isDynamic(),
                 new RecordDetailsDto(recordDetails.getUploadedOn(), recordDetails.getUploadedBy(),
                         recordDetails.getOnInstance(), recordDetails.getRealm())
         );
@@ -65,6 +67,6 @@ public interface PlaceMapper {
 
         return new Place(placeDto.getId(), placeDto.getName(), placeDto.getDescription(),
                 placeDto.getTags(), placeDto.getMediaIds(), multiPointCoords2D,
-                coordinates, placeDto.getCrossingTrailIds(), new RecordDetails());
+                coordinates, placeDto.getCrossingTrailIds(), placeDto.isDynamic(), new RecordDetails());
     }
 }

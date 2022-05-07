@@ -1,0 +1,1 @@
+db.getCollection("core.Place").updateMany({}, {$set : { "isDynamic": true}} )

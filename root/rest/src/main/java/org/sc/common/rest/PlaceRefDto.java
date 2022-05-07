@@ -13,4 +13,5 @@ public class PlaceRefDto {
     private CoordinatesDto coordinates;
     private String placeId;
     private List<String> encounteredTrailIds;
+    private boolean dynamicCrossway;
 }

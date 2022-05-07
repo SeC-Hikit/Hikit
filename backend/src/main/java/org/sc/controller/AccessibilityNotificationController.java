@@ -76,7 +76,7 @@ public class AccessibilityNotificationController {
         final List<AccessibilityNotificationDto> resolvedById =
                 accessibilityNotManager.getResolvedByTrailId(trailId, skip, limit, realm);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolvedById,
-                accessibilityNotManager.countSolvedForTrailId(trailId, realm), skip, limit);
+                accessibilityNotManager.countSolvedForTrailId(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve unresolved notifications")

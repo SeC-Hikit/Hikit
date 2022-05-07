@@ -96,9 +96,9 @@ public class TrailIntersectionsRestIntegrationTest {
 
         // 001aBO: goes from CROCEVIA -> MONTE BADUCCO
         PlaceRefDto startPlaceCrocevia = new PlaceRefDto(startPlaceAndCrossway, new CoordinatesDto(44.134603, 11.122528, 1035.0),
-                "", Collections.emptyList());
+                "", Collections.emptyList(), false);
         PlaceRefDto endPlaceMonteBaducco = new PlaceRefDto(endPlace, new CoordinatesDto(44.1389435, 11.1356351, 765.0),
-                "", Collections.emptyList());
+                "", Collections.emptyList(), false);
 
         TrailImportDto trailImport001aBODto = new TrailImportDto("001aBO", "Any trail", "Any desc", 15,
                 startPlaceCrocevia,
@@ -144,14 +144,14 @@ public class TrailIntersectionsRestIntegrationTest {
                 new CoordinatesDto(intersectionPlaceDto.getCoordinates().get(0).getLatitude(),
                         intersectionPlaceDto.getCoordinates().get(0).getLongitude(),
                         intersectionPlaceDto.getCoordinates().get(0).getAltitude()),
-                intersectionPlaceDto.getId(), Collections.singletonList(trail001aBOImported.getId()));
+                intersectionPlaceDto.getId(), Collections.singletonList(trail001aBOImported.getId()), false);
 
         // Done with intersection
         PlaceRefDto startPlaceRef2Castiglione = new PlaceRefDto("Start place 2",
                 new CoordinatesDto(trail001BORawDto.getStartPos().getLatitude(), trail001BORawDto.getStartPos().getLongitude(), trail001BORawDto.getStartPos().getAltitude()),
-                "", Collections.emptyList());
+                "", Collections.emptyList(), false);
         PlaceRefDto endPlaceRef2Balinello = new PlaceRefDto("End place 2", new CoordinatesDto(trail001BORawDto.getFinalPos().getLatitude(), trail001BORawDto.getFinalPos().getLongitude(), trail001BORawDto.getFinalPos().getAltitude()),
-                "", Collections.emptyList());
+                "", Collections.emptyList(), false);
 
         // Castiglione -> Balinello di Sopra
         TrailImportDto trailImport2Dto = new TrailImportDto("001BO", "Any trail", "Any desc", ANY_OFFICIAL_ETA,
@@ -224,9 +224,9 @@ public class TrailIntersectionsRestIntegrationTest {
 
         PlaceRefDto startPlaceRef2Castiglione = new PlaceRefDto("Start place 2",
                 new CoordinatesDto(trail001BORawDto.getStartPos().getLatitude(), trail001BORawDto.getStartPos().getLongitude(), trail001BORawDto.getStartPos().getAltitude()),
-                "", Collections.emptyList());
+                "", Collections.emptyList(), false);
         PlaceRefDto endPlaceRef2Balinello = new PlaceRefDto("End place 2", new CoordinatesDto(trail001BORawDto.getFinalPos().getLatitude(), trail001BORawDto.getFinalPos().getLongitude(), trail001BORawDto.getFinalPos().getAltitude()),
-                "", Collections.emptyList());
+                "", Collections.emptyList(), false);
 
         // Castiglione -> Balinello di Sopra
         TrailImportDto trailImport2Dto = new TrailImportDto("001BO", "Any trail", "Any desc", ANY_OFFICIAL_ETA,
@@ -249,9 +249,9 @@ public class TrailIntersectionsRestIntegrationTest {
         String endPlace = "End place";
 
         PlaceRefDto startPlaceCrocevia = new PlaceRefDto(startPlaceAndCrossway, new CoordinatesDto(44.134603, 11.122528, 1035.0),
-                "", Collections.singletonList(trail001BOImported.getId()));
+                "", Collections.singletonList(trail001BOImported.getId()), false);
         PlaceRefDto endPlaceMonteBaducco = new PlaceRefDto(endPlace, new CoordinatesDto(44.1389435, 11.1356351, 765.0),
-                "", Collections.emptyList());
+                "", Collections.emptyList(), false);
 
         List<PlaceRefDto> crosswaySingleton = Collections.singletonList(startPlaceCrocevia);
             TrailImportDto trailImport001aBODto = new TrailImportDto("001aBO", "Any trail", "Any desc", 15,

@@ -83,11 +83,11 @@ class TrailImporterService @Autowired constructor(
 
         val otherPlacesRefs = placesLocations.map {
             PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, false)
         }
         val trailCrosswaysFromLocationsRefs = trailCrosswaysFromLocations.map {
             PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, false)
         }
 
         val locationsSet = otherPlacesRefs.plus(trailCrosswaysFromLocationsRefs)
@@ -313,7 +313,7 @@ class TrailImporterService @Autowired constructor(
 
                     val created = placeManager.create(PlaceDto(null, it.name, "",
                             emptyList(), emptyList(), listOf(it.coordinates), it.encounteredTrailIds,
-                            RecordDetailsDto(Date(),
+                            it.isDynamicCrossway, RecordDetailsDto(Date(),
                                     authHelper.username,
                                     authHelper.instance,
                                     authHelper.realm))).first()

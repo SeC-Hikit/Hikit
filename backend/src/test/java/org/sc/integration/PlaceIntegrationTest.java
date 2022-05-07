@@ -93,7 +93,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         String trailId = importedResponse.getContent().get(0).getId();
 
         TrailResponse addPlaceToTrailResponse = adminTrailController.addPlaceToTrail(trailId,
-                new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId, Collections.emptyList()));
+                new PlaceRefDto("ANYZ", INTERMEDIATE_EXPECTED_COORDINATE, placeId, Collections.emptyList(), false));
 
         assertThat(addPlaceToTrailResponse.getStatus()).isEqualTo(Status.OK);
         TrailResponse trailResponse = trailController.getByPlaceId(placeId, LEVEL, 0, 10);
