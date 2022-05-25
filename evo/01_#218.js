@@ -1,1 +1,1 @@
-db.getCollection("core.Place").updateMany({}, {$set : { "isDynamic": true}} )
+db.getCollection("core.Place").updateMany({}, {$set : { "isDynamic": false}} )
