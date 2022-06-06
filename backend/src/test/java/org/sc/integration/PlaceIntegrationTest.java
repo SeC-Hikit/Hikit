@@ -59,6 +59,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         assertThat(addedPlace.getContent().get(0)).isEqualTo(returnedPlaceDto);
     }
 
+
     @Test
     public void shouldRetrieveAndModifyItBack() {
         PlaceResponse placeResponse = placeController.get(addedPlace.getContent().get(0).getId());

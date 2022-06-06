@@ -273,8 +273,10 @@ class TrailImporterService @Autowired constructor(
                     }
 
                     val created = placeManager.create(PlaceDto(null, it.name, "",
-                            emptyList(), emptyList(), listOf(it.coordinates), it.encounteredTrailIds,
-                            it.isDynamicCrossway, RecordDetailsDto(Date(),
+                            emptyList(), emptyList(), listOf(it.coordinates),
+                            it.encounteredTrailIds,
+                            it.isDynamicCrossway,
+                            RecordDetailsDto(Date(),
                                     authHelper.username,
                                     authHelper.instance,
                                     authHelper.realm))).first()
@@ -289,7 +291,8 @@ class TrailImporterService @Autowired constructor(
                 }
             }
 
-    private fun placeSubmittedMatchingSubmittedOnes(otherPlacesBeingSaved: List<PlaceDto>, it: PlaceRefDto): List<PlaceDto> =
+    private fun placeSubmittedMatchingSubmittedOnes(otherPlacesBeingSaved: List<PlaceDto>,
+                                                    it: PlaceRefDto): List<PlaceDto> =
             otherPlacesBeingSaved
                     .filter { otherPlaceSubmitted -> otherPlaceSubmitted.name == it.name }
                     .filter { otherPlaceSubmitted ->

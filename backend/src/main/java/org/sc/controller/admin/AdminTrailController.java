@@ -172,7 +172,7 @@ public class AdminTrailController {
         errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
 
         if (errors.isEmpty()) {
-            List<TrailDto> updatedTrail = trailImporterManager.switchToStatus(trailDto);
+            List<TrailDto> updatedTrail = trailService.switchToStatus(trailDto);
             return trailResponseHelper.constructResponse(emptySet(), updatedTrail,
                     updatedTrail.size(), ZERO, ONE);
         }

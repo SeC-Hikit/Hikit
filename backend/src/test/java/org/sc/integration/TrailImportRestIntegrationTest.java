@@ -62,7 +62,6 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public static final String REALM = "S&C";
     public static final String INSTANCE_ID = "BOLOGNA_1";
 
-
     public static final FileDetailsDto IMPORTED_FILE_DETAILS = new FileDetailsDto(EXPECTED_DATE, USER_ADMIN, INSTANCE_ID, REALM, ANY_FILENAME, ANY_FILENAME, USER_ADMIN);
 
     public static List<PlaceRefDto> LOCATION_REFS;

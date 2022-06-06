@@ -49,6 +49,7 @@ public class TrailDAO {
     private final Mapper<Trail> trailMapper;
     private final StatusFilterHelper statusFilterHelper;
     private final SelectiveArgumentMapper<Trail> trailLevelMapper;
+    private final Mapper<String> trailCodeMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
     private final Mapper<TrailMapping> trailMappingMapper;
     private final LinkedMediaMapper linkedMediaMapper;
@@ -65,8 +66,10 @@ public class TrailDAO {
                     final LinkedMediaMapper linkedMediaMapper,
                     final TrailPreviewMapper trailPreviewMapper,
                     final PlaceRefMapper placeRefMapper,
-                    final CycloMapper cycloMapper) {
+                    final CycloMapper cycloMapper,
+                    final TrailCodeMapper trailCodeMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
+
         this.trailMapper = trailMapper;
         this.statusFilterHelper = statusFilterHelper;
         this.trailLevelMapper = trailLevelMapper;
@@ -75,6 +78,7 @@ public class TrailDAO {
         this.trailPreviewMapper = trailPreviewMapper;
         this.placeRefMapper = placeRefMapper;
         this.cycloMapper = cycloMapper;
+        this.trailCodeMapper = trailCodeMapper;
     }
 
     public List<Trail> getTrails(int skip, int limit,
@@ -109,6 +113,10 @@ public class TrailDAO {
     public List<Trail> getTrailById(final String id,
                                     final TrailSimplifierLevel trailSimplifierLevel) {
         return toTrailsList(collection.find(new Document(Trail.ID, id)), trailSimplifierLevel);
+    }
+
+    public List<String> getCodesById(final List<String> id) {
+        return toTrailCodeList(collection.find(new Document($_IN, new Document(Trail.ID, id))));
     }
 
     public List<Trail> getTrailByPlaceId(final String id,
@@ -319,6 +327,11 @@ public class TrailDAO {
                 .map(t -> trailLevelMapper.mapToObject(t, trailSimplifierLevel)).collect(toList());
     }
 
+    private List<String> toTrailCodeList(final Iterable<Document> documents) {
+        return StreamSupport.stream(documents.spliterator(), false)
+                .map(trailCodeMapper::mapToObject).collect(toList());
+    }
+
     @NotNull
     private FindIterable<Document> foundTrailsWithinSquare(final CoordinatesRectangle geoSquare,
                                                            final int skip,
@@ -388,6 +401,30 @@ public class TrailDAO {
                 ));
         return getTrailById(trail.getId(), TrailSimplifierLevel.LOW);
     }
+
+    @NotNull
+    public List<Trail> updateTrailNamePlaceReference(final String trailId,
+                                                     final String placeId,
+                                                     final String placeName) {
+        collection.updateOne(
+                new Document(Trail.ID, trailId)
+                        .append(Trail.START_POS + DOT + PlaceRef.PLACE_ID, placeId),
+                new Document($_SET,
+                        new Document(Trail.START_POS + DOT + PlaceRef.NAME, placeName)));
+        collection.updateOne(
+                new Document(Trail.ID, trailId)
+                        .append(Trail.FINAL_POS + DOT + PlaceRef.PLACE_ID, placeId),
+                new Document($_SET,
+                        new Document(Trail.FINAL_POS + DOT + PlaceRef.NAME, placeName)));
+        collection.updateOne(
+                new Document(Trail.ID, trailId)
+                        .append(Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID, placeId),
+                new Document($_SET,
+                        new Document(Trail.LOCATIONS + DOLLAR + PlaceRef.NAME, placeName)));
+
+        return getTrailById(trailId, TrailSimplifierLevel.LOW);
+    }
+
 
     public List<TrailMapping> getByStartEndPoint(final double startLatitude, final double startLongitude,
                                                  final double endLatitude, final double endLongitude) {

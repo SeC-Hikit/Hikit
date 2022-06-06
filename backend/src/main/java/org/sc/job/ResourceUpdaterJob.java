@@ -18,7 +18,7 @@ public class ResourceUpdaterJob {
     private static final String STARTING_COMPRESSION_JOB = "Going to run reosurce updater job (batch size: %s)...";
     private static final String DONE_COMPRESSION_JOB = "Done with resource updater job.";
 
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
     private final int imageBatchSize;
 
     @Autowired
@@ -28,7 +28,7 @@ public class ResourceUpdaterJob {
         this.imageBatchSize = appProperties.getJobImageBatchSize();
     }
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     public void doRegenerateResources() {
         LOGGER.trace(format(STARTING_COMPRESSION_JOB, imageBatchSize));
         resourceService.execute();

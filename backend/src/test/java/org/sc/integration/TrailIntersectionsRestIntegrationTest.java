@@ -47,6 +47,7 @@ public class TrailIntersectionsRestIntegrationTest {
 
     public static final int ANY_OFFICIAL_ETA = 15;
     public static final String ANY_MAINTAINING_SECTION = "CAI Bologna";
+    public static final String MAINTAINING_SECTION = "CAI Bologna";
 
     @Autowired
     DataSource dataSource;
@@ -260,7 +261,7 @@ public class TrailIntersectionsRestIntegrationTest {
                 Arrays.asList(startPlaceCrocevia, endPlaceMonteBaducco),
                 crosswaySingleton, TrailClassification.E, "Italy",
                 trailRawDto.getCoordinates(),
-                "CAI Bologna",
+                    MAINTAINING_SECTION,
                 false, "Ovest", Collections.emptyList(),
                 new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
 

@@ -36,6 +36,6 @@ public class PlaceRefMapper implements Mapper<PlaceRef> {
                 .append(PlaceRef.PLACE_ID, object.getPlaceId())
                 .append(PlaceRef.ENCOUNTERED_TRAIL_IDS, object.getEncounteredTrailIds())
                 .append(PlaceRef.COORDINATES, coordinatesMapper.mapToDocument(object.getCoordinates()))
-                .append(PlaceRef.IS_DYNAMIC, coordinatesMapper.mapToDocument(object.getCoordinates()));
+                .append(PlaceRef.IS_DYNAMIC, object.isDynamicCrossway());
     }
 }
