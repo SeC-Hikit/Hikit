@@ -50,7 +50,7 @@ public class TrailPreviewRestIntegrationTest {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         trailResponse = adminTrailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
     }
@@ -75,7 +75,7 @@ public class TrailPreviewRestIntegrationTest {
 
     private void assertAll(TrailPreviewDto firstResult) {
         assertThat(firstResult.getClassification()).isEqualTo(EXPECTED_TRAIL_CLASSIFICATION);
-        assertThat(firstResult.getCode()).isEqualTo(TrailImportRestIntegrationTest.EXPECTED_TRAIL_ID);
+        assertThat(firstResult.getCode()).isEqualTo(TrailImportRestIntegrationTest.EXPECTED_TRAIL_CODE);
         assertThat(firstResult.getStartPos().getPlaceId()).isEqualTo(LOCATION_REFS.get(0).getPlaceId());
         assertThat(firstResult.getFinalPos().getPlaceId()).isEqualTo(LOCATION_REFS.get(2).getPlaceId());
     }

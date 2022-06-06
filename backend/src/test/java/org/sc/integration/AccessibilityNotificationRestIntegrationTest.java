@@ -9,7 +9,6 @@ import org.sc.configuration.DataSource;
 import org.sc.controller.AccessibilityNotificationController;
 import org.sc.controller.admin.AdminAccessibilityIssueController;
 import org.sc.controller.admin.AdminTrailController;
-import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.data.model.AccessibilityNotification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class AccessibilityNotificationRestIntegrationTest {
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         trailResponse = trailController.importTrail(trailImportDto);
         id = trailResponse.getContent().get(0).getId();
         Date reportDate = new Date();

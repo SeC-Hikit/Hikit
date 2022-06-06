@@ -21,9 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
@@ -89,7 +87,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         String placeId = returnedPlaceDto.getId();
 
         // Import trail
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(adminPlaceController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(adminPlaceController);
         TrailResponse importedResponse = adminTrailController.importTrail(trailImportDto);
         String trailId = importedResponse.getContent().get(0).getId();
 

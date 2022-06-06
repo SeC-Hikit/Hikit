@@ -75,7 +75,7 @@ public class MaintenanceRestIntegrationTest {
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
 
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
         importedTrailId = trailResponse.getContent().get(0).getId();
 

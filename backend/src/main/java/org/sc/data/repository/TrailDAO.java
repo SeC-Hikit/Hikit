@@ -116,7 +116,7 @@ public class TrailDAO {
     }
 
     public List<String> getCodesById(final List<String> id) {
-        return toTrailCodeList(collection.find(new Document($_IN, new Document(Trail.ID, id))));
+        return toTrailCodeList(collection.find(new Document(Trail.ID, new Document($_IN, id))));
     }
 
     public List<Trail> getTrailByPlaceId(final String id,

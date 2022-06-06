@@ -180,12 +180,12 @@ class TrailImporterService @Autowired constructor(
 
         val otherPlacesRefs = placesLocations.map {
             PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, false)
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic)
         }
 
         val trailCrosswaysFromLocationsRefs = trailCrosswaysFromLocations.map {
             PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, false)
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic)
         }
 
         return otherPlacesRefs.plus(trailCrosswaysFromLocationsRefs)
