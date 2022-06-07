@@ -420,7 +420,7 @@ public class TrailDAO {
                 new Document(Trail.ID, trailId)
                         .append(Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID, placeId),
                 new Document($_SET,
-                        new Document(Trail.LOCATIONS + DOLLAR + PlaceRef.NAME, placeName)));
+                        new Document(Trail.LOCATIONS + DOT + DOLLAR + DOT + PlaceRef.NAME, placeName)));
 
         return getTrailById(trailId, TrailSimplifierLevel.LOW);
     }

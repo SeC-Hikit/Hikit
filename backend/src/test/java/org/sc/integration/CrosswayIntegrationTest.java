@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -40,6 +41,7 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
 
     public static final String LEVEL = TrailSimplifierLevel.FULL.toString();
     public static final int TWELVE_SECONDS = 12000;
+    public static final String EXPECTED_NAME = "Crocevia 100BO, 101BO";
 
     @Autowired
     private DataSource dataSource;
@@ -106,7 +108,7 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
                         .coordinates(coordinates).build();
 
         TrailImportDto crossingTrail = new TrailImportDto(
-                EXPECTED_TRAIL_CODE,
+                "101BO",
                 "crosswayTrail",
                 "crossing trail desc",
                 ANY_OFFICIAL_ETA, placeStartRef,
@@ -121,17 +123,28 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
 
         crossingImportedTrailResponse = adminTrailController.importTrail(crossingTrail);
         crossingImportedTrail = crossingImportedTrailResponse.getContent().stream().findFirst().get();
-
-
     }
 
     @Test
     public void shouldUpdateAutomaticCrossway() {
-        final TrailResponse byId = trailController.getById(importedTrail.getId(), TrailSimplifierLevel.LOW);
-        final PlaceResponse placeByIdResponse = placeController.get(createdCrosswayPlace.getId());
+        final TrailResponse retrievedInitialTrailResp = trailController.getById(importedTrail.getId(), TrailSimplifierLevel.LOW);
+        final TrailResponse retrievedCrossingTrailResp = trailController.getById(crossingImportedTrail.getId(), TrailSimplifierLevel.LOW);
+        final TrailDto retrievedTrail = retrievedInitialTrailResp.getContent().stream().findFirst().get();
+        final TrailDto retrievedCrossingTrail = retrievedCrossingTrailResp.getContent().stream().findFirst().get();
+
+        final String placeId = createdCrosswayPlace.getId();
+        final PlaceResponse placeByIdResponse = placeController.get(placeId);
         final PlaceDto placeDto = placeByIdResponse.getContent().get(0);
 
-        assertThat(placeDto.getName()).isEqualTo("Crocevia 100BO, 123BO");
+        assertThat(placeDto.getName()).isEqualTo(EXPECTED_NAME);
+        assertThat((retrievedTrail)
+                .getLocations().stream().filter(it-> it.getPlaceId().equals(placeId))
+                .collect(Collectors.toList()).stream().findFirst().get().getName())
+                .isEqualTo(EXPECTED_NAME);
+        assertThat((retrievedCrossingTrail)
+                .getLocations().stream()
+                .filter(it-> it.getPlaceId().equals(placeId)).collect(Collectors.toList()).stream().findFirst().get().getName())
+                .isEqualTo(EXPECTED_NAME);
     }
 
     private void createFirstTrailWithAutoCrossway() {
@@ -143,7 +156,7 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
         Assertions.assertThat(crosswayPlace.getContent()).isNotEmpty();
         Assertions.assertThat(lastPlace.getContent()).isNotEmpty();
 
-        PlaceDto createdFirstPlace = firstPlace.getContent().get(0);
+        PlaceDto createdFirstPlace = firstPlace.getContent().stream().findFirst().get();
         PlaceRefDto placeStartRef = new PlaceRefDto(createdFirstPlace.getName(),
                 createdFirstPlace.getCoordinates().get(0), createdFirstPlace.getId(), emptyList(), false);
 
