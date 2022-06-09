@@ -141,7 +141,6 @@ class TrailManager @Autowired constructor(
         }
     }
 
-
     fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
         return unLinkPlace.map { trailMapper.map(it) }

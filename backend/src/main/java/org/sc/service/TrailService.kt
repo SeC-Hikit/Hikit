@@ -1,7 +1,9 @@
 package org.sc.service
 
+import org.sc.common.rest.PlaceRefDto
 import org.sc.common.rest.TrailDto
 import org.sc.data.mapper.TrailMapper
+import org.sc.data.model.Trail
 import org.sc.data.model.TrailStatus
 import org.sc.manager.*
 import org.sc.processor.PlacesTrailSyncProcessor
@@ -54,6 +56,18 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
         }
         trailToUpdate.status = trailDto.status
         return trailManager.update(trailMapper.map(trailToUpdate))
+    }
+
+    fun unlinkPlace(trailId: String,
+                    placeRef: PlaceRefDto): List<TrailDto> {
+        val unLinkPlace = trailManager.unlinkPlace(trailId, placeRef)
+        if (placeRef.isDynamicCrossway)
+            placesTrailSyncProcessor.updateCrosswayNameWithTrailsPassingCodes(placeRef.placeId)
+        return unLinkPlace
+    }
+
+    fun linkTrailToPlace(id: String, placeRefDto: PlaceRefDto): List<TrailDto> {
+        TODO("Not yet implemented")
     }
 
     private fun isSwitchingToDraft(

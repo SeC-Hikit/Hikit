@@ -36,7 +36,7 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
         }
     }
 
-    private fun updateCrosswayNameWithTrailsPassingCodes(placeId: String) {
+    fun updateCrosswayNameWithTrailsPassingCodes(placeId: String) {
         val placeList = placeManager.getById(placeId)
         if(placeList.isEmpty()) throw IllegalStateException("Cannot update place name of a not-existing location")
         val place = placeList.first()
