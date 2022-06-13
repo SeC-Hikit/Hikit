@@ -22,8 +22,7 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
     @Autowired
     public TrailPreviewMapper(final PlaceRefMapper placeMapper,
                               final FileDetailsMapper fileDetailsMapper,
-                              final CycloMapper cycloMapper,
-                              final PlaceRefMapper placeRefMapper) {
+                              final CycloMapper cycloMapper) {
         this.placeMapper = placeMapper;
         this.fileDetailsMapper = fileDetailsMapper;
         this.cycloMapper = cycloMapper;

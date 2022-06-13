@@ -21,9 +21,9 @@ class TrailManager @Autowired constructor(
         private val trailDAO: TrailDAO,
         private val placeDAO: PlaceDAO,
         private val trailMapper: TrailMapper,
+        private val trailPreviewMapper: TrailPreviewMapper,
         private val linkedMediaMapper: LinkedMediaMapper,
         private val placeRefMapper: PlaceRefMapper,
-        private val coordinatesMapper: CoordinatesMapper,
         private val trailIntersectionMapper: TrailIntersectionMapper,
         private val trailMappingMapper: TrailMappingMapper,
         private val trailPlacesAligner: TrailPlacesAligner,
@@ -91,12 +91,6 @@ class TrailManager @Autowired constructor(
         ensureCreatingNewCrosswayReferences(place, targetTrailId, placeRef)
 
         return getById(targetTrailId, TrailSimplifierLevel.LOW)
-    }
-
-    fun searchByLocationNameOrName(name: String, realm: String, isDraftTrailVisible: Boolean,
-                                   level: TrailSimplifierLevel, skip: Int, limit: Int): List<TrailDto> {
-        return trailDAO.searchByLocationNameOrName(name, realm, level,
-                isDraftTrailVisible, skip, limit).map { trailMapper.map(it) }
     }
 
     private fun ensureLinkingTrailToExistingCrosswayReferences(place: Place, targetTrailId: String) {

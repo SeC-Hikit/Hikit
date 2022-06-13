@@ -80,23 +80,6 @@ public class TrailController {
                         Constants.ONE, Constants.ONE);
     }
 
-    @Operation(summary = "Retrieve trails by location name or trail name")
-    @GetMapping("/search/{name}")
-    public TrailResponse getById(@PathVariable String name,
-                                 @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
-                                 @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level,
-                                 @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-                                 @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
-        return trailResponseHelper
-                .constructResponse(Collections.emptySet(),
-                        trailService.searchByLocationNameOrName(
-                                name, realm, isDraftTrailVisible,
-                                level, skip, limit),
-                        trailManager.count(),
-                        Constants.ONE, Constants.ONE);
-    }
-
     @Operation(summary = "Retrieve trail by place ID")
     @GetMapping("/place/{id}")
     public TrailResponse getByPlaceId(@PathVariable String id,

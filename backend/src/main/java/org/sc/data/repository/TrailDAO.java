@@ -1,5 +1,6 @@
 package org.sc.data.repository;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
@@ -8,6 +9,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
@@ -288,21 +290,26 @@ public class TrailDAO {
                                 .collect(Collectors.toList()))));
     }
 
-    public List<Trail> searchByLocationNameOrName(
+    public List<TrailPreview> searchByLocationOrTrailName(
             String name,
             String realm,
-            TrailSimplifierLevel level,
             boolean isDraftTrailVisible,
             int skip, int limit) {
         final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
-        final FindIterable<Document> foundTrails = collection.find(
-                new Document($_OR, Arrays.asList(
-                        new Document("locations.name", getAnyMatchingPattern(name)),
-                        new Document("name", getAnyMatchingPattern(name)),
-                        realmFilter, statusFilter
-                ))).skip(skip).limit(limit);
-        return toTrailsList(foundTrails, level);
+        final Bson aLimit = Aggregates.limit(limit);
+        final Bson aSkip = Aggregates.skip(skip);
+        final Document filter = new Document($_OR, Arrays.asList(
+                new Document("locations.name", getAnyMatchingPattern(name)),
+                new Document("name", getAnyMatchingPattern(name))
+        ));
+        final AggregateIterable<Document> foundTrails = collection.aggregate(
+                Arrays.asList(
+                        match(filter),
+                        match(statusFilter),
+                        match(realmFilter),
+                        aLimit, aSkip));
+        return toTrailsPreviewList(foundTrails);
     }
 
 
@@ -428,5 +435,15 @@ public class TrailDAO {
                 topRight.getLatitude());
     }
 
-
+    public long countFindingByNameOrLocationName(@Nullable String name, @NotNull String realm,
+                                                 boolean draftTrailVisible) {
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Bson statusFilter = getBsonAggregateStatusInFilter(draftTrailVisible);
+        return collection.countDocuments(
+                new Document($_OR, Arrays.asList(
+                        new Document("locations.name", getAnyMatchingPattern(name)),
+                        new Document("name", getAnyMatchingPattern(name)),
+                        realmFilter, statusFilter
+                )));
+    }
 }
