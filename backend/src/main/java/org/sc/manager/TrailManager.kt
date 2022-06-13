@@ -93,6 +93,12 @@ class TrailManager @Autowired constructor(
         return getById(targetTrailId, TrailSimplifierLevel.LOW)
     }
 
+    fun searchByLocationNameOrName(name: String, realm: String, isDraftTrailVisible: Boolean,
+                                   level: TrailSimplifierLevel, skip: Int, limit: Int): List<TrailDto> {
+        return trailDAO.searchByLocationNameOrName(name, realm, level,
+                isDraftTrailVisible, skip, limit).map { trailMapper.map(it) }
+    }
+
     private fun ensureLinkingTrailToExistingCrosswayReferences(place: Place, targetTrailId: String) {
         trailDAO.linkAllExistingTrailConnectionWithNewTrailId(place.id, targetTrailId);
     }
@@ -197,7 +203,7 @@ class TrailManager @Autowired constructor(
     }
 
     private fun getPreviewById(id: String): List<TrailPreview> =
-            trailDAO.getTrailPreviewById(id);
+            trailDAO.getTrailPreviewById(id)
 
 }
 

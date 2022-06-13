@@ -12,6 +12,7 @@ import org.sc.data.validator.GeneralValidator;
 import org.sc.service.TrailImporterService;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
+import org.sc.service.TrailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class TrailController {
     protected final TrailImporterService trailManagementManager;
     protected final AuthFacade authenticationProvider;
     private final ControllerPagination controllerPagination;
+    private final TrailService trailService;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
@@ -41,13 +43,15 @@ public class TrailController {
                            final TrailResponseHelper trailResponseHelper,
                            final TrailImporterService trailManagementManager,
                            final AuthFacade authFacade,
-                           final ControllerPagination controllerPagination) {
+                           final ControllerPagination controllerPagination,
+                           final TrailService trailService) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
         this.trailManagementManager = trailManagementManager;
         this.authenticationProvider = authFacade;
         this.controllerPagination = controllerPagination;
+        this.trailService = trailService;
     }
 
 
@@ -72,6 +76,23 @@ public class TrailController {
                                  @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level) {
         return trailResponseHelper
                 .constructResponse(Collections.emptySet(), trailManager.getById(id, level),
+                        trailManager.count(),
+                        Constants.ONE, Constants.ONE);
+    }
+
+    @Operation(summary = "Retrieve trails by location name or trail name")
+    @GetMapping("/search/{name}")
+    public TrailResponse getById(@PathVariable String name,
+                                 @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
+                                 @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level,
+                                 @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                 @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                                 @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
+        return trailResponseHelper
+                .constructResponse(Collections.emptySet(),
+                        trailService.searchByLocationNameOrName(
+                                name, realm, isDraftTrailVisible,
+                                level, skip, limit),
                         trailManager.count(),
                         Constants.ONE, Constants.ONE);
     }

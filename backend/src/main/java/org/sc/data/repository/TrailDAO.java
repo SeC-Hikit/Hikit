@@ -81,7 +81,7 @@ public class TrailDAO {
                                  final TrailSimplifierLevel trailSimplifierLevel,
                                  final String realm,
                                  final boolean isDraftTrailVisible) {
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         return toTrailsList(collection.find(
                 realmFilter.append(Trail.STATUS,
                         statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
@@ -93,7 +93,7 @@ public class TrailDAO {
     public List<TrailMapping> getTrailsMappings(int skip, int limit,
                                                 final String realm,
                                                 boolean isDraftTrailVisible) {
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         return toTrailsMappingList(collection.find(realmFilter
                         .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
                 .projection(new Document(Trail.ID, ONE)
@@ -147,7 +147,7 @@ public class TrailDAO {
     public List<TrailPreview> getTrailPreviews(final int skip, final int limit,
                                                final String realm, boolean isDraftTrailVisible) {
         final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
-        final Document filter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document filter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         final Bson project = getTrailPreviewProjection();
 
         final Bson aLimit = Aggregates.limit(limit);
@@ -166,7 +166,7 @@ public class TrailDAO {
                                                  final boolean isDraftTrailVisible) {
         final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
         final Document codeFilter = new Document(Trail.CODE, getStartNameMatchPattern(code));
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         final Bson project = getTrailPreviewProjection();
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
@@ -288,14 +288,32 @@ public class TrailDAO {
                                 .collect(Collectors.toList()))));
     }
 
+    public List<Trail> searchByLocationNameOrName(
+            String name,
+            String realm,
+            TrailSimplifierLevel level,
+            boolean isDraftTrailVisible,
+            int skip, int limit) {
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
+        final FindIterable<Document> foundTrails = collection.find(
+                new Document($_OR, Arrays.asList(
+                        new Document("locations.name", getAnyMatchingPattern(name)),
+                        new Document("name", getAnyMatchingPattern(name)),
+                        realmFilter, statusFilter
+                ))).skip(skip).limit(limit);
+        return toTrailsList(foundTrails, level);
+    }
+
+
     public long countTrail() {
         return collection.countDocuments();
     }
 
     public long countTrailByRealm(final String realm, boolean isDraftTrailVisible) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
-                .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
+                getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
     private List<TrailPreview> toTrailsPreviewList(final Iterable<Document> documents) {
@@ -400,7 +418,7 @@ public class TrailDAO {
 
     public long countTotalByCode(final String realm, final String code, boolean isDraftTrailVisible) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                         .append(Trail.CODE, getStartNameMatchPattern(code))
                         .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }

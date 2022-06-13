@@ -2,6 +2,7 @@ package org.sc.service
 
 import org.sc.common.rest.TrailDto
 import org.sc.manager.*
+import org.sc.processor.TrailSimplifierLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.IllegalStateException
@@ -27,4 +28,10 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
         logger.info("Purge deleting trail $id")
         return deletedTrails
     }
+
+    fun searchByLocationNameOrName(name: String,  realm: String, isDraftTrailVisible: Boolean,
+                                   level: TrailSimplifierLevel,
+                                   skip: Int, limit: Int): List<TrailDto> =
+            trailManager.searchByLocationNameOrName(name, realm, isDraftTrailVisible, level, skip, limit)
+
 }
