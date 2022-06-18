@@ -66,7 +66,7 @@ public class PlaceDAO {
 
     private Bson getLikeNameFilter(String name, String realm) {
         return MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
-                .append(MongoUtils.OR, Arrays.asList(
+                .append(MongoUtils.$_OR, Arrays.asList(
                         new Document(Place.NAME, getStartNameMatchPattern(name)),
                         new Document(Place.TAGS, getStartNameMatchPattern(name))));
     }

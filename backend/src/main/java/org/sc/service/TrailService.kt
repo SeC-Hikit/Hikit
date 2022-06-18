@@ -1,7 +1,9 @@
 package org.sc.service
 
 import org.sc.common.rest.TrailDto
+import org.sc.common.rest.TrailPreviewDto
 import org.sc.manager.*
+import org.sc.processor.TrailSimplifierLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.IllegalStateException
@@ -27,4 +29,5 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
         logger.info("Purge deleting trail $id")
         return deletedTrails
     }
+
 }
