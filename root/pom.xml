@@ -72,14 +72,13 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>1.8</jvmTarget>
+                    <jvmTarget>11</jvmTarget>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <properties>
-        <!-- Build  -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.6.0</kotlin.version>
