@@ -1,14 +1,11 @@
 package org.sc.controller.response;
 
 import org.sc.common.rest.Status;
-import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailMappingDto;
 import org.sc.common.rest.TrailPreviewDto;
 import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailPreviewResponse;
-import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.Constants;
-import org.sc.controller.ControllerPagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

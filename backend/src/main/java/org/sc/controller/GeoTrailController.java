@@ -10,6 +10,7 @@ import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.TrailIntersectionResponse;
 import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailResponse;
+import org.sc.controller.response.ControllerPagination;
 import org.sc.controller.response.TrailIntersectionHelper;
 import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.controller.response.TrailResponseHelper;

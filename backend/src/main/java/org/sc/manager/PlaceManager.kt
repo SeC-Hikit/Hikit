@@ -24,8 +24,8 @@ class PlaceManager @Autowired constructor(
         private val authFacade: AuthFacade
 ) {
 
-    fun getPaginated(skip: Int, limit: Int, realm: String): List<PlaceDto> =
-            placeDao.get(skip, limit, realm).map { placeMapper.map(it) }
+    fun getPaginated(skip: Int, limit: Int, realm: String, isDynamic: Boolean): List<PlaceDto> =
+            placeDao.get(skip, limit, realm, isDynamic).map { placeMapper.map(it) }
 
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int, realm: String): List<PlaceDto> =
             placeDao.getLikeName(name, skip, limit, realm).map { placeMapper.map(it) }

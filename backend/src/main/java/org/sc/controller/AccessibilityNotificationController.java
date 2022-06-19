@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.CountResponse;
+import org.sc.controller.response.ControllerPagination;
 import org.sc.controller.response.AccessibilityIssueResponseHelper;
 import org.sc.manager.AccessibilityNotificationManager;
 import org.springframework.beans.factory.annotation.Autowired;

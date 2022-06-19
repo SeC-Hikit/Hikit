@@ -4,7 +4,6 @@ import org.sc.common.rest.PoiDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.controller.Constants;
-import org.sc.controller.ControllerPagination;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
