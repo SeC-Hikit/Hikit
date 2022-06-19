@@ -22,17 +22,24 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
 
-    fun deleteById(id: String): List<TrailDto> {
-        val deletedTrails = trailManager.deleteById(id)
+    fun deleteById(trailId: String): List<TrailDto> {
+        val deletedTrails = trailManager.deleteById(trailId)
         if (deletedTrails.isEmpty()) throw IllegalStateException()
         val deletedTrail = deletedTrails.first()
-        maintenanceManager.deleteByTrailId(id)
-        accessibilityNotificationManager.deleteByTrailId(id)
+        maintenanceManager.deleteByTrailId(trailId)
+        accessibilityNotificationManager.deleteByTrailId(trailId)
         placeManager.deleteTrailReference(deletedTrail.id, deletedTrail.locations)
         updateDynamicCrosswayNamesForTrail(deletedTrail)
+        ensureDeletionForDynamicEmptyCrossway(deletedTrail)
         poiManager.deleteTrailReference(deletedTrail.id)
-        logger.info("Purge deleting trail $id")
+        logger.info("Purge deleting trail $trailId")
         return deletedTrails
+    }
+
+    private fun ensureDeletionForDynamicEmptyCrossway(deletedTrail: TrailDto) {
+        deletedTrail.locations.forEach {
+            if (it.isDynamicCrossway) placesTrailSyncProcessor.ensureEmptyDynamicCrosswayDeletion(it.placeId)
+        }
     }
 
     fun switchToStatus(trailDto: TrailDto): List<TrailDto> {

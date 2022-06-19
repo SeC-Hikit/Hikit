@@ -1,5 +1,6 @@
 package org.sc.processor
 
+import org.sc.common.rest.PlaceDto
 import org.sc.common.rest.TrailDto
 import org.sc.manager.PlaceManager
 import org.sc.manager.TrailManager
@@ -29,16 +30,28 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
                         }
                     }
 
-            if(it.isDynamicCrossway) {
+            if (it.isDynamicCrossway) {
                 updateDynamicCrosswayNameWithTrailsPassingCodes(it.placeId)
             }
+        }
+    }
+
+    fun ensureEmptyDynamicCrosswayDeletion(placeId: String) {
+        val placeList = placeManager.getById(placeId)
+        if (placeList.isEmpty()) {
+            logger.error("Cannot find dynamic crossway ${placeId} for ensuring deletion)")
+            return
+        }
+        val place = placeList.first()
+        if(isEmptyDynamicCrossway(place)){
+            placeManager.deleteById(place.id)
         }
     }
 
     fun updateDynamicCrosswayNameWithTrailsPassingCodes(placeId: String) {
         val placeList = placeManager.getById(placeId)
         if (placeList.isEmpty()) {
-            logger.warn("Cannot update place name of a not-existing location (id=${placeId})")
+            logger.warn("Cannot update dynamic crossway name of a not-existing location (id=${placeId})")
             return
         }
         if (placeList.any { !it.isDynamic }) {
@@ -55,5 +68,8 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
         // update trails places references
         place.crossingTrailIds.forEach { trailManager.updateTrailPlaceNamesReference(it, placeId, updatedName)}
     }
+
+    private fun isEmptyDynamicCrossway(place: PlaceDto) =
+            place.isDynamic && place.crossingTrailIds.isEmpty()
 
 }

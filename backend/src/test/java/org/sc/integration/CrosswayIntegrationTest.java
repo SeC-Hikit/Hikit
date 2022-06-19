@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.sc.common.rest.Status.*;
 import static org.sc.integration.TrailImportRestIntegrationTest.*;
 
 @RunWith(SpringRunner.class)
@@ -57,7 +59,6 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
     @Autowired
     private GeoTrailController geoTrailController;
 
-    private PlaceResponse addedPlace;
     private TrailResponse importedTrailResponse;
     private TrailResponse crossingImportedTrailResponse;
 
@@ -185,4 +186,26 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
         importedTrailResponse = adminTrailController.importTrail(crossingTrail);
         importedTrail = importedTrailResponse.getContent().stream().findFirst().get();
     }
+
+    @Test
+    public void shouldEnsureCrosswayDeletionWhenNoTrailsCrossIt() {
+        final TrailResponse retrievedInitialTrailResp = trailController.getById(importedTrail.getId(), TrailSimplifierLevel.LOW);
+        final TrailResponse retrievedCrossingTrailResp = trailController.getById(crossingImportedTrail.getId(), TrailSimplifierLevel.LOW);
+
+        assertEquals(OK, retrievedInitialTrailResp.getStatus());
+        assertEquals(OK, retrievedCrossingTrailResp.getStatus());
+
+        final String placeId = createdCrosswayPlace.getId();
+        final PlaceResponse placeByIdResponse = placeController.get(placeId);
+        final PlaceDto placeDto = placeByIdResponse.getContent().get(0);
+
+        assertThat(placeDto.getName()).isEqualTo(EXPECTED_NAME);
+
+        adminTrailController.deleteById(importedTrail.getId());
+        adminTrailController.deleteById(crossingImportedTrail.getId());
+
+        final PlaceResponse placeResponseAfterTrailsDeletion = placeController.get(placeId);
+        assertThat(placeResponseAfterTrailsDeletion.getContent().isEmpty()).isEqualTo(true);
+    }
+
 }
