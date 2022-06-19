@@ -117,7 +117,7 @@ public class AccessibilityReportDao {
         return toNotificationList(collection.find(
                         new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
                                 .append(AccessibilityReport.ISSUE_ID, "")
-                                .append(AccessibilityReport.IS_VALID, true))
+                                .append(AccessibilityReport.IS_VALID, false))
                 .sort(new Document(AccessibilityReport.REPORT_DATE, MongoUtils.ASCENDING_ORDER))
                 .skip(skip)
                 .limit(limit)

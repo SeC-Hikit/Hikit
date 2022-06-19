@@ -3,7 +3,6 @@ package org.sc.service
 import org.sc.common.rest.PlaceRefDto
 import org.sc.common.rest.TrailDto
 import org.sc.data.mapper.TrailMapper
-import org.sc.data.model.Trail
 import org.sc.data.model.TrailStatus
 import org.sc.manager.*
 import org.sc.processor.PlacesTrailSyncProcessor
@@ -30,6 +29,7 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
         maintenanceManager.deleteByTrailId(id)
         accessibilityNotificationManager.deleteByTrailId(id)
         placeManager.deleteTrailReference(deletedTrail.id, deletedTrail.locations)
+        updateDynamicCrosswayNamesForTrail(deletedTrail)
         poiManager.deleteTrailReference(deletedTrail.id)
         logger.info("Purge deleting trail $id")
         return deletedTrails
@@ -55,6 +55,7 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
             placesTrailSyncProcessor.populatePlacesWithTrailData(trailDto)
         }
         trailToUpdate.status = trailDto.status
+        updateDynamicCrosswayNamesForTrail(trailToUpdate)
         return trailManager.update(trailMapper.map(trailToUpdate))
     }
 
@@ -62,12 +63,21 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
                     placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailManager.unlinkPlace(trailId, placeRef)
         if (placeRef.isDynamicCrossway)
-            placesTrailSyncProcessor.updateCrosswayNameWithTrailsPassingCodes(placeRef.placeId)
+            placesTrailSyncProcessor.updateDynamicCrosswayNameWithTrailsPassingCodes(placeRef.placeId)
         return unLinkPlace
     }
 
-    fun linkTrailToPlace(id: String, placeRefDto: PlaceRefDto): List<TrailDto> {
-        TODO("Not yet implemented")
+    fun linkTrailToPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
+        val linkedPlaces = trailManager.linkTrailToPlace(id, placeRef)
+        if (placeRef.isDynamicCrossway)
+            placesTrailSyncProcessor.updateDynamicCrosswayNameWithTrailsPassingCodes(placeRef.placeId)
+        return linkedPlaces
+    }
+
+    private fun updateDynamicCrosswayNamesForTrail(trailToUpdate: TrailDto) {
+        trailToUpdate.locations.forEach {
+            if (it.isDynamicCrossway) placesTrailSyncProcessor.updateDynamicCrosswayNameWithTrailsPassingCodes(it.placeId)
+        }
     }
 
     private fun isSwitchingToDraft(

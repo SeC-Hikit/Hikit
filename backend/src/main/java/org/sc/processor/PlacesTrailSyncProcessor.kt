@@ -6,7 +6,6 @@ import org.sc.manager.TrailManager
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.lang.IllegalStateException
 
 @Component
 class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: TrailManager,
@@ -31,14 +30,21 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
                     }
 
             if(it.isDynamicCrossway) {
-                updateCrosswayNameWithTrailsPassingCodes(it.placeId)
+                updateDynamicCrosswayNameWithTrailsPassingCodes(it.placeId)
             }
         }
     }
 
-    fun updateCrosswayNameWithTrailsPassingCodes(placeId: String) {
+    fun updateDynamicCrosswayNameWithTrailsPassingCodes(placeId: String) {
         val placeList = placeManager.getById(placeId)
-        if(placeList.isEmpty()) throw IllegalStateException("Cannot update place name of a not-existing location")
+        if (placeList.isEmpty()) {
+            logger.warn("Cannot update place name of a not-existing location (id=${placeId})")
+            return
+        }
+        if (placeList.any { !it.isDynamic }) {
+            logger.warn("Cannot update no-auto place (id=${placeId})")
+            return
+        }
         val place = placeList.first()
         val placeCrossingTrailsNames =
                 trailManager.getCodesByTrailIds(place.crossingTrailIds).joinToString(", ")

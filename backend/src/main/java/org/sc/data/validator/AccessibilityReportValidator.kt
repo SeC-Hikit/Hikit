@@ -23,7 +23,7 @@ class AccessibilityReportValidator @Autowired constructor(
 ) : Validator<AccessibilityReportDto> {
 
     companion object {
-        const val maxDistanceBound = 300
+        const val maxDistanceBound = 3000
         const val emailNotValid = "Field 'mail' is not valid"
         const val noParamSpecifiedError = "Empty field '%s'"
         const val noTrailError = "Trail with id '%s', does not exist"
@@ -90,9 +90,5 @@ class AccessibilityReportValidator @Autowired constructor(
     private fun getLowestDistanceToTargetCoords(targetCoords: CoordinatesDto,
                                                 trailCoords: List<TrailCoordinatesDto>) =
          trailCoords.minOf { DistanceProcessor.distanceBetweenPoints(targetCoords, it) }
-
-    private fun getClosesCoord(targetCoords: CoordinatesDto,
-                                                trailCoords: List<TrailCoordinatesDto>) =
-            trailCoords.minByOrNull { DistanceProcessor.distanceBetweenPoints(targetCoords, it) }
 
 }

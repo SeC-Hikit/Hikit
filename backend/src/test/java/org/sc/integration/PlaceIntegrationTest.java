@@ -3,10 +3,7 @@ package org.sc.integration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.sc.common.rest.PlaceDto;
-import org.sc.common.rest.PlaceRefDto;
-import org.sc.common.rest.Status;
-import org.sc.common.rest.TrailImportDto;
+import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
@@ -22,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
@@ -98,6 +96,12 @@ public class PlaceIntegrationTest extends ImportTrailIT {
         TrailResponse trailResponse = trailController.getByPlaceId(placeId, LEVEL, 0, 10);
 
         assertThat(trailResponse.getContent().isEmpty()).isEqualTo(false);
+
+        final TrailDto trail = trailResponse.getContent().stream().findFirst().get();
+
+        // Remove refs first
+        adminTrailController.removePlaceFromTrail(trail.getId(),
+                trail.getLocations().stream().filter(it-> it.getPlaceId().equals(placeId)).collect(Collectors.toList()).stream().findFirst().get());
 
         adminPlaceController.delete(placeId);
 

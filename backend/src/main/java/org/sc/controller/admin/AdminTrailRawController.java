@@ -3,6 +3,7 @@ package org.sc.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.controller.response.TrailRawResponseHelper;
+import org.sc.data.validator.GeneralValidator;
 import org.sc.data.validator.auth.AuthRealmValidator;
 import org.sc.manager.TrailRawManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,21 +25,21 @@ public class AdminTrailRawController {
 
     private final TrailRawManager trailRawManager;
     private final TrailRawResponseHelper trailRawResponseHelper;
-    private final AuthRealmValidator authRealmValidator;
+    private final GeneralValidator generalValidator;
 
     @Autowired
     public AdminTrailRawController(final TrailRawManager trailRawManager,
                                    final TrailRawResponseHelper trailRawResponseHelper,
-                                   final AuthRealmValidator authRealmValidator) {
+                                   final GeneralValidator generalValidator) {
         this.trailRawManager = trailRawManager;
         this.trailRawResponseHelper = trailRawResponseHelper;
-        this.authRealmValidator = authRealmValidator;
+        this.generalValidator = generalValidator;
     }
 
     @Operation(summary = "Delete a single raw trail")
     @DeleteMapping("/{id}")
     public TrailRawResponse deleteById(final @PathVariable String id) {
-        final Set<String> errors = authRealmValidator.validate(id);
+        final Set<String> errors = generalValidator.validateDeleteRawTrail(id);
         if(errors.isEmpty()) {
             return trailRawResponseHelper
                     .constructResponse(Collections.emptySet(),

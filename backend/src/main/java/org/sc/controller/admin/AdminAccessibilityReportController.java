@@ -16,6 +16,8 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static org.sc.controller.Constants.ONE;
+import static org.sc.controller.Constants.ZERO;
 import static org.sc.controller.admin.Constants.PREFIX_REPORT;
 
 @RestController
@@ -43,12 +45,12 @@ public class AdminAccessibilityReportController {
         final Set<String> errors = generalValidator.validate(accReport);
         if (!errors.isEmpty() || accReport.getId() != null) {
             return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), reportService.count(),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
         return accessibilityIssueResponseHelper
                 .constructResponse(errors, reportService.create(accReport),
                         reportService.count(),
-                        org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                        ZERO, ONE);
     }
 
     @Operation(summary = "Updates a report")
@@ -60,12 +62,12 @@ public class AdminAccessibilityReportController {
         final Set<String> updateError = generalValidator.validateReportAcc(accReport.getId());
         if (!updateError.isEmpty() || !errors.isEmpty()) {
             return accessibilityIssueResponseHelper.constructResponse(updateError, emptyList(), reportService.count(),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
         return accessibilityIssueResponseHelper
                 .constructResponse(updateError, reportService.update(accReport),
                         reportService.count(),
-                        org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                        ZERO, ONE);
     }
 
     @Operation(summary = "Remove accessibility reports")
@@ -75,15 +77,15 @@ public class AdminAccessibilityReportController {
         final Set<String> errors = generalValidator.validateReportAcc(id);
         if (!errors.isEmpty()) {
             return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), reportService.count(),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
 
         final List<AccessibilityReportDto> isDeleted =
                 reportService.delete(id);
         return accessibilityIssueResponseHelper
                 .constructResponse(emptySet(), isDeleted, reportService.count(),
-                        org.sc.controller.Constants.ZERO,
-                        org.sc.controller.Constants.ONE);
+                        ZERO,
+                        ONE);
     }
 
     @Operation(summary = "Upgrade a report")
@@ -93,15 +95,15 @@ public class AdminAccessibilityReportController {
         final Set<String> errors = generalValidator.validateReportAcc(id);
         if (!errors.isEmpty()) {
             return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(), reportService.count(),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
 
         final List<AccessibilityReportDto> upgraded =
                 reportService.upgrade(id);
         return accessibilityIssueResponseHelper
                 .constructResponse(emptySet(), upgraded, reportService.count(),
-                        org.sc.controller.Constants.ZERO,
-                        org.sc.controller.Constants.ONE);
+                        ZERO,
+                        ONE);
     }
 
 }
