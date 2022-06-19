@@ -148,6 +148,27 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
                 .isEqualTo(EXPECTED_NAME);
     }
 
+    @Test
+    public void shouldEnsureCrosswayDeletionWhenNoTrailsCrossIt() {
+        final TrailResponse retrievedInitialTrailResp = trailController.getById(importedTrail.getId(), TrailSimplifierLevel.LOW);
+        final TrailResponse retrievedCrossingTrailResp = trailController.getById(crossingImportedTrail.getId(), TrailSimplifierLevel.LOW);
+
+        assertEquals(OK, retrievedInitialTrailResp.getStatus());
+        assertEquals(OK, retrievedCrossingTrailResp.getStatus());
+
+        final String placeId = createdCrosswayPlace.getId();
+        final PlaceResponse placeByIdResponse = placeController.get(placeId);
+        final PlaceDto placeDto = placeByIdResponse.getContent().get(0);
+
+        assertThat(placeDto.getName()).isEqualTo(EXPECTED_NAME);
+
+        adminTrailController.deleteById(importedTrail.getId());
+        adminTrailController.deleteById(crossingImportedTrail.getId());
+
+        final PlaceResponse placeResponseAfterTrailsDeletion = placeController.get(placeId);
+        assertThat(placeResponseAfterTrailsDeletion.getContent().isEmpty()).isEqualTo(true);
+    }
+
     private void createFirstTrailWithAutoCrossway() {
         PlaceResponse firstPlace = adminPlaceController.create(START_CORRECT_PLACE_DTO_2);
         PlaceResponse crosswayPlace = adminPlaceController.create(MID_AUTO_CROSSWAY);
@@ -187,25 +208,5 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
         importedTrail = importedTrailResponse.getContent().stream().findFirst().get();
     }
 
-    @Test
-    public void shouldEnsureCrosswayDeletionWhenNoTrailsCrossIt() {
-        final TrailResponse retrievedInitialTrailResp = trailController.getById(importedTrail.getId(), TrailSimplifierLevel.LOW);
-        final TrailResponse retrievedCrossingTrailResp = trailController.getById(crossingImportedTrail.getId(), TrailSimplifierLevel.LOW);
-
-        assertEquals(OK, retrievedInitialTrailResp.getStatus());
-        assertEquals(OK, retrievedCrossingTrailResp.getStatus());
-
-        final String placeId = createdCrosswayPlace.getId();
-        final PlaceResponse placeByIdResponse = placeController.get(placeId);
-        final PlaceDto placeDto = placeByIdResponse.getContent().get(0);
-
-        assertThat(placeDto.getName()).isEqualTo(EXPECTED_NAME);
-
-        adminTrailController.deleteById(importedTrail.getId());
-        adminTrailController.deleteById(crossingImportedTrail.getId());
-
-        final PlaceResponse placeResponseAfterTrailsDeletion = placeController.get(placeId);
-        assertThat(placeResponseAfterTrailsDeletion.getContent().isEmpty()).isEqualTo(true);
-    }
 
 }
