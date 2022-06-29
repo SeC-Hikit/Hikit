@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.CountResponse;
+import org.sc.controller.response.ControllerPagination;
 import org.sc.controller.response.AccessibilityIssueResponseHelper;
 import org.sc.manager.AccessibilityNotificationManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class AccessibilityNotificationController {
         final List<AccessibilityNotificationDto> resolvedById =
                 accessibilityNotManager.getResolvedByTrailId(trailId, skip, limit, realm);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolvedById,
-                accessibilityNotManager.countSolvedForTrailId(trailId, realm), skip, limit);
+                accessibilityNotManager.countSolvedForTrailId(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve unresolved notifications")

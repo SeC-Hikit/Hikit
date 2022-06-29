@@ -40,6 +40,7 @@ public class PlaceMapper implements Mapper<Place> {
                 document.getList(Place.COORDINATES, Document.class).stream()
                         .map(coordinatesMapper::mapToObject).collect(Collectors.toList()),
                 document.getList(Place.CROSSING, String.class),
+                document.getBoolean(Place.IS_DYNAMIC_CROSSWAY),
                 recordDetailsMapper.mapToObject(document.get(Place.RECORD_DETAILS, Document.class)));
     }
 
@@ -54,6 +55,7 @@ public class PlaceMapper implements Mapper<Place> {
                 .append(Place.CROSSING, object.getCrossingTrailIds())
                 .append(Place.POINTS, multiPointCoordsMapperMapper.mapToDocument(object.getPoints()))
                 .append(Place.RECORD_DETAILS, recordDetailsMapper.mapToDocument(object.getRecordDetails()))
+                .append(Place.IS_DYNAMIC_CROSSWAY, object.isDynamic())
                 .append(Place.COORDINATES, object.getCoordinates()
                         .stream().map(coordinatesMapper::mapToDocument)
                         .collect(Collectors.toList()));

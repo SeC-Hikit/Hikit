@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
-import org.sc.common.rest.response.AccessibilityReportResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.DataSource;
 import org.sc.configuration.auth.AuthFacade;
@@ -49,7 +48,7 @@ public class TrailExportIntegrationTest {
     @Before
     public void setup() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
         trailResponse = trailController.importTrail(trailImportDto);
     }
 

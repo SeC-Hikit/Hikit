@@ -27,19 +27,19 @@ internal class TrailPlacesAlignerTest {
         val startPlaceRef = PlaceRef("Start: Monteveglio",
                 CoordinatesWithAltitude(44.46861, 11.09924, 30.0),
                 "any_id",
-                listOf()
+                listOf(), false
         )
 
         val middlePlaceRef = PlaceRef("middlePlace: Oliveto",
                 CoordinatesWithAltitude(44.47340, 11.12309, 40.0),
                 "any_id",
-                listOf()
+                listOf(), false
         )
 
         val endPlaceRef = PlaceRef("End: Near Rivabella",
                 CoordinatesWithAltitude(44.47469, 11.20395, 90.0),
                 "any_other_id",
-                listOf()
+                listOf(), false
         )
 
         val coordinates = listOf(start, middle1, middle2, end)
@@ -83,31 +83,31 @@ internal class TrailPlacesAlignerTest {
         val startPlaceRef = PlaceRef("Start: Monte Baducco",
                 CoordinatesWithAltitude(44.1388974, 11.13477, 600.0),
                 "any_id",
-                listOf()
+                listOf(), false
         )
 
         val middlePlaceRef1 = PlaceRef("middlePlace: Woods",
                 CoordinatesWithAltitude(44.138328, 11.133494, 620.0),
                 "any_idPlace",
-                listOf()
+                listOf(), false
         )
 
         val middlePlaceRef2 = PlaceRef("middlePlace2: Woods",
                 CoordinatesWithAltitude(44.138210,11.133053, 620.0),
                 "any_idPlace",
-                listOf()
+                listOf(), false
         )
 
         val middlePlaceRef3 = PlaceRef("middlePlace3: Woods",
                 CoordinatesWithAltitude(44.137801, 11.132006, 630.0),
                 "any_other_id",
-                listOf()
+                listOf(), false
         )
 
         val endPlaceRef = PlaceRef("End: middle of the woods",
                 CoordinatesWithAltitude(44.13754039877708379, 11.13112179969814441, 600.0),
                 "final_id",
-                listOf()
+                listOf(), false
         )
 
         // Random order

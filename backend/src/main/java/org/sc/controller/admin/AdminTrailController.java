@@ -53,7 +53,7 @@ public class AdminTrailController {
         errors.addAll(generalValidator.validate(placeRefDto));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedPlaceResultDtos =
-                    trailManager.linkTrailToPlace(id, placeRefDto);
+                    trailService.linkTrailToPlace(id, placeRefDto);
             return trailResponseHelper.constructResponse(errors, linkedPlaceResultDtos,
                     trailManager.count(),
                     ONE, ONE);
@@ -72,7 +72,7 @@ public class AdminTrailController {
         errors.addAll(generalValidator.validate(placeRefDto));
         if (errors.isEmpty()) {
             final List<TrailDto> linkedPlaceResultDtos =
-                    trailManager.unlinkPlace(id, placeRefDto);
+                    trailService.unlinkPlace(id, placeRefDto);
             return trailResponseHelper.constructResponse(errors, linkedPlaceResultDtos,
                     trailManager.count(),
                     ONE, ONE);
@@ -172,7 +172,7 @@ public class AdminTrailController {
         errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
 
         if (errors.isEmpty()) {
-            List<TrailDto> updatedTrail = trailImporterManager.switchToStatus(trailDto);
+            List<TrailDto> updatedTrail = trailService.switchToStatus(trailDto);
             return trailResponseHelper.constructResponse(emptySet(), updatedTrail,
                     updatedTrail.size(), ZERO, ONE);
         }

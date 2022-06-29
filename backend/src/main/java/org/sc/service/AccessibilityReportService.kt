@@ -72,6 +72,7 @@ class AccessibilityReportService @Autowired constructor(
         }
         val createdReport = createdNotification.first()
         reportDto.issueId = createdReport.id
+        reportDto.valid = true
         resourceManager.addEntry(
                 createdReport.trailId, RegenerationEntryType.ACCESSIBILITY_ISSUE,
                 createdReport.id, authHelper.username, RegenerationActionType.CREATE)

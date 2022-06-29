@@ -1,12 +1,14 @@
 package org.sc.data.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Data
+@Builder
 public class Coordinates2D {
     private final Double latitude;
     private final Double longitude;

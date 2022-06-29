@@ -2,7 +2,8 @@ package org.sc.controller
 
 import org.junit.Assert.*
 import org.junit.Test
-import org.sc.controller.ControllerPagination.checkSkipLim
+import org.sc.controller.response.ControllerPagination
+import org.sc.controller.response.ControllerPagination.checkSkipLim
 import kotlin.test.assertFailsWith
 
 class ControllerPaginationTest {

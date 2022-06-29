@@ -16,10 +16,7 @@ import org.sc.manager.TrailFileManager
 import org.sc.manager.TrailManager
 import org.sc.manager.regeneration.RegenerationActionType
 import org.sc.manager.regeneration.RegenerationEntryType
-import org.sc.processor.DistanceProcessor
-import org.sc.processor.TrailSimplifier
-import org.sc.processor.TrailSimplifierLevel
-import org.sc.processor.TrailsStatsCalculator
+import org.sc.processor.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -32,6 +29,7 @@ class TrailImporterService @Autowired constructor(
         private val trailFileManager: TrailFileManager,
         private val placeManager: PlaceManager,
         private val resourceManager: ResourceManager,
+        private val placesTrailSyncProcessor: PlacesTrailSyncProcessor,
         private val trailsStatsCalculator: TrailsStatsCalculator,
         private val trailDatasetVersionDao: TrailDatasetVersionDao,
         private val coordinatesMapper: CoordinatesMapper,
@@ -69,31 +67,22 @@ class TrailImporterService @Autowired constructor(
 
         val createdOn = Date()
 
-        // Create places in case they did not exist
         val authHelper = authFacade.authHelper
 
-        logger.info("Creating or retrieving places for trail import...")
+        logger.info("Creating or retrieving crossway places for trail import...")
         val trailCrosswaysFromLocations: List<PlaceDto> = getLocationFromPlaceRef(
                 listOf(), importingTrail.crossways, authHelper)
 
+        logger.info("Creating or retrieving other places for trail import...")
         val placesLocations: List<PlaceDto> = getLocationFromPlaceRef(
                 trailCrosswaysFromLocations,
                 importingTrail.locations,
                 authHelper)
 
-        val otherPlacesRefs = placesLocations.map {
-            PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
-        }
-        val trailCrosswaysFromLocationsRefs = trailCrosswaysFromLocations.map {
-            PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds)
-        }
+        logger.info("Mapping retrieved places to refs")
+        val locationsSet = getDistinctPlacesRefs(placesLocations, trailCrosswaysFromLocations)
 
-        val locationsSet = otherPlacesRefs.plus(trailCrosswaysFromLocationsRefs)
-                .distinctBy { it.placeId }
-
-        logger.info("Reordering places in memory...")
+        logger.info("Reordering places refs in memory...")
         val placesInOrder: List<PlaceRef> =
                 trailPlacesAligner.sortLocationsByTrailCoordinates(
                         coordinates,
@@ -162,7 +151,7 @@ class TrailImporterService @Autowired constructor(
 
         val trailSaved = savedTrailAsList.first()
         logger.info("Linking places to trail...")
-        populatePlacesWithTrailData(trailSaved)
+        placesTrailSyncProcessor.populatePlacesWithTrailData(trailSaved)
 
         logger.info("Generating static resources for trail...")
         val targetPlaces = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
@@ -186,21 +175,21 @@ class TrailImporterService @Autowired constructor(
         return savedTrailAsList
     }
 
-    private fun populatePlacesWithTrailData(trailSaved: TrailDto) {
-        trailSaved.locations.map {
-            logger.info("Connecting place with Id '${it.placeId}' to newly created trail with Id '${trailSaved.id}'")
-            trailsManager.linkTrailToPlace(trailSaved.id, it)
-            // Reload place
-            val updatedPlace = placeManager.getById(it.placeId).first()
-            updatedPlace.crossingTrailIds.filter { encounteredTrail -> encounteredTrail.equals(trailSaved.id) }
-                    .forEach { encounteredTrailNotTrailSaved ->
-                        run {
-                            logger.info("Ensuring also place with Id '${it.placeId}' " +
-                                    "to other existing trail with Id '${encounteredTrailNotTrailSaved}'")
-                            trailsManager.linkTrailToPlace(encounteredTrailNotTrailSaved, it)
-                        }
-                    }
+    private fun getDistinctPlacesRefs(placesLocations: List<PlaceDto>,
+                                      trailCrosswaysFromLocations: List<PlaceDto>): List<PlaceRef> {
+
+        val otherPlacesRefs = placesLocations.map {
+            PlaceRef(it.name,
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic)
         }
+
+        val trailCrosswaysFromLocationsRefs = trailCrosswaysFromLocations.map {
+            PlaceRef(it.name,
+                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic)
+        }
+
+        return otherPlacesRefs.plus(trailCrosswaysFromLocationsRefs)
+                .distinctBy { it.placeId }
     }
 
     fun mappingMatchingTrail(targetTrailRaw: TrailRawDto): List<TrailMappingDto> {
@@ -262,34 +251,6 @@ class TrailImporterService @Autowired constructor(
         return update
     }
 
-    fun switchToStatus(trailDto: TrailDto): List<TrailDto> {
-        val trailToUpdate = trailsManager.getById(trailDto.id, TrailSimplifierLevel.LOW).first()
-
-        if (trailDto.status == trailToUpdate.status) {
-            logger.info("Did not change status to trail ${trailDto.id}")
-            return trailsManager.update(trailMapper.map(trailToUpdate))
-        }
-        // Turn PUBLIC -> DRAFT
-        if (isSwitchingToDraft(trailDto, trailToUpdate)) {
-            logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.DRAFT}""")
-            trailsManager.propagateChangesToTrails(trailDto.id)
-            trailDto.locations.forEach{
-                placeManager.unlinkTrailFromPlace(it.placeId, trailDto.id, it.coordinates)
-            }
-            // DRAFT -> PUBLIC
-        } else {
-            logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.PUBLIC}""")
-            populatePlacesWithTrailData(trailDto)
-        }
-        trailToUpdate.status = trailDto.status
-        return trailsManager.update(trailMapper.map(trailToUpdate))
-    }
-
-    private fun isSwitchingToDraft(
-            trailDto: TrailDto,
-            trailToUpdate: TrailDto
-    ) = trailDto.status == TrailStatus.DRAFT &&
-            trailToUpdate.status == TrailStatus.PUBLIC
 
     private fun getLocationFromPlaceRef(otherPlacesBeingSaved: List<PlaceDto>,
                                         elements: List<PlaceRefDto>,
@@ -312,7 +273,9 @@ class TrailImporterService @Autowired constructor(
                     }
 
                     val created = placeManager.create(PlaceDto(null, it.name, "",
-                            emptyList(), emptyList(), listOf(it.coordinates), it.encounteredTrailIds,
+                            emptyList(), emptyList(), listOf(it.coordinates),
+                            it.encounteredTrailIds,
+                            it.isDynamicCrossway,
                             RecordDetailsDto(Date(),
                                     authHelper.username,
                                     authHelper.instance,
@@ -328,7 +291,8 @@ class TrailImporterService @Autowired constructor(
                 }
             }
 
-    private fun placeSubmittedMatchingSubmittedOnes(otherPlacesBeingSaved: List<PlaceDto>, it: PlaceRefDto): List<PlaceDto> =
+    private fun placeSubmittedMatchingSubmittedOnes(otherPlacesBeingSaved: List<PlaceDto>,
+                                                    it: PlaceRefDto): List<PlaceDto> =
             otherPlacesBeingSaved
                     .filter { otherPlaceSubmitted -> otherPlaceSubmitted.name == it.name }
                     .filter { otherPlaceSubmitted ->

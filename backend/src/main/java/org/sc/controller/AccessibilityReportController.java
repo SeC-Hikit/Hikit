@@ -6,6 +6,7 @@ import org.sc.common.rest.CountDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.response.AccessibilityReportResponse;
 import org.sc.common.rest.response.CountResponse;
+import org.sc.controller.response.ControllerPagination;
 import org.sc.controller.response.AccessibilityReportResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.service.AccessibilityReportService;

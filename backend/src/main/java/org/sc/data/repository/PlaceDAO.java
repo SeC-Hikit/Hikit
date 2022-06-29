@@ -25,13 +25,14 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.sc.data.model.Place.*;
 import static org.sc.data.repository.MongoUtils.*;
 
 @Repository
 public class PlaceDAO {
     private static final Logger LOGGER = getLogger(PlaceDAO.class);
     public static final int ONE = 1;
-    public static final String DB_REALM_STRUCTURE_SELECTOR = Place.RECORD_DETAILS + DOT + FileDetails.REALM;
+    public static final String DB_REALM_STRUCTURE_SELECTOR = RECORD_DETAILS + DOT + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
     private final PlaceMapper placeMapper;
@@ -41,21 +42,22 @@ public class PlaceDAO {
     public PlaceDAO(final DataSource dataSource,
                     final PlaceMapper placeMapper,
                     final CoordinatesMapper coordinatesMapper) {
-        this.collection = dataSource.getDB().getCollection(Place.COLLECTION_NAME);
+        this.collection = dataSource.getDB().getCollection(COLLECTION_NAME);
         this.placeMapper = placeMapper;
         this.coordinatesMapper = coordinatesMapper;
     }
 
     @NotNull
-    public List<Place> get(int page, int count, String realm) {
+    public List<Place> get(int page, int count, String realm, boolean isDynamic) {
         return toPlaceList(collection.find(
                         MongoUtils.getRealmConditionalFilter(realm,
-                                DB_REALM_STRUCTURE_SELECTOR))
+                                DB_REALM_STRUCTURE_SELECTOR)
+                                .append(IS_DYNAMIC_CROSSWAY, isDynamic))
                 .skip(page).limit(count));
     }
 
     public List<Place> getById(final String id) {
-        return toPlaceList(collection.find(new Document(Place.ID, id)));
+        return toPlaceList(collection.find(new Document(ID, id)));
     }
 
     public List<Place> getLikeName(final String name, int page, int count, String realm) {
@@ -87,18 +89,18 @@ public class PlaceDAO {
 
     public List<Place> delete(final String id) {
         final List<Place> places = getById(id);
-        collection.deleteOne(new Document(Place.ID, id));
+        collection.deleteOne(new Document(ID, id));
         LOGGER.info("delete Places: {}, for id: {}", places, id);
         return places;
     }
 
     public List<Place> linkTrailToPlace(final String id,
                                         final String trailId, CoordinatesDto trailCoordinates) {
-        collection.updateOne(new Document(Place.ID, id),
-                new Document($ADD_TO_SET, new Document(Place.CROSSING,
+        collection.updateOne(new Document(ID, id),
+                new Document($ADD_TO_SET, new Document(CROSSING,
                         trailId))
-                        .append($PUSH, new Document(Place.COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
-                        .append($PUSH, new Document(Place.POINTS + DOT + MultiPointCoords2D.COORDINATES,
+                        .append($PUSH, new Document(COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
+                        .append($PUSH, new Document(POINTS + DOT + MultiPointCoords2D.COORDINATES,
                                 CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
         );
         return getById(id);
@@ -108,8 +110,8 @@ public class PlaceDAO {
                                             final String trailId,
                                             final Coordinates coordinates) {
 
-        collection.updateOne(new Document(Place.ID, placeId),
-                new Document($PULL, new Document(Place.CROSSING,
+        collection.updateOne(new Document(ID, placeId),
+                new Document($PULL, new Document(CROSSING,
                         trailId)));
 
         final List<Place> afterChange = getById(placeId);
@@ -121,8 +123,8 @@ public class PlaceDAO {
                 afterChange.stream().findFirst()
                         .get().getCoordinates().size() > ONE;
         if (areManyCoordinatesPresent) {
-            collection.updateOne(new Document(Place.ID, placeId),
-                    new Document($PULL, new Document(Place.COORDINATES,
+            collection.updateOne(new Document(ID, placeId),
+                    new Document($PULL, new Document(COORDINATES,
                             coordinatesMapper.mapToDocument(coordinates))));
         }
 
@@ -138,11 +140,11 @@ public class PlaceDAO {
         }
 
         collection.updateOne(
-                new Document(Place.ID, place.getId()),
+                new Document(ID, place.getId()),
                 new Document($_SET,
-                        new Document(Place.DESCRIPTION, place.getDescription())
-                                .append(Place.TAGS, place.getTags())
-                                .append(Place.NAME, place.getName())
+                        new Document(DESCRIPTION, place.getDescription())
+                                .append(TAGS, place.getTags())
+                                .append(NAME, place.getName())
                 )
         );
         return getById(place.getId());
@@ -150,9 +152,9 @@ public class PlaceDAO {
 
     private Document upsertItem(final Document doc,
                                 final String existingOrNewObjectId) {
-        doc.append(Place.ID, existingOrNewObjectId);
+        doc.append(ID, existingOrNewObjectId);
         Document created = collection.findOneAndReplace(
-                new Document(Place.ID, existingOrNewObjectId), doc,
+                new Document(ID, existingOrNewObjectId), doc,
                 new FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER));
         if (created == null) {
             LOGGER.error("upsertItem created is null for Document: {}, existingOrNewObjectId: {}", doc, existingOrNewObjectId);
@@ -163,17 +165,17 @@ public class PlaceDAO {
 
     public List<Place> addMediaToPlace(final String placeId,
                                        final LinkedMedia map) {
-        collection.updateOne(new Document(Place.ID, placeId),
+        collection.updateOne(new Document(ID, placeId),
                 new Document($ADD_TO_SET,
-                        new Document(Place.MEDIA_IDS,
+                        new Document(MEDIA_IDS,
                                 map.getId())));
         return getById(placeId);
     }
 
     public List<Place> removeMediaFromPlace(final String placeId,
                                             final String id) {
-        collection.updateOne(new Document(Place.ID, placeId),
-                new Document($PULL, new Document(Place.MEDIA_IDS,
+        collection.updateOne(new Document(ID, placeId),
+                new Document($PULL, new Document(MEDIA_IDS,
                         id)));
         return getById(placeId);
     }
@@ -181,7 +183,7 @@ public class PlaceDAO {
     public List<Place> getNear(double longitude, double latitude,
                                double distance, int skip, int limit) {
         return toPlaceList(collection.find(
-                        new Document(Place.POINTS,
+                        new Document(POINTS,
                                 getPointNearSearchQuery(longitude, latitude, distance)))
                 .skip(skip)
                 .limit(limit)

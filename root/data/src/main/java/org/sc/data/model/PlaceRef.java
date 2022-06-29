@@ -15,9 +15,11 @@ public class PlaceRef {
     public static final String COORDINATES = "coordinates";
     public static final String PLACE_ID = "placeId";
     public static final String ENCOUNTERED_TRAIL_IDS = "encounteredTrailIds";
+    public static final String IS_DYNAMIC = "isDynamic";
 
     private String name;
     private CoordinatesWithAltitude coordinates;
     private String placeId;
     private List<String> encounteredTrailIds;
+    private boolean dynamicCrossway;
 }

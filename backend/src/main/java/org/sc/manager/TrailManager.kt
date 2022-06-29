@@ -42,6 +42,9 @@ class TrailManager @Autowired constructor(
     fun getById(id: String, level: TrailSimplifierLevel): List<TrailDto> =
             trailDAO.getTrailById(id, level).map { trailMapper.map(it) }
 
+    fun getByIds(id: String, level: TrailSimplifierLevel): List<TrailDto> =
+            trailDAO.getTrailById(id, level).map { trailMapper.map(it) }
+
     fun getByPlaceRefId(code: String, page: Int, limit: Int, level: TrailSimplifierLevel): List<TrailDto> =
             trailDAO.getTrailByPlaceId(code, page, limit, level).map { trailMapper.map(it) }
 
@@ -64,6 +67,10 @@ class TrailManager @Autowired constructor(
 
     fun update(trail: Trail): List<TrailDto> {
         return trailDAO.update(trail).map { trailMapper.map(it) };
+    }
+
+    fun updateTrailPlaceNamesReference(trailId: String, placeId: String, placeName: String): List<TrailDto> {
+        return trailDAO.updateTrailNamePlaceReference(trailId, placeId, placeName).map { trailMapper.map(it) };
     }
 
     fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto): List<TrailDto> {
@@ -135,7 +142,6 @@ class TrailManager @Autowired constructor(
         }
     }
 
-
     fun unlinkPlace(id: String, placeRef: PlaceRefDto): List<TrailDto> {
         val unLinkPlace = trailDAO.unLinkPlace(id, placeRefMapper.map(placeRef))
         return unLinkPlace.map { trailMapper.map(it) }
@@ -177,6 +183,8 @@ class TrailManager @Autowired constructor(
         }
     }
 
+    fun getCodesByTrailIds(ids: List<String>) = trailDAO.getCodesById(ids);
+
     private fun getTrailIntersection(coordinates: List<Coordinates2D>, trail: Trail): TrailIntersectionDto {
         val coordinates2D = GeoCalculator.getIntersectionPointsBetweenSegments(
                 coordinates, trail.geoLineString
@@ -198,6 +206,7 @@ class TrailManager @Autowired constructor(
 
     private fun getPreviewById(id: String): List<TrailPreview> =
             trailDAO.getTrailPreviewById(id)
+
 
 }
 

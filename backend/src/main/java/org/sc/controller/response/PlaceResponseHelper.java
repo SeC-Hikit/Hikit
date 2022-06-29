@@ -4,7 +4,6 @@ import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.controller.Constants;
-import org.sc.controller.ControllerPagination;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

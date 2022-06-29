@@ -150,17 +150,17 @@ public class GeoTrailRestIntegrationTest {
         String start_place = "Start place";
         PlaceResponse any_fountain = adminPlaceController.create(new PlaceDto(placeId1, start_place, "", Collections.singletonList("Any fountain"),
                 Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0)), Collections.emptyList(),
-                new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
+                false, new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
         String end_place = "End place";
         PlaceResponse another_fountain = adminPlaceController.create(new PlaceDto(placeId2, end_place, "", Collections.singletonList("Another fountain"),
                 Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0)), Collections.emptyList(),
-                new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
+                false, new RecordDetailsDto(new Date(), trailRawDto.getFileDetails().getUploadedBy(), trailRawDto.getFileDetails().getOnInstance(), trailRawDto.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace = new PlaceRefDto(start_place, new CoordinatesDto(44.13998529867459, 11.15928920022217, 765.0),
-                any_fountain.getContent().get(0).getId(), Collections.emptyList());
+                any_fountain.getContent().get(0).getId(), Collections.emptyList(), false);
         PlaceRefDto endPlace = new PlaceRefDto(end_place, new CoordinatesDto(44.12684089895337, 11.13139950018985, 1035.0),
-                another_fountain.getContent().get(0).getId(), Collections.emptyList());
+                another_fountain.getContent().get(0).getId(), Collections.emptyList(), false);
 
         TrailImportDto trailImportDto = new TrailImportDto("ABC", "Any trail", "Any desc", 15,
                 startPlace,
@@ -192,17 +192,17 @@ public class GeoTrailRestIntegrationTest {
         String startPlaceName = "Another Start place";
         PlaceResponse any_start_waterfall = adminPlaceController.create(new PlaceDto(placeId3, startPlaceName, "", Collections.singletonList("Any waterfall"),
                 Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0)), Collections.emptyList(),
-                new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
+                false, new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
 
         String endPlaceName = "Another End place";
         PlaceResponse any_end_bivouac = adminPlaceController.create(new PlaceDto(placeId4, endPlaceName, "", Collections.singletonList("Another fountain"),
                 Collections.emptyList(), Collections.singletonList(new CoordinatesDto(44.11522879887705, 11.159186600446347, 775.0)), Collections.emptyList(),
-                new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
+                false, new RecordDetailsDto(new Date(), importedTrail033.getFileDetails().getUploadedBy(), importedTrail033.getFileDetails().getOnInstance(), importedTrail033.getFileDetails().getRealm())));
 
         PlaceRefDto startPlace2 = new PlaceRefDto(startPlaceName, new CoordinatesDto(44.134854998681604, 11.130673499683706, 1118.0),
-                any_start_waterfall.getContent().get(0).getId(), Collections.emptyList());
+                any_start_waterfall.getContent().get(0).getId(), Collections.emptyList(), false);
         PlaceRefDto endPlace2 = new PlaceRefDto(endPlaceName, new CoordinatesDto(44.11522879887705, 11.159186600446347, 1035.0),
-                any_end_bivouac.getContent().get(0).getId(), Collections.emptyList());
+                any_end_bivouac.getContent().get(0).getId(), Collections.emptyList(), false);
 
         TrailImportDto trail2Import = new TrailImportDto("ABC 2", "Any trail 2", "Any desc 2", 15,
                 startPlace2,

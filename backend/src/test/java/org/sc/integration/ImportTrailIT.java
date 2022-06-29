@@ -18,8 +18,11 @@ public class ImportTrailIT {
     public static final String USER_ADMIN = "mario";
 
     public static final CoordinatesDto START_COORDINATES_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
-    public static final CoordinatesDto INTERMEDIATE_COORDINATES_DTO = new CoordinatesDto(44.436084, 11.315620, 250.0);
+    public static final CoordinatesDto INTERMEDIATE_COORDINATES_DTO = new CoordinatesDto(44.491557, 11.248103, 250.0);
     public static final CoordinatesDto END_COORDINATES_DTO = new CoordinatesDto(44.568191623, 11.154781567, 250.0);
+
+    public static final CoordinatesDto START_COORDINATES_DTO_2 = new CoordinatesDto(44.486450, 11.232650, 100.0);
+    public static final CoordinatesDto END_COORDINATES_DTO_2 = new CoordinatesDto(44.495138, 11.258401, 180.0);
 
     public static final CoordinatesDto INTERMEDIATE_EXPECTED_COORDINATE = new CoordinatesDto(44.436084, 11.315620, 250.0);
 
@@ -29,17 +32,30 @@ public class ImportTrailIT {
 
     public static PlaceDto START_CORRECT_PLACE_DTO = new PlaceDto(null, "The first magical place", PLACE_EXPECTED_DESCRIPTION,
             TAGS, Collections.emptyList(),
-            Collections.singletonList(START_COORDINATES_DTO), Collections.emptyList(), null);
+            Collections.singletonList(START_COORDINATES_DTO), Collections.emptyList(), false, null);
+
+
+    public static PlaceDto START_CORRECT_PLACE_DTO_2 = new PlaceDto(null, "Another trail start", PLACE_EXPECTED_DESCRIPTION,
+            TAGS, Collections.emptyList(),
+            Collections.singletonList(START_COORDINATES_DTO_2), Collections.emptyList(), false, null);
+
+    public static PlaceDto MID_AUTO_CROSSWAY = new PlaceDto(null, "Automatic crossway", PLACE_EXPECTED_DESCRIPTION,
+            TAGS, Collections.emptyList(),
+            Collections.singletonList(INTERMEDIATE_COORDINATES_DTO), Collections.emptyList(), true, null);
+
+    public static PlaceDto END_CORRECT_PLACE_DTO_2 = new PlaceDto(null, "Another trail end", PLACE_EXPECTED_DESCRIPTION,
+            TAGS, Collections.emptyList(),
+            Collections.singletonList(END_COORDINATES_DTO_2), Collections.emptyList(), false,null);
 
     public static final String PLACE_NAME = "A magical place";
 
     public static PlaceDto CORRECT_PLACE_DTO = new PlaceDto(null, PLACE_NAME, PLACE_EXPECTED_DESCRIPTION,
             TAGS, Collections.emptyList(),
-            Collections.singletonList(INTERMEDIATE_COORDINATES_DTO), Collections.emptyList(), null);
+            Collections.singletonList(INTERMEDIATE_COORDINATES_DTO), Collections.emptyList(), false, null);
 
     public static PlaceDto END_CORRECT_PLACE_DTO = new PlaceDto(null, "Another magical place", PLACE_EXPECTED_DESCRIPTION,
             TAGS, Collections.emptyList(),
-            Collections.singletonList(END_COORDINATES_DTO), Collections.emptyList(), null);
+            Collections.singletonList(END_COORDINATES_DTO), Collections.emptyList(), false,null);
 
 
 }

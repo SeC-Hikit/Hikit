@@ -4,7 +4,6 @@ import org.sc.common.rest.AccessibilityNotificationDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.controller.Constants;
-import org.sc.controller.ControllerPagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

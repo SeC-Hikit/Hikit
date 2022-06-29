@@ -1,4 +1,4 @@
-package org.sc.controller
+package org.sc.controller.response
 
 import org.springframework.stereotype.Component
 import kotlin.math.ceil

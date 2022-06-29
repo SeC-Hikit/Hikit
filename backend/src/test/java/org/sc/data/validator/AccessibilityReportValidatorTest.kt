@@ -140,8 +140,8 @@ internal class AccessibilityReportValidatorTest {
 
     private fun getTooDistantUserCoordsMock(): CoordinatesDto {
         val userPosition = mockkClass(CoordinatesDto::class)
-        every { userPosition.latitude } returns 44.440834
-        every { userPosition.longitude } returns 11.251723
+        every { userPosition.latitude } returns 44.550834
+        every { userPosition.longitude } returns 11.381723
         every { userPosition.altitude } returns 0.0
         return userPosition
     }

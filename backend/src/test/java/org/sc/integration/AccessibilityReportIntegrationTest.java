@@ -30,6 +30,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sc.integration.ImportTrailIT.INTERMEDIATE_COORDINATES_DTO;
+import static org.sc.integration.TrailImportRestIntegrationTest.INTERMEDIATE_EXPECTED_COORDINATE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -69,12 +70,12 @@ public class AccessibilityReportIntegrationTest {
     @Before
     public void setup() {
         IntegrationUtils.clearCollections(dataSource);
-        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImportWithNoCrossways(placeController);
+        TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
 
         trailResponse = trailController.importTrail(trailImportDto);
         trailId = trailResponse.getContent().get(0).getId();
         reportDate = new Date();
-        anyTrailCoord = new CoordinatesDto(INTERMEDIATE_COORDINATES_DTO.getLatitude(), INTERMEDIATE_COORDINATES_DTO.getLongitude(), INTERMEDIATE_COORDINATES_DTO.getAltitude());
+        anyTrailCoord = new CoordinatesDto(INTERMEDIATE_EXPECTED_COORDINATE.getLatitude(), INTERMEDIATE_EXPECTED_COORDINATE.getLongitude(), INTERMEDIATE_EXPECTED_COORDINATE.getAltitude());
         createResponse = accessibilityReportController.create(new AccessibilityReportDto(null, ANY_DESCRIPTION, trailId, ANY_TARGET_EMAIL, ANY_TEL, "", reportDate, false, anyTrailCoord, null));
     }
 
