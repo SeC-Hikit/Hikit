@@ -6,9 +6,10 @@ import io.jenetics.jpx.Track;
 import io.jenetics.jpx.TrackSegment;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GpsReadUtils {
 
@@ -52,7 +53,7 @@ public class GpsReadUtils {
     }
 
     public static Point[] readGpxPoints(String filename) throws IOException {
-        GPX read = GPX.read("src/test/resources" + filename);
+        GPX read = GPX.read(Path.of("src/test/resources" + filename));
         Track trackSegments = read.getTracks().get(0);
         TrackSegment segment = trackSegments.getSegments().get(0);
         return segment.getPoints().stream().map(t -> new MyPoint(t.getLatitude().doubleValue(),
@@ -62,10 +63,9 @@ public class GpsReadUtils {
     public static Point[] readPoints(String fileName) throws Exception {
         List<MyPoint> pointList = new ArrayList<MyPoint>();
         File file = new File("src/test/resources", fileName);
-        InputStream is = null;
-        try {
-            is = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+        try (InputStream is = new FileInputStream(file)) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().length() == 0) {
@@ -75,10 +75,6 @@ public class GpsReadUtils {
                 double x = Double.parseDouble(xy[0]);
                 double y = Double.parseDouble(xy[1]);
                 pointList.add(new MyPoint(x, y));
-            }
-        } finally {
-            if (is != null) {
-                is.close();
             }
         }
         return pointList.toArray(new MyPoint[pointList.size()]);

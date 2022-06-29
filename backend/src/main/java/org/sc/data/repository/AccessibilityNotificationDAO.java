@@ -59,7 +59,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit, String realm) {
         return toNotificationList(collection.find(
                 new Document(AccessibilityNotification.TRAIL_ID, id)
-                        .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, null)))
+                        .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, null)))
                 .skip(skip).limit(limit));
     }
 
@@ -67,7 +67,7 @@ public class AccessibilityNotificationDAO {
                                                      final int limit, String realm) {
         return toNotificationList(collection.find(
                 MongoUtils.getRealmConditionalFilter(realm, COLLECTION_REALM_STRUCTURE)
-                        .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, "")))
+                        .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, "")))
                 .skip(skip).limit(limit));
     }
 
@@ -129,7 +129,7 @@ public class AccessibilityNotificationDAO {
 
     public long countSolved() {
         return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION,
-                new Document($NOT_EQUAL, null)));
+                new Document($_NOT_EQUAL, null)));
     }
 
     public long countNotSolved(String realm) {
@@ -140,11 +140,11 @@ public class AccessibilityNotificationDAO {
 
     public long countSolvedForTrailId(final String trailId) {
         return collection.countDocuments(new Document(AccessibilityNotification.TRAIL_ID, trailId)
-                .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, null)));
+                .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, null)));
     }
 
     public long countNotSolvedForTrailId(final String trailId) {
         return collection.countDocuments(new Document(AccessibilityNotification.TRAIL_ID, trailId)
-                .append(AccessibilityNotification.RESOLUTION, new Document($NOT_EQUAL, false)));
+                .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, false)));
     }
 }

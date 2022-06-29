@@ -22,7 +22,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.repository.MongoUtils.$NOT_EQUAL;
+import static org.sc.data.repository.MongoUtils.$_NOT_EQUAL;
 import static org.sc.data.repository.MongoUtils.DOT;
 
 @Repository
@@ -129,7 +129,7 @@ public class AccessibilityReportDao {
                                                         final int limit) {
         return toNotificationList(collection.find(
                         new Document(COLLECTION_REALM_STRUCT, realm)
-                                .append(AccessibilityReport.ISSUE_ID, new Document($NOT_EQUAL, "")))
+                                .append(AccessibilityReport.ISSUE_ID, new Document($_NOT_EQUAL, "")))
                 .sort(new Document(AccessibilityReport.REPORT_DATE, MongoUtils.ASCENDING_ORDER))
                 .skip(skip)
                 .limit(limit)
@@ -161,7 +161,7 @@ public class AccessibilityReportDao {
     public long countUpgraded(final String realm) {
         return collection.countDocuments(
                 new Document(COLLECTION_REALM_STRUCT, realm)
-                        .append(AccessibilityReport.ISSUE_ID, new Document($NOT_EQUAL, "")));
+                        .append(AccessibilityReport.ISSUE_ID, new Document($_NOT_EQUAL, "")));
     }
 
     public List<AccessibilityReport> validate(final String validationId) {

@@ -1,5 +1,6 @@
 package org.sc.data.repository;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
@@ -8,6 +9,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
@@ -85,7 +87,7 @@ public class TrailDAO {
                                  final TrailSimplifierLevel trailSimplifierLevel,
                                  final String realm,
                                  final boolean isDraftTrailVisible) {
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         return toTrailsList(collection.find(
                 realmFilter.append(Trail.STATUS,
                         statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
@@ -97,7 +99,7 @@ public class TrailDAO {
     public List<TrailMapping> getTrailsMappings(int skip, int limit,
                                                 final String realm,
                                                 boolean isDraftTrailVisible) {
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         return toTrailsMappingList(collection.find(realmFilter
                         .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
                 .projection(new Document(Trail.ID, ONE)
@@ -155,7 +157,7 @@ public class TrailDAO {
     public List<TrailPreview> getTrailPreviews(final int skip, final int limit,
                                                final String realm, boolean isDraftTrailVisible) {
         final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
-        final Document filter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document filter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         final Bson project = getTrailPreviewProjection();
 
         final Bson aLimit = Aggregates.limit(limit);
@@ -174,7 +176,7 @@ public class TrailDAO {
                                                  final boolean isDraftTrailVisible) {
         final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
         final Document codeFilter = new Document(Trail.CODE, getStartNameMatchPattern(code));
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         final Bson project = getTrailPreviewProjection();
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
@@ -296,14 +298,37 @@ public class TrailDAO {
                                 .collect(Collectors.toList()))));
     }
 
+    public List<TrailPreview> searchByLocationOrTrailName(
+            String name,
+            String realm,
+            boolean isDraftTrailVisible,
+            int skip, int limit) {
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Bson statusFilter = getBsonAggregateStatusInFilter(isDraftTrailVisible);
+        final Bson aLimit = Aggregates.limit(limit);
+        final Bson aSkip = Aggregates.skip(skip);
+        final Document filter = new Document($_OR, Arrays.asList(
+                new Document("locations.name", getAnyMatchingPattern(name)),
+                new Document("name", getAnyMatchingPattern(name))
+        ));
+        final AggregateIterable<Document> foundTrails = collection.aggregate(
+                Arrays.asList(
+                        match(filter),
+                        match(statusFilter),
+                        match(realmFilter),
+                        aLimit, aSkip));
+        return toTrailsPreviewList(foundTrails);
+    }
+
+
     public long countTrail() {
         return collection.countDocuments();
     }
 
     public long countTrailByRealm(final String realm, boolean isDraftTrailVisible) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
-                .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
+                getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
 
     private List<TrailPreview> toTrailsPreviewList(final Iterable<Document> documents) {
@@ -437,7 +462,7 @@ public class TrailDAO {
 
     public long countTotalByCode(final String realm, final String code, boolean isDraftTrailVisible) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                         .append(Trail.CODE, getStartNameMatchPattern(code))
                         .append(Trail.STATUS, statusFilterHelper.getInFilterBson(isDraftTrailVisible)));
     }
@@ -447,5 +472,15 @@ public class TrailDAO {
                 topRight.getLatitude());
     }
 
-
+    public long countFindingByNameOrLocationName(@Nullable String name, @NotNull String realm,
+                                                 boolean draftTrailVisible) {
+        final Document realmFilter = getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Bson statusFilter = getBsonAggregateStatusInFilter(draftTrailVisible);
+        return collection.countDocuments(
+                new Document($_OR, Arrays.asList(
+                        new Document("locations.name", getAnyMatchingPattern(name)),
+                        new Document("name", getAnyMatchingPattern(name)),
+                        realmFilter, statusFilter
+                )));
+    }
 }
