@@ -13,7 +13,7 @@
 
     <groupId>org.sec</groupId>
     <artifactId>root</artifactId>
-    <version>1.4</version>
+    <version>2.0-SNAPSHOT</version>
     <name>Sentieri e Cartografia</name>
     <description>Sentieri e Cartografia root pom</description>
     <packaging>pom</packaging>
@@ -89,6 +89,6 @@
         <log4j2.version>2.15.0</log4j2.version>
         <spring-boot-mail.version>2.7.0</spring-boot-mail.version>
         <org.mapstruct.version>1.5.1.Final</org.mapstruct.version>
-        <lombok.version>1.18.20</lombok.version>
+        <lombok.version>1.18.10</lombok.version>
     </properties>
 </project>
