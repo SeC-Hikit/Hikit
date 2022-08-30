@@ -1,11 +1,10 @@
 package org.sc.adapter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.sc.configuration.AppProperties
-import org.sc.configuration.AppProperties.LOCAL_IP_ADDRESS
 import org.sc.adapter.response.AltitudeApiRequestPoint
 import org.sc.adapter.response.AltitudeApiResponse
 import org.sc.adapter.response.AltitudeServiceRequest
+import org.sc.configuration.AppProperties
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
@@ -34,7 +33,8 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
         val apiGetEndpoint = "http://$pathToServiceApi?locations=$latitude,$longitude"
         return try {
             val getCall = URL(apiGetEndpoint).readText()
-            val gsonBuilder: AltitudeApiResponse = objectMapper.readValue(getCall, AltitudeApiResponse::class.java)
+            val gsonBuilder: AltitudeApiResponse =
+                    objectMapper.readValue(getCall, AltitudeApiResponse::class.java)
             listOf(gsonBuilder.results.first().elevation)
         } catch (e: Exception) {
             logger.severe("Could not connect to altitude service or read its response")
