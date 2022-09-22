@@ -18,14 +18,17 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
                                           private val placeManager: PlaceManager,
                                           private val placesTrailSyncProcessor: PlacesTrailSyncProcessor,
                                           private val poiManager: PoiManager,
-                                          private val trailMapper: TrailMapper) {
+                                          private val trailMapper: TrailMapper,
+                                          private val trailHistoryManager: TrailHistoryManager) {
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
 
     fun deleteById(trailId: String): List<TrailDto> {
+        logger.info("Going to delete trail with id: '%s'".format(trailId))
         val deletedTrails = trailManager.deleteById(trailId)
         if (deletedTrails.isEmpty()) throw IllegalStateException()
         val deletedTrail = deletedTrails.first()
+        trailHistoryManager.addToHistory(deletedTrail)
         maintenanceManager.deleteByTrailId(trailId)
         accessibilityNotificationManager.deleteByTrailId(trailId)
         placeManager.deleteTrailReference(deletedTrail.id, deletedTrail.locations)

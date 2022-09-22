@@ -61,6 +61,11 @@ class TrailManager @Autowired constructor(
         }
     }
 
+    fun upgrade(trailId: String, trail: Trail): List<TrailDto> {
+        propagateChangesToTrails(trailId)
+        return save(trail)
+    }
+
     fun save(trail: Trail): List<TrailDto> {
         return trailDAO.upsert(trail).map { trailMapper.map(it) }
     }

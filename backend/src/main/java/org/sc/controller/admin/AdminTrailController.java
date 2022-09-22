@@ -8,6 +8,7 @@ import org.sc.data.validator.GeneralValidator;
 import org.sc.service.TrailImporterService;
 import org.sc.manager.TrailManager;
 import org.sc.service.TrailService;
+import org.sc.service.TrailUpgradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,8 @@ public class AdminTrailController {
     private final TrailService trailService;
     private final TrailManager trailManager;
     private final GeneralValidator generalValidator;
-    private final TrailImporterService trailImporterManager;
+    private final TrailImporterService trailImporterService;
+    private final TrailUpgradeService trailUpgradeService;
     private final TrailResponseHelper trailResponseHelper;
 
     @Autowired
@@ -37,12 +39,14 @@ public class AdminTrailController {
             final TrailManager trailManager,
             final GeneralValidator generalValidator,
             final TrailResponseHelper trailResponseHelper,
-            final TrailImporterService trailImporterManager) {
+            final TrailImporterService trailImporterService,
+            final TrailUpgradeService trailUpgradeService) {
         this.trailService = trailService;
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
-        this.trailImporterManager = trailImporterManager;
+        this.trailImporterService = trailImporterService;
+        this.trailUpgradeService = trailUpgradeService;
     }
 
     @Operation(summary = "Add place to trail")
@@ -135,7 +139,7 @@ public class AdminTrailController {
     }
 
     @Operation(summary = "Creates a new trail")
-    @PutMapping(path = "/save",
+    @PostMapping(path = "/save",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TrailResponse importTrail(@RequestBody TrailImportDto request) {
@@ -144,19 +148,36 @@ public class AdminTrailController {
             return trailResponseHelper.constructResponse(errors, emptyList(), trailManager.count(),
                     ZERO, ONE);
         }
-        final List<TrailDto> savedTrail = trailImporterManager.save(request);
+        final List<TrailDto> savedTrail = trailImporterService.save(request);
         return trailResponseHelper.constructResponse(emptySet(), savedTrail, trailManager.count(),
                 ZERO, ONE);
     }
+
+    @Operation(summary = "Upgrade an existing trail possibly modifying its connections or relations")
+    @PutMapping("/upgrade/{id}")
+    public TrailResponse upgradeTrail(@RequestBody TrailUpgradeDto trailDto) {
+        final Set<String> errors = generalValidator.validate(trailDto);
+        errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
+
+        if (errors.isEmpty()) {
+            List<TrailDto> updatedTrail = trailUpgradeService.upgradeTrail(trailDto);
+            return trailResponseHelper.constructResponse(emptySet(), updatedTrail,
+                    updatedTrail.size(), ZERO, ONE);
+        }
+
+        return trailResponseHelper.constructResponse(errors, emptyList(),
+                ZERO, ZERO, ONE);
+    }
+
 
     @Operation(summary = "Update an existing trail without modifying its connections or relations")
     @PutMapping("/update")
     public TrailResponse updateTrail(@RequestBody TrailDto trailDto) {
         final Set<String> errors = generalValidator.validate(trailDto);
-        errors.addAll(generalValidator. validateUpdateTrail(trailDto.getId()));
+        errors.addAll(generalValidator.validateUpdateTrail(trailDto.getId()));
 
         if (errors.isEmpty()) {
-            List<TrailDto> updatedTrail = trailImporterManager.updateTrail(trailDto);
+            List<TrailDto> updatedTrail = trailImporterService.updateTrail(trailDto);
             return trailResponseHelper.constructResponse(emptySet(), updatedTrail,
                     updatedTrail.size(), ZERO, ONE);
         }

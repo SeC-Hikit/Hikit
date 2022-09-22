@@ -1,5 +1,6 @@
 package org.sc.common.rest;
 
+import lombok.Builder;
 import lombok.Data;
 import org.sc.data.model.*;
 
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
+@Builder
 public class TrailDto {
     private String id;
     private String code;

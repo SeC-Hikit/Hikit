@@ -1,6 +1,7 @@
 package org.sc.processor
 
 import org.sc.data.model.Coordinates
+import org.sc.data.model.StatsTrailMetadata
 import org.springframework.stereotype.Component
 import kotlin.math.abs
 import kotlin.math.exp

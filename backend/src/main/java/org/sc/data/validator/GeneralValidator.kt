@@ -35,7 +35,8 @@ class GeneralValidator @Autowired constructor(
     private val poiValidator: PoiValidator,
     private val rectangleValidator: RectangleValidator,
     private val geoLineValidator: GeoLineValidator,
-    private val accessibilityReportValidator: AccessibilityReportValidator
+    private val accessibilityReportValidator: AccessibilityReportValidator,
+    private val trailUpgradeValidator: TrailUpgradeValidator
 ) {
     fun validate(acd: AccessibilityReportDto): Set<String> = accessibilityReportValidator.validate(acd)
     fun validate(acd: AccessibilityNotificationDto): Set<String> = accessibilityValidator.validate(acd)
@@ -51,6 +52,7 @@ class GeneralValidator @Autowired constructor(
     fun validate(pgd: PointGeolocationDto): Set<String> = pointGeolocationValidatorDto.validate(pgd)
     fun validate(tcd: TrailCoordinatesDto): Set<String> = trailCoordinatesValidator.validate(tcd)
     fun validate(ti: TrailImportDto): Set<String> = trailImportValidator.validate(ti)
+    fun validate(ti: TrailUpgradeDto): Set<String> = trailUpgradeValidator.validate(ti)
     fun validate(td: TrailDto): Set<String> = trailUpdateValidator.validate(td)
     fun validate(td: TrailRawDto): Set<String> = trailRawValidator.validate(td)
     fun validate(poi: PoiDto): Set<String> = poiValidator.validate(poi)
@@ -65,7 +67,6 @@ class GeneralValidator @Autowired constructor(
     fun validateUpdatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
     fun validateUpdateTrail(id: String): Set<String> = trailExistenceValidator.validateExistenceAndRealm(id)
     fun validateUpdateMaintenance(id: String): Set<String> = maintenanceValidator.validateExistenceAndRealm(id)
-
     fun validateMediaExistence(id: String): Set<String> = mediaExistenceValidator.validate(id)
     fun validatePoiExistence(id: String): Set<String> = poiExistenceValidator.validate(id)
     fun validate(rectangleDto: RectangleDto): Set<String> = rectangleValidator.validate(rectangleDto)

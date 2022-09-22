@@ -18,6 +18,7 @@ public class FileDetails {
     public static final String FILENAME = "filename";
     public static final String ORIGINAL_FILENAME = "originalFilename";
     public static final String LAST_MODIFIED_BY = "lastModifiedBy";
+    public static final String VERSION = "version";
 
     private Date uploadedOn;
     private String uploadedBy;
@@ -26,4 +27,5 @@ public class FileDetails {
     private String filename;
     private String originalFilename;
     private String lastModifiedBy;
+    private Double version;
 }

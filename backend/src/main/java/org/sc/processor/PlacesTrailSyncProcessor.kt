@@ -43,7 +43,7 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
             return
         }
         val place = placeList.first()
-        if(isEmptyDynamicCrossway(place)){
+        if (isEmptyDynamicCrossway(place)) {
             placeManager.deleteById(place.id)
         }
     }
