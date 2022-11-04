@@ -49,12 +49,12 @@ class TrailManager @Autowired constructor(
             trailDAO.getTrailByPlaceId(code, page, limit, level).map { trailMapper.map(it) }
 
     fun deleteById(id: String): List<TrailDto> {
-        propagateChangesToTrails(id)
+        removePlaceFromTrailRefs(id)
         val deletedTrailInMem = trailDAO.delete(id)
         return deletedTrailInMem.map { trailMapper.map(it) }
     }
 
-    fun propagateChangesToTrails(trailId: String) {
+    fun removePlaceFromTrailRefs(trailId: String) {
         val trail = getPreviewById(trailId).first();
         trail.locations.forEach {
             trailDAO.propagatePlaceRemovalFromRefs(it.placeId, trail.id);
@@ -62,7 +62,7 @@ class TrailManager @Autowired constructor(
     }
 
     fun upgrade(trailId: String, trail: Trail): List<TrailDto> {
-        propagateChangesToTrails(trailId)
+        removePlaceFromTrailRefs(trailId)
         return save(trail)
     }
 
@@ -172,20 +172,6 @@ class TrailManager @Autowired constructor(
         val trailMappings = trailDAO.findTrailMappingWithinGeoSquare(
                 CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100)
         return trailMappings.map { trailMappingMapper.map(it) }
-    }
-
-    fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
-        val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates)
-        val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
-                TrailSimplifierLevel.FULL, true)
-
-        return foundTrailsWithinGeoSquare.filter {
-            GeoCalculator.areSegmentsIntersecting(
-                    geoLineDto.coordinates, it.geoLineString
-            )
-        }.map { trail ->
-            getTrailIntersection(geoLineDto.coordinates, trail)
-        }
     }
 
     fun getCodesByTrailIds(ids: List<String>) = trailDAO.getCodesById(ids);

@@ -17,6 +17,7 @@ import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
+import org.sc.service.TrailIntersectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,7 @@ public class GeoTrailController {
     private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
     private final TrailPreviewResponseHelper trailPreviewRespHelper;
+    private final TrailIntersectionService trailIntersectionService;
 
     @Autowired
     public GeoTrailController(final TrailManager trailManager,
@@ -47,6 +49,7 @@ public class GeoTrailController {
                               final TrailIntersectionHelper trailIntersectionHelper,
                               final TrailResponseHelper trailResponseHelper,
                               final TrailPreviewResponseHelper trailPreviewResponseHelper,
+                              final TrailIntersectionService trailIntersectionService,
                               final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
         this.trailIntersectionHelper = trailIntersectionHelper;
@@ -54,6 +57,7 @@ public class GeoTrailController {
         this.trailResponseHelper = trailResponseHelper;
         this.controllerPagination = controllerPagination;
         this.trailPreviewRespHelper = trailPreviewResponseHelper;
+        this.trailIntersectionService = trailIntersectionService;
     }
 
     @Operation(summary = "Find all existing trail intersections for a given multi-coordinate line")
@@ -67,7 +71,7 @@ public class GeoTrailController {
         if (!validate.isEmpty()) return trailIntersectionHelper.constructResponse(validate, emptyList(), 0, skip, limit);
 
         final List<TrailIntersectionDto> intersections =
-                trailManager.findIntersection(geoLineDto, skip, limit);
+                trailIntersectionService.findIntersection(geoLineDto, skip, limit);
         return trailIntersectionHelper.constructResponse(emptySet(), intersections, intersections.size(), skip, limit);
     }
 

@@ -61,7 +61,7 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
         val place = placeList.first()
         val placeCrossingTrailsNames =
                 trailManager.getCodesByTrailIds(place.crossingTrailIds).joinToString(", ")
-        val updatedName = "Crocevia $placeCrossingTrailsNames";
+        val updatedName = getCrosswayDefaultName(placeCrossingTrailsNames);
         logger.info("Updating place with id ${place.id} with previous name='${place.name}' with new name='$updatedName'")
         place.name = updatedName
         placeManager.update(place)
@@ -69,7 +69,13 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
         place.crossingTrailIds.forEach { trailManager.updateTrailPlaceNamesReference(it, placeId, updatedName)}
     }
 
+    private fun getCrosswayDefaultName(placeCrossingTrailsNames: String) = "Crocevia $placeCrossingTrailsNames"
+
     private fun isEmptyDynamicCrossway(place: PlaceDto) =
             place.isDynamic && place.crossingTrailIds.isEmpty()
+
+    fun deleteTrailReferences(previousVersion: TrailDto) {
+        placeManager.deleteTrailReference()
+    }
 
 }

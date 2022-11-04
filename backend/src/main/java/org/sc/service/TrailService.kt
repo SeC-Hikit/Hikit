@@ -25,18 +25,15 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
 
     fun deleteById(trailId: String): List<TrailDto> {
         logger.info("Going to delete trail with id: '%s'".format(trailId))
-        val deletedTrails = trailManager.deleteById(trailId)
-        if (deletedTrails.isEmpty()) throw IllegalStateException()
-        val deletedTrail = deletedTrails.first()
-        trailHistoryManager.addToHistory(deletedTrail)
+        val deletedTrail = getSingleTrail(trailId);
         maintenanceManager.deleteByTrailId(trailId)
         accessibilityNotificationManager.deleteByTrailId(trailId)
         placeManager.deleteTrailReference(deletedTrail.id, deletedTrail.locations)
         updateDynamicCrosswayNamesForTrail(deletedTrail)
         ensureDeletionForDynamicEmptyCrossway(deletedTrail)
         poiManager.deleteTrailReference(deletedTrail.id)
-        logger.info("Purge deleting trail $trailId")
-        return deletedTrails
+        logger.info("Trail '$trailId' has been deleted")
+        return listOf(deletedTrail)
     }
 
     private fun ensureDeletionForDynamicEmptyCrossway(deletedTrail: TrailDto) {
@@ -55,7 +52,7 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
         // Turn PUBLIC -> DRAFT
         if (isSwitchingToDraft(trailDto, trailToUpdate)) {
             logger.info("""Trail ${trailToUpdate.code} -> ${TrailStatus.DRAFT}""")
-            trailManager.propagateChangesToTrails(trailDto.id)
+            trailManager.removePlaceFromTrailRefs(trailDto.id)
             trailDto.locations.forEach {
                 placeManager.unlinkTrailFromPlace(it.placeId, trailDto.id, it.coordinates)
             }
@@ -89,6 +86,8 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
             if (it.isDynamicCrossway) placesTrailSyncProcessor.updateDynamicCrosswayNameWithTrailsPassingCodes(it.placeId)
         }
     }
+
+    private fun getSingleTrail(trailId: String) = trailManager.deleteById(trailId).first()
 
     private fun isSwitchingToDraft(
             trailDto: TrailDto,

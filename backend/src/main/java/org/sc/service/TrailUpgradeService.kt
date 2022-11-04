@@ -1,16 +1,10 @@
 package org.sc.service
 
 import org.sc.common.rest.*
-import org.sc.configuration.auth.AuthFacade
-import org.sc.data.geo.TrailPlacesAligner
-import org.sc.data.mapper.CoordinatesMapper
-import org.sc.data.mapper.TrailMapper
-import org.sc.data.mapper.TrailRawMapper
-import org.sc.data.repository.TrailDatasetVersionDao
-import org.sc.data.repository.TrailRawDAO
 import org.sc.manager.*
 import org.sc.processor.*
 import org.sc.processor.helper.TrailCoordinatesCalculator
+import org.sc.service.helper.TrailProcessingHelper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -19,28 +13,23 @@ import java.util.*
 
 @Service
 class TrailUpgradeService @Autowired constructor(
-        private val trailsManager: TrailManager,
-        private val trailFileManager: TrailFileManager,
+        private val trailManager: TrailManager,
+        private val maintenanceManager: MaintenanceManager,
+        private val accessibilityNotificationManager: AccessibilityNotificationManager,
+
         private val placeManager: PlaceManager,
-        private val resourceManager: ResourceManager,
         private val placesTrailSyncProcessor: PlacesTrailSyncProcessor,
-        private val trailsStatsCalculator: TrailsStatsCalculator,
-        private val trailDatasetVersionDao: TrailDatasetVersionDao,
-        private val coordinatesMapper: CoordinatesMapper,
-        private val trailPlacesAligner: TrailPlacesAligner,
-        private val trailRawMapper: TrailRawMapper,
-        private val trailRawDao: TrailRawDAO,
-        private val trailMapper: TrailMapper,
-        private val authFacade: AuthFacade,
-        private val trailSimplifier: TrailSimplifier,
-        private val trailCoordinatesCalculator: TrailCoordinatesCalculator
+        private val trailCoordinatesCalculator: TrailCoordinatesCalculator,
+        private val trailProcessingHelper: TrailProcessingHelper,
+        private val poiManager: PoiManager,
+        private val trailIntersectionService: TrailIntersectionService
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    fun checkUpgradeTrail(newTrailVersion: TrailUpgradeDto): List<TrailDto> {
+    fun checkUpgradeTrail(newTrailVersion: TrailUpgradeDto): TrailDto {
 
         val id = newTrailVersion.id
-        val previousVersion = trailsManager.getById(id, TrailSimplifierLevel.FULL)
+        val previousVersion = trailManager.getById(id, TrailSimplifierLevel.FULL)
         val isEqual = previousVersion == newTrailVersion;
 
         if(!isEqual) {
@@ -51,20 +40,55 @@ class TrailUpgradeService @Autowired constructor(
         // checkTrailUpgradability();
 
         // Remove all previous crossways and connections
-        return listOf()
+        throw NotImplementedError()
     }
 
-    private fun upgradeTrail(previousVersion: TrailDto,
-                             newTrailVersion: TrailUpgradeDto): List<TrailDto> {
+    private fun upgradeTrail(prevTrail: TrailDto,
+                             newTrailVersion: TrailUpgradeDto): TrailDto {
+
+        logger.info("Going to upgrade trail with id: '${prevTrail.id}'")
+        val trailId = prevTrail.id
+        val deletedTrail = getSingleTrail(trailId)
+
+        logger.info("Deleting all maintenances related to trail id '${prevTrail.id}'")
+        maintenanceManager.deleteByTrailId(trailId)
+
+        logger.info("Deleting all accessibility notifications related to trail id '${prevTrail.id}'")
+        accessibilityNotificationManager.deleteByTrailId(trailId)
+
+        logger.info("Cleaning trail references for trail id '${prevTrail.id}'")
+        placeManager.deleteTrailReference(deletedTrail.id, deletedTrail.locations)
+
+        trailProcessingHelper.updateDynamicCrosswayNamesForTrail(deletedTrail)
+        trailProcessingHelper.ensureDeletionForDynamicEmptyCrossway(deletedTrail)
+
+        logger.info("Cleaning POI trail references for trail id '${prevTrail.id}'")
+        poiManager.deleteTrailReference(deletedTrail.id)
 
         logger.info("Ensuring all places and connections are removed")
-        placesTrailSyncProcessor.deleteTrailReferencesAndSyncPlaces(previousVersion)
+        placesTrailSyncProcessor.deleteTrailReferences(prevTrail)
 
 
-        val buildUpdatedTrail = buildUpdatedTrail(
-                upgradeDto,
-                previousVersion.first().fileDetails,
-                trailCoordinatesCalculator.calculateStats(upgradeDto.coordinates))
+
+        // todo: should compare previous and new intersection to determine which intersections
+        // should be saved new
+        val upgradedTrailIntersections = trailIntersectionService.findIntersectionsByCoordsDto(newTrailVersion.coordinates)
+
+        val placesForUpdate = findMatchingIntersectionsWithOlderTrail()
+
+        logger.info("Clean up success...now going to migrate trail id '${prevTrail.id}' " +
+                "to newly received trail data")
+
+
+
+        return buildUpdatedTrail(
+                newTrailVersion,
+                prevTrail.fileDetails,
+                trailCoordinatesCalculator.calculateStats(newTrailVersion.coordinates))
+    }
+
+    private fun findMatchingIntersectionsWithOlderTrail(): Any {
+        TODO("Not yet implemented")
     }
 
     private fun buildUpdatedTrail(upgradeDto: TrailUpgradeDto,
@@ -93,7 +117,8 @@ class TrailUpgradeService @Autowired constructor(
                 .classification(upgradeDto.classification)
                 .country(upgradeDto.country)
                 .statsTrailMetadata(statsTrailMetadata)
-                .coordinates(upgradeDto.coordinates)
+                // TODO!
+                //.coordinates(upgradeDto.coordinates)
                 .mediaList(upgradeDto.linkedMediaDtos)
                 .lastUpdate(Date())
                 .territorialDivision(upgradeDto.territorialDivision)
@@ -103,6 +128,9 @@ class TrailUpgradeService @Autowired constructor(
                 .cycloDetails(upgradeDto.cycloDetails)
                 .build()
     }
+
+    private fun getSingleTrail(trailId: String) = trailManager.deleteById(trailId).first()
+
 //    fun save(importingTrail: TrailImportDto): List<TrailDto> {
 //        logger.info("Enforcing point calculation...")
 //
