@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class TrailPreviewService @Autowired constructor(private val trailPreviewManager: TrailPreviewManager) {
-    fun searchByLocationNameOrName(name: String, realm: String, isDraftTrailVisible: Boolean,
-                                   skip: Int, limit: Int): List<TrailPreviewDto> =
+    fun searchByLocationNameOrTrailName(name: String, realm: String, isDraftTrailVisible: Boolean,
+                                        skip: Int, limit: Int): List<TrailPreviewDto> =
             trailPreviewManager.searchByLocationNameOrName(name, realm, isDraftTrailVisible, skip, limit)
 
 }

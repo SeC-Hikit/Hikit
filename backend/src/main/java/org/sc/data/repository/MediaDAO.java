@@ -97,7 +97,7 @@ public class MediaDAO {
     }
 
     public List<Media> getMedia(final int skip, final int limit, final String realm) {
-        final Document filter = MongoUtils.getRealmConditionalFilter(realm, REALM_STRUCT);
+        final Document filter = MongoUtils.getConditionalEqFilter(realm, REALM_STRUCT);
         final Bson aLimit = Aggregates.limit(limit);
         final Bson aSkip = Aggregates.skip(skip);
         return toMediaList(collection.aggregate(Arrays.asList(match(filter), aLimit, aSkip)));
@@ -109,7 +109,7 @@ public class MediaDAO {
     }
 
     public long countMedia(final String realm) {
-        final Document filter = MongoUtils.getRealmConditionalFilter(realm, REALM_STRUCT);
+        final Document filter = MongoUtils.getConditionalEqFilter(realm, REALM_STRUCT);
         return collection.countDocuments(filter);
     }
 

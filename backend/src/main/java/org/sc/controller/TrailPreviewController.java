@@ -6,7 +6,6 @@ import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.controller.response.ControllerPagination;
 import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.manager.TrailPreviewManager;
-import org.sc.processor.TrailSimplifierLevel;
 import org.sc.service.TrailPreviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -99,18 +98,17 @@ public class TrailPreviewController {
 
     @Operation(summary = "Retrieve trails by location name or trail name")
     @GetMapping("/find/name/{name}")
-    public TrailPreviewResponse findByLocationOrTrailNames(@PathVariable String name,
-                                                    @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
-                                                    @RequestParam(defaultValue = "LOW") TrailSimplifierLevel level,
-                                                    @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
-                                                    @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
-                                                    @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
+    public TrailPreviewResponse findByLocationOrTrailNames(
+            @PathVariable(required = false) String name,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
+            @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+            @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+            @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
         return trailPreviewResponseHelper
                 .constructResponse(Collections.emptySet(),
-                        trailPreviewService.searchByLocationNameOrName(
+                        trailPreviewService.searchByLocationNameOrTrailName(
                                 name, realm, isDraftTrailVisible, skip, limit),
                         trailManager.countFindingByNameOrLocationName(name, realm, isDraftTrailVisible),
                         Constants.ONE, Constants.ONE);
     }
-
 }

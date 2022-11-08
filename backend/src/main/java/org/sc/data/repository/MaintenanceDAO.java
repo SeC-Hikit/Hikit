@@ -45,7 +45,7 @@ public class MaintenanceDAO {
                                        final LocalDate date,
                                        final String realm) {
         return toMaintenanceList(collection.find(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                         .append(Maintenance.DATE, new Document("$gt", date)))
                 .skip(from).limit(to));
     }
@@ -55,7 +55,7 @@ public class MaintenanceDAO {
                                          final LocalDate date,
                                          final String realm) {
         return toMaintenanceList(collection.find(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                         .append(Maintenance.DATE, new Document("$lt", date)))
                 .sort(new Document(Maintenance.DATE, -1))
                 .skip(from).limit(to));
@@ -116,19 +116,19 @@ public class MaintenanceDAO {
 
     public long countMaintenance(String realm) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
         );
     }
 
     public long countPastMaintenance(String realm) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                         .append(Maintenance.DATE, new Document("$lt", new Date())));
     }
 
     public long countFutureMaintenance(String realm) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                         .append(Maintenance.DATE, new Document("$gt", new Date())));
     }
 
