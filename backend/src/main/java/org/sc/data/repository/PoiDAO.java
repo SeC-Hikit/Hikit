@@ -170,7 +170,7 @@ public class PoiDAO {
 
     public long countPOIByRealm(String realm) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm,
+                MongoUtils.getConditionalEqFilter(realm,
                         DB_REALM_STRUCTURE_SELECTOR));
     }
 }

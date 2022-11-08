@@ -35,7 +35,7 @@ public class TrailRawDAO {
     }
 
     public List<TrailRaw> get(final int skip, final int limit, final String realm) {
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         return toTrailRawList(collection.find(new Document(realmFilter)).skip(skip).limit(limit).sort(
                 new Document(TrailRaw.FILE_DETAILS + "." + FileDetails.UPLOADED_ON, -1)));
     }
@@ -65,7 +65,7 @@ public class TrailRawDAO {
     }
 
     public long count(final String realm) {
-        final Document realmFilter = MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Document realmFilter = MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
         return collection.countDocuments(realmFilter);
     }
 

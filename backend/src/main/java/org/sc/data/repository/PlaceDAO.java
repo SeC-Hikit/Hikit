@@ -50,7 +50,7 @@ public class PlaceDAO {
     @NotNull
     public List<Place> get(int page, int count, String realm, boolean isDynamic) {
         return toPlaceList(collection.find(
-                        MongoUtils.getRealmConditionalFilter(realm,
+                        MongoUtils.getConditionalEqFilter(realm,
                                 DB_REALM_STRUCTURE_SELECTOR)
                                 .append(IS_DYNAMIC_CROSSWAY, isDynamic))
                 .skip(page).limit(count));
@@ -67,7 +67,7 @@ public class PlaceDAO {
     }
 
     private Bson getLikeNameFilter(String name, String realm) {
-        return MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+        return MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
                 .append(MongoUtils.$_OR, Arrays.asList(
                         new Document(Place.NAME, getStartNameMatchPattern(name)),
                         new Document(Place.TAGS, getStartNameMatchPattern(name))));
@@ -196,7 +196,7 @@ public class PlaceDAO {
 
     public long count(String realm) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
         );
     }
 

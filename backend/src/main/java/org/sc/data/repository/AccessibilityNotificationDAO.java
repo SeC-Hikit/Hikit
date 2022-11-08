@@ -43,7 +43,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getUnresolved(final int skip,
                                                          final int limit, String realm) {
         return toNotificationList(collection.find(
-                MongoUtils.getRealmConditionalFilter(realm, COLLECTION_REALM_STRUCTURE)
+                MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
                         .append(AccessibilityNotification.RESOLUTION, ""))
                 .skip(skip)
                 .limit(limit));
@@ -66,7 +66,7 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getSolved(final int skip,
                                                      final int limit, String realm) {
         return toNotificationList(collection.find(
-                MongoUtils.getRealmConditionalFilter(realm, COLLECTION_REALM_STRUCTURE)
+                MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
                         .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, "")))
                 .skip(skip).limit(limit));
     }
@@ -123,7 +123,7 @@ public class AccessibilityNotificationDAO {
     }
 
     public long countAccessibility(String realm) {
-        return collection.countDocuments(MongoUtils.getRealmConditionalFilter(realm,
+        return collection.countDocuments(MongoUtils.getConditionalEqFilter(realm,
                 COLLECTION_REALM_STRUCTURE));
     }
 
@@ -134,7 +134,7 @@ public class AccessibilityNotificationDAO {
 
     public long countNotSolved(String realm) {
         return collection.countDocuments(
-                MongoUtils.getRealmConditionalFilter(realm, COLLECTION_REALM_STRUCTURE)
+                MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
                 .append(AccessibilityNotification.RESOLUTION, null));
     }
 
