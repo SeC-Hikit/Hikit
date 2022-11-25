@@ -120,7 +120,7 @@ class PlaceManager @Autowired constructor(
     }
 
     fun count(): Long = placeDao.count()
-    fun countByRealm(realm: String): Long = placeDao.count(realm)
+    fun countByRealm(realm: String, isDynamic: Boolean = false): Long = placeDao.count(realm, isDynamic)
     fun countByNameOrTags(name: String, realm: String) = placeDao.count(name, realm)
 
 }

@@ -44,10 +44,12 @@ public class PlaceController {
     @GetMapping
     public PlaceResponse get(@RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                              @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                             @RequestParam(required = false) Boolean isDynamicShowing,
                              @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
+        var isDynamic = isDynamicShowing != null && isDynamicShowing;
         return placeResponseHelper.constructResponse(emptySet(),
-                placeManager.getPaginated(skip, limit, realm, false), placeManager.countByRealm(realm), skip, limit);
+                placeManager.getPaginated(skip, limit, realm, isDynamic), placeManager.countByRealm(realm, isDynamic), skip, limit);
     }
 
     @Operation(summary = "Retrieve place by ID")

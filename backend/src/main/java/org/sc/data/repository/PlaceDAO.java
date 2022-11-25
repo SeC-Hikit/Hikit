@@ -199,6 +199,12 @@ public class PlaceDAO {
                 MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
         );
     }
+    public long count(@NotNull String realm, boolean isDynamic) {
+        return collection.countDocuments(
+                MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
+                        .append("isDynamic", isDynamic)
+        );
+    }
 
     public long count(String name, String realm) {
         return collection.countDocuments(getLikeNameFilter(name, realm));
