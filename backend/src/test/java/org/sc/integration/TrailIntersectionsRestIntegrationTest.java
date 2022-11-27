@@ -327,7 +327,7 @@ public class TrailIntersectionsRestIntegrationTest {
                 .flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(encounteredTrailsReloaded.contains(trail001aBO.getId())).isFalse();
 
-        PlaceResponse placeResponse = placeController.get(0, 1000, NO_FILTERING_TOKEN);
+        PlaceResponse placeResponse = placeController.get(0, 1000, false, NO_FILTERING_TOKEN);
         List<String> allPlaces = placeResponse.getContent().stream().map(PlaceDto::getCrossingTrailIds).flatMap(Collection::stream).collect(Collectors.toList());
 
         assertThat(allPlaces.contains(trail001aBO.getId())).isFalse();
@@ -359,7 +359,7 @@ public class TrailIntersectionsRestIntegrationTest {
                 .flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(encounteredTrailsReloaded.contains(trail001aBO.getId())).isFalse();
 
-        PlaceResponse placeResponse = placeController.get(0, 1000, NO_FILTERING_TOKEN);
+        PlaceResponse placeResponse = placeController.get(0, 1000, false,  NO_FILTERING_TOKEN);
         List<String> allPlaces = placeResponse.getContent().stream().map(PlaceDto::getCrossingTrailIds).flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(allPlaces.contains(trail001aBO.getId())).isFalse();
 
