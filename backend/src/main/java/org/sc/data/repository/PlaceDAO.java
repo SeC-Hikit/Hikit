@@ -56,6 +56,16 @@ public class PlaceDAO {
                 .skip(page).limit(count));
     }
 
+    @NotNull
+    public List<Place> getLatest(int page, int count, String realm, boolean isDynamic) {
+        return toPlaceList(collection.find(
+                        MongoUtils.getConditionalEqFilter(realm,
+                                        DB_REALM_STRUCTURE_SELECTOR)
+                                .append(IS_DYNAMIC_CROSSWAY, isDynamic))
+                .sort(new Document(FileDetails.UPLOADED_ON, DESCENDING_ORDER))
+                .skip(page).limit(count));
+    }
+
     public List<Place> getById(final String id) {
         return toPlaceList(collection.find(new Document(ID, id)));
     }
@@ -188,6 +198,21 @@ public class PlaceDAO {
                 .skip(skip)
                 .limit(limit)
         );
+    }
+    public List<Place> getDynamicsNearExcludingById(double longitude,
+                                                    double latitude,
+                                                    double distance,
+                                                    String idToExclude) {
+            return toPlaceList(collection.find(
+                            new Document(POINTS,
+                                    getPointNearSearchQuery(longitude, latitude, distance))
+                                    .append(IS_DYNAMIC_CROSSWAY, true)
+                                    .append(ID,
+                                            new Document($_NOT_EQUAL, idToExclude)))
+                    .sort(new Document(FileDetails.UPLOADED_ON, DESCENDING_ORDER))
+                    .skip(0)
+                    .limit(Integer.MAX_VALUE)
+            );
     }
 
     public long count() {

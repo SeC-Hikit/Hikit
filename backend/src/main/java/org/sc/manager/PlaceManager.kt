@@ -27,6 +27,9 @@ class PlaceManager @Autowired constructor(
     fun getPaginated(skip: Int, limit: Int, realm: String, isDynamic: Boolean): List<PlaceDto> =
             placeDao.get(skip, limit, realm, isDynamic).map { placeMapper.map(it) }
 
+    fun getLatestPaginated(skip: Int, limit: Int, isDynamic: Boolean, realm: String = "*"): List<PlaceDto> =
+            placeDao.getLatest(skip, limit, realm, isDynamic).map { placeMapper.map(it) }
+
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int, realm: String): List<PlaceDto> =
             placeDao.getLikeName(name, skip, limit, realm).map { placeMapper.map(it) }
 
@@ -108,6 +111,17 @@ class PlaceManager @Autowired constructor(
         locationRefs.forEach {
             placeDao.removeTrailFromPlace(it.placeId, trailId, it.coordinates)
         }
+    }
+
+    fun findNearestByCoordinatesExcludingById(
+            id: String, coordinates: List<CoordinatesDto>, distance: Double) : List<Place> {
+        val latitudeMax = coordinates.maxOf { it.latitude }
+        val latitudeMin = coordinates.minOf { it.latitude }
+        val longitudeMax = coordinates.maxOf { it.longitude }
+        val longitudeMin = coordinates.minOf { it.longitude }
+        val middleLatitude = (latitudeMax + latitudeMin) / 2
+        val middleLongitude = (longitudeMax + longitudeMin) / 2
+        return placeDao.getDynamicsNearExcludingById(middleLongitude, middleLatitude, distance, id)
     }
 
     private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {
