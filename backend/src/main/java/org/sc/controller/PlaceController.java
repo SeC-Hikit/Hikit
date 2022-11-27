@@ -7,6 +7,7 @@ import org.sc.controller.response.ControllerPagination;
 import org.sc.controller.response.PlaceResponseHelper;
 import org.sc.data.validator.*;
 import org.sc.manager.PlaceManager;
+import org.sc.service.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,16 +29,18 @@ public class PlaceController {
     private final PlaceResponseHelper placeResponseHelper;
     private final ControllerPagination controllerPagination;
     private final GeneralValidator generalValidator;
+    private final PlaceService placeService;
 
     @Autowired
     public PlaceController(PlaceManager placeManager,
                            PlaceResponseHelper placeResponseHelper,
                            ControllerPagination controllerPagination,
-                           GeneralValidator generalValidator) {
+                           GeneralValidator generalValidator, PlaceService placeService) {
         this.placeManager = placeManager;
         this.placeResponseHelper = placeResponseHelper;
         this.controllerPagination = controllerPagination;
         this.generalValidator = generalValidator;
+        this.placeService = placeService;
     }
 
     @Operation(summary = "Retrieve places")
@@ -47,9 +50,9 @@ public class PlaceController {
                              @RequestParam(required = false) Boolean isDynamicShowing,
                              @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         controllerPagination.checkSkipLim(skip, limit);
-        var isDynamic = isDynamicShowing != null && isDynamicShowing;
         return placeResponseHelper.constructResponse(emptySet(),
-                placeManager.getPaginated(skip, limit, realm, isDynamic), placeManager.countByRealm(realm, isDynamic), skip, limit);
+                placeService.fetchPaginated(skip, limit, realm, isDynamicShowing),
+                placeService.countByRealm(realm, isDynamicShowing), skip, limit);
     }
 
     @Operation(summary = "Retrieve place by ID")
