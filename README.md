@@ -44,7 +44,7 @@ In case you want to test run Hikit in combination with all its dependencies:
 The service will be available at `http://localhost:8990/api/v<N>` (where `<N>` stands for the version number)
 
 ### Production
-As for production, Hikit takes advantage of a Keycloak instance, as it does not implement user and roles natively.
+Hikit takes advantage of a Keycloak instance, as it does not implement user and roles natively.
 In order to configure a Keycloak instance, see the Keycloak official documentation.
 
 ### Properties
