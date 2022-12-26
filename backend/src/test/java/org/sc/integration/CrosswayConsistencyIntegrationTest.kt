@@ -24,7 +24,7 @@ import java.util.*
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @ActiveProfiles("test")
-class CrosswayConsistencyTest {
+class CrosswayConsistencyIntegrationTest {
 
     @Autowired private lateinit var adminPlaceController: AdminPlaceController
     @Autowired private lateinit var adminTrailController: AdminTrailController
