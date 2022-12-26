@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -22,7 +21,7 @@ public class Place {
     public static final String MEDIA_IDS = "mediaIds";
     public static final String POINTS = "points";
     public static final String COORDINATES = "coordinates";
-    public static final String CROSSING = "crossingIds";
+    public static final String CROSSING_IDS = "crossingIds";
     public static final String RECORD_DETAILS = "recordDetails";
     public static final String IS_DYNAMIC_CROSSWAY = "isDynamic";
 

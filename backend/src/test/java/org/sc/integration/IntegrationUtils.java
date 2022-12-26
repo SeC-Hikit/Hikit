@@ -22,6 +22,7 @@ public class IntegrationUtils {
         IntegrationUtils.emptyCollection(dataSource, AccessibilityReport.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Poi.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Place.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, "core.TrailDatasetVersion");
     }
 
 }

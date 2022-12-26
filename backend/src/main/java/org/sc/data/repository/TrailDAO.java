@@ -41,6 +41,9 @@ public class TrailDAO {
     public static final String PLACE_ID_IN_LOCATIONS = Trail.LOCATIONS + DOT + PlaceRef.PLACE_ID;
     public static final String POSITIONAL_EVERY_OPERATOR = ".$[].";
     public static final String POSITIONAL_OPERATOR = ".$";
+
+    public static final String PLACE_ID_IN_LOCATIONS_POSITIONAL = Trail.LOCATIONS + POSITIONAL_OPERATOR + DOT + PlaceRef.PLACE_ID;
+    public static final String PLACE_NAME_IN_LOCATIONS_POSITIONAL = Trail.LOCATIONS + POSITIONAL_OPERATOR + DOT + PlaceRef.NAME;
     public static final String START_POS_COORDINATES = Trail.START_POS + "." + PlaceRef.COORDINATES + "." + PlaceRef.COORDINATES;
     public static final String FINAL_POS_COORDINATES = Trail.FINAL_POS + "." + PlaceRef.COORDINATES + "." + PlaceRef.COORDINATES;
     public static final String DB_REALM_STRUCTURE_SELECTOR = Trail.RECORD_DETAILS + "." + FileDetails.REALM;
@@ -452,6 +455,16 @@ public class TrailDAO {
         return getTrailById(trailId, TrailSimplifierLevel.LOW);
     }
 
+    public void updateAllPlaceReferencesWithNewPlaceId(@NotNull String oldId,
+                                                       @NotNull String id,
+                                                       @NotNull String name
+                                                       ) {
+        collection.updateMany(
+                new Document(PLACE_ID_IN_LOCATIONS, oldId),
+                new Document($_SET, new Document(PLACE_ID_IN_LOCATIONS_POSITIONAL, id))
+                        .append($_SET, new Document(PLACE_NAME_IN_LOCATIONS_POSITIONAL, name)));
+    }
+
 
     public List<TrailMapping> getByStartEndPoint(final double startLatitude, final double startLongitude,
                                                  final double endLatitude, final double endLongitude) {
@@ -485,4 +498,6 @@ public class TrailDAO {
                         realmFilter, statusFilter
                 )));
     }
+
+
 }

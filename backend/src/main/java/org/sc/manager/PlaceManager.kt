@@ -113,7 +113,11 @@ class PlaceManager @Autowired constructor(
         }
     }
 
-    fun findNearestByCoordinatesExcludingById(
+    fun addNotExistingTrailsIdToPlaceId(id: String, crossingTrailIds: List<String>) =
+        placeDao.addTrailsIdToPlace(id, crossingTrailIds)
+
+
+    fun findNearestMatchByCoordinatesExcludingById(
             id: String, coordinates: List<CoordinatesDto>, distance: Double) : List<Place> {
         val latitudeMax = coordinates.maxOf { it.latitude }
         val latitudeMin = coordinates.minOf { it.latitude }
@@ -121,7 +125,8 @@ class PlaceManager @Autowired constructor(
         val longitudeMin = coordinates.minOf { it.longitude }
         val middleLatitude = (latitudeMax + latitudeMin) / 2
         val middleLongitude = (longitudeMax + longitudeMin) / 2
-        return placeDao.getDynamicsNearExcludingById(middleLongitude, middleLatitude, distance, id)
+        return placeDao.getNotDynamicsNearExcludingById(middleLongitude, middleLatitude,
+                distance, id)
     }
 
     private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {

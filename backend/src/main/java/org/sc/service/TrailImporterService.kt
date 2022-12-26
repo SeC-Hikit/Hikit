@@ -56,6 +56,7 @@ class TrailImporterService @Autowired constructor(
                     trailsStatsCalculator.calculateLengthFromTo(importingTrail.coordinates, it))
         }
 
+        logger.info("Calculating stats...")
         val statsTrailMetadata = StatsTrailMetadata(
                 trailsStatsCalculator.calculateTotRise(coordinates),
                 trailsStatsCalculator.calculateTotFall(coordinates),
