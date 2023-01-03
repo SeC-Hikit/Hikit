@@ -13,7 +13,8 @@ import org.sc.controller.admin.AdminTrailController
 import org.sc.controller.admin.AdminTrailImporterController
 import org.sc.data.model.TrailClassification
 import org.sc.data.model.TrailStatus
-import org.sc.job.DynamicCrosswayConsistencyJob
+import org.sc.data.repository.PlaceDAO
+import org.sc.job.PlaceClusteringJob
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -24,20 +25,23 @@ import java.util.*
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @ActiveProfiles("test")
-class CrosswayConsistencyIntegrationTest {
+class PlaceClusteringJobIntegrationTest {
 
     @Autowired private lateinit var adminPlaceController: AdminPlaceController
     @Autowired private lateinit var adminTrailController: AdminTrailController
     @Autowired private lateinit var importerController: AdminTrailImporterController
     @Autowired private lateinit var dataSource: DataSource
-    @Autowired private lateinit var dynamicCrosswayConsistencyJob: DynamicCrosswayConsistencyJob
+    @Autowired private lateinit var placeClusteringJob: PlaceClusteringJob
     @Autowired private lateinit var placeController: PlaceController
+    @Autowired private lateinit var placeDao: PlaceDAO
 
     companion object {
         const val TRAIL_001_IMPORT_FILENAME = "001BO.gpx"
         const val TRAIL_031_IMPORT_FILENAME = "031BO.gpx"
         const val TRAIL_029_IMPORT_FILENAME = "029BO.gpx"
     }
+
+    private var castiglionePlacesCoordinates = mutableListOf<CoordinatesDto>()
 
     @Before
     fun setUp() {
@@ -59,6 +63,8 @@ class CrosswayConsistencyIntegrationTest {
                 trail029Import.content.first().coordinates.last().latitude,
                 trail029Import.content.first().coordinates.last().longitude)
 
+        castiglionePlacesCoordinates.add(lastCoordinateDto)
+
         val firstPlaceImported = adminPlaceController.create(PlaceDto("", "Lagaro",
                 "A description", emptyList(), emptyList(), listOf(firstCoordinateDto), emptyList(), false,
                 RecordDetailsDto(Date(), "test", "test", "test")))
@@ -73,7 +79,6 @@ class CrosswayConsistencyIntegrationTest {
         val lastPlaceRefDto = PlaceRefDto("Castiglione dei Pepoli", lastCoordinateDto,
                 lastPlaceImported.content.first().id,
                 emptyList(), false)
-
         adminTrailController.importTrail(
                 TrailImportDto("001", "", "A description", 5,
                         firstPlaceRef,
@@ -84,13 +89,18 @@ class CrosswayConsistencyIntegrationTest {
                                 TRAIL_029_IMPORT_FILENAME, "test"),
                         TrailStatus.PUBLIC))
 
-        assertThat(placeController.getLikeNameOrTags("Castiglione", 0, Integer.MAX_VALUE, "*").content).asList().hasSize(3)
+        val placesBeforeConsistencyJob = placeController.getLikeNameOrTags("Castiglione", 0, Integer.MAX_VALUE, "*")
+        assertThat(placesBeforeConsistencyJob.content).asList().hasSize(3)
 
         // when - 1500m boundary (set in application.properties)
-        dynamicCrosswayConsistencyJob.doEnsureDynamicCrosswayConsistency()
+        placeClusteringJob.doEnsureDynamicCrosswayConsistency()
 
         // then
-        assertThat(placeController.getLikeNameOrTags("Castiglione", 0, Integer.MAX_VALUE, "*").content).asList().hasSize(1)
+        val placeAfterConsistencyJob = placeController.getLikeNameOrTags("Castiglione", 0, Integer.MAX_VALUE, "*")
+        assertThat(placeAfterConsistencyJob.content).asList().hasSize(1)
+        val placeEntityExpected = placeDao.getById(placeAfterConsistencyJob.content.first().id).first()
+        val castiglioneCoordinates: List<List<Double>> = castiglionePlacesCoordinates.map { cpc -> listOf(cpc.longitude, cpc.latitude) }
+        assertThat(placeEntityExpected.points.coordinates2D).asList().containsAll(castiglioneCoordinates)
     }
 
 
@@ -128,6 +138,8 @@ class CrosswayConsistencyIntegrationTest {
                         FileDetailsDto(Date(), "test", "test", "test", TRAIL_001_IMPORT_FILENAME,
                                 TRAIL_031_IMPORT_FILENAME, "test"),
                         TrailStatus.PUBLIC))
+
+        castiglionePlacesCoordinates.add(lastCoordinateDto)
     }
 
     private fun importFirstTrail(trail001Import: TrailRawResponse) {
@@ -162,5 +174,7 @@ class CrosswayConsistencyIntegrationTest {
                         FileDetailsDto(Date(), "test", "test", "test", TRAIL_001_IMPORT_FILENAME,
                                 TRAIL_001_IMPORT_FILENAME, "test"),
                         TrailStatus.PUBLIC))
+
+        castiglionePlacesCoordinates.add(firstCoordinateDto)
     }
 }

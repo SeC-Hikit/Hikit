@@ -208,7 +208,6 @@ class TrailManager @Autowired constructor(
 
     fun updateTrailPlaceReferences(oldId: String, id: String, name: String) {
         trailDAO.updateAllPlaceReferencesWithNewPlaceId(oldId, id, name)
-
     }
 
 }

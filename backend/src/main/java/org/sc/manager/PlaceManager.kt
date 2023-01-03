@@ -27,8 +27,8 @@ class PlaceManager @Autowired constructor(
     fun getPaginated(skip: Int, limit: Int, realm: String, isDynamic: Boolean): List<PlaceDto> =
             placeDao.get(skip, limit, realm, isDynamic).map { placeMapper.map(it) }
 
-    fun getLatestPaginated(skip: Int, limit: Int, isDynamic: Boolean, realm: String = "*"): List<PlaceDto> =
-            placeDao.getLatest(skip, limit, realm, isDynamic).map { placeMapper.map(it) }
+    fun getOldestPaginated(skip: Int, limit: Int, isDynamic: Boolean, realm: String = "*"): List<PlaceDto> =
+            placeDao.getOldest(skip, limit, realm, isDynamic).map { placeMapper.map(it) }
 
     fun getLikeNameOrTags(name: String, skip: Int, limit: Int, realm: String): List<PlaceDto> =
             placeDao.getLikeName(name, skip, limit, realm).map { placeMapper.map(it) }
@@ -72,7 +72,7 @@ class PlaceManager @Autowired constructor(
     }
 
     fun update(place: PlaceDto): List<PlaceDto> {
-        val update = placeDao.update(placeMapper.map(place)).first()
+        val update = placeDao.updateNameAndTags(placeMapper.map(place)).first()
         update.crossingTrailIds.forEach {
             resourceManager.addEntry(it, RegenerationEntryType.PLACE,
                     update.id, authFacade.authHelper.username,
@@ -111,6 +111,13 @@ class PlaceManager @Autowired constructor(
         locationRefs.forEach {
             placeDao.removeTrailFromPlace(it.placeId, trailId, it.coordinates)
         }
+    }
+
+    fun mergePlacePositions(placeId: String, otherPlaceId: String) {
+        val place = placeDao.getById(placeId).first()
+        val otherPlace = placeDao.getById(otherPlaceId).first()
+        val points = otherPlace.points.coordinates2D
+        placeDao.updatePlacePoints(place.id, points)
     }
 
     fun addNotExistingTrailsIdToPlaceId(id: String, crossingTrailIds: List<String>) =
