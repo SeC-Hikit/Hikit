@@ -62,7 +62,9 @@ class PlaceManager @Autowired constructor(
 
     fun deleteById(placeId: String): List<PlaceDto> {
         trailManager.removePlaceRefFromTrails(placeId)
-        val deletedPlace = placeDao.delete(placeId).first()
+        val deletablePlace = placeDao.delete(placeId)
+        if(deletablePlace.isEmpty()) return emptyList()
+        val deletedPlace = deletablePlace.first()
         deletedPlace.crossingTrailIds.forEach {
             resourceManager.addEntry(it, RegenerationEntryType.PLACE,
                     deletedPlace.id, authFacade.authHelper.username,
@@ -125,7 +127,8 @@ class PlaceManager @Autowired constructor(
 
 
     fun findNearestMatchByCoordinatesExcludingById(
-            id: String, coordinates: List<CoordinatesDto>, distance: Double) : List<Place> {
+            id: String, coordinates: List<CoordinatesDto>,
+            distance: Double, instanceRealm: String) : List<Place> {
         val latitudeMax = coordinates.maxOf { it.latitude }
         val latitudeMin = coordinates.minOf { it.latitude }
         val longitudeMax = coordinates.maxOf { it.longitude }
@@ -133,7 +136,7 @@ class PlaceManager @Autowired constructor(
         val middleLatitude = (latitudeMax + latitudeMin) / 2
         val middleLongitude = (longitudeMax + longitudeMin) / 2
         return placeDao.getNotDynamicsNearExcludingById(middleLongitude, middleLatitude,
-                distance, id)
+                distance, id, instanceRealm)
     }
 
     private fun ensureCorrectElevation(mapCreation: Place) = mapCreation.coordinates.map {

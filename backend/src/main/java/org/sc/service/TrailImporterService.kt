@@ -168,7 +168,6 @@ class TrailImporterService @Autowired constructor(
                             trailSaved.id, authHelper.username, RegenerationActionType.CREATE)
                 }
 
-
         logger.info("Updating trail set version...")
         trailDatasetVersionDao.increaseVersion()
 

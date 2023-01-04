@@ -10,37 +10,56 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
+
 @Component
 class PlaceClusteringJob @Autowired constructor(
         private val placeManager: PlaceManager,
         private val trailManager: TrailManager,
         private val appProperties: AppProperties) {
 
-    private val logger = LogManager.getLogger(CompressImageJob::class.java)
+    private val logger = LogManager.getLogger(PlaceClusteringJob::class.java)
 
-    @Scheduled(fixedRate = 60_000, initialDelay = 180_000)
-    fun doEnsureDynamicCrosswayConsistency() {
-        val latest = placeManager.getOldestPaginated(0, Int.MAX_VALUE, false)
+    companion object {
+        const val batchSize = 2
+    }
+
+    @Scheduled(fixedRate = 180_000, initialDelay = 180_000)
+    fun ensurePlacesConsistency() {
+        logger.info("Starting clustering job for non-dynamic places in instance")
+        val countPlaces = placeManager.countByRealm(appProperties.instanceRealm, false)
         val clusteredInThisRun = mutableListOf<Place>()
 
-        latest.forEach { subjectPlace ->
-            val nearestMatches = placeManager.findNearestMatchByCoordinatesExcludingById(
-                    subjectPlace.id, subjectPlace.coordinates,
-                    appProperties.jobCrosswayConsistencyDistance
-            )
-            val clusteringPlaces: List<Place> = nearestMatches
-                    .filter { !clusteredInThisRun.any { it.id.equals(subjectPlace.id) } }
-                    .filter { match -> match.name.lowercase().startsWith(subjectPlace.name.lowercase()) }
-                    .filter { it.coordinates.size >= subjectPlace.coordinates.size }
-                    .filter { subjectPlace.recordDetails.uploadedOn.before(it.recordDetails.uploadedOn) }
+        var i = 0;
+        while (i < countPlaces) {
+            val latest = placeManager.getOldestPaginated(i, batchSize,
+                    false, appProperties.instanceRealm)
 
-            clusterElectedSpaces(subjectPlace, clusteringPlaces)
+            latest.forEach { subjectPlace ->
+                val nearestMatches =
+                        placeManager.findNearestMatchByCoordinatesExcludingById(
+                                subjectPlace.id, subjectPlace.coordinates,
+                                appProperties.jobCrosswayConsistencyDistance,
+                                appProperties.instanceRealm
+                        )
+                val clusteringPlaces: List<Place> = nearestMatches
+                        .filter { !clusteredInThisRun.any { it.id.equals(subjectPlace.id) } }
+                        .filter { match -> match.name.lowercase().startsWith(subjectPlace.name.lowercase()) }
+                        .filter { it.coordinates.size >= subjectPlace.coordinates.size }
+                        .filter { subjectPlace.recordDetails.uploadedOn.before(it.recordDetails.uploadedOn) }
 
-            if (clusteringPlaces.isNotEmpty()) {
-                clusteredInThisRun.addAll(clusteringPlaces)
+                clusterElectedSpaces(subjectPlace, clusteringPlaces)
+
+                if (clusteringPlaces.isNotEmpty()) {
+                    clusteredInThisRun.addAll(clusteringPlaces)
+                }
             }
+
+            i += batchSize
         }
 
+        logger.info("Clustering job for non-dynamic places over, " +
+                "places which were clustered and are going to " +
+                "be removed: ${clusteredInThisRun.map { it.id }}")
         clusteredInThisRun.forEach {
             placeManager.deleteById(it.id)
         }

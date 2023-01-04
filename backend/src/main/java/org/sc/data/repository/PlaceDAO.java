@@ -108,11 +108,10 @@ public class PlaceDAO {
                                         final String trailId,
                                         final CoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(ID, id),
-                new Document($ADD_TO_SET, new Document(CROSSING_IDS,
-                        trailId))
-                        .append($PUSH, new Document(COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
-                        .append($ADD_TO_SET, new Document(POINTS + DOT + MultiPointCoords2D.COORDINATES,
+                new Document($ADD_TO_SET, new Document(CROSSING_IDS, trailId)
+                        .append(POINTS + DOT + MultiPointCoords2D.COORDINATES,
                                 CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
+                        .append($PUSH, new Document(COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
         );
         return getById(id);
     }
@@ -212,11 +211,13 @@ public class PlaceDAO {
     public List<Place> getNotDynamicsNearExcludingById(double longitude,
                                                        double latitude,
                                                        double distance,
-                                                       String idToExclude) {
+                                                       String idToExclude,
+                                                       String instanceRealm) {
         return toPlaceList(collection.find(
                         new Document(POINTS,
                                 getPointNearSearchQuery(longitude, latitude, distance))
                                 .append(IS_DYNAMIC_CROSSWAY, false)
+                                .append(DB_REALM_STRUCTURE_SELECTOR, instanceRealm)
                                 .append(ID,
                                         new Document($_NOT_EQUAL, idToExclude)))
                 .sort(new Document(FileDetails.UPLOADED_ON, DESCENDING_ORDER))

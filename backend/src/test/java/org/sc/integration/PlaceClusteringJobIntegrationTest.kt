@@ -6,8 +6,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.sc.common.rest.*
 import org.sc.common.rest.response.TrailRawResponse
+import org.sc.configuration.AppProperties
 import org.sc.configuration.DataSource
 import org.sc.controller.PlaceController
+import org.sc.controller.TrailController
 import org.sc.controller.admin.AdminPlaceController
 import org.sc.controller.admin.AdminTrailController
 import org.sc.controller.admin.AdminTrailImporterController
@@ -15,6 +17,7 @@ import org.sc.data.model.TrailClassification
 import org.sc.data.model.TrailStatus
 import org.sc.data.repository.PlaceDAO
 import org.sc.job.PlaceClusteringJob
+import org.sc.processor.TrailSimplifierLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -29,11 +32,13 @@ class PlaceClusteringJobIntegrationTest {
 
     @Autowired private lateinit var adminPlaceController: AdminPlaceController
     @Autowired private lateinit var adminTrailController: AdminTrailController
+    @Autowired private lateinit var trailController: TrailController
     @Autowired private lateinit var importerController: AdminTrailImporterController
     @Autowired private lateinit var dataSource: DataSource
     @Autowired private lateinit var placeClusteringJob: PlaceClusteringJob
     @Autowired private lateinit var placeController: PlaceController
     @Autowired private lateinit var placeDao: PlaceDAO
+    @Autowired private lateinit var appProperties: AppProperties
 
     companion object {
         const val TRAIL_001_IMPORT_FILENAME = "001BO.gpx"
@@ -42,6 +47,7 @@ class PlaceClusteringJobIntegrationTest {
     }
 
     private var castiglionePlacesCoordinates = mutableListOf<CoordinatesDto>()
+    private var castiglionePlaceIds = mutableListOf<String>()
 
     @Before
     fun setUp() {
@@ -54,6 +60,7 @@ class PlaceClusteringJobIntegrationTest {
 
     @Test
     fun `on importing a third trail and running consistency job, should ensure consistency`() {
+        val allTrailsId = trailController.get(0, Int.MAX_VALUE, appProperties.instanceRealm, TrailSimplifierLevel.LOW, true).content.map { it.id }
         // given
         val trail029Import = ImportTrailIT.importRawTrail(importerController, TRAIL_029_IMPORT_FILENAME, this.javaClass)
         val firstCoordinateDto = CoordinatesDto(
@@ -93,7 +100,7 @@ class PlaceClusteringJobIntegrationTest {
         assertThat(placesBeforeConsistencyJob.content).asList().hasSize(3)
 
         // when - 1500m boundary (set in application.properties)
-        placeClusteringJob.doEnsureDynamicCrosswayConsistency()
+        placeClusteringJob.ensurePlacesConsistency()
 
         // then
         val placeAfterConsistencyJob = placeController.getLikeNameOrTags("Castiglione", 0, Integer.MAX_VALUE, "*")
@@ -101,6 +108,14 @@ class PlaceClusteringJobIntegrationTest {
         val placeEntityExpected = placeDao.getById(placeAfterConsistencyJob.content.first().id).first()
         val castiglioneCoordinates: List<List<Double>> = castiglionePlacesCoordinates.map { cpc -> listOf(cpc.longitude, cpc.latitude) }
         assertThat(placeEntityExpected.points.coordinates2D).asList().containsAll(castiglioneCoordinates)
+        assertThat(placeEntityExpected.crossingTrailIds).asList().containsAll(allTrailsId)
+        ensureNoOrphanPlaceIdsAreLeftOnDb()
+    }
+
+    private fun ensureNoOrphanPlaceIdsAreLeftOnDb() {
+        val allTrails = trailController.get(0, Int.MAX_VALUE, appProperties.instanceRealm, TrailSimplifierLevel.LOW, true);
+        val notFoundResultsIds: List<Boolean> = allTrails.content.flatMap { it.locations.map { place -> !castiglionePlaceIds.contains(place.placeId) } }
+        assertThat(!notFoundResultsIds.contains(false));
     }
 
 
@@ -140,6 +155,7 @@ class PlaceClusteringJobIntegrationTest {
                         TrailStatus.PUBLIC))
 
         castiglionePlacesCoordinates.add(lastCoordinateDto)
+        castiglionePlaceIds.add(lastPlaceImported.content.first().id)
     }
 
     private fun importFirstTrail(trail001Import: TrailRawResponse) {
@@ -176,5 +192,6 @@ class PlaceClusteringJobIntegrationTest {
                         TrailStatus.PUBLIC))
 
         castiglionePlacesCoordinates.add(firstCoordinateDto)
+        castiglionePlaceIds.add(firstPlaceImported.content.first().id)
     }
 }
