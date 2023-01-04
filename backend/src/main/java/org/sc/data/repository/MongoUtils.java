@@ -30,6 +30,7 @@ public class MongoUtils {
     public static final String $PULL = "$pull";
     public static final String $PUSH = "$push";
     public static final String $ADD_TO_SET = "$addToSet";
+    public static final String $EACH = "$each";
     public static final String $_MAX_M_DISTANCE_FILTER = "$maxDistance";
     public static final String $_GEO_NEAR_OPERATOR = "$geoNear";
     public static final String $_GEO_WITHIN = "$geoWithin";

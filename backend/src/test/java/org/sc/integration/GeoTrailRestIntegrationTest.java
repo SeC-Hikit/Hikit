@@ -73,8 +73,8 @@ public class GeoTrailRestIntegrationTest {
     @Before
     public void setUp() throws IOException {
         IntegrationUtils.clearCollections(dataSource);
-        trail035Import = importRawTrail(adminTrailImporterController, TRAIL_035_IMPORT_FILENAME);
-        trail033Import = importRawTrail(adminTrailImporterController, TRAIL_033_IMPORT_FILENAME);
+        trail035Import = ImportTrailIT.importRawTrail(adminTrailImporterController, TRAIL_035_IMPORT_FILENAME, this.getClass());
+        trail033Import = ImportTrailIT.importRawTrail(adminTrailImporterController, TRAIL_033_IMPORT_FILENAME, this.getClass());
     }
 
     @Test
@@ -220,12 +220,5 @@ public class GeoTrailRestIntegrationTest {
         secondTrailId = trail2Response.getContent().get(0).getId();
     }
 
-    public TrailRawResponse importRawTrail(final AdminTrailImporterController adminTrailImporterController,
-                                           final String fileName) throws IOException {
-        return adminTrailImporterController.importGpx(
-                new MockMultipartFile("file", fileName, "multipart/form-data",
-                        getClass().getClassLoader().getResourceAsStream("trails" + File.separator + fileName)
-                )
-        );
-    }
+
 }

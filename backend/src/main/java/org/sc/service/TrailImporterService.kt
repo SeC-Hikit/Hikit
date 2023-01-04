@@ -56,6 +56,7 @@ class TrailImporterService @Autowired constructor(
                     trailsStatsCalculator.calculateLengthFromTo(importingTrail.coordinates, it))
         }
 
+        logger.info("Calculating stats...")
         val statsTrailMetadata = StatsTrailMetadata(
                 trailsStatsCalculator.calculateTotRise(coordinates),
                 trailsStatsCalculator.calculateTotFall(coordinates),
@@ -166,7 +167,6 @@ class TrailImporterService @Autowired constructor(
                     resourceManager.addEntry(it.id, RegenerationEntryType.TRAIL,
                             trailSaved.id, authHelper.username, RegenerationActionType.CREATE)
                 }
-
 
         logger.info("Updating trail set version...")
         trailDatasetVersionDao.increaseVersion()

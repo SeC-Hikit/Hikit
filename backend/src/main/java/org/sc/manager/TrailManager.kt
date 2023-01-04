@@ -21,7 +21,6 @@ class TrailManager @Autowired constructor(
         private val trailDAO: TrailDAO,
         private val placeDAO: PlaceDAO,
         private val trailMapper: TrailMapper,
-        private val trailPreviewMapper: TrailPreviewMapper,
         private val linkedMediaMapper: LinkedMediaMapper,
         private val placeRefMapper: PlaceRefMapper,
         private val trailIntersectionMapper: TrailIntersectionMapper,
@@ -55,9 +54,9 @@ class TrailManager @Autowired constructor(
     }
 
     fun propagateChangesToTrails(trailId: String) {
-        val trail = getPreviewById(trailId).first();
+        val trail = getPreviewById(trailId).first()
         trail.locations.forEach {
-            trailDAO.propagatePlaceRemovalFromRefs(it.placeId, trail.id);
+            trailDAO.propagatePlaceRemovalFromRefs(it.placeId, trail.id)
         }
     }
 
@@ -66,7 +65,7 @@ class TrailManager @Autowired constructor(
     }
 
     fun update(trail: Trail): List<TrailDto> {
-        return trailDAO.update(trail).map { trailMapper.map(it) };
+        return trailDAO.update(trail).map { trailMapper.map(it) }
     }
 
     fun updateTrailPlaceNamesReference(trailId: String, placeId: String, placeName: String): List<TrailDto> {
@@ -101,7 +100,7 @@ class TrailManager @Autowired constructor(
     }
 
     private fun ensureLinkingTrailToExistingCrosswayReferences(place: Place, targetTrailId: String) {
-        trailDAO.linkAllExistingTrailConnectionWithNewTrailId(place.id, targetTrailId);
+        trailDAO.linkAllExistingTrailConnectionWithNewTrailId(place.id, targetTrailId)
     }
 
     fun getByMatchingStartEndPoint(startPos: TrailCoordinatesDto, finalPos: TrailCoordinatesDto): List<TrailMappingDto> =
@@ -120,23 +119,23 @@ class TrailManager @Autowired constructor(
     private fun linkAllNewTrailConnectionsWithNewTrailId(otherCrossingTrailId: String,
                                                          targetTrailId: String,
                                                          placeRef: PlaceRefDto) {
-        val previewById = getPreviewById(otherCrossingTrailId);
+        val previewById = getPreviewById(otherCrossingTrailId)
         val first = previewById.first()
         val encounteredTrailIds = first.locations.flatMap { it.encounteredTrailIds }
 
         val isTargetTrailNotPresentInListOfEncounteredTrails = !encounteredTrailIds.contains(targetTrailId)
 
         if (isTargetTrailNotPresentInListOfEncounteredTrails) {
-            val byId = getById(otherCrossingTrailId, TrailSimplifierLevel.HIGH);
+            val byId = getById(otherCrossingTrailId, TrailSimplifierLevel.HIGH)
             if (byId.isEmpty()) {
                 throw IllegalStateException()
             }
             val targetTrail = byId.first()
 
-            val targetPlacesRefs = targetTrail.locations.plus(placeRef);
+            val targetPlacesRefs = targetTrail.locations.plus(placeRef)
 
             val reorderedPlaces = trailPlacesAligner.sortLocationsByTrailCoordinatesDto(
-                    targetTrail.coordinates, targetPlacesRefs);
+                    targetTrail.coordinates, targetPlacesRefs)
 
             trailDAO.updatePlacesRefsByTrailId(otherCrossingTrailId, reorderedPlaces)
         }
@@ -183,7 +182,7 @@ class TrailManager @Autowired constructor(
         }
     }
 
-    fun getCodesByTrailIds(ids: List<String>) = trailDAO.getCodesById(ids);
+    fun getCodesByTrailIds(ids: List<String>) = trailDAO.getCodesById(ids)
 
     private fun getTrailIntersection(coordinates: List<Coordinates2D>, trail: Trail): TrailIntersectionDto {
         val coordinates2D = GeoCalculator.getIntersectionPointsBetweenSegments(
@@ -207,6 +206,9 @@ class TrailManager @Autowired constructor(
     private fun getPreviewById(id: String): List<TrailPreview> =
             trailDAO.getTrailPreviewById(id)
 
+    fun updateTrailPlaceReferences(oldId: String, id: String, name: String) {
+        trailDAO.updateAllPlaceReferencesWithNewPlaceId(oldId, id, name)
+    }
 
 }
 

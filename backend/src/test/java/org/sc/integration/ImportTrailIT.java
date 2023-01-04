@@ -1,17 +1,16 @@
 package org.sc.integration;
 
-import org.sc.common.rest.*;
-import org.sc.data.model.TrailClassification;
+import org.sc.common.rest.CoordinatesDto;
+import org.sc.common.rest.PlaceDto;
+import org.sc.common.rest.response.TrailRawResponse;
+import org.sc.controller.admin.AdminTrailImporterController;
+import org.springframework.mock.web.MockMultipartFile;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 public class ImportTrailIT {
 
@@ -57,5 +56,12 @@ public class ImportTrailIT {
             TAGS, Collections.emptyList(),
             Collections.singletonList(END_COORDINATES_DTO), Collections.emptyList(), false,null);
 
-
+    public static TrailRawResponse importRawTrail(final AdminTrailImporterController adminTrailImporterController,
+                                           final String fileName, final Class<?> clazz) throws IOException {
+        return adminTrailImporterController.importGpx(
+                new MockMultipartFile("file", fileName, "multipart/form-data",
+                        clazz.getClassLoader().getResourceAsStream("trails" + File.separator + fileName)
+                )
+        );
+    }
 }

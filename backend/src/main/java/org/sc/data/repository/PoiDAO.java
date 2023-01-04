@@ -137,7 +137,8 @@ public class PoiDAO {
 
     public List<Poi> linkMedia(final String id,
                                final LinkedMedia linkMedia) {
-        collection.updateOne(new Document(Poi.OBJECT_ID, id), new Document($ADD_TO_SET,
+        collection.updateOne(new Document(Poi.OBJECT_ID, id),
+                new Document($ADD_TO_SET,
                 new Document(Poi.MEDIA, linkedMediaMapper.mapToDocument(linkMedia))));
         return getById(id);
     }

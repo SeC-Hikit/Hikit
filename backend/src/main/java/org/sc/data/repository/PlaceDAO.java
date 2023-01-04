@@ -51,8 +51,18 @@ public class PlaceDAO {
     public List<Place> get(int page, int count, String realm, boolean isDynamic) {
         return toPlaceList(collection.find(
                         MongoUtils.getConditionalEqFilter(realm,
-                                DB_REALM_STRUCTURE_SELECTOR)
+                                        DB_REALM_STRUCTURE_SELECTOR)
                                 .append(IS_DYNAMIC_CROSSWAY, isDynamic))
+                .skip(page).limit(count));
+    }
+
+    @NotNull
+    public List<Place> getOldest(int page, int count, String realm, boolean isDynamic) {
+        return toPlaceList(collection.find(
+                        MongoUtils.getConditionalEqFilter(realm,
+                                        DB_REALM_STRUCTURE_SELECTOR)
+                                .append(IS_DYNAMIC_CROSSWAY, isDynamic))
+                .sort(new Document(FileDetails.UPLOADED_ON, ASCENDING_ORDER))
                 .skip(page).limit(count));
     }
 
@@ -95,15 +105,23 @@ public class PlaceDAO {
     }
 
     public List<Place> linkTrailToPlace(final String id,
-                                        final String trailId, CoordinatesDto trailCoordinates) {
+                                        final String trailId,
+                                        final CoordinatesDto trailCoordinates) {
         collection.updateOne(new Document(ID, id),
-                new Document($ADD_TO_SET, new Document(CROSSING,
-                        trailId))
-                        .append($PUSH, new Document(COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
-                        .append($PUSH, new Document(POINTS + DOT + MultiPointCoords2D.COORDINATES,
+                new Document($ADD_TO_SET, new Document(CROSSING_IDS, trailId)
+                        .append(POINTS + DOT + MultiPointCoords2D.COORDINATES,
                                 CoordinatesUtil.INSTANCE.getLongLatFromCoordinates(trailCoordinates)))
+                        .append($PUSH, new Document(COORDINATES, coordinatesMapper.mapToDocument(trailCoordinates)))
         );
         return getById(id);
+    }
+
+    public void updatePlacePoints(final String id, final List<List<Double>> trailCoordinates) {
+        trailCoordinates.forEach(it ->
+            collection.updateOne(new Document(ID, id),
+                new Document($ADD_TO_SET,
+                    new Document(POINTS + DOT + MultiPointCoords2D.COORDINATES, it)))
+        );
     }
 
     public List<Place> removeTrailFromPlace(final String placeId,
@@ -111,7 +129,7 @@ public class PlaceDAO {
                                             final Coordinates coordinates) {
 
         collection.updateOne(new Document(ID, placeId),
-                new Document($PULL, new Document(CROSSING,
+                new Document($PULL, new Document(CROSSING_IDS,
                         trailId)));
 
         final List<Place> afterChange = getById(placeId);
@@ -133,7 +151,7 @@ public class PlaceDAO {
         return byId;
     }
 
-    public List<Place> update(final Place place) {
+    public List<Place> updateNameAndTags(final Place place) {
         if (place.getId() == null) {
             LOGGER.error("update null id for Place: {}", place);
             throw new IllegalStateException();
@@ -190,6 +208,31 @@ public class PlaceDAO {
         );
     }
 
+    public List<Place> getNotDynamicsNearExcludingById(double longitude,
+                                                       double latitude,
+                                                       double distance,
+                                                       String idToExclude,
+                                                       String instanceRealm) {
+        return toPlaceList(collection.find(
+                        new Document(POINTS,
+                                getPointNearSearchQuery(longitude, latitude, distance))
+                                .append(IS_DYNAMIC_CROSSWAY, false)
+                                .append(DB_REALM_STRUCTURE_SELECTOR, instanceRealm)
+                                .append(ID,
+                                        new Document($_NOT_EQUAL, idToExclude)))
+                .sort(new Document(FileDetails.UPLOADED_ON, DESCENDING_ORDER))
+        );
+    }
+
+    public void addTrailsIdToPlace(@NotNull String id, @NotNull List<String> crossingTrailIds) {
+        collection.updateOne(
+                new Document(ID, id),
+                new Document($ADD_TO_SET,
+                        new Document(CROSSING_IDS, new Document($EACH, crossingTrailIds))
+                )
+        );
+    }
+
     public long count() {
         return collection.countDocuments();
     }
@@ -199,10 +242,11 @@ public class PlaceDAO {
                 MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
         );
     }
+
     public long count(@NotNull String realm, boolean isDynamic) {
         return collection.countDocuments(
                 MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
-                        .append("isDynamic", isDynamic)
+                        .append(IS_DYNAMIC_CROSSWAY, isDynamic)
         );
     }
 

@@ -39,7 +39,7 @@ public class PlaceMapper implements Mapper<Place> {
                 multiPointCoordsMapperMapper.mapToObject(document.get(Place.POINTS, Document.class)),
                 document.getList(Place.COORDINATES, Document.class).stream()
                         .map(coordinatesMapper::mapToObject).collect(Collectors.toList()),
-                document.getList(Place.CROSSING, String.class),
+                document.getList(Place.CROSSING_IDS, String.class),
                 document.getBoolean(Place.IS_DYNAMIC_CROSSWAY),
                 recordDetailsMapper.mapToObject(document.get(Place.RECORD_DETAILS, Document.class)));
     }
@@ -52,7 +52,7 @@ public class PlaceMapper implements Mapper<Place> {
                 .append(Place.DESCRIPTION, object.getDescription())
                 .append(Place.TAGS, object.getTags())
                 .append(Place.MEDIA_IDS, object.getMediaIds())
-                .append(Place.CROSSING, object.getCrossingTrailIds())
+                .append(Place.CROSSING_IDS, object.getCrossingTrailIds())
                 .append(Place.POINTS, multiPointCoordsMapperMapper.mapToDocument(object.getPoints()))
                 .append(Place.RECORD_DETAILS, recordDetailsMapper.mapToDocument(object.getRecordDetails()))
                 .append(Place.IS_DYNAMIC_CROSSWAY, object.isDynamic())

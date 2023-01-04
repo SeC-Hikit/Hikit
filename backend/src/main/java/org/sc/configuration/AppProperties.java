@@ -29,6 +29,7 @@ public class AppProperties {
     private final String instanceHostname;
     private final String validationAddress;
     private final int jobImageBatchSize;
+    private final double jobCrosswayConsistencyDistance;
 
     @Autowired
     public AppProperties(final @Value("${server.port}") String port,
@@ -46,7 +47,8 @@ public class AppProperties {
                          final @Value("${instance.realm}") String instanceRealm,
                          final @Value("${instance.hostname:127.0.0.1}") String instanceHostname,
                          final @Value("${instance.report.validation.address}") String validationAddress,
-                         final @Value("${jobImage.batchsize}") int jobImageBatchSize
+                         final @Value("${jobImage.batchsize}") int jobImageBatchSize,
+                         final @Value("${job.crossway.consistency.distance:100.0}") double jobCrosswayConsistencyDistance
     ) {
         this.port = port;
         this.trailStorage = storage;
@@ -64,6 +66,7 @@ public class AppProperties {
         this.instanceHostname = instanceHostname;
         this.validationAddress = validationAddress;
         this.jobImageBatchSize = jobImageBatchSize;
+        this.jobCrosswayConsistencyDistance = jobCrosswayConsistencyDistance;
     }
 
     public String getPort() {
@@ -128,5 +131,9 @@ public class AppProperties {
 
     public int getJobImageBatchSize() {
         return jobImageBatchSize;
+    }
+
+    public double getJobCrosswayConsistencyDistance() {
+        return jobCrosswayConsistencyDistance;
     }
 }
