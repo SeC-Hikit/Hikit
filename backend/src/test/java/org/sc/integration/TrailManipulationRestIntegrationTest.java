@@ -65,8 +65,6 @@ public class TrailManipulationRestIntegrationTest {
     TrailController trailController;
     @Autowired
     GeoTrailController geoTrailController;
-    @Autowired
-    PlaceController placeController;
 
     private TrailRawResponse trail035Import;
     private TrailRawResponse trail033Import;

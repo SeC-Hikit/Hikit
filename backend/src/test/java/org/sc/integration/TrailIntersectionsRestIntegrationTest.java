@@ -44,6 +44,7 @@ public class TrailIntersectionsRestIntegrationTest {
     public static final String TRAIL_INTERSECTION_FOLDER = "intersections";
     public static final String TRAIL_001aBO_IMPORT_FILENAME = "001aBO.gpx";
     public static final String TRAIL_001BO_IMPORT_FILENAME = "001BO.gpx";
+    public static final String TRAIL_001xBO_IMPORT_FILENAME = "001xBO.gpx";
 
     public static final int ANY_OFFICIAL_ETA = 15;
     public static final String ANY_MAINTAINING_SECTION = "CAI Bologna";
@@ -74,6 +75,7 @@ public class TrailIntersectionsRestIntegrationTest {
     private TrailDto trail001BO;
     private TrailDto trail001aBO;
     private PlaceRefDto intersectionPlaceRef;
+    private TrailRawResponse trail001xBOImport;
 
 
     @Before
@@ -83,10 +85,12 @@ public class TrailIntersectionsRestIntegrationTest {
                 TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001aBO_IMPORT_FILENAME);
         trail001BOImport = importRawTrail(adminTrailImporterController,
                 TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001BO_IMPORT_FILENAME);
+        trail001xBOImport = importRawTrail(adminTrailImporterController,
+                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001xBO_IMPORT_FILENAME);
     }
 
     @Test
-    public void shallCreateTrail_addAnotherOneWithIntersectionAndCheckDataIntegration() {
+    public void whenCreatingMoreThanOneTrail_shouldCheckCrosswayIntegrity() {
 
         TrailRawResponse trail001aBoResp = trailRawController.getById(trail001aBOImport.getContent().stream().findFirst().get().getId());
         assertThat(trail001aBoResp.getContent().size()).isEqualTo(1);
@@ -212,7 +216,7 @@ public class TrailIntersectionsRestIntegrationTest {
     }
 
     @Test
-    public void shallCreatTrailThenAddAnotherOneWithStartingPlaceMatchingCrossway() {
+    public void shallCreateTrailThenAddAnotherOneWithStartingPlaceMatchingCrossway() {
 
         TrailRawResponse trail001aBoResp = trailRawController.getById(trail001aBOImport.getContent().stream().findFirst().get().getId());
         assertThat(trail001aBoResp.getContent().size()).isEqualTo(1);
@@ -255,13 +259,13 @@ public class TrailIntersectionsRestIntegrationTest {
                 "", Collections.emptyList(), false);
 
         List<PlaceRefDto> crosswaySingleton = Collections.singletonList(startPlaceCrocevia);
-            TrailImportDto trailImport001aBODto = new TrailImportDto("001aBO", "Any trail", "Any desc", 15,
+        TrailImportDto trailImport001aBODto = new TrailImportDto("001aBO", "Any trail", "Any desc", 15,
                 startPlaceCrocevia,
                 endPlaceMonteBaducco,
                 Arrays.asList(startPlaceCrocevia, endPlaceMonteBaducco),
                 crosswaySingleton, TrailClassification.E, "Italy",
                 trailRawDto.getCoordinates(),
-                    MAINTAINING_SECTION,
+                MAINTAINING_SECTION,
                 false, "Ovest", Collections.emptyList(),
                 new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
 
@@ -311,7 +315,7 @@ public class TrailIntersectionsRestIntegrationTest {
 
     @Test
     public void deleteOneShallRemoveAllReferences() {
-        shallCreateTrail_addAnotherOneWithIntersectionAndCheckDataIntegration();
+        whenCreatingMoreThanOneTrail_shouldCheckCrosswayIntegrity();
 
         TrailResponse otherTrailSharingCrossway = trailController.getById(trail001BO.getId(), TrailSimplifierLevel.LOW);
         List<String> encounteredTrails = otherTrailSharingCrossway.getContent().get(0).getLocations().stream().map(PlaceRefDto::getEncounteredTrailIds)
@@ -335,7 +339,7 @@ public class TrailIntersectionsRestIntegrationTest {
 
     @Test
     public void onePublishedTrailShallBeSetToDraftAndBackToPublished() {
-        shallCreateTrail_addAnotherOneWithIntersectionAndCheckDataIntegration();
+        whenCreatingMoreThanOneTrail_shouldCheckCrosswayIntegrity();
 
         TrailResponse otherTrailSharingCrossway = trailController.getById(trail001BO.getId(), TrailSimplifierLevel.LOW);
         List<String> encounteredTrails = otherTrailSharingCrossway.getContent().get(0).getLocations().stream().map(PlaceRefDto::getEncounteredTrailIds)
@@ -359,7 +363,7 @@ public class TrailIntersectionsRestIntegrationTest {
                 .flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(encounteredTrailsReloaded.contains(trail001aBO.getId())).isFalse();
 
-        PlaceResponse placeResponse = placeController.get(0, 1000, false,  NO_FILTERING_TOKEN);
+        PlaceResponse placeResponse = placeController.get(0, 1000, false, NO_FILTERING_TOKEN);
         List<String> allPlaces = placeResponse.getContent().stream().map(PlaceDto::getCrossingTrailIds).flatMap(Collection::stream).collect(Collectors.toList());
         assertThat(allPlaces.contains(trail001aBO.getId())).isFalse();
 
@@ -379,10 +383,56 @@ public class TrailIntersectionsRestIntegrationTest {
         TrailResponse trail001BOReloaded = trailController.getById(trail001BO.getId(), TrailSimplifierLevel.LOW);
         List<PlaceRefDto> encounteredIntersectionPlaceReloaded = trail001BOReloaded
                 .getContent().get(0).getLocations().stream()
-                .filter(t-> t.getName().equals(intersectionPlaceRef.getName())).collect(Collectors.toList());
+                .filter(t -> t.getName().equals(intersectionPlaceRef.getName())).collect(Collectors.toList());
 
         PlaceRefDto intersection = encounteredIntersectionPlaceReloaded.stream().findFirst().get();
         assertThat(intersection.getEncounteredTrailIds().contains((byIdReloaded.getId()))).isTrue();
+    }
+
+    @Test
+    public void shouldDetectCrossingOnTwoTrails() {
+        TrailRawResponse trail001aBoResp = trailRawController.getById(trail001aBOImport.getContent().stream().findFirst().get().getId());
+        assertThat(trail001aBoResp.getContent().size()).isEqualTo(1);
+        TrailRawDto trailRawDto = trail001aBoResp.getContent().get(0);
+
+        // Create first trail 001BO
+        TrailRawResponse trail001BOResp = trailRawController.getById(trail001BOImport.getContent().stream().findFirst().get().getId());
+        TrailRawDto trail001BORawDto = trail001BOResp.getContent().get(0);
+
+        PlaceRefDto startPlaceRef2Castiglione = new PlaceRefDto("Start place 2",
+                new CoordinatesDto(trail001BORawDto.getStartPos().getLatitude(), trail001BORawDto.getStartPos().getLongitude(), trail001BORawDto.getStartPos().getAltitude()),
+                "", Collections.emptyList(), false);
+        PlaceRefDto endPlaceRef2Balinello = new PlaceRefDto("End place 2", new CoordinatesDto(trail001BORawDto.getFinalPos().getLatitude(), trail001BORawDto.getFinalPos().getLongitude(), trail001BORawDto.getFinalPos().getAltitude()),
+                "", Collections.emptyList(), false);
+
+        // Castiglione -> Balinello di Sopra
+        TrailImportDto trailImport2Dto = new TrailImportDto("001BO", "Any trail", "Any desc", ANY_OFFICIAL_ETA,
+                startPlaceRef2Castiglione,
+                endPlaceRef2Balinello,
+                Arrays.asList(startPlaceRef2Castiglione, endPlaceRef2Balinello),
+                Collections.emptyList(),
+                TrailClassification.E, "Italy",
+                trail001BORawDto.getCoordinates(),
+                ANY_MAINTAINING_SECTION,
+                false, "Ovest", Collections.emptyList(),
+                new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
+
+        TrailResponse trailImportResponse = adminTrailController.importTrail(trailImport2Dto);
+        assertThat(trailImportResponse.getContent().size()).isEqualTo(1);
+
+        final TrailIntersectionResponse trailIntersection =
+                geoTrailController.findTrailIntersection(
+                        new GeoLineDto(trail001xBOImport.getContent()
+                                .stream().findFirst().get()
+                                .getCoordinates()
+                                .stream()
+                                .map(t -> new Coordinates2D(t.getLongitude(), t.getLatitude()))
+                                .collect(Collectors.toList())),
+                        0, 10
+                );
+
+        List<TrailIntersectionDto> content = trailIntersection.getContent();
+        assertThat(content.size()).isEqualTo(1);
     }
 
 
