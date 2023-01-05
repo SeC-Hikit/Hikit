@@ -169,7 +169,7 @@ class TrailManager @Autowired constructor(
     }
 
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
-        val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates)
+        val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates, 0.001)
         val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
                 TrailSimplifierLevel.FULL, true)
 

@@ -10,9 +10,9 @@ object GeoCalculator {
 
     private val geometryFactory = GeometryFactory()
 
-    fun getOuterSquareForCoordinates(coordinates2D: List<Coordinates2D>): CoordinatesRectangle {
-        val topRight = Coordinates2D(coordinates2D.maxOf { it.longitude }, coordinates2D.maxOf { it.latitude })
-        val bottomLeft = Coordinates2D(coordinates2D.minOf { it.longitude }, coordinates2D.minOf { it.latitude })
+    fun getOuterSquareForCoordinates(coordinates2D: List<Coordinates2D>, paddingDistance: Double = 0.0): CoordinatesRectangle {
+        val topRight = Coordinates2D(coordinates2D.maxOf { it.longitude + paddingDistance }, coordinates2D.maxOf { it.latitude + paddingDistance })
+        val bottomLeft = Coordinates2D(coordinates2D.minOf { it.longitude - paddingDistance }, coordinates2D.minOf { it.latitude - paddingDistance })
         return CoordinatesRectangle(bottomLeft, topRight)
     }
 

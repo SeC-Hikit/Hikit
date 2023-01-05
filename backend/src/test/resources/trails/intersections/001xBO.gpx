@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="GDAL 1.11.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><bounds minlat="44.127139998610041" minlon="11.118746399477093" maxlat="44.128296499096884" maxlon="11.119873900198085"/></metadata>                  
+<trk>
+  <name>001xBO</name>
+  <desc>&quot;Variante 001&quot; - Fonte del Tassinaro - Percorso 001</desc>
+  <trkseg>
+    <trkpt lat="44.128296499096884" lon="11.118963599778922">
+    </trkpt>
+    <trkpt lat="44.128185199169671" lon="11.119172799619514">
+    </trkpt>
+    <trkpt lat="44.128088998921307" lon="11.119342800422235">
+    </trkpt>
+    <trkpt lat="44.1280489986177" lon="11.119376099352905">
+    </trkpt>
+    <trkpt lat="44.128012899355767" lon="11.119394699651689">
+    </trkpt>
+    <trkpt lat="44.127973898728037" lon="11.119378500078096">
+    </trkpt>
+    <trkpt lat="44.127957098712322" lon="11.119323500114634">
+    </trkpt>
+    <trkpt lat="44.127958899075132" lon="11.119229399705933">
+    </trkpt>
+    <trkpt lat="44.128087798633857" lon="11.118847599613328">
+    </trkpt>
+    <trkpt lat="44.128075199250077" lon="11.11875800005663">
+    </trkpt>
+    <trkpt lat="44.128025399501702" lon="11.118746399477093">
+    </trkpt>
+    <trkpt lat="44.127981299320112" lon="11.118809299670126">
+    </trkpt>
+    <trkpt lat="44.127910999464497" lon="11.118935600007642">
+    </trkpt>
+    <trkpt lat="44.127856199197282" lon="11.118993199949093">
+    </trkpt>
+    <trkpt lat="44.127787499371252" lon="11.119035399550377">
+    </trkpt>
+    <trkpt lat="44.127693699287143" lon="11.119081699794561">
+    </trkpt>
+    <trkpt lat="44.127637698840005" lon="11.119160500464174">
+    </trkpt>
+    <trkpt lat="44.127535699105351" lon="11.119370700311222">
+    </trkpt>
+    <trkpt lat="44.127378298976573" lon="11.119620300303358">
+    </trkpt>
+    <trkpt lat="44.127278399404112" lon="11.119751800296845">
+    </trkpt>
+    <trkpt lat="44.127139998610041" lon="11.119873900198085">
+    </trkpt>
+  </trkseg>
+</trk>
+</gpx>
