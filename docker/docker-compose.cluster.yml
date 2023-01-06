@@ -1,7 +1,7 @@
 version: '3.0'
 services:
   sec_backend:
-    image: "sec/backend-1.5"
+    image: "sec/backend-2.0-SNAPSHOT"
     ports:
       - "8990:8990"
     restart: always

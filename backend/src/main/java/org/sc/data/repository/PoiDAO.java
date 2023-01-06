@@ -58,9 +58,9 @@ public class PoiDAO {
         return toPoisList(collection.find(new Document(Poi.OBJECT_ID, id)));
     }
 
-    public List<Poi> getByTrailCode(final String code,
-                                    final int page,
-                                    final int count) {
+    public List<Poi> getByCode(final String code,
+                               final int page,
+                               final int count) {
         return toPoisList(collection.find(new Document(Poi.TRAIL_CODES, code)).skip(page).limit(count));
     }
 
