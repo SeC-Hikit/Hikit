@@ -41,7 +41,7 @@ class PoiManager @Autowired constructor(
     }
 
     fun getPoiByTrailId(code: String, page: Int, count: Int): List<PoiDto> {
-        return poiDAO.getByCode(code, page, count).map { poiDtoMapper.poiToPoiDto(it) }
+        return poiDAO.getByTrailCode(code, page, count).map { poiDtoMapper.poiToPoiDto(it) }
     }
 
     fun getPoiByMacro(macro: String, page: Int, count: Int): List<PoiDto> {
