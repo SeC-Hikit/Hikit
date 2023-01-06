@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class AppProperties {
 
     public static final String APP_NAME = "Sentieri&Cartografia";
-    public static final String DISPLAYED_VERSION = "1.4.0";
+    public static final String DISPLAYED_VERSION = "1.5.0-SNAPSHOT";
     public static final String LOCAL_IP_ADDRESS = "127.0.0.1";
 
     private final String port;

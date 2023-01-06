@@ -1,8 +1,8 @@
-# Hikit
-Hikit is a collaborative service that manages high level geo and meta data related to trails.
-It is intended to provide trail support teams (like the [CAI](https://www.cai.it/) ones) with a rich set of features to update and maintain a trail library, while making this data available to users.
+# Hikit Service
+Hikit service manages high level geo and meta-data related to trails.
+It is intended to provide organizations (like the [CAI](https://www.cai.it/) ones) with a rich set of features to update and maintain a trail rich format library, while making this data available to users.
 
-Currently, the library supports accessibility-notifications, user reports, maintenance planning, generic/specific POIs and other features all linked with trails.
+Currently, it supports a wide set of features like accessibility-notifications, user trail accidents reports, maintenance planning, generic/specific POIs and other features all linked with trails.
 
 ## Build
 ### Prerequisites
@@ -13,12 +13,12 @@ Currently, the library supports accessibility-notifications, user reports, maint
 After cloning the repo, simply run `mvn install -f root/pom.xml`.
 
 ### Deployment Build
-To incude all dependencies in a portable uber-jar, run `mvn install -P package`.
+To include all dependencies in a portable uber-jar, run `mvn install -P package`.
 
-### Test
-There are two main types of tests written to address the S&C QA: unit test and integration test.
-The latter requires the [dependencies](#Dependencies) to be up and running as it tests application operations connecting to them.
-Once the dependencies are made available, to run the integration tests, simply execute `mvn install -P it`. 
+### Testing
+There are two main types of tests written to address the Hikit QA: unit and integration tests.
+The latter requires the [dependencies](#Dependencies) to be up and running as it runs application operations connecting to them.
+Once the dependencies are made available, simply execute `mvn install -P it`. 
 
 ## Run
 
@@ -44,7 +44,7 @@ In case you want to test run Hikit in combination with all its dependencies:
 The service will be available at `http://localhost:8990/api/v<N>` (where `<N>` stands for the version number)
 
 ### Production
-Hikit takes advantage of a Keycloak instance, as it does not implement user and roles natively.
+As for production, Hikit takes advantage of a Keycloak instance, as it does not implement user and roles natively.
 In order to configure a Keycloak instance, see the Keycloak official documentation.
 
 ### Properties
