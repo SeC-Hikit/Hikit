@@ -14,7 +14,7 @@ class AccessibilityReportMailAdapter @Autowired constructor(private val mailAdap
     private val logger = Logger.getLogger(AccessibilityReportMailAdapter::class.java.name)
 
     companion object {
-        const val subject = "[S&C] Attivazione segnalazione"
+        const val subject = "[Hikit] Attivazione segnalazione"
         const val message = "Il %s, hai inviato una segnalazione " +
                 "tramite S&C al '%s' per il sentiero '%s' (ID da sistema: '%s'). </br> " +
                 "Descrizione: '%s'.<br/>Per attivare la segnalazione, clicca <a href=\"%s\" target='_blank'>qui</a>, " +
