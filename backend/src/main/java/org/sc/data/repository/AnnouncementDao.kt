@@ -1,6 +1,7 @@
 package org.sc.data.repository
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.FindOneAndReplaceOptions
 import org.apache.logging.log4j.LogManager
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -14,10 +15,12 @@ import org.sc.data.repository.MongoUtils.DOT
 import org.springframework.stereotype.Repository
 
 @Repository
-class AnnouncementsDao(dataSource: DataSource,
-                       private val announcementsMapper: AnnouncementMapper) {
+class AnnouncementDao(
+    dataSource: DataSource,
+    private val announcementsMapper: AnnouncementMapper
+) {
 
-    private val logger = LogManager.getLogger(AnnouncementsDao::class.java)
+    private val logger = LogManager.getLogger(AnnouncementDao::class.java)
 
     val collection: MongoCollection<Document>
 
@@ -27,30 +30,40 @@ class AnnouncementsDao(dataSource: DataSource,
 
     fun get(id: String) = toAnnouncementList(collection.find(Document(Announcement.ID, id)))
 
-    fun get(skip: Int,
-            limit: Int,
-            realm: String): List<Announcement> {
-        val realmFilter = MongoUtils.getConditionalEqFilter(realm, Announcement.RECORD_DETAILS + DOT + RecordDetails.REALM)
-        return toAnnouncementList(collection.find(realmFilter)
+    fun get(
+        skip: Int,
+        limit: Int,
+        realm: String
+    ): List<Announcement> {
+        val realmFilter =
+            MongoUtils.getConditionalEqFilter(realm, Announcement.RECORD_DETAILS + DOT + RecordDetails.REALM)
+        return toAnnouncementList(
+            collection.find(realmFilter)
                 .skip(skip)
                 .limit(limit)
-                .sort(Document(Announcement.RECORD_DETAILS + DOT + RecordDetails.UPLOADED_ON,
-                        DESCENDING_ORDER)))
+                .sort(
+                    Document(
+                        Announcement.RECORD_DETAILS + DOT + RecordDetails.UPLOADED_ON,
+                        DESCENDING_ORDER
+                    )
+                )
+        )
     }
 
     fun create(announcement: Announcement): List<Announcement> {
         val objectId = ObjectId().toHexString()
         collection.findOneAndReplace(
-                Document(Trail.ID, objectId),
-                announcementsMapper.mapToDocument(announcement.copy(id = objectId))
+            Document(Trail.ID, objectId),
+            announcementsMapper.mapToDocument(announcement.copy(id = objectId)),
+            FindOneAndReplaceOptions().upsert(true)
         )
         return get(objectId)
     }
 
     fun update(update: Announcement): List<Announcement> {
         val updateOne = collection.updateOne(
-                Document(Announcement.ID, update.id),
-                announcementsMapper.mapToDocument(update)
+            Document(Announcement.ID, update.id),
+            announcementsMapper.mapToDocument(update)
         )
         if (!updateOne.wasAcknowledged()) logger.error("Could not delete announcement with id: ${update.id}")
         return get(update.id)

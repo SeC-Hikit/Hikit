@@ -1,13 +1,13 @@
 package org.sc.data.model
 
 data class Announcement(
-        val id: String,
-        val name: String,
-        val description: String,
-        val relatedTopic: AnnouncementRelatedTopic,
-        val type: AnnouncementType,
-        val valid: Boolean,
-        val recordDetails: RecordDetails
+        var id: String,
+        var name: String,
+        var description: String,
+        var relatedTopic: AnnouncementRelatedTopic,
+        var type: AnnouncementType,
+        var valid: Boolean,
+        var recordDetails: RecordDetails
 ) {
 
     companion object {

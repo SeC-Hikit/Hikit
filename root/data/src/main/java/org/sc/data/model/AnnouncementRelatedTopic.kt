@@ -1,8 +1,8 @@
 package org.sc.data.model
 
 data class AnnouncementRelatedTopic(
-        val announcementTopicType: AnnouncementTopicType,
-        val id: String
+        var announcementTopicType: AnnouncementTopicType,
+        var id: String
 ) {
     companion object {
         const val ID = "_id"

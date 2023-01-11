@@ -3,13 +3,13 @@ package org.sc.data.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.sc.common.rest.AccessibilityNotificationDto;
-import org.sc.data.model.AccessibilityNotification;
+import org.sc.common.rest.AnnouncementDto;
+import org.sc.data.model.Announcement;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AnnouncementMapper {
-    AccessibilityNotificationDto map(AccessibilityNotification an);
+    AnnouncementDto map(Announcement an);
 
     @Mapping(source = "id", target = "id")
-    AccessibilityNotification map(AccessibilityNotificationDto an);
+    Announcement map(AnnouncementDto an);
 }

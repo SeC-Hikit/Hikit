@@ -10,6 +10,7 @@ public class Constants {
     public static final String PREFIX_ACCESSIBILITY = "/admin/accessibility";
     public static final String PREFIX_REPORT = "/admin/report";
     public static final String PREFIX_DIAGNOSE = "/admin/diagnose";
+    public static final String PREFIX_ANNOUNCEMENT = "/admin/announcement";
     public static final String PREFIX_RAW = "/admin/raw";
     public static final String PREFIX_MEDIA = "/admin/media";
     public static final String PREFIX_IMPORT = "/admin/import";
