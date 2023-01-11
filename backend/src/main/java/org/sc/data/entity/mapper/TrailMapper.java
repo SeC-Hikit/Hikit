@@ -12,6 +12,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.sc.data.model.Trail.*;
 
 @Component
 public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail> {
@@ -46,27 +47,27 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     @Override
     public Trail mapToObject(final Document doc) {
         LOGGER.trace("mapToObject Document: {} ", doc);
-        return Trail.builder()
-                .id(doc.getString(Trail.ID))
-                .name(doc.getString(Trail.NAME))
-                .description(doc.getString(Trail.DESCRIPTION))
-                .code(doc.getString(Trail.CODE))
-                .startLocation(placeMapper.mapToObject(doc.get(Trail.START_POS, Document.class)))
-                .endLocation(placeMapper.mapToObject(doc.get(Trail.FINAL_POS, Document.class)))
-                .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
-                .variant(doc.getBoolean(Trail.VARIANT))
+        return builder()
+                .id(doc.getString(ID))
+                .name(doc.getString(NAME))
+                .description(doc.getString(DESCRIPTION))
+                .code(doc.getString(CODE))
+                .startLocation(placeMapper.mapToObject(doc.get(START_POS, Document.class)))
+                .endLocation(placeMapper.mapToObject(doc.get(FINAL_POS, Document.class)))
+                .officialEta(doc.getInteger(OFFICIAL_ETA))
+                .variant(doc.getBoolean(VARIANT))
                 .locations(getLocations(doc))
                 .classification(getClassification(doc))
-                .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
-                .country(doc.getString(Trail.COUNTRY))
+                .statsTrailMetadata(getMetadata(doc.get(STATS_METADATA, Document.class)))
+                .country(doc.getString(COUNTRY))
                 .coordinates(getCoordinatesWithAltitude(doc, TrailSimplifierLevel.FULL))
                 .lastUpdate(getLastUpdateDate(doc))
-                .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
-                .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
-                .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .maintainingSection(doc.getString(SECTION_CARED_BY))
+                .territorialDivision(doc.getString(TERRITORIAL_CARED_BY))
+                .geoLineString(getGeoLine(doc.get(GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
-                .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
-                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)))
+                .cycloDetails(cycloMapper.mapToObject(doc.get(CYCLO, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(RECORD_DETAILS, Document.class)))
                 .status(getStatus(doc))
                 .build();
     }
@@ -75,63 +76,63 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     public Document mapToDocument(final Trail object) {
         LOGGER.trace("mapToDocument Trail: {} ", object);
         return new Document()
-                .append(Trail.NAME, object.getName())
-                .append(Trail.DESCRIPTION, object.getDescription())
-                .append(Trail.CODE, object.getCode())
-                .append(Trail.START_POS, placeMapper.mapToDocument(object.getStartLocation()))
-                .append(Trail.FINAL_POS, placeMapper.mapToDocument(object.getEndLocation()))
-                .append(Trail.OFFICIAL_ETA, object.getOfficialEta())
-                .append(Trail.LOCATIONS, object.getLocations().stream()
+                .append(NAME, object.getName())
+                .append(DESCRIPTION, object.getDescription())
+                .append(CODE, object.getCode())
+                .append(START_POS, placeMapper.mapToDocument(object.getStartLocation()))
+                .append(FINAL_POS, placeMapper.mapToDocument(object.getEndLocation()))
+                .append(OFFICIAL_ETA, object.getOfficialEta())
+                .append(LOCATIONS, object.getLocations().stream()
                         .map(placeMapper::mapToDocument).collect(toList()))
-                .append(Trail.CLASSIFICATION, object.getClassification().toString())
-                .append(Trail.COUNTRY, object.getCountry())
-                .append(Trail.SECTION_CARED_BY, object.getMaintainingSection())
-                .append(Trail.LAST_UPDATE_DATE, new Date())
-                .append(Trail.VARIANT, object.isVariant())
-                .append(Trail.TERRITORIAL_CARED_BY, object.getTerritorialDivision())
-                .append(Trail.STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsTrailMetadata()))
-                .append(Trail.COORDINATES, object.getCoordinates().stream()
+                .append(CLASSIFICATION, object.getClassification().toString())
+                .append(COUNTRY, object.getCountry())
+                .append(SECTION_CARED_BY, object.getMaintainingSection())
+                .append(LAST_UPDATE_DATE, new Date())
+                .append(VARIANT, object.isVariant())
+                .append(TERRITORIAL_CARED_BY, object.getTerritorialDivision())
+                .append(STATS_METADATA, statsTrailMapper.mapToDocument(object.getStatsTrailMetadata()))
+                .append(COORDINATES, object.getCoordinates().stream()
                         .map(trailCoordinatesMapper::mapToDocument).collect(toList()))
-                .append(Trail.COORDINATES_LOW, object.getCoordinatesLow().stream()
+                .append(COORDINATES_LOW, object.getCoordinatesLow().stream()
                         .map(trailCoordinatesMapper::mapToDocument).collect(toList()))
-                .append(Trail.COORDINATES_MEDIUM, object.getCoordinatesMedium().stream()
+                .append(COORDINATES_MEDIUM, object.getCoordinatesMedium().stream()
                         .map(trailCoordinatesMapper::mapToDocument).collect(toList()))
-                .append(Trail.COORDINATES_HIGH, object.getCoordinatesHigh().stream()
+                .append(COORDINATES_HIGH, object.getCoordinatesHigh().stream()
                         .map(trailCoordinatesMapper::mapToDocument).collect(toList()))
-                .append(Trail.MEDIA, object.getMediaList().stream()
+                .append(MEDIA, object.getMediaList().stream()
                         .map(linkedMediaMapper::mapToDocument)
                         .collect(toList()))
-                .append(Trail.GEO_LINE, getGeoLineValue(object))
-                .append(Trail.CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
-                .append(Trail.RECORD_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
-                .append(Trail.STATUS, object.getStatus().toString());
+                .append(GEO_LINE, getGeoLineValue(object))
+                .append(CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
+                .append(RECORD_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
+                .append(STATUS, object.getStatus().toString());
     }
 
     @Override
     public Trail mapToObject(final Document doc,
                              final TrailSimplifierLevel precisionLevel) {
         LOGGER.trace("mapToObject Document: {}, TrailSimplifierLevel: {} ", doc, precisionLevel);
-        return Trail.builder()
-                .id(doc.getString(Trail.ID))
-                .name(doc.getString(Trail.NAME))
-                .description(doc.getString(Trail.DESCRIPTION))
-                .code(doc.getString(Trail.CODE))
-                .startLocation(placeMapper.mapToObject(doc.get(Trail.START_POS, Document.class)))
-                .endLocation(placeMapper.mapToObject(doc.get(Trail.FINAL_POS, Document.class)))
-                .officialEta(doc.getInteger(Trail.OFFICIAL_ETA))
-                .variant(doc.getBoolean(Trail.VARIANT))
+        return builder()
+                .id(doc.getString(ID))
+                .name(doc.getString(NAME))
+                .description(doc.getString(DESCRIPTION))
+                .code(doc.getString(CODE))
+                .startLocation(placeMapper.mapToObject(doc.get(START_POS, Document.class)))
+                .endLocation(placeMapper.mapToObject(doc.get(FINAL_POS, Document.class)))
+                .officialEta(doc.getInteger(OFFICIAL_ETA))
+                .variant(doc.getBoolean(VARIANT))
                 .locations(getLocations(doc))
                 .classification(getClassification(doc))
-                .statsTrailMetadata(getMetadata(doc.get(Trail.STATS_METADATA, Document.class)))
-                .country(doc.getString(Trail.COUNTRY))
+                .statsTrailMetadata(getMetadata(doc.get(STATS_METADATA, Document.class)))
+                .country(doc.getString(COUNTRY))
                 .coordinates(getCoordinatesWithAltitude(doc, precisionLevel))
                 .lastUpdate(getLastUpdateDate(doc))
-                .maintainingSection(doc.getString(Trail.SECTION_CARED_BY))
-                .territorialDivision(doc.getString(Trail.TERRITORIAL_CARED_BY))
-                .geoLineString(getGeoLine(doc.get(Trail.GEO_LINE, Document.class)))
+                .maintainingSection(doc.getString(SECTION_CARED_BY))
+                .territorialDivision(doc.getString(TERRITORIAL_CARED_BY))
+                .geoLineString(getGeoLine(doc.get(GEO_LINE, Document.class)))
                 .mediaList(getLinkedMediaMapper(doc))
-                .cycloDetails(cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)))
-                .fileDetails(fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)))
+                .cycloDetails(cycloMapper.mapToObject(doc.get(CYCLO, Document.class)))
+                .fileDetails(fileDetailsMapper.mapToObject(doc.get(RECORD_DETAILS, Document.class)))
                 .status(getStatus(doc))
                 .build();
     }
@@ -171,7 +172,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     }
 
     protected List<PlaceRef> getLocations(final Document doc) {
-        final List<Document> list = doc.getList(Trail.LOCATIONS, Document.class);
+        final List<Document> list = doc.getList(LOCATIONS, Document.class);
         return list.stream().map(placeMapper::mapToObject).collect(toList());
     }
 
@@ -179,27 +180,27 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
         LOGGER.trace("getCoordinatesFieldName TrailSimplifierLevel: {}", level);
         switch (level) {
             case LOW:
-                return Trail.COORDINATES_LOW;
+                return COORDINATES_LOW;
             case MEDIUM:
-                return Trail.COORDINATES_MEDIUM;
+                return COORDINATES_MEDIUM;
             case HIGH:
-                return Trail.COORDINATES_HIGH;
+                return COORDINATES_HIGH;
             default:
-                return Trail.COORDINATES;
+                return COORDINATES;
         }
     }
 
     protected Date getLastUpdateDate(Document doc) {
-        return doc.getDate(Trail.LAST_UPDATE_DATE);
+        return doc.getDate(LAST_UPDATE_DATE);
     }
 
     protected TrailClassification getClassification(Document doc) {
-        final String classification = doc.getString(Trail.CLASSIFICATION);
+        final String classification = doc.getString(CLASSIFICATION);
         return TrailClassification.valueOf(classification);
     }
 
     protected TrailStatus getStatus(Document doc) {
-        final String classification = doc.getString(Trail.STATUS);
+        final String classification = doc.getString(STATUS);
         return TrailStatus.valueOf(classification);
     }
 
