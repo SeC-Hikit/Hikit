@@ -1,6 +1,6 @@
 # Hikit Service
-Hikit service manages high level geo and meta-data related to trails.
-It is intended to provide organizations (like the [CAI](https://www.cai.it/) ones) with a rich set of features to update and maintain a trail rich format library, while making this data available to users.
+Hikit central service manages high level geo and meta-data related to trails.
+It is intended to provide organizations (like [CAI](https://www.cai.it/)) with a rich set of features to update and maintain a trail rich format library, while making this data available to users.
 
 Currently, it supports a wide set of features like accessibility-notifications, user trail accidents reports, maintenance planning, generic/specific POIs and other features all linked with trails.
 
