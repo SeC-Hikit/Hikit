@@ -33,7 +33,7 @@ class AdminAnnouncementController @Autowired constructor(
             retrieved, retrieved.size.toLong(),0,1)
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete the announcement")
-    fun delete(id: String) = announcementService.delete(id)
+    fun delete(@PathVariable id: String) = announcementService.delete(id)
 }

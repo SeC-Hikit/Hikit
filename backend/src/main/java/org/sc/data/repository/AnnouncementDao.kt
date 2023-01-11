@@ -63,7 +63,7 @@ class AnnouncementDao(
     fun update(update: Announcement): List<Announcement> {
         val updateOne = collection.updateOne(
             Document(Announcement.ID, update.id),
-            announcementsMapper.mapToDocument(update)
+            Document("\$set", announcementsMapper.mapToDocument(update))
         )
         if (!updateOne.wasAcknowledged()) logger.error("Could not delete announcement with id: ${update.id}")
         return get(update.id)
