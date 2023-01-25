@@ -5,7 +5,7 @@ import com.mongodb.client.model.FindOneAndReplaceOptions
 import org.apache.logging.log4j.LogManager
 import org.bson.Document
 import org.bson.types.ObjectId
-import org.sc.configuration.DataSource
+import org.hikit.common.datasource.Datasource
 import org.sc.data.entity.mapper.AnnouncementMapper
 import org.sc.data.model.Announcement
 import org.sc.data.model.RecordDetails
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class AnnouncementDao(
-    dataSource: DataSource,
+    dataSource: Datasource,
     private val announcementsMapper: AnnouncementMapper
 ) {
 

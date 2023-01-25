@@ -7,7 +7,7 @@ import com.mongodb.client.model.ReturnDocument;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.configuration.DataSource;
+import org.hikit.common.datasource.Datasource;
 import org.sc.data.entity.mapper.AccessibilityReportMapper;
 import org.sc.data.model.AccessibilityNotification;
 import org.sc.data.model.AccessibilityReport;
@@ -36,7 +36,7 @@ public class AccessibilityReportDao {
     private final AccessibilityReportMapper mapper;
 
     @Autowired
-    public AccessibilityReportDao(final DataSource dataSource,
+    public AccessibilityReportDao(final Datasource dataSource,
                                   AccessibilityReportMapper accessibilityReportMapper) {
         this.collection = dataSource.getDB().getCollection(AccessibilityReport.COLLECTION_NAME);
         this.mapper = accessibilityReportMapper;

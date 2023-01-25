@@ -3,7 +3,7 @@ package org.sc.configuration.tenant;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
-import org.sc.configuration.DataSource;
+import org.hikit.common.datasource.Datasource;
 import org.sc.data.tenant.Instance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ public class InstanceRegister {
     private final MongoCollection<Document> collection;
 
     @Autowired
-    public InstanceRegister(final DataSource dataSource) {
+    public InstanceRegister(final Datasource dataSource) {
         collection = dataSource.getDB().getCollection(Instance.COLLECTION_NAME);
     }
 

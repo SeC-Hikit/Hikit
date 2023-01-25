@@ -3,7 +3,7 @@ package org.sc.data.repository;
 import com.mongodb.client.MongoCollection;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.sc.configuration.DataSource;
+import org.hikit.common.datasource.Datasource;
 import org.sc.data.entity.mapper.TrailDatasetMapper;
 import org.sc.data.TrailDatasetVersion;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class TrailDatasetVersionDao {
     private final TrailDatasetMapper mapper;
 
     @Autowired
-    public TrailDatasetVersionDao(final DataSource dataSource,
+    public TrailDatasetVersionDao(final Datasource dataSource,
                                   final TrailDatasetMapper mapper) {
         this.collection = dataSource.getDB().getCollection(CORE_TRAIL_DATASET_VERSION);
         this.mapper = mapper;

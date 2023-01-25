@@ -4,7 +4,7 @@ import com.mongodb.client.MongoCollection;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.configuration.DataSource;
+import org.hikit.common.datasource.Datasource;
 import org.sc.data.entity.mapper.TrailRawMapper;
 import org.sc.data.model.FileDetails;
 import org.sc.data.model.TrailRaw;
@@ -28,7 +28,7 @@ public class TrailRawDAO {
     private final TrailRawMapper trailRawMapper;
 
     @Autowired
-    public TrailRawDAO(final DataSource dataSource,
+    public TrailRawDAO(final Datasource dataSource,
                        final TrailRawMapper placeMapper) {
         this.collection = dataSource.getDB().getCollection(TrailRaw.COLLECTION_NAME);
         this.trailRawMapper = placeMapper;

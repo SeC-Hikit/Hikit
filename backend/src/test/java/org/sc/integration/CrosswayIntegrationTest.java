@@ -1,6 +1,7 @@
 package org.sc.integration;
 
 import org.assertj.core.api.Assertions;
+import org.hikit.common.datasource.Datasource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +10,6 @@ import org.sc.common.rest.geo.GeoLineDto;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailIntersectionResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.GeoTrailController;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
@@ -23,10 +23,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -46,7 +44,7 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
     public static final String EXPECTED_NAME = "Crocevia 100BO, 101BO";
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
 
     @Autowired
     private AdminPlaceController adminPlaceController;

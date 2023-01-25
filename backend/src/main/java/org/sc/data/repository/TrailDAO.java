@@ -8,9 +8,9 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.hikit.common.datasource.Datasource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.*;
 import org.sc.data.geo.CoordinatesRectangle;
 import org.sc.data.model.*;
@@ -63,7 +63,7 @@ public class TrailDAO {
 
 
     @Autowired
-    public TrailDAO(final DataSource dataSource,
+    public TrailDAO(final Datasource dataSource,
                     final TrailMapper trailMapper,
                     final StatusFilterHelper statusFilterHelper,
                     final SelectiveArgumentMapper<Trail> trailLevelMapper,

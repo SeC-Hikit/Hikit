@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,7 +10,6 @@ import org.sc.common.rest.TrailImportDto;
 import org.sc.common.rest.TrailPreviewDto;
 import org.sc.common.rest.response.TrailPreviewResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailPreviewController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -34,7 +34,7 @@ public class TrailPreviewRestIntegrationTest {
     public static final String ANY_REALM = "S&C";
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
 
     @Autowired
     AdminTrailImporterController importController;

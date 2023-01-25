@@ -4,7 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.configuration.DataSource;
+import org.hikit.common.datasource.Datasource;
 import org.sc.data.entity.mapper.ResourceEntryMapper;
 import org.sc.data.model.ResourceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class ResourceDao {
     private final ResourceEntryMapper mapper;
 
     @Autowired
-    public ResourceDao(final DataSource dataSource,
+    public ResourceDao(final Datasource dataSource,
                        final ResourceEntryMapper resourceEntryMapper) {
         this.collection = dataSource.getDB().getCollection(ResourceEntry.COLLECTION_NAME);
         this.mapper = resourceEntryMapper;

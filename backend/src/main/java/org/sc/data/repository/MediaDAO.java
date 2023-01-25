@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.sc.configuration.DataSource;
+import org.hikit.common.datasource.Datasource;
 import org.sc.data.entity.mapper.MediaMapper;
 import org.sc.data.model.FileDetails;
 import org.sc.data.model.Media;
@@ -39,7 +39,7 @@ public class MediaDAO {
     private final MediaMapper mapper;
 
     @Autowired
-    public MediaDAO(final DataSource dataSource,
+    public MediaDAO(final Datasource dataSource,
                     final MediaMapper mapper) {
         this.collection = dataSource.getDB().getCollection(Media.COLLECTION_NAME);
         this.mapper = mapper;

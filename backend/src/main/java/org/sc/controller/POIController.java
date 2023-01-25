@@ -63,7 +63,7 @@ public class POIController {
     }
 
     @Operation(summary = "Retrieve POI by trail code")
-    @GetMapping("/code/{code}")
+    @GetMapping("/trail/{code}")
     public PoiResponse getByTrail(@PathVariable String code,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {

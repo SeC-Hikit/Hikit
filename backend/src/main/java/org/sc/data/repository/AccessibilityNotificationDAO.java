@@ -7,8 +7,8 @@ import com.mongodb.client.model.ReturnDocument;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.hikit.common.datasource.Datasource;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
-import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
 import org.sc.data.model.AccessibilityNotification;
 import org.sc.data.model.FileDetails;
@@ -34,7 +34,7 @@ public class AccessibilityNotificationDAO {
     private final AccessibilityNotificationMapper mapper;
 
     @Autowired
-    public AccessibilityNotificationDAO(final DataSource dataSource,
+    public AccessibilityNotificationDAO(final Datasource dataSource,
                                         final AccessibilityNotificationMapper mapper) {
         this.collection = dataSource.getDB().getCollection(AccessibilityNotification.COLLECTION_NAME);
         this.mapper = mapper;

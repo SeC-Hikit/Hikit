@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +9,6 @@ import org.sc.common.rest.response.MediaResponse;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.*;
 import org.sc.controller.admin.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,8 @@ public class MediaRestIntegrationTest  {
 
     public static final String FILE_NAME = "sec_map.png";
 
-    @Autowired DataSource dataSource;
+    @Autowired
+    Datasource dataSource;
     @Autowired AdminMediaController adminMediaController;
     @Autowired MediaController mediaController;
     @Autowired POIController poiController;

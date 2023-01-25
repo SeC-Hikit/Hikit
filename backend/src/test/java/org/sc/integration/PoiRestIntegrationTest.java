@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PoiResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.POIController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -48,7 +48,7 @@ public class PoiRestIntegrationTest {
     public static final List<KeyValueDto> EXPECTED_KEY_VALS = Collections.singletonList(EXPECTED_KEYVAL);
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
     @Autowired
     private AdminPoiController adminPoiController;
     @Autowired

@@ -8,6 +8,7 @@ import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.Logger;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.hikit.common.datasource.Datasource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,7 +18,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 @Configuration
-public class MongoDataSource implements DataSource {
+public class MongoDataSource implements Datasource {
 
     private static final Logger LOGGER = getLogger(MongoDataSource.class);
 

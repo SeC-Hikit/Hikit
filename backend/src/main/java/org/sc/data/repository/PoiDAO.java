@@ -7,8 +7,8 @@ import com.mongodb.client.model.ReturnDocument;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.hikit.common.datasource.Datasource;
 import org.jetbrains.annotations.NotNull;
-import org.sc.configuration.DataSource;
 import org.sc.data.model.FileDetails;
 import org.sc.data.model.LinkedMedia;
 import org.sc.data.entity.mapper.LinkedMediaMapper;
@@ -36,7 +36,7 @@ public class PoiDAO {
     private final LinkedMediaMapper linkedMediaMapper;
 
     @Autowired
-    public PoiDAO(final DataSource dataSource,
+    public PoiDAO(final Datasource dataSource,
                   final PoiMapper mapper,
                   final LinkedMediaMapper linkedMediaMapper) {
         this.collection = dataSource.getDB().getCollection(Poi.COLLECTION_NAME);
