@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.sc.common.rest.*
 import org.sc.common.rest.response.TrailRawResponse
 import org.sc.configuration.AppProperties
-import org.sc.configuration.DataSource
+import org.sc.configuration.MongoDataSource
 import org.sc.controller.PlaceController
 import org.sc.controller.TrailController
 import org.sc.controller.admin.AdminPlaceController
@@ -34,7 +34,7 @@ class PlaceClusteringJobIntegrationTest {
     @Autowired private lateinit var adminTrailController: AdminTrailController
     @Autowired private lateinit var trailController: TrailController
     @Autowired private lateinit var importerController: AdminTrailImporterController
-    @Autowired private lateinit var dataSource: DataSource
+    @Autowired private lateinit var dataSource: MongoDataSource
     @Autowired private lateinit var placeClusteringJob: PlaceClusteringJob
     @Autowired private lateinit var placeController: PlaceController
     @Autowired private lateinit var placeDao: PlaceDAO

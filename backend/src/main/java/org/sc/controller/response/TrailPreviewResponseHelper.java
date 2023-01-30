@@ -1,5 +1,6 @@
 package org.sc.controller.response;
 
+import org.hikit.common.response.ControllerPagination;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailMappingDto;
 import org.sc.common.rest.TrailPreviewDto;
@@ -37,10 +38,10 @@ public class TrailPreviewResponseHelper {
     }
 
     public TrailMappingResponse constructMappingResponse(Set<String> errors,
-                                                  List<TrailMappingDto> dtos,
-                                                  long totalCount,
-                                                  int skip,
-                                                  int limit) {
+                                                         List<TrailMappingDto> dtos,
+                                                         long totalCount,
+                                                         int skip,
+                                                         int limit) {
         return new TrailMappingResponse(Status.OK, errors, dtos,
                 controllerPagination.getCurrentPage(skip, limit),
                 controllerPagination.getTotalPages(totalCount, limit), limit, totalCount);

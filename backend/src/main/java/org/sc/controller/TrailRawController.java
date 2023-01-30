@@ -2,7 +2,7 @@ package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.response.TrailRawResponse;
-import org.sc.controller.response.ControllerPagination;
+import org.hikit.common.response.ControllerPagination;
 import org.sc.controller.response.TrailRawResponseHelper;
 import org.sc.manager.TrailRawManager;
 import org.springframework.web.bind.annotation.*;

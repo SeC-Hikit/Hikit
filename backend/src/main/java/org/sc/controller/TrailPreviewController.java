@@ -3,7 +3,7 @@ package org.sc.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailPreviewResponse;
-import org.sc.controller.response.ControllerPagination;
+import org.hikit.common.response.ControllerPagination;
 import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.manager.TrailPreviewManager;
 import org.sc.service.TrailPreviewService;

@@ -5,7 +5,7 @@ import org.sc.common.rest.CountDto;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.PoiResponse;
-import org.sc.controller.response.ControllerPagination;
+import org.hikit.common.response.ControllerPagination;
 import org.sc.controller.response.PoiResponseHelper;
 import org.sc.manager.PoiManager;
 import org.springframework.beans.factory.annotation.Autowired;
