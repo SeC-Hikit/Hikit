@@ -98,7 +98,6 @@ public class TrailDAO {
                 trailSimplifierLevel);
     }
 
-    // TODO: add tests on this
     public List<TrailMapping> getTrailsMappings(int skip, int limit,
                                                 final String realm,
                                                 boolean isDraftTrailVisible) {
