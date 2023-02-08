@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.hikit.common.data.mapper.MultiPointCoords2D;
 import org.hikit.common.datasource.Datasource;
 import org.jetbrains.annotations.NotNull;
 import org.sc.common.rest.CoordinatesDto;

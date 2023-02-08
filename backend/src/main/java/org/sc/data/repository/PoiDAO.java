@@ -84,7 +84,8 @@ public class PoiDAO {
 
     @NotNull
     public List<Poi> getByPosition(double longitude, double latitude, double meters, int page, int count) {
-        final AggregateIterable<Document> aggregate = collection.aggregate(Arrays.asList(new Document($_GEO_NEAR_OPERATOR,
+        final AggregateIterable<Document> aggregate = collection.aggregate(Arrays.asList(
+                new Document($_GEO_NEAR_OPERATOR,
                         new Document(NEAR_OPERATOR, new Document("type", "Point")
                                 .append("coordinates", Arrays.asList(longitude, latitude)))
                                 .append(DISTANCE_FIELD, "distanceToIt")

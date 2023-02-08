@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 
 @SpringBootApplication(
         exclude = {MongoAutoConfiguration.class},
-        scanBasePackages={"org.hikit.common"}
+        scanBasePackages={"org.hikit.common", "org.sc"}
 )
 public class Main {
 
