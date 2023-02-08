@@ -1,6 +1,7 @@
 package org.sc.integration;
 
 import org.assertj.core.api.Assertions;
+import org.hikit.common.datasource.Datasource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,9 +13,7 @@ import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailIntersectionResponse;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.GeoTrailController;
-import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailRawController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -25,11 +24,9 @@ import org.sc.data.model.*;
 import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +47,7 @@ public class TrailManipulationRestIntegrationTest {
     public static final TrailSimplifierLevel LEVEL = TrailSimplifierLevel.FULL;
 
     @Autowired
-    DataSource dataSource;
+    Datasource dataSource;
     @Autowired
     TrailRawController trailRawController;
     @Autowired

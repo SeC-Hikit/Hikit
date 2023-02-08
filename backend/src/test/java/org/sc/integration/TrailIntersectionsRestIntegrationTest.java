@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +11,6 @@ import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailIntersectionResponse;
 import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.GeoTrailController;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
@@ -51,7 +51,7 @@ public class TrailIntersectionsRestIntegrationTest {
     public static final String MAINTAINING_SECTION = "CAI Bologna";
 
     @Autowired
-    DataSource dataSource;
+    Datasource dataSource;
     @Autowired
     TrailRawController trailRawController;
     @Autowired

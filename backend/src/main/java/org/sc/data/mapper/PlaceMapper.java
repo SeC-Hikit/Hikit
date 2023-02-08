@@ -1,12 +1,12 @@
 package org.sc.data.mapper;
 
+import org.hikit.common.data.mapper.MultiPointCoords2D;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.common.rest.PlaceDto;
 import org.sc.common.rest.RecordDetailsDto;
 import org.sc.data.model.CoordinatesWithAltitude;
-import org.sc.data.model.MultiPointCoords2D;
 import org.sc.data.model.Place;
 import org.sc.data.model.RecordDetails;
 

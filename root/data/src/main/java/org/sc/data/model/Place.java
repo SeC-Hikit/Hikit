@@ -4,6 +4,7 @@ package org.sc.data.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.hikit.common.data.mapper.MultiPointCoords2D;
 
 import java.util.List;
 

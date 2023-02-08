@@ -7,7 +7,7 @@ import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.response.CountResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.configuration.auth.AuthFacade;
-import org.sc.controller.response.ControllerPagination;
+import org.hikit.common.response.ControllerPagination;
 import org.sc.controller.response.TrailResponseHelper;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.service.TrailImporterService;

@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.MaintenanceDto;
@@ -12,7 +13,6 @@ import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.TrailClassification;
 import org.sc.common.rest.response.MaintenanceResponse;
-import org.sc.configuration.DataSource;
 import org.sc.data.mapper.MaintenanceMapper;
 import org.sc.data.repository.MaintenanceDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class MaintenanceRestIntegrationTest {
     public static final TrailClassification EXPECTED_TRAIL_CLASSIFICATION = TrailClassification.E;
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
 
     @Autowired
     private MaintenanceController maintenanceController;

@@ -2,6 +2,7 @@ package org.sc.data.entity.mapper;
 
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.hikit.common.data.mapper.MultiPointCoordsMapper;
 import org.sc.data.model.Place;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

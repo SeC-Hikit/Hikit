@@ -3,6 +3,7 @@ package org.sc.configuration;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
 import org.apache.logging.log4j.Logger;
+import org.hikit.common.datasource.Datasource;
 import org.sc.configuration.tenant.InstanceRegister;
 import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
@@ -24,7 +25,7 @@ public class StartupChecker {
     private static final Logger LOGGER = getLogger(StartupChecker.class);
 
     @Autowired
-    DataSource dataSource;
+    Datasource dataSource;
     @Autowired
     TrailDatasetVersionDao trailDatasetVersionDao;
     @Autowired

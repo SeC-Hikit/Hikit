@@ -3,7 +3,7 @@ package org.sc.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
-import org.sc.controller.response.ControllerPagination;
+import org.hikit.common.response.ControllerPagination;
 import org.sc.controller.response.PlaceResponseHelper;
 import org.sc.data.validator.*;
 import org.sc.manager.PlaceManager;

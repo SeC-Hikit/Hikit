@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityReportResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.AccessibilityReportController;
 import org.sc.controller.admin.AdminAccessibilityReportController;
@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sc.integration.ImportTrailIT.INTERMEDIATE_COORDINATES_DTO;
 import static org.sc.integration.TrailImportRestIntegrationTest.INTERMEDIATE_EXPECTED_COORDINATE;
 
 @RunWith(SpringRunner.class)
@@ -59,7 +58,7 @@ public class AccessibilityReportIntegrationTest {
     @Autowired AuthFacade authHelper;
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
 
     private TrailResponse trailResponse;
     private String trailId;

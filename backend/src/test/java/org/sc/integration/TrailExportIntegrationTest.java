@@ -1,11 +1,11 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.configuration.auth.AuthFacade;
 import org.sc.controller.admin.AdminMaintenanceController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -41,7 +41,7 @@ public class TrailExportIntegrationTest {
     AuthFacade authHelper;
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
 
     private TrailResponse trailResponse;
 

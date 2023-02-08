@@ -1,5 +1,6 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.TrailController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
@@ -66,7 +66,7 @@ public class TrailImportRestIntegrationTest extends ImportTrailIT {
     public static List<PlaceRefDto> LOCATION_REFS;
 
     @Autowired
-    DataSource dataSource;
+    Datasource dataSource;
 
     @Autowired AdminPlaceController placeController;
     @Autowired AdminTrailController adminTrailController;

@@ -1,11 +1,11 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.AccessibilityNotificationController;
 import org.sc.controller.admin.AdminAccessibilityIssueController;
 import org.sc.controller.admin.AdminTrailController;
@@ -32,7 +32,7 @@ public class AccessibilityNotificationRestIntegrationTest {
     public static final String ANY_SOLVED_DESC = "ANY_SOLVED_DESC";
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
 
     @Autowired
     private AccessibilityNotificationController accessibilityNotificationController;

@@ -1,12 +1,12 @@
 package org.sc.integration;
 
+import org.hikit.common.datasource.Datasource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.sc.configuration.DataSource;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
 import org.sc.controller.admin.AdminPlaceController;
@@ -32,7 +32,7 @@ public class PlaceIntegrationTest extends ImportTrailIT {
     public static final String LEVEL = TrailSimplifierLevel.FULL.toString();
 
     @Autowired
-    private DataSource dataSource;
+    private Datasource dataSource;
 
     @Autowired private AdminPlaceController adminPlaceController;
     @Autowired private PlaceController placeController;

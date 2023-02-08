@@ -1,10 +1,12 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.common.rest.*;
+import org.hikit.common.response.ControllerPagination;
+import org.sc.common.rest.AccessibilityNotificationDto;
+import org.sc.common.rest.CountDto;
+import org.sc.common.rest.Status;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.CountResponse;
-import org.sc.controller.response.ControllerPagination;
 import org.sc.controller.response.AccessibilityIssueResponseHelper;
 import org.sc.manager.AccessibilityNotificationManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static java.lang.String.format;
-import static java.util.Collections.*;
+import static java.util.Collections.emptySet;
 import static org.sc.configuration.AppBoundaries.MAX_DOCS_ON_READ;
 import static org.sc.configuration.AppBoundaries.MIN_DOCS_ON_READ;
 import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;

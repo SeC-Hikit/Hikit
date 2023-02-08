@@ -1,5 +1,6 @@
 package org.sc.controller.response;
 
+import org.hikit.common.response.ControllerPagination;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailRawDto;
 import org.sc.common.rest.response.TrailRawResponse;

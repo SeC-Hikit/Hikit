@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.sc.common.rest.MediaDto;
 import org.sc.common.rest.response.MediaResponse;
-import org.sc.controller.response.ControllerPagination;
+import org.hikit.common.response.ControllerPagination;
 import org.sc.controller.response.MediaResponseHelper;
 import org.sc.manager.MediaManager;
 import org.springframework.beans.factory.annotation.Autowired;

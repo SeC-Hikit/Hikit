@@ -7,7 +7,7 @@ import com.mongodb.client.model.ReturnDocument;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.sc.configuration.DataSource;
+import org.hikit.common.datasource.Datasource;
 import org.sc.data.entity.mapper.MaintenanceMapper;
 import org.sc.data.model.FileDetails;
 import org.sc.data.model.Maintenance;
@@ -34,7 +34,7 @@ public class MaintenanceDAO {
     private final MaintenanceMapper mapper;
 
     @Autowired
-    public MaintenanceDAO(final DataSource dataSource,
+    public MaintenanceDAO(final Datasource dataSource,
                           final MaintenanceMapper mapper) {
         this.collection = dataSource.getDB().getCollection(Maintenance.COLLECTION_NAME);
         this.mapper = mapper;

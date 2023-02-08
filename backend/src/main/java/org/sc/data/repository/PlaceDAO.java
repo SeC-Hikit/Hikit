@@ -7,9 +7,10 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.hikit.common.data.mapper.MultiPointCoords2D;
+import org.hikit.common.datasource.Datasource;
 import org.jetbrains.annotations.NotNull;
 import org.sc.common.rest.CoordinatesDto;
-import org.sc.configuration.DataSource;
 import org.sc.data.entity.mapper.CoordinatesMapper;
 import org.sc.data.entity.mapper.PlaceMapper;
 import org.sc.data.model.*;
@@ -39,7 +40,7 @@ public class PlaceDAO {
     private final CoordinatesMapper coordinatesMapper;
 
     @Autowired
-    public PlaceDAO(final DataSource dataSource,
+    public PlaceDAO(final Datasource dataSource,
                     final PlaceMapper placeMapper,
                     final CoordinatesMapper coordinatesMapper) {
         this.collection = dataSource.getDB().getCollection(COLLECTION_NAME);

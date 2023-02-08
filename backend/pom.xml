@@ -19,11 +19,19 @@
         <mongo-java-driver.version>3.12.8</mongo-java-driver.version>
         <tika-core.version>1.25</tika-core.version>
         <springdoc-openapi-ui.version>1.5.2</springdoc-openapi-ui.version>
+        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
         <mockk.version>1.12.3</mockk.version>
         <itextpdf.version>5.5.12</itextpdf.version>
+        <jackson-databind-nullable.version>0.2.1</jackson-databind-nullable.version>
         <kotlinx-coroutines-core.version>1.6.0</kotlinx-coroutines-core.version>
     </properties>
+
     <dependencies>
+        <dependency>
+            <groupId>org.hikit</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.sec</groupId>
             <artifactId>rest</artifactId>
@@ -34,7 +42,6 @@
             <artifactId>data</artifactId>
             <version>2.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
@@ -45,6 +52,16 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -117,9 +134,9 @@
             <version>1.13</version>
         </dependency>
         <dependency>
-        <groupId>com.goebl</groupId>
-        <artifactId>simplify</artifactId>
-        <version>1.0.0</version>
+            <groupId>com.goebl</groupId>
+            <artifactId>simplify</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>de.micromata.jak</groupId>
@@ -136,6 +153,16 @@
             <artifactId>kotlinx-coroutines-core</artifactId>
             <version>${kotlinx-coroutines-core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>2.14.2</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-annotations</artifactId>-->
+<!--            <version>2.14.2</version>-->
+<!--        </dependency>-->
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -154,6 +181,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -252,6 +280,7 @@
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>${spring-boot.version}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -298,5 +327,82 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>microservice-binding</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <version>5.1.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>${project.basedir}/src/main/resources/microservice/ert-swagger.json</inputSpec>
+                                    <generatorName>spring</generatorName>
+                                    <configOptions>
+                                        <apiPackage>org.ert.api</apiPackage>
+                                        <interfaceOnly>true</interfaceOnly>
+                                        <generate>true</generate>
+                                        <generateBuilders>true</generateBuilders>,
+                                    </configOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>${spring-boot.version}</version>
+                        <configuration>
+                            <classifier>spring-boot</classifier>
+                            <mainClass>
+                                org.hikit.er.Main
+                            </mainClass>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-plugin</artifactId>
+                        <version>${kotlin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>compile</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>test-compile</id>
+                                <goals>
+                                    <goal>test-compile</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirs>
+                                        <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                    </sourceDirs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-surefire-plugin.version}</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*IntegrationTest</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build></profile>
     </profiles>
 </project>
