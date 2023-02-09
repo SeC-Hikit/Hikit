@@ -23,9 +23,8 @@ jobs:
     - name: checkout Common
       uses: actions/checkout@v2
       with:
-        repository: SeC-Hikit/Hikit-Common
+        repository: SeC-Hikit/Hikit-Common 
         path: hikit-common
-        ref: main
     - name: install common
       working-directory: hikit-common
       run: mvn install --file common/pom.xml
