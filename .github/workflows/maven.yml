@@ -20,5 +20,13 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - name: checkout Common
+      uses: actions/checkout@v2
+      with:
+        repository: SeC-Hikit/Hikit-Common 
+        path: hikit-common 
+    - name: install common
+      working-directory: hikit-common
+      run: mvn install
     - name: Build with Maven
       run: mvn -B install --file root/pom.xml
