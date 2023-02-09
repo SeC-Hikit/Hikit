@@ -23,6 +23,7 @@ jobs:
     - name: checkout Common
       uses: actions/checkout@v2
       with:
+        ref: main
         repository: SeC-Hikit/Hikit-Common 
         path: hikit-common
     - name: install common
