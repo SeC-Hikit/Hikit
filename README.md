@@ -10,7 +10,8 @@ Currently, it supports a wide set of features like accessibility-notifications, 
 - Maven 3
 
 ### Development build
-After cloning the repo, simply run `mvn install -f root/pom.xml -P microservice-binding`.
+First, clone and build commons: https://github.com/SeC-Hikit/Hikit-Common.
+Then, after cloning the repo, simply run `mvn install -f root/pom.xml -P microservice-binding`.
 
 ### Deployment Build
 To include all dependencies in a portable uber-jar, run `mvn install -P package,microservice-binding`.
