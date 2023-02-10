@@ -10,15 +10,15 @@ Currently, it supports a wide set of features like accessibility-notifications, 
 - Maven 3
 
 ### Development build
-After cloning the repo, simply run `mvn install -f root/pom.xml`.
+After cloning the repo, simply run `mvn install -f root/pom.xml -P microservice-binding`.
 
 ### Deployment Build
-To include all dependencies in a portable uber-jar, run `mvn install -P package`.
+To include all dependencies in a portable uber-jar, run `mvn install -P package,microservice-binding`.
 
 ### Testing
 There are two main types of tests written to address the Hikit QA: unit and integration tests.
 The latter requires the [dependencies](#Dependencies) to be up and running as it runs application operations connecting to them.
-Once the dependencies are made available, simply execute `mvn install -P it`. 
+Once the dependencies are made available, simply execute `mvn install -P it, microservice-binding`. 
 
 ## Run
 
