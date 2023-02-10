@@ -23,11 +23,9 @@ jobs:
     - name: checkout Common
       uses: actions/checkout@v2
       with:
-        fetch-depth: 2
         repository: SeC-Hikit/Hikit-Common 
         path: hikit-common
-    - run: git checkout HEAD^
-    - name: install common
+    - name: install Common
       working-directory: hikit-common
       run: mvn install --file common/pom.xml
     - name: Build with Maven
