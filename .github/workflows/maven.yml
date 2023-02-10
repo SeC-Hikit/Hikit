@@ -29,4 +29,4 @@ jobs:
       working-directory: hikit-common
       run: mvn install --file common/pom.xml
     - name: Build with Maven
-      run: mvn -B install --file root/pom.xml
+      run: mvn -B install --file root/pom.xml -P microservice-binding
