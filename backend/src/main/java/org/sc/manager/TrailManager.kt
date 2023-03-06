@@ -157,7 +157,7 @@ class TrailManager @Autowired constructor(
             level: TrailSimplifierLevel,
             isDraftTrailVisible: Boolean
     ): List<TrailDto> {
-        val trails = trailDAO.findTrailWithinGeoSquare(
+        val trails = trailDAO.findTrailsWithinGeoSquare(
                 CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level, isDraftTrailVisible)
         return trails.map { trailMapper.map(it) }
     }
@@ -170,10 +170,10 @@ class TrailManager @Autowired constructor(
 
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
         val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates, 0.001)
-        val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
+        val foundTrailsInGeoSquare = trailDAO.findTrailsWithinGeoSquare(outerGeoSquare, skip, limit,
                 TrailSimplifierLevel.FULL, true)
 
-        return foundTrailsWithinGeoSquare.filter {
+        return foundTrailsInGeoSquare.filter {
             GeoCalculator.areSegmentsIntersecting(
                     geoLineDto.coordinates, it.geoLineString
             )
@@ -185,14 +185,25 @@ class TrailManager @Autowired constructor(
     fun getCodesByTrailIds(ids: List<String>) = trailDAO.getCodesById(ids)
 
     private fun getTrailIntersection(coordinates: List<Coordinates2D>, trail: Trail): TrailIntersectionDto {
-        val coordinates2D = GeoCalculator.getIntersectionPointsBetweenSegments(
+        val intersectingPoints = GeoCalculator.getIntersectionPointsBetweenSegments(
                 coordinates, trail.geoLineString
         )
+
+
+        val selectedCoordinates = intersectingPoints.filter {
+            val firstCoordinate = trail.coordinates.first()
+            val lastCoordinate = trail.coordinates.last()
+            (firstCoordinate.latitude == it.latitude && firstCoordinate.longitude == it.longitude) ||
+                    (lastCoordinate.latitude == it.latitude && lastCoordinate.longitude == it.longitude) ||
+                    isFirstIntersectionInIntersectionSpan(it, intersectingPoints)
+        }
+
+
         val altitudeResultOrderedList =
-                altitudeService.getElevationsByLongLat(coordinates2D.map { coord -> Pair(coord.latitude, coord.longitude) })
+                altitudeService.getElevationsByLongLat(selectedCoordinates.map { coord -> Pair(coord.latitude, coord.longitude) })
 
         val coordinatesForTrail = mutableListOf<Coordinates>()
-        coordinates2D.forEachIndexed { index, coord ->
+        intersectingPoints.forEachIndexed { index, coord ->
             coordinatesForTrail.add(
                     CoordinatesWithAltitude(
                             coord.latitude, coord.longitude,
@@ -201,6 +212,13 @@ class TrailManager @Autowired constructor(
             )
         }
         return trailIntersectionMapper.map(TrailIntersection(trail, coordinatesForTrail))
+    }
+
+    private fun isFirstIntersectionInIntersectionSpan(
+        it: Coordinates2D,
+        intersectingPoints: List<Coordinates2D>
+    ): Boolean {
+        TODO("Not yet implemented")
     }
 
     private fun getPreviewById(id: String): List<TrailPreview> =
