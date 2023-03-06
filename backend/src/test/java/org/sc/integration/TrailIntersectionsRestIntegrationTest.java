@@ -57,10 +57,6 @@ public class TrailIntersectionsRestIntegrationTest {
     @Autowired
     AdminTrailImporterController adminTrailImporterController;
     @Autowired
-    AdminTrailRawController adminTrailRawController;
-    @Autowired
-    AdminPlaceController adminPlaceController;
-    @Autowired
     AdminTrailController adminTrailController;
     @Autowired
     TrailController trailController;
@@ -81,12 +77,12 @@ public class TrailIntersectionsRestIntegrationTest {
     @Before
     public void setUp() throws IOException {
         IntegrationUtils.clearCollections(dataSource);
-        trail001aBOImport = importRawTrail(adminTrailImporterController,
-                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001aBO_IMPORT_FILENAME);
-        trail001BOImport = importRawTrail(adminTrailImporterController,
-                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001BO_IMPORT_FILENAME);
-        trail001xBOImport = importRawTrail(adminTrailImporterController,
-                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001xBO_IMPORT_FILENAME);
+        trail001aBOImport = IntegrationUtils.importRawTrail(adminTrailImporterController,
+                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001aBO_IMPORT_FILENAME, this.getClass());
+        trail001BOImport = IntegrationUtils.importRawTrail(adminTrailImporterController,
+                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001BO_IMPORT_FILENAME, this.getClass());
+        trail001xBOImport = IntegrationUtils.importRawTrail(adminTrailImporterController,
+                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_001xBO_IMPORT_FILENAME, this.getClass());
     }
 
     @Test
@@ -451,15 +447,6 @@ public class TrailIntersectionsRestIntegrationTest {
         IntegrationUtils.emptyCollection(dataSource, TrailRaw.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Trail.COLLECTION_NAME);
         IntegrationUtils.emptyCollection(dataSource, Place.COLLECTION_NAME);
-    }
-
-    public TrailRawResponse importRawTrail(final AdminTrailImporterController adminTrailImporterController,
-                                           final String fileName) throws IOException {
-        return adminTrailImporterController.importGpx(
-                new MockMultipartFile("file", fileName, "multipart/form-data",
-                        getClass().getClassLoader().getResourceAsStream("trails" + File.separator + fileName)
-                )
-        );
     }
 }
 
