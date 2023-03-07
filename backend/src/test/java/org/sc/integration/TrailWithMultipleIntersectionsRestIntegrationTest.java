@@ -241,6 +241,7 @@ public class TrailWithMultipleIntersectionsRestIntegrationTest {
                 .isEqualTo(trail446Imported.getId());
         assertThat(secondIntersectionObject.getPoints().get(1))
                 .matches(it -> it.getLatitude() == 44.21991999261081 && it.getLongitude() == 10.931598991155624);
+        assertThat(secondIntersectionObject.getPoints().size()).isEqualTo(2);
     }
 
     private TrailResponse importTrail(TrailImportDto trailImportDto) {

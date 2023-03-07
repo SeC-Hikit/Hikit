@@ -189,21 +189,17 @@ class TrailManager @Autowired constructor(
                 coordinates, trail.geoLineString
         )
 
-
         val selectedCoordinates = intersectingPoints.filter {
-            val firstCoordinate = trail.coordinates.first()
-            val lastCoordinate = trail.coordinates.last()
-            (firstCoordinate.latitude == it.latitude && firstCoordinate.longitude == it.longitude) ||
-                    (lastCoordinate.latitude == it.latitude && lastCoordinate.longitude == it.longitude) ||
-                    isFirstIntersectionInIntersectionSpan(it, intersectingPoints)
+            GeoCalculator.electPossibleCrossway(it, intersectingPoints)
         }
 
+        // TODO: should check no overlapping in between one point and the other
 
         val altitudeResultOrderedList =
                 altitudeService.getElevationsByLongLat(selectedCoordinates.map { coord -> Pair(coord.latitude, coord.longitude) })
 
         val coordinatesForTrail = mutableListOf<Coordinates>()
-        intersectingPoints.forEachIndexed { index, coord ->
+        selectedCoordinates.forEachIndexed { index, coord ->
             coordinatesForTrail.add(
                     CoordinatesWithAltitude(
                             coord.latitude, coord.longitude,
@@ -212,13 +208,6 @@ class TrailManager @Autowired constructor(
             )
         }
         return trailIntersectionMapper.map(TrailIntersection(trail, coordinatesForTrail))
-    }
-
-    private fun isFirstIntersectionInIntersectionSpan(
-        it: Coordinates2D,
-        intersectingPoints: List<Coordinates2D>
-    ): Boolean {
-        TODO("Not yet implemented")
     }
 
     private fun getPreviewById(id: String): List<TrailPreview> =
