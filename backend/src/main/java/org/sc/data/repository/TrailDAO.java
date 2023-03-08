@@ -218,7 +218,7 @@ public class TrailDAO {
         return getTrailById(id, TrailSimplifierLevel.LOW);
     }
 
-    public List<Trail> findTrailWithinGeoSquare(
+    public List<Trail> findTrailsWithinGeoSquare(
             final CoordinatesRectangle geoSquare,
             final int skip,
             final int limit,

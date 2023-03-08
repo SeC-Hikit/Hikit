@@ -1,32 +1,28 @@
 package org.sc.manager
 
 import org.sc.common.rest.*
-import org.sc.common.rest.geo.GeoLineDto
 import org.sc.common.rest.geo.RectangleDto
 import org.sc.data.geo.CoordinatesRectangle
+import org.sc.data.geo.TrailPlacesAligner
 import org.sc.data.mapper.*
-import org.sc.data.model.*
+import org.sc.data.model.Place
+import org.sc.data.model.Trail
+import org.sc.data.model.TrailPreview
 import org.sc.data.repository.PlaceDAO
 import org.sc.data.repository.TrailDAO
-import org.sc.processor.GeoCalculator
 import org.sc.processor.TrailSimplifierLevel
-import org.sc.adapter.AltitudeServiceAdapter
-import org.sc.data.geo.TrailPlacesAligner
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.lang.IllegalStateException
 
 @Component
 class TrailManager @Autowired constructor(
-        private val trailDAO: TrailDAO,
-        private val placeDAO: PlaceDAO,
-        private val trailMapper: TrailMapper,
-        private val linkedMediaMapper: LinkedMediaMapper,
-        private val placeRefMapper: PlaceRefMapper,
-        private val trailIntersectionMapper: TrailIntersectionMapper,
-        private val trailMappingMapper: TrailMappingMapper,
-        private val trailPlacesAligner: TrailPlacesAligner,
-        private val altitudeService: AltitudeServiceAdapter
+    private val trailDAO: TrailDAO,
+    private val placeDAO: PlaceDAO,
+    private val trailMapper: TrailMapper,
+    private val linkedMediaMapper: LinkedMediaMapper,
+    private val placeRefMapper: PlaceRefMapper,
+    private val trailMappingMapper: TrailMappingMapper,
+    private val trailPlacesAligner: TrailPlacesAligner
 ) {
 
     fun get(
@@ -69,7 +65,7 @@ class TrailManager @Autowired constructor(
     }
 
     fun updateTrailPlaceNamesReference(trailId: String, placeId: String, placeName: String): List<TrailDto> {
-        return trailDAO.updateTrailNamePlaceReference(trailId, placeId, placeName).map { trailMapper.map(it) };
+        return trailDAO.updateTrailNamePlaceReference(trailId, placeId, placeName).map { trailMapper.map(it) }
     }
 
     fun linkMedia(id: String, linkedMediaRequest: LinkedMediaDto): List<TrailDto> {
@@ -104,7 +100,7 @@ class TrailManager @Autowired constructor(
     }
 
     fun getByMatchingStartEndPoint(startPos: TrailCoordinatesDto, finalPos: TrailCoordinatesDto): List<TrailMappingDto> =
-            trailDAO.getByStartEndPoint(startPos.latitude, startPos.longitude, finalPos.latitude, finalPos.longitude).map { trailMappingMapper.map(it) };
+            trailDAO.getByStartEndPoint(startPos.latitude, startPos.longitude, finalPos.latitude, finalPos.longitude).map { trailMappingMapper.map(it) }
 
 
     private fun ensureCreatingNewCrosswayReferences(place: Place,
@@ -157,7 +153,7 @@ class TrailManager @Autowired constructor(
             level: TrailSimplifierLevel,
             isDraftTrailVisible: Boolean
     ): List<TrailDto> {
-        val trails = trailDAO.findTrailWithinGeoSquare(
+        val trails = trailDAO.findTrailsWithinGeoSquare(
                 CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level, isDraftTrailVisible)
         return trails.map { trailMapper.map(it) }
     }
@@ -168,40 +164,7 @@ class TrailManager @Autowired constructor(
         return trailMappings.map { trailMappingMapper.map(it) }
     }
 
-    fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
-        val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates, 0.001)
-        val foundTrailsWithinGeoSquare = trailDAO.findTrailWithinGeoSquare(outerGeoSquare, skip, limit,
-                TrailSimplifierLevel.FULL, true)
-
-        return foundTrailsWithinGeoSquare.filter {
-            GeoCalculator.areSegmentsIntersecting(
-                    geoLineDto.coordinates, it.geoLineString
-            )
-        }.map { trail ->
-            getTrailIntersection(geoLineDto.coordinates, trail)
-        }
-    }
-
     fun getCodesByTrailIds(ids: List<String>) = trailDAO.getCodesById(ids)
-
-    private fun getTrailIntersection(coordinates: List<Coordinates2D>, trail: Trail): TrailIntersectionDto {
-        val coordinates2D = GeoCalculator.getIntersectionPointsBetweenSegments(
-                coordinates, trail.geoLineString
-        )
-        val altitudeResultOrderedList =
-                altitudeService.getElevationsByLongLat(coordinates2D.map { coord -> Pair(coord.latitude, coord.longitude) })
-
-        val coordinatesForTrail = mutableListOf<Coordinates>()
-        coordinates2D.forEachIndexed { index, coord ->
-            coordinatesForTrail.add(
-                    CoordinatesWithAltitude(
-                            coord.latitude, coord.longitude,
-                            altitudeResultOrderedList[index]
-                    )
-            )
-        }
-        return trailIntersectionMapper.map(TrailIntersection(trail, coordinatesForTrail))
-    }
 
     private fun getPreviewById(id: String): List<TrailPreview> =
             trailDAO.getTrailPreviewById(id)

@@ -10,9 +10,14 @@ object GeoCalculator {
 
     private val geometryFactory = GeometryFactory()
 
-    fun getOuterSquareForCoordinates(coordinates2D: List<Coordinates2D>, paddingDistance: Double = 0.0): CoordinatesRectangle {
-        val topRight = Coordinates2D(coordinates2D.maxOf { it.longitude + paddingDistance }, coordinates2D.maxOf { it.latitude + paddingDistance })
-        val bottomLeft = Coordinates2D(coordinates2D.minOf { it.longitude - paddingDistance }, coordinates2D.minOf { it.latitude - paddingDistance })
+    fun getOuterSquareForCoordinates(
+        coordinates2D: List<Coordinates2D>,
+        paddingDistance: Double = 0.0
+    ): CoordinatesRectangle {
+        val topRight = Coordinates2D(coordinates2D.maxOf { it.longitude + paddingDistance },
+            coordinates2D.maxOf { it.latitude + paddingDistance })
+        val bottomLeft = Coordinates2D(coordinates2D.minOf { it.longitude - paddingDistance },
+            coordinates2D.minOf { it.latitude - paddingDistance })
         return CoordinatesRectangle(bottomLeft, topRight)
     }
 
@@ -32,9 +37,14 @@ object GeoCalculator {
         val subjectSegmentEuclidean = geometryFactory.createLineString(subjectMappedCoordinates.toTypedArray())
         val targetSegmentEuclidean = geometryFactory.createLineString(foundSegmentCoordinates.toTypedArray())
 
-        return subjectSegmentEuclidean.intersection(targetSegmentEuclidean).coordinates.map { Coordinates2D(it.x, it.y) }
+        return subjectSegmentEuclidean.intersection(targetSegmentEuclidean).coordinates.map {
+            Coordinates2D(
+                it.x,
+                it.y
+            )
+        }
     }
 
     private fun mapToCoords(subjectSegment: List<Coordinates2D>) =
-            subjectSegment.map { Coordinate(it.longitude, it.latitude) }
+        subjectSegment.map { Coordinate(it.longitude, it.latitude) }
 }
