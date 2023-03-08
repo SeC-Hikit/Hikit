@@ -15,15 +15,12 @@ import org.sc.controller.GeoTrailController;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
 import org.sc.controller.TrailRawController;
-import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
 import org.sc.controller.admin.AdminTrailImporterController;
-import org.sc.controller.admin.AdminTrailRawController;
 import org.sc.data.model.*;
 import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 

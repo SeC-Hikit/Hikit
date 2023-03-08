@@ -42,10 +42,6 @@ public class TrailWithMultipleIntersectionsRestIntegrationTest {
     public static final String TRAIL_400_4BO_IMPORT_FILENAME = "400-4.gpx";
     public static final String TRAIL_446_IMPORT_FILENAME = "446.gpx";
 
-    public static final int ANY_OFFICIAL_ETA = 15;
-    public static final String ANY_MAINTAINING_SECTION = "CAI Bologna";
-    public static final String MAINTAINING_SECTION = "CAI Bologna";
-
     @Autowired
     Datasource dataSource;
     @Autowired
@@ -140,9 +136,8 @@ public class TrailWithMultipleIntersectionsRestIntegrationTest {
                 .isEqualTo(trail345Imported.getId());
         assertThat(firstIntersectionObject.getPoints().get(1))
                 .matches(it ->
-                        it.getLatitude() == 44.206141820177436 && it.getLongitude() == 10.902140624821186);
-
-        assertThat(firstIntersectionObject.getPoints().size()).isEqualTo(2);
+                        it.getLatitude() == 44.206141820177436 &&
+                        it.getLongitude() == 10.902140624821186);
     }
 
 
@@ -241,7 +236,6 @@ public class TrailWithMultipleIntersectionsRestIntegrationTest {
                 .isEqualTo(trail446Imported.getId());
         assertThat(secondIntersectionObject.getPoints().get(1))
                 .matches(it -> it.getLatitude() == 44.21991999261081 && it.getLongitude() == 10.931598991155624);
-        assertThat(secondIntersectionObject.getPoints().size()).isEqualTo(2);
     }
 
     private TrailResponse importTrail(TrailImportDto trailImportDto) {

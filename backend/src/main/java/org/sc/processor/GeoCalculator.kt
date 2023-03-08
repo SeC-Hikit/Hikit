@@ -6,8 +6,6 @@ import org.sc.data.geo.CoordinatesRectangle
 import org.sc.data.model.Coordinates2D
 import org.sc.data.model.GeoLineString
 
-private const val fiftyMeter = 500
-
 object GeoCalculator {
 
     private val geometryFactory = GeometryFactory()
@@ -46,59 +44,6 @@ object GeoCalculator {
             )
         }
     }
-
-    fun electPossibleCrossway(
-        it: Coordinates2D,
-        intersectingPoints: List<Coordinates2D>
-    ): Boolean {
-
-        val indexOf = intersectingPoints.indexOf(it)
-
-        val nextIndex = indexOf + 1
-        val previousIndex = indexOf - 1
-
-        val nextElementOrNull = intersectingPoints.elementAtOrNull(nextIndex)
-        val previousElementOrNull = intersectingPoints.elementAtOrNull(previousIndex)
-
-        val isIsolated = nextElementOrNull == null &&
-                previousElementOrNull == null
-
-        if (isIsolated) return true
-
-        val isCrosswayOfAStartingOverlay = nextElementOrNull != null &&
-                intersectingPoints.elementAtOrNull(previousIndex) == null
-
-        if (isCrosswayOfAStartingOverlay) {
-            return true
-        }
-
-        val isCrosswayOfAnEndingOverlay = nextElementOrNull == null && intersectingPoints.elementAtOrNull(previousIndex) != null
-
-        if (isCrosswayOfAnEndingOverlay) {
-            return true
-        }
-
-        val isNextCrossingSpanningSetDistance = nextElementOrNull != null &&
-                getRadialDistance(it, nextElementOrNull) >= fiftyMeter
-        if (isNextCrossingSpanningSetDistance
-        ) {
-            return true
-        }
-
-        val isPreviousCrossingSpanningSetDistance = previousElementOrNull != null &&
-                getRadialDistance(it, previousElementOrNull) >= fiftyMeter
-        if (isPreviousCrossingSpanningSetDistance) {
-            return true
-        }
-
-        return false
-    }
-
-    private fun getRadialDistance(it: Coordinates2D, nextElementOrNull: Coordinates2D) =
-        DistanceProcessor.getRadialDistance(
-            lat1 = it.latitude, lon1 = it.longitude,
-            lat2 = nextElementOrNull.latitude, lon2 = nextElementOrNull.longitude
-        )
 
     private fun mapToCoords(subjectSegment: List<Coordinates2D>) =
         subjectSegment.map { Coordinate(it.longitude, it.latitude) }
