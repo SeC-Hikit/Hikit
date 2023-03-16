@@ -2,10 +2,12 @@ package org.sc.manager
 
 import org.sc.common.rest.*
 import org.sc.common.rest.geo.RectangleDto
+import org.sc.data.entity.mapper.StaticTrailDetailsMapper
 import org.sc.data.geo.CoordinatesRectangle
 import org.sc.data.geo.TrailPlacesAligner
 import org.sc.data.mapper.*
 import org.sc.data.model.Place
+import org.sc.data.model.StaticTrailDetails
 import org.sc.data.model.Trail
 import org.sc.data.model.TrailPreview
 import org.sc.data.repository.PlaceDAO
@@ -22,7 +24,8 @@ class TrailManager @Autowired constructor(
     private val linkedMediaMapper: LinkedMediaMapper,
     private val placeRefMapper: PlaceRefMapper,
     private val trailMappingMapper: TrailMappingMapper,
-    private val trailPlacesAligner: TrailPlacesAligner
+    private val trailPlacesAligner: TrailPlacesAligner,
+    private val staticTrailDetailsMapper: StaticTrailDetailsMapper
 ) {
 
     fun get(
@@ -171,6 +174,10 @@ class TrailManager @Autowired constructor(
 
     fun updateTrailPlaceReferences(oldId: String, id: String, name: String) {
         trailDAO.updateAllPlaceReferencesWithNewPlaceId(oldId, id, name)
+    }
+
+    fun updateStaticResources(id: String, resources: StaticTrailDetails) {
+        trailDAO.updateStaticResources(id, staticTrailDetailsMapper.mapToDocument(resources))
     }
 
 }

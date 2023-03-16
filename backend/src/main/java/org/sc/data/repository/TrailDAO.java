@@ -457,7 +457,7 @@ public class TrailDAO {
     public void updateAllPlaceReferencesWithNewPlaceId(@NotNull String oldId,
                                                        @NotNull String id,
                                                        @NotNull String name
-                                                       ) {
+    ) {
         collection.updateMany(
                 new Document(PLACE_ID_IN_LOCATIONS, oldId),
                 new Document($_SET, new Document(PLACE_ID_IN_LOCATIONS_POSITIONAL, id))
@@ -498,5 +498,12 @@ public class TrailDAO {
                 )));
     }
 
-
+    public void updateStaticResources(final String id,
+                                      final Document mapToDocument) {
+        collection.updateOne(
+                new Document(Trail.ID, id),
+                new Document("$set",
+                        new Document(Trail.STATIC_TRAIL_DETAILS, mapToDocument)
+                ));
+    }
 }

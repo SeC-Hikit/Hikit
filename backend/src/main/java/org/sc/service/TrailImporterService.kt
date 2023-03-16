@@ -25,45 +25,47 @@ import java.util.*
 
 @Service
 class TrailImporterService @Autowired constructor(
-        private val trailsManager: TrailManager,
-        private val trailFileManager: TrailFileManager,
-        private val placeManager: PlaceManager,
-        private val resourceManager: ResourceManager,
-        private val placesTrailSyncProcessor: PlacesTrailSyncProcessor,
-        private val trailsStatsCalculator: TrailsStatsCalculator,
-        private val trailDatasetVersionDao: TrailDatasetVersionDao,
-        private val coordinatesMapper: CoordinatesMapper,
-        private val trailPlacesAligner: TrailPlacesAligner,
-        private val trailRawMapper: TrailRawMapper,
-        private val trailRawDao: TrailRawDAO,
-        private val trailMapper: TrailMapper,
-        private val authFacade: AuthFacade,
-        private val trailSimplifier: TrailSimplifier
+    private val trailsManager: TrailManager,
+    private val trailFileManager: TrailFileManager,
+    private val placeManager: PlaceManager,
+    private val resourceManager: ResourceManager,
+    private val placesTrailSyncProcessor: PlacesTrailSyncProcessor,
+    private val trailsStatsCalculator: TrailsStatsCalculator,
+    private val trailDatasetVersionDao: TrailDatasetVersionDao,
+    private val coordinatesMapper: CoordinatesMapper,
+    private val trailPlacesAligner: TrailPlacesAligner,
+    private val trailRawMapper: TrailRawMapper,
+    private val trailRawDao: TrailRawDAO,
+    private val trailMapper: TrailMapper,
+    private val authFacade: AuthFacade,
+    private val trailSimplifier: TrailSimplifier
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     private val maxDistanceForPlaceAssociationInM = 50
 
     fun saveRaw(trailRaw: TrailRawDto): TrailRawDto =
-            trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
-                    .first()
+        trailRawDao.createRawTrail(trailRawMapper.map(trailRaw)).map { trailRawMapper.map(it) }
+            .first()
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
         logger.info("Enforcing point calculation...")
 
         val coordinates = importingTrail.coordinates.map {
-            TrailCoordinates(it.latitude, it.longitude, it.altitude,
-                    trailsStatsCalculator.calculateLengthFromTo(importingTrail.coordinates, it))
+            TrailCoordinates(
+                it.latitude, it.longitude, it.altitude,
+                trailsStatsCalculator.calculateLengthFromTo(importingTrail.coordinates, it)
+            )
         }
 
         logger.info("Calculating stats...")
         val statsTrailMetadata = StatsTrailMetadata(
-                trailsStatsCalculator.calculateTotRise(coordinates),
-                trailsStatsCalculator.calculateTotFall(coordinates),
-                trailsStatsCalculator.calculateEta(coordinates),
-                trailsStatsCalculator.calculateTrailLength(coordinates),
-                trailsStatsCalculator.calculateHighestPlace(coordinates),
-                trailsStatsCalculator.calculateLowestPlace(coordinates)
+            trailsStatsCalculator.calculateTotRise(coordinates),
+            trailsStatsCalculator.calculateTotFall(coordinates),
+            trailsStatsCalculator.calculateEta(coordinates),
+            trailsStatsCalculator.calculateTrailLength(coordinates),
+            trailsStatsCalculator.calculateHighestPlace(coordinates),
+            trailsStatsCalculator.calculateLowestPlace(coordinates)
         )
 
         val createdOn = Date()
@@ -72,23 +74,25 @@ class TrailImporterService @Autowired constructor(
 
         logger.info("Creating or retrieving crossway places for trail import...")
         val trailCrosswaysFromLocations: List<PlaceDto> = getLocationFromPlaceRef(
-                listOf(), importingTrail.crossways, authHelper)
+            listOf(), importingTrail.crossways, authHelper
+        )
 
         logger.info("Creating or retrieving other places for trail import...")
         val placesLocations: List<PlaceDto> = getLocationFromPlaceRef(
-                trailCrosswaysFromLocations,
-                importingTrail.locations,
-                authHelper)
+            trailCrosswaysFromLocations,
+            importingTrail.locations,
+            authHelper
+        )
 
         logger.info("Mapping retrieved places to refs")
         val locationsSet = getDistinctPlacesRefs(placesLocations, trailCrosswaysFromLocations)
 
         logger.info("Reordering places refs in memory...")
         val placesInOrder: List<PlaceRef> =
-                trailPlacesAligner.sortLocationsByTrailCoordinates(
-                        coordinates,
-                        locationsSet.toList()
-                )
+            trailPlacesAligner.sortLocationsByTrailCoordinates(
+                coordinates,
+                locationsSet.toList()
+            )
 
         logger.info("Simplifying trail data...")
         val simplifyLowQuality = trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW)
@@ -97,51 +101,51 @@ class TrailImporterService @Autowired constructor(
 
         logger.info("Saving the trail...")
         val trail = Trail.builder()
-                .name(importingTrail.name)
-                .startLocation(placesInOrder.first())
-                .endLocation(placesInOrder.last())
-                .description(importingTrail.description)
-                .officialEta(importingTrail.officialEta)
-                .code(importingTrail.code)
-                .variant(importingTrail.isVariant)
-                .locations(placesInOrder)
-                .classification(importingTrail.classification)
-                .country(importingTrail.country)
-                .statsTrailMetadata(statsTrailMetadata)
-                .coordinates(coordinates)
-                .coordinatesLow(simplifyLowQuality)
-                .coordinatesMedium(simplifyMediumQuality)
-                .coordinatesHigh(simplifyHighQuality)
-                .lastUpdate(createdOn)
-                .maintainingSection(importingTrail.maintainingSection)
-                .territorialDivision(importingTrail.territorialDivision)
-                .geoLineString(GeoLineString(importingTrail.coordinates.map {
-                    Coordinates2D(
-                            it.longitude,
-                            it.latitude
-                    )
-                }))
-                .cycloDetails(
-                        CycloDetails(
-                                CycloClassification.UNCLASSIFIED, 0,
-                                CycloFeasibility(true, 0),
-                                CycloFeasibility(true, 0), ""
-                        )
+            .name(importingTrail.name)
+            .startLocation(placesInOrder.first())
+            .endLocation(placesInOrder.last())
+            .description(importingTrail.description)
+            .officialEta(importingTrail.officialEta)
+            .code(importingTrail.code)
+            .variant(importingTrail.isVariant)
+            .locations(placesInOrder)
+            .classification(importingTrail.classification)
+            .country(importingTrail.country)
+            .statsTrailMetadata(statsTrailMetadata)
+            .coordinates(coordinates)
+            .coordinatesLow(simplifyLowQuality)
+            .coordinatesMedium(simplifyMediumQuality)
+            .coordinatesHigh(simplifyHighQuality)
+            .lastUpdate(createdOn)
+            .maintainingSection(importingTrail.maintainingSection)
+            .territorialDivision(importingTrail.territorialDivision)
+            .geoLineString(GeoLineString(importingTrail.coordinates.map {
+                Coordinates2D(
+                    it.longitude,
+                    it.latitude
                 )
-                .mediaList(emptyList())
-                .fileDetails(
-                        FileDetails(
-                                importingTrail.fileDetailsDto.uploadedOn,
-                                authHelper.username,
-                                authHelper.instance,
-                                authHelper.realm,
-                                importingTrail.fileDetailsDto.filename,
-                                importingTrail.fileDetailsDto.originalFilename,
-                                authHelper.username
-                        )
+            }))
+            .cycloDetails(
+                CycloDetails(
+                    CycloClassification.UNCLASSIFIED, 0,
+                    CycloFeasibility(true, 0),
+                    CycloFeasibility(true, 0), ""
                 )
-                .status(importingTrail.trailStatus)
-                .build()
+            )
+            .mediaList(emptyList())
+            .fileDetails(
+                FileDetails(
+                    importingTrail.fileDetailsDto.uploadedOn,
+                    authHelper.username,
+                    authHelper.instance,
+                    authHelper.realm,
+                    importingTrail.fileDetailsDto.filename,
+                    importingTrail.fileDetailsDto.originalFilename,
+                    authHelper.username
+                )
+            )
+            .status(importingTrail.trailStatus)
+            .build()
 
         val savedTrailAsList = trailsManager.save(trail)
         if (savedTrailAsList.isEmpty()) {
@@ -151,22 +155,30 @@ class TrailImporterService @Autowired constructor(
         }
 
         val trailSaved = savedTrailAsList.first()
+
         logger.info("Linking places to trail...")
         placesTrailSyncProcessor.populatePlacesWithTrailData(trailSaved)
 
+        logger.info("Generated name for static resources...")
+        val fileName = trailFileManager.getFilename(trailSaved)
+
         logger.info("Generating static resources for trail...")
         val targetPlaces = trailSaved.locations.flatMap { placeManager.getById(it.placeId) }
-        updateResourcesForTrail(trailSaved, targetPlaces)
+        val resources = updateResourcesForTrail(trailSaved, targetPlaces, fileName)
+
+        trailsManager.updateStaticResources(trailSaved.id, resources)
 
         trailSaved.locations
-                .flatMap { it.encounteredTrailIds }
-                .filter { it != trailSaved.id }
-                .flatMap { trailsManager.getById(it, TrailSimplifierLevel.LOW) }
-                .forEach {
-                    logger.info("Ri-generating static resources for related trail '${it.id}'...")
-                    resourceManager.addEntry(it.id, RegenerationEntryType.TRAIL,
-                            trailSaved.id, authHelper.username, RegenerationActionType.CREATE)
-                }
+            .flatMap { it.encounteredTrailIds }
+            .filter { it != trailSaved.id }
+            .flatMap { trailsManager.getById(it, TrailSimplifierLevel.LOW) }
+            .forEach {
+                logger.info("Ri-generating static resources for related trail '${it.id}'...")
+                resourceManager.addEntry(
+                    it.id, RegenerationEntryType.TRAIL,
+                    trailSaved.id, authHelper.username, RegenerationActionType.CREATE
+                )
+            }
 
         logger.info("Updating trail set version...")
         trailDatasetVersionDao.increaseVersion()
@@ -175,32 +187,40 @@ class TrailImporterService @Autowired constructor(
         return savedTrailAsList
     }
 
-    private fun getDistinctPlacesRefs(placesLocations: List<PlaceDto>,
-                                      trailCrosswaysFromLocations: List<PlaceDto>): List<PlaceRef> {
+    private fun getDistinctPlacesRefs(
+        placesLocations: List<PlaceDto>,
+        trailCrosswaysFromLocations: List<PlaceDto>
+    ): List<PlaceRef> {
 
         val otherPlacesRefs = placesLocations.map {
-            PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic)
+            PlaceRef(
+                it.name,
+                coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic
+            )
         }
 
         val trailCrosswaysFromLocationsRefs = trailCrosswaysFromLocations.map {
-            PlaceRef(it.name,
-                    coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic)
+            PlaceRef(
+                it.name,
+                coordinatesMapper.map(it.coordinates.last()), it.id, it.crossingTrailIds, it.isDynamic
+            )
         }
 
         return otherPlacesRefs.plus(trailCrosswaysFromLocationsRefs)
-                .distinctBy { it.placeId }
+            .distinctBy { it.placeId }
     }
 
     fun mappingMatchingTrail(targetTrailRaw: TrailRawDto): List<TrailMappingDto> {
         return trailsManager.getByMatchingStartEndPoint(targetTrailRaw.startPos, targetTrailRaw.finalPos);
     }
 
-    fun updateResourcesForTrail(targetTrail: TrailDto, targetPlaces: List<PlaceDto>) {
-        trailFileManager.writeTrailToOfficialGpx(targetTrail)
-        trailFileManager.writeTrailToKml(targetTrail)
-        trailFileManager.writeTrailToPdf(targetTrail, targetPlaces, emptyList(), emptyList())
-    }
+    fun updateResourcesForTrail(targetTrail: TrailDto, targetPlaces: List<PlaceDto>, fileName: String) =
+        StaticTrailDetails(
+            trailFileManager.writeTrailToOfficialGpx(targetTrail, fileName),
+            trailFileManager.writeTrailToKml(targetTrail, fileName),
+            trailFileManager.writeTrailToPdf(targetTrail, targetPlaces, emptyList(), emptyList(), fileName)
+        )
+
 
     fun updateTrail(trailDto: TrailDto): List<TrailDto> {
 
@@ -213,8 +233,8 @@ class TrailImporterService @Autowired constructor(
         removedPlacesOnTrail.forEach {
             trailsManager.unlinkPlace(trailId, it)
             placeManager.unlinkTrailFromPlace(
-                    it.placeId, trailId,
-                    coordinatesMapper.map(it.coordinates)
+                it.placeId, trailId,
+                coordinatesMapper.map(it.coordinates)
             )
         }
         addedPlacesOnTrail.forEach { trailsManager.linkTrailToPlace(trailId, it) }
@@ -245,59 +265,76 @@ class TrailImporterService @Autowired constructor(
         val update = trailsManager.update(trailMapper.map(trailToUpdate))
 
         val updateTrailId = update.first().id
-        resourceManager.addEntry(updateTrailId, RegenerationEntryType.TRAIL,
-                updateTrailId, authFacade.authHelper.username, RegenerationActionType.UPDATE)
+        resourceManager.addEntry(
+            updateTrailId, RegenerationEntryType.TRAIL,
+            updateTrailId, authFacade.authHelper.username, RegenerationActionType.UPDATE
+        )
 
         return update
     }
 
 
-    private fun getLocationFromPlaceRef(otherPlacesBeingSaved: List<PlaceDto>,
-                                        elements: List<PlaceRefDto>,
-                                        authHelper: AuthHelper): List<PlaceDto> =
-            elements.map {
+    private fun getLocationFromPlaceRef(
+        otherPlacesBeingSaved: List<PlaceDto>,
+        elements: List<PlaceRefDto>,
+        authHelper: AuthHelper
+    ): List<PlaceDto> =
+        elements.map {
 
-                val isPlaceNotPresentOnSystem = it.placeId == null || it.placeId.trim().isEmpty()
+            val isPlaceNotPresentOnSystem = it.placeId == null || it.placeId.trim().isEmpty()
 
-                if (isPlaceNotPresentOnSystem) {
-                    val matchingPreviouslySubmittedCrossway =
-                            placeSubmittedMatchingSubmittedOnes(otherPlacesBeingSaved, it)
-                    if (matchingPreviouslySubmittedCrossway.isNotEmpty()) {
-                        val first = matchingPreviouslySubmittedCrossway.first()
-                        logger.info("Place with name '${it.name}' is matching submitted crossway with ID: " +
+            if (isPlaceNotPresentOnSystem) {
+                val matchingPreviouslySubmittedCrossway =
+                    placeSubmittedMatchingSubmittedOnes(otherPlacesBeingSaved, it)
+                if (matchingPreviouslySubmittedCrossway.isNotEmpty()) {
+                    val first = matchingPreviouslySubmittedCrossway.first()
+                    logger.info(
+                        "Place with name '${it.name}' is matching submitted crossway with ID: " +
                                 first.id +
-                                ". Going to associate that, without creating new location")
-                        first.crossingTrailIds =
-                                first.crossingTrailIds.toSet().plus(it.encounteredTrailIds).toList()
-                        return@map first
-                    }
+                                ". Going to associate that, without creating new location"
+                    )
+                    first.crossingTrailIds =
+                        first.crossingTrailIds.toSet().plus(it.encounteredTrailIds).toList()
+                    return@map first
+                }
 
-                    val created = placeManager.create(PlaceDto(null, it.name, "",
-                            emptyList(), emptyList(), listOf(it.coordinates),
-                            it.encounteredTrailIds,
-                            it.isDynamicCrossway,
-                            RecordDetailsDto(Date(),
-                                    authHelper.username,
-                                    authHelper.instance,
-                                    authHelper.realm))).first()
-                    created.coordinates = created.coordinates.plus(it.coordinates)
-                    created.crossingTrailIds = it.encounteredTrailIds
-                    created
-                } else {
-                    val valueReturned = placeManager.getById(it.placeId).first()
-                    valueReturned.coordinates = valueReturned.coordinates.plus(it.coordinates)
-                    valueReturned.crossingTrailIds = it.encounteredTrailIds
-                    valueReturned
+                val created = placeManager.create(
+                    PlaceDto(
+                        null, it.name, "",
+                        emptyList(), emptyList(), listOf(it.coordinates),
+                        it.encounteredTrailIds,
+                        it.isDynamicCrossway,
+                        RecordDetailsDto(
+                            Date(),
+                            authHelper.username,
+                            authHelper.instance,
+                            authHelper.realm
+                        )
+                    )
+                ).first()
+                created.coordinates = created.coordinates.plus(it.coordinates)
+                created.crossingTrailIds = it.encounteredTrailIds
+                created
+            } else {
+                val valueReturned = placeManager.getById(it.placeId).first()
+                valueReturned.coordinates = valueReturned.coordinates.plus(it.coordinates)
+                valueReturned.crossingTrailIds = it.encounteredTrailIds
+                valueReturned
+            }
+        }
+
+    private fun placeSubmittedMatchingSubmittedOnes(
+        otherPlacesBeingSaved: List<PlaceDto>,
+        it: PlaceRefDto
+    ): List<PlaceDto> =
+        otherPlacesBeingSaved
+            .filter { otherPlaceSubmitted -> otherPlaceSubmitted.name == it.name }
+            .filter { otherPlaceSubmitted ->
+                otherPlaceSubmitted.coordinates.any { placeSubmittedCoordinate ->
+                    DistanceProcessor.distanceBetweenPoints(
+                        placeSubmittedCoordinate,
+                        it.coordinates
+                    ) <= maxDistanceForPlaceAssociationInM
                 }
             }
-
-    private fun placeSubmittedMatchingSubmittedOnes(otherPlacesBeingSaved: List<PlaceDto>,
-                                                    it: PlaceRefDto): List<PlaceDto> =
-            otherPlacesBeingSaved
-                    .filter { otherPlaceSubmitted -> otherPlaceSubmitted.name == it.name }
-                    .filter { otherPlaceSubmitted ->
-                        otherPlaceSubmitted.coordinates.any { placeSubmittedCoordinate ->
-                            DistanceProcessor.distanceBetweenPoints(placeSubmittedCoordinate, it.coordinates) <= maxDistanceForPlaceAssociationInM
-                        }
-                    }
 }

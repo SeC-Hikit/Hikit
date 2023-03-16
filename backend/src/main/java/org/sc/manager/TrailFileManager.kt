@@ -106,7 +106,7 @@ class TrailFileManager @Autowired constructor(
         )
     }
 
-    fun writeTrailToOfficialGpx(trail: TrailDto) {
+    fun writeTrailToOfficialGpx(trail: TrailDto, fileName: String) : String {
         logger.info("Writing GPX trail for trail with id '${trail.id}'")
         val creator = "S&C_$DISPLAYED_VERSION"
         val gpx = GPX.builder(creator)
@@ -123,23 +123,32 @@ class TrailFileManager @Autowired constructor(
                                 .author("S&C - $creator")
                                 .name(trail.code).time(trail.lastUpdate.toInstant()).build()
                 ).build()
-        gpxFileHandlerHelper.writeToFile(gpx, pathToGpxStoredFiles.resolve(getFilename(trail) + ".gpx"))
+        val generatedFilename = "$fileName.gpx"
+        gpxFileHandlerHelper.writeToFile(gpx, pathToGpxStoredFiles.resolve(generatedFilename))
+        return generatedFilename
     }
 
-    fun writeTrailToKml(trail: TrailDto) {
+    fun writeTrailToKml(trail: TrailDto, fileName: String): String {
         logger.info("Writing KML for trail with id '${trail.id}'")
         val kml = Kml()
         val lineString: LineString = LineString().withAltitudeMode(AltitudeMode.ABSOLUTE)
         trail.coordinates.forEach { lineString.addToCoordinates(it.longitude, it.latitude, it.altitude) }
         kml.createAndSetDocument().createAndAddPlacemark().withGeometry(lineString)
-        kml.marshal(pathToKmlStoredFiles.resolve(getFilename(trail) + ".kml").toFile())
+        val generatedFilename = "$fileName.kml"
+        kml.marshal(pathToKmlStoredFiles.resolve(generatedFilename).toFile())
+        return generatedFilename
     }
 
-    fun writeTrailToPdf(trail: TrailDto, places: List<PlaceDto>, lastMaintenance: List<MaintenanceDto>,
-                        reportedOpenIssues: List<AccessibilityNotificationDto>) {
-        val pathname = pathToPdfStoredFiles.resolve(getFilename(trail) + ".pdf")
+    fun writeTrailToPdf(
+        trail: TrailDto, places: List<PlaceDto>, lastMaintenance: List<MaintenanceDto>,
+        reportedOpenIssues: List<AccessibilityNotificationDto>,
+        fileName: String
+    ): String {
+        val generatedFilename = "$fileName.pdf"
+        val pathname = pathToPdfStoredFiles.resolve(generatedFilename)
         pdfFileHandlerHelper.exportPdf(trail, places, lastMaintenance, reportedOpenIssues, pathname)
         logger.info("Exported pdf for trail with 'id' ${trail.id} in path: $pathname")
+        return generatedFilename
     }
 
     fun getGPXFilesTempPathList(uploadedFiles: List<MultipartFile>): Map<String, Optional<Path>> {
@@ -176,7 +185,7 @@ class TrailFileManager @Autowired constructor(
         Files.delete(File(makePathToSavedFile(filename)).toPath())
     }
 
-    private fun getFilename(trail: TrailDto) = trail.code + "_" + trail.id
+    fun getFilename(trail: TrailDto) = trail.code.replace("/", "_") + "_" + trail.id
 
     private fun findUploadedFilesWithMissingNames(uploadedFiles: List<MultipartFile>)
             : List<MultipartFile> = uploadedFiles.filter { it.originalFilename == null }

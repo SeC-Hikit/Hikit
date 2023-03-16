@@ -23,7 +23,6 @@ import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 public class POIController {
 
     public final static String PREFIX = "/poi";
-    private final static Logger LOGGER = Logger.getLogger(POIController.class.getName());
 
     private final PoiManager poiManager;
     private final PoiResponseHelper poiResponseHelper;

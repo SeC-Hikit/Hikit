@@ -25,6 +25,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     protected final LinkedMediaMapper linkedMediaMapper;
     protected final CycloMapper cycloMapper;
     protected final FileDetailsMapper fileDetailsMapper;
+    private final StaticTrailDetailsMapper staticTrailDetailsMapper;
 
 
     @Autowired
@@ -34,7 +35,8 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                        final StatsTrailMapper statsTrailMapper,
                        final LinkedMediaMapper linkedMediaMapper,
                        final CycloMapper cycloMapper,
-                       final FileDetailsMapper fileDetailsMapper) {
+                       final FileDetailsMapper fileDetailsMapper,
+                       final StaticTrailDetailsMapper staticTrailDetailsMapper) {
         this.placeMapper = placeMapper;
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.geoLineMapper = geoLineMapper;
@@ -42,6 +44,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
         this.linkedMediaMapper = linkedMediaMapper;
         this.cycloMapper = cycloMapper;
         this.fileDetailsMapper = fileDetailsMapper;
+        this.staticTrailDetailsMapper = staticTrailDetailsMapper;
     }
 
     @Override
@@ -68,6 +71,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .mediaList(getLinkedMediaMapper(doc))
                 .cycloDetails(cycloMapper.mapToObject(doc.get(CYCLO, Document.class)))
                 .fileDetails(fileDetailsMapper.mapToObject(doc.get(RECORD_DETAILS, Document.class)))
+                .staticTrailDetails(staticTrailDetailsMapper.mapToObject(doc.get(STATIC_TRAIL_DETAILS, Document.class)))
                 .status(getStatus(doc))
                 .build();
     }
@@ -105,6 +109,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .append(GEO_LINE, getGeoLineValue(object))
                 .append(CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
                 .append(RECORD_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
+                .append(STATIC_TRAIL_DETAILS, staticTrailDetailsMapper.mapToDocument(object.getStaticTrailDetails()))
                 .append(STATUS, object.getStatus().toString());
     }
 
