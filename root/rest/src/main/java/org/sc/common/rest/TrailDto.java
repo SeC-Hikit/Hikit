@@ -27,5 +27,6 @@ public class TrailDto {
     private String maintainingSection;
     private TrailStatus status;
     private FileDetailsDto fileDetails;
+    private StaticTrailDetailsDto staticTrailDetails;
     private CycloDetailsDto cycloDetails;
 }

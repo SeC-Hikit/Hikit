@@ -8,6 +8,7 @@ import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.response.ResourceGeneratorResponse;
 import org.sc.configuration.AppProperties;
 import org.sc.manager.PlaceManager;
+import org.sc.manager.TrailFileManager;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
 import org.sc.service.ResourceService;
@@ -48,18 +49,21 @@ public class AdminResourceController {
     private final TrailManager trailManager;
     private final PlaceManager placeManager;
     private final AppProperties appProperties;
+    private final TrailFileManager trailFileManager;
 
     @Autowired
     public AdminResourceController(final TrailManager trailManager,
                                    final ResourceService resourceService,
                                    final TrailImporterService trailImporterService,
                                    final PlaceManager placeManager,
-                                   final AppProperties appProperties) {
+                                   final AppProperties appProperties,
+                                   final TrailFileManager trailFileManager) {
         this.trailManager = trailManager;
         this.resourceService = resourceService;
         this.trailImporterService = trailImporterService;
         this.placeManager = placeManager;
         this.appProperties = appProperties;
+        this.trailFileManager = trailFileManager;
     }
 
     @Operation(summary = "Get the status")
@@ -131,13 +135,16 @@ public class AdminResourceController {
     }
 
     private void doExport(List<TrailDto> trails) {
-        trails.forEach(t -> {
-            final String trailId = t.getId();
+        trails.forEach(trail -> {
+            final String trailId = trail.getId();
             LOGGER.info(format(REGENERATE_FOR_TRAIL_ID_MESSAGE, trailId));
-            final List<PlaceDto> targetPlaces = t.getLocations().stream()
+            final List<PlaceDto> targetPlaces = trail.getLocations().stream()
                     .map((it) -> placeManager.getById(it.getPlaceId())).flatMap(Collection::stream)
                     .collect(Collectors.toList());
-            trailImporterService.updateResourcesForTrail(t, targetPlaces);
+            trailImporterService.updateResourcesForTrail(
+                    trail,
+                    targetPlaces,
+                    trailFileManager.getFilename(trail));
             LOGGER.info(format(DONE_REGENERATING_FOR_TRAIL_ID, trailId));
         });
     }

@@ -1,6 +1,8 @@
 package org.sc.service
 
+import com.sun.tools.xjc.reader.xmlschema.bindinfo.BIConversion.Static
 import org.sc.common.rest.TrailDto
+import org.sc.data.model.StaticTrailDetails
 import org.sc.manager.*
 import org.sc.processor.TrailSimplifierLevel
 import org.slf4j.LoggerFactory
@@ -56,7 +58,18 @@ class ResourceService @Autowired constructor(
         val lastMaintenance = maintenancesByTrailId.maxByOrNull { it.date }
         val openIssues = accessibilityNotificationManager.getUnresolvedByTrailId(trailId, 0, Int.MAX_VALUE)
         logger.info("Generating PDF file for trail '$trailId'")
-        trailFileManager.writeTrailToPdf(trailSaved, places, listOfNotNull(lastMaintenance), openIssues)
+        val resolvedName = trailFileManager.writeTrailToPdf(
+            trailSaved,
+            places,
+            listOfNotNull(lastMaintenance),
+            openIssues,
+            fileName = trailFileManager.getFilename(trailSaved)
+        )
+        trailManager.updateStaticResources(
+            trailId, StaticTrailDetails(
+            trailSaved.staticTrailDetails.pathGpx,
+            trailSaved.staticTrailDetails.pathKml,
+            resolvedName))
     }
 
 }
