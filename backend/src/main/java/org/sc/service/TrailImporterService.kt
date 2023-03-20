@@ -133,6 +133,7 @@ class TrailImporterService @Autowired constructor(
                 )
             )
             .mediaList(emptyList())
+            .staticTrailDetails(StaticTrailDetails("", "", ""))
             .fileDetails(
                 FileDetails(
                     importingTrail.fileDetailsDto.uploadedOn,

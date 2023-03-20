@@ -36,7 +36,7 @@ public class Trail {
 
     public static final String MEDIA = "media";
     public static final String STATUS = "status";
-    public static final String STATIC_TRAIL_DETAILS = "staticFileDetails";
+    public static final String STATIC_TRAIL_DETAILS = "staticTrailDetails";
     public static final String RECORD_DETAILS = "recordDetails";
     public static final String CYCLO = "cyclo";
 

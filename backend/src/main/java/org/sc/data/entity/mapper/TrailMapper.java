@@ -138,6 +138,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .mediaList(getLinkedMediaMapper(doc))
                 .cycloDetails(cycloMapper.mapToObject(doc.get(CYCLO, Document.class)))
                 .fileDetails(fileDetailsMapper.mapToObject(doc.get(RECORD_DETAILS, Document.class)))
+                .staticTrailDetails(staticTrailDetailsMapper.mapToObject(doc.get(STATIC_TRAIL_DETAILS, Document.class)))
                 .status(getStatus(doc))
                 .build();
     }

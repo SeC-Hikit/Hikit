@@ -65,7 +65,11 @@ class ResourceService @Autowired constructor(
             openIssues,
             fileName = trailFileManager.getFilename(trailSaved)
         )
-        trailManager.updateStaticResources(trailId, StaticTrailDetails(trailSaved.staticTrailDetails.pathGpx, trailSaved.staticTrailDetails.pathKml, resolvedName))
+        trailManager.updateStaticResources(
+            trailId, StaticTrailDetails(
+            trailSaved.staticTrailDetails.pathGpx,
+            trailSaved.staticTrailDetails.pathKml,
+            resolvedName))
     }
 
 }
