@@ -1,6 +1,5 @@
 package org.sc.service
 
-import com.sun.tools.xjc.reader.xmlschema.bindinfo.BIConversion.Static
 import org.sc.common.rest.TrailDto
 import org.sc.data.model.StaticTrailDetails
 import org.sc.manager.*
@@ -69,7 +68,8 @@ class ResourceService @Autowired constructor(
             trailId, StaticTrailDetails(
             trailSaved.staticTrailDetails.pathGpx,
             trailSaved.staticTrailDetails.pathKml,
-            resolvedName))
+            resolvedName)
+        )
     }
 
 }

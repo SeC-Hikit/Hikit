@@ -2,12 +2,10 @@ package org.sc.data.entity.mapper;
 
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.sc.data.model.FileDetails;
 import org.sc.data.model.StaticTrailDetails;
 import org.springframework.stereotype.Component;
 
 import static org.apache.logging.log4j.LogManager.getLogger;
-import static org.sc.data.model.FileDetails.*;
 import static org.sc.data.model.StaticTrailDetails.*;
 
 @Component
