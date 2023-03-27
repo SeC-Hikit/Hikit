@@ -21,7 +21,7 @@
         <springdoc-openapi-ui.version>1.5.2</springdoc-openapi-ui.version>
         <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
         <mockk.version>1.12.3</mockk.version>
-        <itextpdf.version>5.5.12</itextpdf.version>
+        <itextpdf.version>5.5.13.3</itextpdf.version>
         <jackson-databind-nullable.version>0.2.1</jackson-databind-nullable.version>
         <kotlinx-coroutines-core.version>1.6.0</kotlinx-coroutines-core.version>
     </properties>
