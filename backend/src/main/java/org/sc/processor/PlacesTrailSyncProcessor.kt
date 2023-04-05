@@ -22,7 +22,6 @@ class PlacesTrailSyncProcessor @Autowired constructor(private val trailManager: 
 
             val updatedPlace = placeManager.getById(it.placeId).first()
             updatedPlace.crossingTrailIds
-//                .filter { encounteredTrail -> encounteredTrail.equals(trailSaved.id) }
                     .forEach { encounteredTrailNotTrailSaved ->
                         run {
                             logger.info("Ensuring also place with Id '${it.placeId}' " +
