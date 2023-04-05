@@ -9,13 +9,17 @@ import org.sc.common.rest.*;
 import org.sc.common.rest.geo.GeoLineDto;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailIntersectionResponse;
+import org.sc.common.rest.response.TrailRawResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.GeoTrailController;
 import org.sc.controller.PlaceController;
 import org.sc.controller.TrailController;
+import org.sc.controller.TrailRawController;
 import org.sc.controller.admin.AdminPlaceController;
 import org.sc.controller.admin.AdminTrailController;
+import org.sc.controller.admin.AdminTrailImporterController;
 import org.sc.data.model.Coordinates2D;
+import org.sc.data.model.TrailClassification;
 import org.sc.data.model.TrailStatus;
 import org.sc.processor.TrailSimplifierLevel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +27,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
-import java.util.Date;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sc.common.rest.Status.*;
 import static org.sc.integration.TrailImportRestIntegrationTest.*;
+import static org.sc.integration.TrailWithMultipleIntersectionsRestIntegrationTest.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -56,6 +67,11 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
     private TrailController trailController;
     @Autowired
     private GeoTrailController geoTrailController;
+    @Autowired
+    private AdminTrailImporterController adminTrailImporterController;
+    @Autowired
+    private TrailRawController trailRawController;
+
 
     private TrailResponse importedTrailResponse;
     private TrailResponse crossingImportedTrailResponse;
@@ -124,6 +140,108 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
         crossingImportedTrail = crossingImportedTrailResponse.getContent().stream().findFirst().get();
     }
 
+
+    @Test
+    public void whenImportingTwoTrailsWithDynamicCrossways_bothShouldHaveCrosswaysInLocationLists() throws IOException {
+        // import trail raws
+        final var trail345Import = IntegrationUtils.importRawTrail(adminTrailImporterController,
+                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_345_IMPORT_FILENAME, this.getClass());
+        final var trail400_4Import = IntegrationUtils.importRawTrail(adminTrailImporterController,
+                TRAIL_INTERSECTION_FOLDER + File.separator + TRAIL_400_4BO_IMPORT_FILENAME, this.getClass());
+
+        // import
+        TrailRawResponse trail345RawResp = trailRawController.getById(trail345Import.getContent().stream().findFirst().get().getId());
+        assertThat(trail345RawResp.getContent().size()).isEqualTo(1);
+        TrailRawDto trailRawDto = trail345RawResp.getContent().get(0);
+
+        String startPlaceAndCrossway = "Rocca Corneta";
+        String endPlace = "Abetaia";
+
+        // 345aBO: goes from CROCEVIA -> MONTE BADUCCO
+        PlaceRefDto startPlaceCrocevia = new PlaceRefDto(startPlaceAndCrossway, new CoordinatesDto(44.134603, 11.122528, 1035.0),
+                "", Collections.emptyList(), false);
+        PlaceRefDto endPlaceMonteBaducco = new PlaceRefDto(endPlace, new CoordinatesDto(44.1389435, 11.1356351, 765.0),
+                "", Collections.emptyList(), false);
+
+        TrailImportDto trailImport345BODto = new TrailImportDto("345", "Any trail", "Any desc", 15,
+                startPlaceCrocevia,
+                endPlaceMonteBaducco,
+                Arrays.asList(startPlaceCrocevia, endPlaceMonteBaducco), Collections.emptyList(), TrailClassification.E, "Italy",
+                trailRawDto.getCoordinates(),
+                "CAI Bologna",
+                false, "Ovest", Collections.emptyList(),
+                new Date(), trailRawDto.getFileDetails(), TrailStatus.PUBLIC);
+
+
+        TrailResponse trail345Resp = importTrail(trailImport345BODto);
+        TrailDto trail345Imported = trail345Resp.getContent().get(0);
+
+        // Now import the next trail with crossways
+        TrailRawResponse trail400_4RawResp = trailRawController.getById(trail400_4Import.getContent().stream().findFirst().get().getId());
+        assertThat(trail400_4RawResp.getContent().size()).isEqualTo(1);
+        TrailRawDto trail400_4RawDto = trail400_4RawResp.getContent().get(0);
+
+        String startPlaceAndCrossway_2 = "Via Ronchidoso, Montese";
+        String endPlace_2 = "Via Montefiore, Castelluccio";
+
+        PlaceRefDto startPlaceCrocevia_2 = new PlaceRefDto(startPlaceAndCrossway_2, new CoordinatesDto(44.134603, 11.122528, 1035.0),
+                "", Collections.emptyList(), false);
+        PlaceRefDto endPlaceMonteBaducco_2 = new PlaceRefDto(endPlace_2, new CoordinatesDto(44.1389435, 11.1356351, 765.0),
+                "", Collections.emptyList(), false);
+
+        var trailIntersection =
+                geoTrailController.findTrailIntersection(
+                        new GeoLineDto(trail400_4RawDto.getCoordinates()
+                                .stream()
+                                .map(t -> new Coordinates2D(t.getLongitude(), t.getLatitude()))
+                                .collect(toList())),
+                        0, 10
+                );
+
+        assertThat(trailIntersection.getContent().get(0).getPoints().size()).isEqualTo(2);
+
+        var crossways = trailIntersection.getContent().stream().map(
+                it -> it.getPoints().stream().map(
+                        coord ->
+                                new PlaceRefDto("Crossway 345, 400/4 - " + Math.random(), coord,
+                                        "", singletonList(it.getTrail().getId()), true)).collect(toList())
+        ).flatMap(Collection::stream).collect(toList());
+
+        var placeList =
+                new ArrayList<PlaceRefDto>();
+        placeList.add(startPlaceCrocevia_2);
+        placeList.addAll(crossways);
+        placeList.add(endPlaceMonteBaducco_2);
+
+        var trailImport400_4Dto = new TrailImportDto("400/4", "Any trail", "Any desc", 15,
+                startPlaceCrocevia_2,
+                endPlaceMonteBaducco_2,
+                placeList, Collections.emptyList(), TrailClassification.E, "Italy",
+                trail400_4RawDto.getCoordinates(),
+                "CAI Bologna",
+                false, "Ovest", Collections.emptyList(),
+                new Date(), trail400_4RawDto.getFileDetails(), TrailStatus.PUBLIC);
+
+        TrailResponse trail400_4Resp = importTrail(trailImport400_4Dto);
+        TrailDto trail400_4Imported = trail400_4Resp.getContent().get(0);
+
+        // Reload previous trail
+        var trail345 = trailController.getById(trail345Imported.getId(), TrailSimplifierLevel.FULL)
+                .getContent().stream().findFirst().get();
+
+        var foundFirstCrossway = trail345.getLocations().stream()
+                .filter(it -> it.getCoordinates().equals(crossways.get(0).getCoordinates())
+                ).collect(toList());
+        var foundSecondCrossway = trail345.getLocations().stream()
+                .filter(it -> it.getCoordinates().equals(crossways.get(1).getCoordinates())
+                ).collect(toList());
+
+        assertThat(foundFirstCrossway.isEmpty()).isFalse();
+        assertThat(foundSecondCrossway.isEmpty()).isFalse();
+
+        // check locations order
+    }
+
     @Test
     public void shouldUpdateAutomaticCrossway() {
         final TrailResponse retrievedInitialTrailResp = trailController.getById(importedTrail.getId(), TrailSimplifierLevel.LOW);
@@ -138,11 +256,11 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
         assertThat(placeDto.getName()).isEqualTo(EXPECTED_NAME);
         assertThat((retrievedTrail)
                 .getLocations().stream().filter(it-> it.getPlaceId().equals(placeId))
-                .collect(Collectors.toList()).stream().findFirst().get().getName())
+                .collect(toList()).stream().findFirst().get().getName())
                 .isEqualTo(EXPECTED_NAME);
         assertThat((retrievedCrossingTrail)
                 .getLocations().stream()
-                .filter(it-> it.getPlaceId().equals(placeId)).collect(Collectors.toList()).stream().findFirst().get().getName())
+                .filter(it-> it.getPlaceId().equals(placeId)).collect(toList()).stream().findFirst().get().getName())
                 .isEqualTo(EXPECTED_NAME);
     }
 
@@ -206,9 +324,9 @@ public class CrosswayIntegrationTest extends ImportTrailIT {
         importedTrail = importedTrailResponse.getContent().stream().findFirst().get();
     }
 
-
-
-
-
-
+    private TrailResponse importTrail(TrailImportDto trailImportDto) {
+        TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
+        assertThat(trailResponse.getContent().size()).isEqualTo(1);
+        return trailResponse;
+    }
 }
