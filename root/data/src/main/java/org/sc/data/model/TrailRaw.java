@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TrailRaw {
 
-    public static String COLLECTION_NAME = "core.Raw";
+    public static final String COLLECTION_NAME = "core.Raw";
 
     public static String ID = Trail.ID;
     public static String NAME = Trail.NAME;

@@ -61,13 +61,13 @@ public class POIController {
                 poiManager.count(), Constants.ZERO, Constants.ONE);
     }
 
-    @Operation(summary = "Retrieve POI by trail code")
-    @GetMapping("/trail/{code}")
-    public PoiResponse getByTrail(@PathVariable String code,
+    @Operation(summary = "Retrieve POI by trail id")
+    @GetMapping("/trail/{id}")
+    public PoiResponse getByTrail(@PathVariable String id,
                                   @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
                                   @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit) {
         controllerPagination.checkSkipLim(skip, limit);
-        return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByTrailId(code, skip, limit),
+        return poiResponseHelper.constructResponse(emptySet(), poiManager.getPoiByTrailId(id, skip, limit),
                 poiManager.count(), skip, limit);
     }
 
