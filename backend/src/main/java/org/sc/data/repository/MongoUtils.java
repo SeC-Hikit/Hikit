@@ -74,6 +74,10 @@ public class MongoUtils {
         return Pattern.compile(".*" + name + ".*", Pattern.CASE_INSENSITIVE);
     }
 
+    public static Pattern getAnyStartingPattern(final String name) {
+        return Pattern.compile(name + ".*", Pattern.CASE_INSENSITIVE);
+    }
+
     private static Document getRealmFilter(final String realm, final String dbRealmStructureSelector) {
         return new Document(dbRealmStructureSelector, realm);
     }

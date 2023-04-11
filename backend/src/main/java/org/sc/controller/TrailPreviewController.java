@@ -96,7 +96,7 @@ public class TrailPreviewController {
                         trailManager.countFindingByCode(realm, code, isDraftTrailVisible), skip, limit);
     }
 
-    @Operation(summary = "Retrieve trails by location name or trail name")
+    @Operation(summary = "Retrieve trails by location name, code or trail name")
     @GetMapping("/find/name/{name}")
     public TrailPreviewResponse findByLocationOrTrailNames(
             @PathVariable(required = false) String name,

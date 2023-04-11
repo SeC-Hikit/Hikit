@@ -300,7 +300,7 @@ public class TrailDAO {
                                 .collect(Collectors.toList()))));
     }
 
-    public List<TrailPreview> searchByLocationOrTrailName(
+    public List<TrailPreview> searchByLocationOrTrailNameCode(
             String name,
             String realm,
             boolean isDraftTrailVisible,
@@ -312,7 +312,8 @@ public class TrailDAO {
         final Bson aOrder = Aggregates.sort(new Document(Trail.CODE, 1));
         final Document filter = new Document($_OR, Arrays.asList(
                 new Document("locations.name", getAnyMatchingPattern(name)),
-                new Document("name", getAnyMatchingPattern(name))
+                new Document("name", getAnyStartingPattern(name)),
+                new Document("code", getAnyStartingPattern(name))
         ));
         final AggregateIterable<Document> foundTrails =
                 collection.aggregate(

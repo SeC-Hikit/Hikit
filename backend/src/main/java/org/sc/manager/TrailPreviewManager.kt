@@ -45,7 +45,7 @@ class TrailPreviewManager @Autowired constructor(
             trailDAO.findPreviewsByCode(code, skip, limit, realm, isDraftTrailVisible).map { trailPreviewMapper.map(it) }
 
     fun searchByLocationNameOrName(name: String, realm: String, isDraftTrailVisible: Boolean, skip: Int, limit: Int): List<TrailPreviewDto> {
-        return trailDAO.searchByLocationOrTrailName(name, realm,
+        return trailDAO.searchByLocationOrTrailNameCode(name, realm,
                 isDraftTrailVisible, skip, limit)
                 .map { trailPreviewMapper.map(it) }
     }
