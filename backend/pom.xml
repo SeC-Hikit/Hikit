@@ -14,6 +14,7 @@
     <version>2.0-SNAPSHOT</version>
 
     <properties>
+        <start-class>org.sc.Main</start-class>
         <java.version>1.8</java.version>
         <jackson-module-kotlin.version>2.11.2</jackson-module-kotlin.version>
         <mongo-java-driver.version>3.12.8</mongo-java-driver.version>
@@ -360,7 +361,7 @@
                         <configuration>
                             <classifier>spring-boot</classifier>
                             <mainClass>
-                                org.hikit.er.Main
+                                org.sc.Main
                             </mainClass>
                         </configuration>
                     </plugin>
