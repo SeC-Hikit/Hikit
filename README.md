@@ -14,12 +14,12 @@ First, clone and build commons: https://github.com/SeC-Hikit/Hikit-Common.
 Then, after cloning this repo, simply run `mvn install -f root/pom.xml -P microservice-binding`.
 
 ### Deployment Build
-To include all dependencies in a portable uber-jar, run `mvn install -P package,microservice-binding`.
+To include all dependencies in a portable uber-jar, run `mvn install -f root/pom.xml -P package,microservice-binding`.
 
 ### Testing
 There are two main types of tests written to address the Hikit QA: unit and integration tests.
 The latter requires the [dependencies](#Dependencies) to be up and running as it runs application operations connecting to them.
-Once the dependencies are made available, simply execute `mvn install -P it, microservice-binding`. 
+Once the dependencies are made available, simply execute `mvn install -f root/pom.xml -P it, microservice-binding`. 
 
 ## Run
 
