@@ -8,12 +8,14 @@ import org.sc.adapter.microservice.ErtLocalityMicroserviceAdapter
 import org.sc.common.rest.CoordinatesDto
 import org.sc.data.validator.GeneralValidator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@ConditionalOnExpression("\${microservice.ert.localities.enabled:false}")
 @RequestMapping(ErtLocalitiesController.PREFIX)
 class ErtLocalitiesController @Autowired constructor(
     private val ertLocalityMicroserviceAdapter: ErtLocalityMicroserviceAdapter,
