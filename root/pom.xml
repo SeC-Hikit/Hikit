@@ -14,8 +14,8 @@
     <groupId>org.sec</groupId>
     <artifactId>root</artifactId>
     <version>2.0-SNAPSHOT</version>
-    <name>Sentieri e Cartografia</name>
-    <description>Sentieri e Cartografia root pom</description>
+    <name>Hikit</name>
+    <description>Hikit root pom</description>
     <packaging>pom</packaging>
 
     <modules>
