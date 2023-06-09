@@ -169,7 +169,12 @@ public class TrailDAO {
                         Arrays.asList(
                                 match(filter),
                                 match(statusFilter),
-                                project, aLimit, aSkip, aOrder)));
+                                project,
+                                aOrder,
+                                aSkip,
+                                aLimit)
+                )
+        );
     }
 
     public List<TrailPreview> findPreviewsByCode(final String code, final int skip,
@@ -186,7 +191,8 @@ public class TrailDAO {
                 Arrays.asList(match(codeFilter),
                         match(statusFilter),
                         match(realmFilter),
-                        project, aLimit, aSkip, aOrder)));
+                        project, aOrder,
+                        aLimit, aSkip)));
     }
 
     public List<TrailPreview> trailPreviewById(final String id) {
@@ -321,7 +327,9 @@ public class TrailDAO {
                                 match(filter),
                                 match(statusFilter),
                                 match(realmFilter),
-                                aLimit, aSkip, aOrder));
+                                aOrder,
+                                aLimit,
+                                aSkip));
         return toTrailsPreviewList(foundTrails);
     }
 
