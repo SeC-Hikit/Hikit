@@ -25,8 +25,8 @@ class AdminAnnouncementController @Autowired constructor(
             retrieved, retrieved.size.toLong(),0,1)
     }
 
-    @Operation(summary = "Update the provided announcement")
     @PostMapping
+    @Operation(summary = "Update the provided announcement")
     fun update(@RequestBody request: AnnouncementDto): AnnouncementResponse {
         val retrieved = announcementService.update(request)
         return announcementResponseHelper.constructResponse(emptySet(),

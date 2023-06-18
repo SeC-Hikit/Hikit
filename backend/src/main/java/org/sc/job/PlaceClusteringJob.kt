@@ -23,7 +23,7 @@ class PlaceClusteringJob @Autowired constructor(
         const val batchSize = 2
     }
 
-    @Scheduled(fixedRate = 180_000, initialDelay = 180_000)
+    @Scheduled(cron = "0 0 12 * * ?") // at 12.00 every day
     fun ensurePlacesConsistency() {
         logger.info("Starting clustering job for non-dynamic places in instance")
         val countPlaces = placeManager.countByRealm(appProperties.instanceRealm, false)
