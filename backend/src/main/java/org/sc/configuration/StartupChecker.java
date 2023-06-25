@@ -45,6 +45,7 @@ public class StartupChecker {
         configureDir(fileManagementUtil.getTrailGpxStoragePath(), "Could not create trail/gpx folder");
         configureDir(fileManagementUtil.getTrailKmlStoragePath(), "Could not create trail/kml folder");
         configureDir(fileManagementUtil.getTrailPdfStoragePath(), "Could not create trail/pdf folder");
+        configureDir(fileManagementUtil.getTrailCsvStoragePath(), "Could not create trail/csv folder");
 
         instanceRegister.register(
                 appProperties.getInstanceId(),

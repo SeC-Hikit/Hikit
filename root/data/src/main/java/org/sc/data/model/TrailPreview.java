@@ -19,5 +19,6 @@ public class TrailPreview {
     private PlaceRef finalPos;
     private FileDetails fileDetails;
     private boolean bikeData;
+    private StatsTrailMetadata statsTrailMetadata;
     private TrailStatus trailStatus;
 }

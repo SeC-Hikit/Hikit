@@ -6,6 +6,7 @@ import org.sc.data.mapper.TrailMapper
 import org.sc.data.model.TrailStatus
 import org.sc.manager.*
 import org.sc.processor.PlacesTrailSyncProcessor
+import org.sc.processor.TrailExporter
 import org.sc.processor.TrailSimplifierLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -34,12 +35,6 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
         poiManager.deleteTrailReference(deletedTrail.id)
         logger.info("Purge deleting trail $trailId")
         return deletedTrails
-    }
-
-    private fun ensureDeletionForDynamicEmptyCrossway(deletedTrail: TrailDto) {
-        deletedTrail.locations.forEach {
-            if (it.isDynamicCrossway) placesTrailSyncProcessor.ensureEmptyDynamicCrosswayDeletion(it.placeId)
-        }
     }
 
     fun switchToStatus(trailDto: TrailDto): List<TrailDto> {
@@ -92,6 +87,12 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
             trailToUpdate: TrailDto
     ) = trailDto.status == TrailStatus.DRAFT &&
             trailToUpdate.status == TrailStatus.PUBLIC
+
+    private fun ensureDeletionForDynamicEmptyCrossway(deletedTrail: TrailDto) {
+        deletedTrail.locations.forEach {
+            if (it.isDynamicCrossway) placesTrailSyncProcessor.ensureEmptyDynamicCrosswayDeletion(it.placeId)
+        }
+    }
 
 
 }

@@ -22,5 +22,6 @@ public class TrailPreviewDto {
     private List<PlaceRefDto> locations;
     private boolean bikeData;
     private TrailStatus trailStatus;
+    private StatsTrailMetadataDto statsTrailMetadata;
     private FileDetailsDto fileDetails;
 }

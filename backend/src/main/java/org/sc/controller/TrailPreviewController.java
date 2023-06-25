@@ -47,7 +47,7 @@ public class TrailPreviewController {
                                                  @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
         controllerPagination.checkSkipLim(skip, limit);
         return trailPreviewResponseHelper
-                .constructResponse(emptySet(), trailManager.getPreviews(skip, limit, realm, isDraftTrailVisible),
+                .constructResponse(emptySet(), trailPreviewService.getTrailPreviews(skip, limit, realm, isDraftTrailVisible),
                         trailManager.countPreviewByRealm(realm, isDraftTrailVisible), skip, limit);
     }
 
