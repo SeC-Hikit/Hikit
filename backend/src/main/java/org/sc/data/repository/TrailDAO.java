@@ -406,6 +406,7 @@ public class TrailDAO {
                 include(Trail.RECORD_DETAILS),
                 include(Trail.LAST_UPDATE_DATE),
                 include(Trail.CODE),
+                include(Trail.STATS_METADATA),
                 computed(Trail.START_POS,
                         new Document("$arrayElemAt",
                                 Arrays.asList(DOLLAR + Trail.LOCATIONS, 0))),

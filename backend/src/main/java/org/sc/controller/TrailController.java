@@ -36,7 +36,6 @@ public class TrailController {
     protected final TrailImporterService trailManagementManager;
     protected final AuthFacade authenticationProvider;
     private final ControllerPagination controllerPagination;
-    private final TrailService trailService;
 
     @Autowired
     public TrailController(final TrailManager trailManager,
@@ -44,15 +43,13 @@ public class TrailController {
                            final TrailResponseHelper trailResponseHelper,
                            final TrailImporterService trailManagementManager,
                            final AuthFacade authFacade,
-                           final ControllerPagination controllerPagination,
-                           final TrailService trailService) {
+                           final ControllerPagination controllerPagination) {
         this.trailManager = trailManager;
         this.generalValidator = generalValidator;
         this.trailResponseHelper = trailResponseHelper;
         this.trailManagementManager = trailManagementManager;
         this.authenticationProvider = authFacade;
         this.controllerPagination = controllerPagination;
-        this.trailService = trailService;
     }
 
 

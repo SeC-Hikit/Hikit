@@ -4,6 +4,7 @@ import org.sc.common.rest.TrailMappingDto
 import org.sc.common.rest.TrailPreviewDto
 import org.sc.data.mapper.TrailMappingMapper
 import org.sc.data.mapper.TrailPreviewMapper
+import org.sc.data.model.TrailPreview
 import org.sc.data.repository.TrailDAO
 import org.sc.data.repository.TrailRawDAO
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,9 +32,9 @@ class TrailPreviewManager @Autowired constructor(
             limit: Int,
             realm: String,
             isDraftTrailVisible: Boolean
-    ): List<TrailPreviewDto> =
+    ): List<TrailPreview> =
         trailDAO.getTrailPreviews(skip, limit, realm, isDraftTrailVisible)
-                .map { trailPreviewMapper.map(it) }
+
 
     fun findPreviewsByCode(
             code: String,
@@ -44,7 +45,7 @@ class TrailPreviewManager @Autowired constructor(
     ): List<TrailPreviewDto> =
             trailDAO.findPreviewsByCode(code, skip, limit, realm, isDraftTrailVisible).map { trailPreviewMapper.map(it) }
 
-    fun searchByLocationNameOrName(name: String, realm: String, isDraftTrailVisible: Boolean, skip: Int, limit: Int): List<TrailPreviewDto> {
+    fun searchByLocationNameOrCode(name: String, realm: String, isDraftTrailVisible: Boolean, skip: Int, limit: Int): List<TrailPreviewDto> {
         return trailDAO.searchByLocationOrTrailNameCode(name, realm,
                 isDraftTrailVisible, skip, limit)
                 .map { trailPreviewMapper.map(it) }

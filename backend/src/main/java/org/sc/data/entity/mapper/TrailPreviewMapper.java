@@ -31,6 +31,8 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
     @Override
     public TrailPreview mapToObject(Document doc) {
         LOGGER.trace("mapToObject Document: {} ", doc);
+        final StatsTrailMetadata metadata = TrailMapperUtil.getMetadata(doc.get(Trail.STATS_METADATA, Document.class));
+
         return new TrailPreview(
                 doc.getString(Trail.ID),
                 doc.getString(Trail.CODE),
@@ -41,6 +43,7 @@ public class TrailPreviewMapper implements Mapper<TrailPreview> {
                 fileDetailsMapper.mapToObject(doc.get(Trail.RECORD_DETAILS, Document.class)),
                 !cycloMapper.mapToObject(doc.get(Trail.CYCLO, Document.class)).getCycloClassification()
                         .equals(CycloClassification.UNCLASSIFIED),
+                metadata,
                 getStatus(doc));
     }
 

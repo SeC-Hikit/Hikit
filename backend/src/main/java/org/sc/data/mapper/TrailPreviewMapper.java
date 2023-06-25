@@ -23,5 +23,6 @@ public interface TrailPreviewMapper {
     @Mapping(target = "startPos.coordinates", source = "startPos")
     @Mapping(target = "finalPos.coordinates", source = "finalPos")
     @Mapping(target = "finalPos.placeId", ignore = true)
+    @Mapping(target = "statsTrailMetadata", ignore = true)
     TrailPreviewDto map(TrailRaw trail);
 }

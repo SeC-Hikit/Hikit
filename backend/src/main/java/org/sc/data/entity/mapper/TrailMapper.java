@@ -61,7 +61,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .variant(doc.getBoolean(VARIANT))
                 .locations(getLocations(doc))
                 .classification(getClassification(doc))
-                .statsTrailMetadata(getMetadata(doc.get(STATS_METADATA, Document.class)))
+                .statsTrailMetadata(TrailMapperUtil.getMetadata(doc.get(STATS_METADATA, Document.class)))
                 .country(doc.getString(COUNTRY))
                 .coordinates(getCoordinatesWithAltitude(doc, TrailSimplifierLevel.FULL))
                 .lastUpdate(getLastUpdateDate(doc))
@@ -128,7 +128,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .variant(doc.getBoolean(VARIANT))
                 .locations(getLocations(doc))
                 .classification(getClassification(doc))
-                .statsTrailMetadata(getMetadata(doc.get(STATS_METADATA, Document.class)))
+                .statsTrailMetadata(TrailMapperUtil.getMetadata(doc.get(STATS_METADATA, Document.class)))
                 .country(doc.getString(COUNTRY))
                 .coordinates(getCoordinatesWithAltitude(doc, precisionLevel))
                 .lastUpdate(getLastUpdateDate(doc))
@@ -154,15 +154,6 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
 
     protected GeoLineString getGeoLine(final Document doc) {
         return geoLineMapper.mapToObject(doc);
-    }
-
-    protected StatsTrailMetadata getMetadata(final Document doc) {
-        return new StatsTrailMetadata(doc.getDouble(StatsTrailMetadata.TOTAL_RISE),
-                doc.getDouble(StatsTrailMetadata.TOTAL_FALL),
-                doc.getDouble(StatsTrailMetadata.ETA),
-                doc.getDouble(StatsTrailMetadata.LENGTH),
-                doc.getDouble(StatsTrailMetadata.HIGHEST_PLACE),
-                doc.getDouble(StatsTrailMetadata.LOWEST_PLACE));
     }
 
     protected List<LinkedMedia> getLinkedMediaMapper(Document doc) {
