@@ -22,8 +22,10 @@ class TrailIntersectionManager @Autowired constructor(
 
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
         val outerGeoSquare = GeoCalculator.getOuterSquareForCoordinates(geoLineDto.coordinates, 0.001)
-        val foundTrailsInGeoSquare = trailDAO.findTrailsWithinGeoSquare(outerGeoSquare, skip, limit,
-            TrailSimplifierLevel.FULL, true)
+        val foundTrailsInGeoSquare = trailDAO.findTrailsWithinGeoSquare(
+            outerGeoSquare, skip, limit,
+            TrailSimplifierLevel.FULL, true, emptyList()
+        )
 
         return foundTrailsInGeoSquare.filter {
             GeoCalculator.areSegmentsIntersecting(

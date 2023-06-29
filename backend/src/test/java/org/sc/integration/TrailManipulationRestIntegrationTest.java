@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.geo.GeoLineDto;
+import org.sc.common.rest.geo.LocateDto;
 import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.PlaceResponse;
 import org.sc.common.rest.response.TrailIntersectionResponse;
@@ -132,8 +133,11 @@ public class TrailManipulationRestIntegrationTest {
                 .getContent().size()).isEqualTo(1);
         trailController.getById(trailResponse.getContent().get(0).getId(), LEVEL);
 
-        TrailResponse geoLocateTrail = geoTrailController.geoLocateTrail(new RectangleDto(new Coordinates2D(11.15928920022217, 44.13998529867459),
-                new Coordinates2D(11.156454500448556, 44.138395199458394)), LEVEL, true);
+        TrailResponse geoLocateTrail = geoTrailController.geoLocateTrail(
+                new LocateDto(new RectangleDto(
+                        new Coordinates2D(11.15928920022217, 44.13998529867459),
+                        new Coordinates2D(11.156454500448556, 44.138395199458394)),
+                        Collections.emptyList()), LEVEL, true);
 
         assertThat(geoLocateTrail.getContent()).asList().isNotEmpty();
         assertThat(geoLocateTrail.getContent().get(0).getId()).isEqualTo(trailResponse.getContent().get(0).getId());
