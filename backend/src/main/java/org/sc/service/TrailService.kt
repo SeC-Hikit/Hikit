@@ -2,11 +2,11 @@ package org.sc.service
 
 import org.sc.common.rest.PlaceRefDto
 import org.sc.common.rest.TrailDto
+import org.sc.common.rest.geo.LocateDto
 import org.sc.data.mapper.TrailMapper
 import org.sc.data.model.TrailStatus
 import org.sc.manager.*
 import org.sc.processor.PlacesTrailSyncProcessor
-import org.sc.processor.TrailExporter
 import org.sc.processor.TrailSimplifierLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -61,8 +61,10 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
         return trailManager.update(trailMapper.map(trailToUpdate))
     }
 
-    fun unlinkPlace(trailId: String,
-                    placeRef: PlaceRefDto): List<TrailDto> {
+    fun unlinkPlace(
+        trailId: String,
+        placeRef: PlaceRefDto
+    ): List<TrailDto> {
         val unLinkPlace = trailManager.unlinkPlace(trailId, placeRef)
         if (placeRef.isDynamicCrossway)
             placesTrailSyncProcessor.updateDynamicCrosswayNameWithTrailsPassingCodes(placeRef.placeId)
@@ -83,8 +85,8 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
     }
 
     private fun isSwitchingToDraft(
-            trailDto: TrailDto,
-            trailToUpdate: TrailDto
+        trailDto: TrailDto,
+        trailToUpdate: TrailDto
     ) = trailDto.status == TrailStatus.DRAFT &&
             trailToUpdate.status == TrailStatus.PUBLIC
 
@@ -93,6 +95,19 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
             if (it.isDynamicCrossway) placesTrailSyncProcessor.ensureEmptyDynamicCrosswayDeletion(it.placeId)
         }
     }
+
+    fun findTrailsWithinSearchArea(
+        locateRequest: LocateDto,
+        level: TrailSimplifierLevel,
+        isDraftTrailVisible: Boolean
+    ): List<TrailDto> =
+        trailManager.findTrailsWithinRectangle(
+            locateRequest.rectangleDto.bottomLeft,
+            locateRequest.rectangleDto.topRight,
+            locateRequest.trailIdsNotToLoad,
+            level, isDraftTrailVisible
+        )
+
 
 
 }

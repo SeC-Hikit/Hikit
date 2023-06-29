@@ -15,7 +15,6 @@ public class MongoUtils {
     public static final int ONE = ASCENDING_ORDER;
 
     public static final String NO_FILTERING_TOKEN = "*";
-    public static final String EXISTS_PARAM = "$exists";
     public static final String DOLLAR = "$";
     public static final String DOT = ".";
     public static final String $_OR = "$or";
@@ -24,6 +23,7 @@ public class MongoUtils {
     public static final String $_GEOMETRY = "$geometry";
     public static final String $_SET = "$set";
     public static final String $_IN = "$in";
+    public static final String $_NIN = "$nin";
     public static final String NEAR_OPERATOR = "near";
     public static final String LIMIT = "$limit";
     public static final String SKIP = "$skip";

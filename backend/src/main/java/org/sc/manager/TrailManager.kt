@@ -6,6 +6,7 @@ import org.sc.data.entity.mapper.StaticTrailDetailsMapper
 import org.sc.data.geo.CoordinatesRectangle
 import org.sc.data.geo.TrailPlacesAligner
 import org.sc.data.mapper.*
+import org.sc.data.model.Coordinates2D
 import org.sc.data.model.Place
 import org.sc.data.model.StaticTrailDetails
 import org.sc.data.model.Trail
@@ -152,12 +153,17 @@ class TrailManager @Autowired constructor(
     }
 
     fun findTrailsWithinRectangle(
-            rectangleDto: RectangleDto,
+            bottomLeft: Coordinates2D,
+            topRight: Coordinates2D,
+            excludedTrails: List<String>,
             level: TrailSimplifierLevel,
             isDraftTrailVisible: Boolean
     ): List<TrailDto> {
         val trails = trailDAO.findTrailsWithinGeoSquare(
-                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level, isDraftTrailVisible)
+            CoordinatesRectangle(bottomLeft, topRight), 0, 100,
+            level, isDraftTrailVisible,
+            excludedTrails
+        )
         return trails.map { trailMapper.map(it) }
     }
 

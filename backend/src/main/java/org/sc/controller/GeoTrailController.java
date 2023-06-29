@@ -6,6 +6,7 @@ import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailIntersectionDto;
 import org.sc.common.rest.TrailMappingDto;
 import org.sc.common.rest.geo.GeoLineDto;
+import org.sc.common.rest.geo.LocateDto;
 import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.TrailIntersectionResponse;
 import org.sc.common.rest.response.TrailMappingResponse;
@@ -18,6 +19,7 @@ import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.TrailIntersectionManager;
 import org.sc.manager.TrailManager;
 import org.sc.processor.TrailSimplifierLevel;
+import org.sc.service.TrailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,7 @@ public class GeoTrailController {
     private final GeneralValidator generalValidator;
     private final ControllerPagination controllerPagination;
     private final TrailPreviewResponseHelper trailPreviewRespHelper;
+    private final TrailService trailService;
 
     @Autowired
     public GeoTrailController(final TrailManager trailManager,
@@ -50,7 +53,8 @@ public class GeoTrailController {
                               final TrailIntersectionHelper trailIntersectionHelper,
                               final TrailResponseHelper trailResponseHelper,
                               final TrailPreviewResponseHelper trailPreviewResponseHelper,
-                              final ControllerPagination controllerPagination) {
+                              final ControllerPagination controllerPagination,
+                              final TrailService trailService) {
         this.trailManager = trailManager;
         this.trailIntersectionManager = trailIntersectionManager;
         this.trailIntersectionHelper = trailIntersectionHelper;
@@ -58,6 +62,7 @@ public class GeoTrailController {
         this.trailResponseHelper = trailResponseHelper;
         this.controllerPagination = controllerPagination;
         this.trailPreviewRespHelper = trailPreviewResponseHelper;
+        this.trailService = trailService;
     }
 
     @Operation(summary = "Find all existing trail intersections for a given multi-coordinate line")
@@ -75,16 +80,17 @@ public class GeoTrailController {
         return trailIntersectionHelper.constructResponse(emptySet(), intersections, intersections.size(), skip, limit);
     }
 
-    @Operation(summary = "Find geo-located trails within a defined rectangle")
+    @Operation(summary = "Find geo-located trails within a defined rectangle area")
     @PostMapping("/locate")
-    public TrailResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto,
+    public TrailResponse geoLocateTrail(@RequestBody LocateDto locationRequest,
                                         @RequestParam(defaultValue = "MEDIUM") TrailSimplifierLevel level,
                                         @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
 
-        final Set<String> errors = generalValidator.validate(rectangleDto);
+        final RectangleDto area = locationRequest.getRectangleDto();
+        final Set<String> errors = generalValidator.validate(area);
 
         if (errors.isEmpty()) {
-            final List<TrailDto> foundTrails = trailManager.findTrailsWithinRectangle(rectangleDto, level, isDraftTrailVisible);
+            final List<TrailDto> foundTrails = trailService.findTrailsWithinSearchArea(locationRequest, level, isDraftTrailVisible);
             return trailResponseHelper.constructResponse(emptySet(), foundTrails,
                     foundTrails.size(), Constants.ZERO, Constants.ONE);
         }
