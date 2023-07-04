@@ -12,6 +12,99 @@
     }
   ],
   "paths": {
+    "/municipality": {
+      "post": {
+        "tags": [
+          "municipality-controller"
+        ],
+        "summary": "Find within which municipalities a line is contained",
+        "operationId": "findMunicipalitiesForLine",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LineRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MunicipalityResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/municipality/{id}": {
+      "get": {
+        "tags": [
+          "municipality-controller"
+        ],
+        "summary": "Retrieve a municipality by ID",
+        "operationId": "getById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MunicipalityResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/municipality/name/{name}": {
+      "get": {
+        "tags": [
+          "municipality-controller"
+        ],
+        "summary": "Retrieve a municipality by name",
+        "operationId": "getByName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MunicipalityResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/locality": {
       "get": {
         "tags": [
@@ -85,6 +178,30 @@
   },
   "components": {
     "schemas": {
+      "Coordinates": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "LineRequest": {
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Coordinates"
+            }
+          }
+        }
+      },
       "CityRefDto": {
         "type": "object",
         "properties": {
@@ -189,6 +306,86 @@
           }
         }
       },
+      "MunicipalityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoordinatesDto"
+            }
+          },
+          "image": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageDto"
+            }
+          },
+          "relatingCity": {
+            "$ref": "#/components/schemas/CityRefDto"
+          },
+          "recordDetails": {
+            "$ref": "#/components/schemas/RecordDetailsDto"
+          },
+          "importedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "geometry": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoordinatesDto"
+            }
+          }
+        }
+      },
+      "MunicipalityResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "ERROR"
+            ]
+          },
+          "messages": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MunicipalityDto"
+            }
+          }
+        }
+      },
+      "RecordDetailsDto": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "LocalityDto": {
         "type": "object",
         "properties": {
@@ -263,19 +460,6 @@
             "items": {
               "$ref": "#/components/schemas/LocalityDto"
             }
-          }
-        }
-      },
-      "RecordDetailsDto": {
-        "type": "object",
-        "properties": {
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
           }
         }
       }
