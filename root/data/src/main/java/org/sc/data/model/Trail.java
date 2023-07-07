@@ -41,6 +41,7 @@ public class Trail {
     public static final String CYCLO = "cyclo";
 
     public static final String LAST_UPDATE_DATE = "lastUpdate";
+    public static final String MUNICIPALITIES = "municipalities";
 
     private String id;
     private String name;
@@ -67,5 +68,6 @@ public class Trail {
     private StaticTrailDetails staticTrailDetails;
     private FileDetails fileDetails;
     private CycloDetails cycloDetails;
+    private List<MunicipalityDetails> municipalities;
 }
 

@@ -38,7 +38,8 @@ class TrailImporterService @Autowired constructor(
     private val trailRawDao: TrailRawDAO,
     private val trailMapper: TrailMapper,
     private val authFacade: AuthFacade,
-    private val trailSimplifier: TrailSimplifier
+    private val trailSimplifier: TrailSimplifier,
+    private val trailService: TrailService
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -49,8 +50,9 @@ class TrailImporterService @Autowired constructor(
             .first()
 
     fun save(importingTrail: TrailImportDto): List<TrailDto> {
-        logger.info("Enforcing point calculation...")
+        logger.info("Importing Trail with code:${importingTrail.code}...")
 
+        logger.debug("Enforcing point calculation...")
         val coordinates = importingTrail.coordinates.map {
             TrailCoordinates(
                 it.latitude, it.longitude, it.altitude,
@@ -58,7 +60,7 @@ class TrailImporterService @Autowired constructor(
             )
         }
 
-        logger.info("Calculating stats...")
+        logger.debug("Calculating stats...")
         val statsTrailMetadata = StatsTrailMetadata(
             trailsStatsCalculator.calculateTotRise(coordinates),
             trailsStatsCalculator.calculateTotFall(coordinates),
@@ -84,20 +86,23 @@ class TrailImporterService @Autowired constructor(
             authHelper
         )
 
-        logger.info("Mapping retrieved places to refs")
+        logger.debug("Mapping retrieved places to refs")
         val locationsSet = getDistinctPlacesRefs(placesLocations, trailCrosswaysFromLocations)
 
-        logger.info("Reordering places refs in memory...")
+        logger.debug("Reordering places refs in memory...")
         val placesInOrder: List<PlaceRef> =
             trailPlacesAligner.sortLocationsByTrailCoordinates(
                 coordinates,
                 locationsSet.toList()
             )
 
-        logger.info("Simplifying trail data...")
+        logger.debug("Simplifying trail data...")
         val simplifyLowQuality = trailSimplifier.simplify(coordinates, TrailSimplifierLevel.LOW)
         val simplifyMediumQuality = trailSimplifier.simplify(coordinates, TrailSimplifierLevel.MEDIUM)
         val simplifyHighQuality = trailSimplifier.simplify(coordinates, TrailSimplifierLevel.HIGH)
+
+        logger.info("Now looking for municipalities...")
+        val findMunicipalityForTrailCoordinates = trailService.findMunicipalityForTrailCoordinates(coordinates)
 
         logger.info("Saving the trail...")
         val trail = Trail.builder()
@@ -134,6 +139,7 @@ class TrailImporterService @Autowired constructor(
             )
             .mediaList(emptyList())
             .staticTrailDetails(StaticTrailDetails("", "", ""))
+            .municipalities(findMunicipalityForTrailCoordinates)
             .fileDetails(
                 FileDetails(
                     importingTrail.fileDetailsDto.uploadedOn,
@@ -212,7 +218,7 @@ class TrailImporterService @Autowired constructor(
     }
 
     fun mappingMatchingTrail(targetTrailRaw: TrailRawDto): List<TrailMappingDto> {
-        return trailsManager.getByMatchingStartEndPoint(targetTrailRaw.startPos, targetTrailRaw.finalPos);
+        return trailsManager.getByMatchingStartEndPoint(targetTrailRaw.startPos, targetTrailRaw.finalPos)
     }
 
     fun updateResourcesForTrail(targetTrail: TrailDto, targetPlaces: List<PlaceDto>, fileName: String) =

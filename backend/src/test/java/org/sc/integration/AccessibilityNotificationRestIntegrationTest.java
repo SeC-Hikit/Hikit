@@ -1,19 +1,22 @@
 package org.sc.integration;
 
 import org.hikit.common.datasource.Datasource;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sc.common.rest.*;
 import org.sc.common.rest.response.AccessibilityResponse;
 import org.sc.common.rest.response.TrailResponse;
 import org.sc.controller.AccessibilityNotificationController;
 import org.sc.controller.admin.AdminAccessibilityIssueController;
-import org.sc.controller.admin.AdminTrailController;
 import org.sc.controller.admin.AdminPlaceController;
+import org.sc.controller.admin.AdminTrailController;
 import org.sc.data.model.AccessibilityNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
@@ -22,8 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@ActiveProfiles("test")
+@SpringBootTest()
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class AccessibilityNotificationRestIntegrationTest {
 
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";

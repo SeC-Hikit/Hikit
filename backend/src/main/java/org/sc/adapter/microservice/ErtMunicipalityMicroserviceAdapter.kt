@@ -17,7 +17,7 @@ class ErtMunicipalityMicroserviceAdapter @Autowired constructor(
 ) : MunicipalityApi {
     private val logger = LoggerFactory.getLogger(ErtMunicipalityMicroserviceAdapter::class.java)
 
-    @Value("\${microservice.ert.localities:http://localhost:8991/api/v1/municipality}")
+    @Value("\${microservice.ert.municipality:http://localhost:8991/api/v1/municipality}")
     lateinit var endpointUrl: String
 
     override fun getByName(

@@ -15,7 +15,6 @@ public class MongoUtils {
     public static final int ONE = ASCENDING_ORDER;
 
     public static final String NO_FILTERING_TOKEN = "*";
-    public static final String EXISTS_PARAM = "$exists";
     public static final String DOLLAR = "$";
     public static final String DOT = ".";
     public static final String $_OR = "$or";
@@ -46,9 +45,8 @@ public class MongoUtils {
     public static final String GEO_TYPE = "type";
     public static final String GEO_POINT = "Point";
     public static final String GEO_POLYGON = "Polygon";
-    public static final String GEO_LINE_STRING = "LineString";
     public static final String GEO_COORDINATES = "coordinates";
-
+    public static String $_AND = "$and";
     public static final Object DESCENDING_ORDER = -1;
     public static final FindOneAndReplaceOptions UPSERT_OPTIONS = new FindOneAndReplaceOptions().upsert(true)
             .returnDocument(ReturnDocument.AFTER);
@@ -72,6 +70,10 @@ public class MongoUtils {
 
     public static Pattern getAnyMatchingPattern(final String name) {
         return Pattern.compile(".*" + name + ".*", Pattern.CASE_INSENSITIVE);
+    }
+
+    public static Pattern getCaseInsensitive(final String name) {
+        return Pattern.compile(name, Pattern.CASE_INSENSITIVE);
     }
 
     public static Pattern getAnyStartingPattern(final String name) {

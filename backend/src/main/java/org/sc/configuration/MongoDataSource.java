@@ -30,8 +30,10 @@ public class MongoDataSource implements Datasource {
         this.databaseName = appProperties.getDbName();
         LOGGER.info(format("Setting connection to DB '%s'. Connection String: '%s'",
                 databaseName, appProperties.getMongoDbUri()));
-        final CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        final CodecRegistry pojoCodecRegistry =
+                fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(false)
+                        .register("org.sc.data.model").build()));
         final MongoClientSettings mongoSettings = MongoClientSettings.
                 builder()
                 .codecRegistry(pojoCodecRegistry)

@@ -96,6 +96,19 @@ public class TrailPreviewController {
                         trailManager.countFindingByCode(realm, code, isDraftTrailVisible), skip, limit);
     }
 
+    @Operation(summary = "Find trail preview by municipality")
+    @GetMapping("/find/municipality/{municipality}")
+    public TrailPreviewResponse findByMunicipality(@PathVariable String municipality,
+                                                @RequestParam(required = false, defaultValue = MIN_DOCS_ON_READ) int skip,
+                                                @RequestParam(required = false, defaultValue = MAX_DOCS_ON_READ) int limit,
+                                                @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm,
+                                                @RequestParam(defaultValue = "false") boolean isDraftTrailVisible) {
+        controllerPagination.checkSkipLim(skip, limit);
+        return trailPreviewResponseHelper
+                .constructResponse(emptySet(), trailManager.findPreviewsByMunicipality(municipality, skip, limit, realm, isDraftTrailVisible),
+                        trailManager.countFindingByMunicipality(realm, municipality, isDraftTrailVisible), skip, limit);
+    }
+
     @Operation(summary = "Retrieve trails by location name, code or trail name")
     @GetMapping("/find/name/{name}")
     public TrailPreviewResponse findByLocationOrTrailNames(

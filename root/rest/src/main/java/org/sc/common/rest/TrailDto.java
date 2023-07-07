@@ -29,4 +29,5 @@ public class TrailDto {
     private FileDetailsDto fileDetails;
     private StaticTrailDetailsDto staticTrailDetails;
     private CycloDetailsDto cycloDetails;
+    private List<MunicipalityDetailsDto> municipalities;
 }

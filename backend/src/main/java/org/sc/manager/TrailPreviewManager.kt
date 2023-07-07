@@ -19,36 +19,58 @@ class TrailPreviewManager @Autowired constructor(
 ) {
 
     fun getMappings(
-            skip: Int,
-            limit: Int,
-            realm: String,
-            isDraftTrailVisible: Boolean
+        skip: Int,
+        limit: Int,
+        realm: String,
+        isDraftTrailVisible: Boolean
     ): List<TrailMappingDto> =
-            trailDAO.getTrailsMappings(skip, limit, realm, isDraftTrailVisible)
-                    .map { trailMappingMapper.map(it) }
+        trailDAO.getTrailsMappings(skip, limit, realm, isDraftTrailVisible)
+            .map { trailMappingMapper.map(it) }
 
     fun getPreviews(
-            skip: Int,
-            limit: Int,
-            realm: String,
-            isDraftTrailVisible: Boolean
+        skip: Int,
+        limit: Int,
+        realm: String,
+        isDraftTrailVisible: Boolean
     ): List<TrailPreview> =
         trailDAO.getTrailPreviews(skip, limit, realm, isDraftTrailVisible)
 
+    fun findPreviewsByMunicipality(
+        municipality: String,
+        skip: Int,
+        limit: Int,
+        realm: String,
+        isDraftTrailVisible: Boolean
+    ):
+            List<TrailPreviewDto> {
+        return trailDAO.findByMunicipality(
+            municipality, realm,
+            isDraftTrailVisible, skip, limit
+        )
+            .map { trailPreviewMapper.map(it) }
+    }
 
     fun findPreviewsByCode(
-            code: String,
-            skip: Int,
-            limit: Int,
-            realm: String,
-            isDraftTrailVisible: Boolean
+        code: String,
+        skip: Int,
+        limit: Int,
+        realm: String,
+        isDraftTrailVisible: Boolean
     ): List<TrailPreviewDto> =
-            trailDAO.findPreviewsByCode(code, skip, limit, realm, isDraftTrailVisible).map { trailPreviewMapper.map(it) }
+        trailDAO.findPreviewsByCode(code, skip, limit, realm, isDraftTrailVisible).map { trailPreviewMapper.map(it) }
 
-    fun searchByLocationNameOrCode(name: String, realm: String, isDraftTrailVisible: Boolean, skip: Int, limit: Int): List<TrailPreviewDto> {
-        return trailDAO.searchByLocationOrTrailNameCode(name, realm,
-                isDraftTrailVisible, skip, limit)
-                .map { trailPreviewMapper.map(it) }
+    fun searchByLocationNameOrCode(
+        name: String,
+        realm: String,
+        isDraftTrailVisible: Boolean,
+        skip: Int,
+        limit: Int
+    ): List<TrailPreviewDto> {
+        return trailDAO.searchByLocationOrTrailNameCode(
+            name, realm,
+            isDraftTrailVisible, skip, limit
+        )
+            .map { trailPreviewMapper.map(it) }
     }
 
     fun getRawPreviews(skip: Int, limit: Int, realm: String): List<TrailPreviewDto> =
@@ -59,10 +81,16 @@ class TrailPreviewManager @Autowired constructor(
 
     fun countPreview(): Long = trailDAO.countTrail()
     fun countPreviewByRealm(realm: String, isDraftTrailVisible: Boolean): Long =
-            trailDAO.countTrailByRealm(realm, isDraftTrailVisible)
+        trailDAO.countTrailByRealm(realm, isDraftTrailVisible)
+
     fun countFindingByCode(realm: String, code: String, isDraftTrailVisible: Boolean): Long =
-            trailDAO.countTotalByCode(realm, code, isDraftTrailVisible)
+        trailDAO.countTotalByCode(realm, code, isDraftTrailVisible)
+
     fun countFindingByNameOrLocationName(name: String, realm: String, isDraftTrailVisible: Boolean): Long =
-            trailDAO.countFindingByNameOrLocationName(name, realm, isDraftTrailVisible)
-    fun countRaw(realm : String): Long = trailRawDAO.count(realm)
+        trailDAO.countFindingByNameOrLocationName(name, realm, isDraftTrailVisible)
+
+    fun countRaw(realm: String): Long = trailRawDAO.count(realm)
+    fun countFindingByMunicipality(realm: String, municipality: String, isDraftTrailVisible: Boolean): Long {
+        return trailDAO.countByMunicipality(municipality, realm, isDraftTrailVisible)
+    }
 }

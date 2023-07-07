@@ -6,10 +6,7 @@ import org.sc.data.entity.mapper.StaticTrailDetailsMapper
 import org.sc.data.geo.CoordinatesRectangle
 import org.sc.data.geo.TrailPlacesAligner
 import org.sc.data.mapper.*
-import org.sc.data.model.Place
-import org.sc.data.model.StaticTrailDetails
-import org.sc.data.model.Trail
-import org.sc.data.model.TrailPreview
+import org.sc.data.model.*
 import org.sc.data.repository.PlaceDAO
 import org.sc.data.repository.TrailDAO
 import org.sc.processor.TrailSimplifierLevel
@@ -178,6 +175,14 @@ class TrailManager @Autowired constructor(
 
     fun updateStaticResources(id: String, resources: StaticTrailDetails) {
         trailDAO.updateStaticResources(id, staticTrailDetailsMapper.mapToDocument(resources))
+    }
+
+    fun getTrailsWithoutMunicipalities() : List<Trail> {
+        return trailDAO.trailWoMunicipialities
+    }
+
+    fun getMunicipality() : List<MunicipalityDetails> {
+        return trailDAO.distinctMunicipality()
     }
 
 }
