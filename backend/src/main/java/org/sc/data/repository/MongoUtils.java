@@ -23,6 +23,7 @@ public class MongoUtils {
     public static final String $_GEOMETRY = "$geometry";
     public static final String $_SET = "$set";
     public static final String $_IN = "$in";
+    public static final String $_NIN = "$nin";
     public static final String NEAR_OPERATOR = "near";
     public static final String LIMIT = "$limit";
     public static final String SKIP = "$skip";

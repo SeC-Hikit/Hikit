@@ -247,10 +247,11 @@ public class TrailDAO {
             final int skip,
             final int limit,
             final TrailSimplifierLevel level,
-            final boolean isDraftTrailVisible) {
+            final boolean isDraftTrailVisible,
+            final List<String> excludedTrails) {
         final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
         final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
-        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit, resolvedTopLeftVertex, resolvedBottomRightVertex, isDraftTrailVisible);
+        final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit, resolvedTopLeftVertex, resolvedBottomRightVertex, isDraftTrailVisible, excludedTrails);
         LOGGER.trace("findTrailWithinGeoSquare geoSquare: {}, skip: {}, limit: {}, level: {}, resolvedTopLeftVertex: {}, resolvedBottomRightVertex: {}",
                 geoSquare, skip, limit, level, resolvedTopLeftVertex, resolvedBottomRightVertex);
         return toTrailsList(foundTrails, level);
@@ -262,7 +263,7 @@ public class TrailDAO {
         final List<Double> resolvedTopLeftVertex = resolveVertex(geoSquare.getBottomLeft(), geoSquare.getTopRight());
         final List<Double> resolvedBottomRightVertex = resolveVertex(geoSquare.getTopRight(), geoSquare.getBottomLeft());
         final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit,
-                resolvedTopLeftVertex, resolvedBottomRightVertex, true)
+                resolvedTopLeftVertex, resolvedBottomRightVertex, true, Collections.emptyList())
                 .projection(new Document(Trail.ID, ONE).append(Trail.CODE, ONE).append(Trail.NAME, ONE));
         return toTrailsMappingList(foundTrails);
     }
@@ -394,11 +395,13 @@ public class TrailDAO {
                                                            final int limit,
                                                            final List<Double> resolvedTopLeftVertex,
                                                            final List<Double> resolvedBottomRightVertex,
-                                                           final boolean isDraftTrailVisible) {
+                                                           final boolean isDraftTrailVisible,
+                                                           final List<String> excludedTrails) {
         final List<String> inStatusFilter = statusFilterHelper.getInFilter(isDraftTrailVisible);
         return collection.find(
                 new Document(Trail.STATUS,
                         new Document($_IN, inStatusFilter))
+                        .append(Trail.ID, new Document($_NIN, excludedTrails))
                         .append(Trail.GEO_LINE,
                                 new Document($_GEO_INTERSECT,
                                         new Document($_GEOMETRY, new Document(GEO_TYPE, GEO_POLYGON)

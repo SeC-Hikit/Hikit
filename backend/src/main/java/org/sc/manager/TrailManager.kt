@@ -149,12 +149,17 @@ class TrailManager @Autowired constructor(
     }
 
     fun findTrailsWithinRectangle(
-            rectangleDto: RectangleDto,
+            bottomLeft: Coordinates2D,
+            topRight: Coordinates2D,
+            excludedTrails: List<String>,
             level: TrailSimplifierLevel,
             isDraftTrailVisible: Boolean
     ): List<TrailDto> {
         val trails = trailDAO.findTrailsWithinGeoSquare(
-                CoordinatesRectangle(rectangleDto.bottomLeft, rectangleDto.topRight), 0, 100, level, isDraftTrailVisible)
+            CoordinatesRectangle(bottomLeft, topRight), 0, 100,
+            level, isDraftTrailVisible,
+            excludedTrails
+        )
         return trails.map { trailMapper.map(it) }
     }
 
