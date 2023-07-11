@@ -14,7 +14,7 @@ class MunicipalityToTrailImportJob @Autowired constructor(
 ): PlaceImportJob {
     private val logger = LogManager.getLogger(MunicipalityToTrailImportJob::class.java)
 
-    @Scheduled(cron = "0 */2 0-23 * * *")
+    @Scheduled(cron = "0 0 1 * * ?")
     override fun import() {
         logger.info("Starting job to classify trails within municipalities administrations")
         val trailsWithoutMunicipalities = trailManager.getTrailsWithoutMunicipalities()

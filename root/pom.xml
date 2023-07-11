@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.12</version>
+        <version>2.4.0</version>
         <relativePath/>
     </parent>
 
@@ -85,7 +85,7 @@
         <jpx.version>2.3.0</jpx.version>
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <junit.version>4.13.1</junit.version>
-        <spring-boot.version>2.5.12</spring-boot.version>
+        <spring-boot.version>2.4.0</spring-boot.version>
         <log4j2.version>2.15.0</log4j2.version>
         <spring-boot-mail.version>2.7.0</spring-boot-mail.version>
         <org.mapstruct.version>1.5.1.Final</org.mapstruct.version>

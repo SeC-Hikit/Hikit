@@ -32,7 +32,7 @@ public class MongoDataSource implements Datasource {
                 databaseName, appProperties.getMongoDbUri()));
         final CodecRegistry pojoCodecRegistry =
                 fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(false)
+                fromProviders(PojoCodecProvider.builder().automatic(true)
                         .register("org.sc.data.model").build()));
         final MongoClientSettings mongoSettings = MongoClientSettings.
                 builder()
