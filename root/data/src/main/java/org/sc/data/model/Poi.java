@@ -3,7 +3,6 @@ package org.sc.data.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -12,6 +11,9 @@ public class Poi {
     public static final String COLLECTION_NAME = "core.Poi";
 
     public static final String OBJECT_ID = "_id";
+    public static final String EXTERNAL_ID = "externalId";
+    public static final String EXTERNAL_SYSTEM_NAME = "externalSystemName";
+
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
     public static final String TAGS = "tags";
@@ -35,6 +37,8 @@ public class Poi {
     private CoordinatesWithAltitude coordinates;
     private List<String> externalResources;
     private List<KeyVal> keyVal;
+    private String externalId;
+    private String externalSystemName;
     private RecordDetails recordDetails;
 
 }

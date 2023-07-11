@@ -47,6 +47,8 @@ public class PoiMapper implements Mapper<Poi> {
                 getCoordinatesWithAltitude(document),
                 document.getList(Poi.EXTERNAL_RESOURCES, String.class),
                 getKeyVals(document),
+                document.getString(Poi.EXTERNAL_ID),
+                document.getString(Poi.EXTERNAL_SYSTEM_NAME),
                 recordDetailsMapper.mapToObject(document.get(Poi.RECORD_DETAILS, Document.class)));
     }
 
@@ -65,6 +67,8 @@ public class PoiMapper implements Mapper<Poi> {
                 .append(Poi.TRAIL_COORDINATES, coordinatesMapper.mapToDocument(poi.getCoordinates()))
                 .append(Poi.EXTERNAL_RESOURCES, poi.getExternalResources())
                 .append(Poi.RECORD_DETAILS, poi.getRecordDetails())
+                .append(Poi.EXTERNAL_ID, poi.getExternalId())
+                .append(Poi.EXTERNAL_SYSTEM_NAME, poi.getExternalSystemName())
                 .append(Poi.KEY_VAL, poi.getKeyVal().stream()
                         .map(keyValMapper::mapToDocument)
                         .collect(toList()));

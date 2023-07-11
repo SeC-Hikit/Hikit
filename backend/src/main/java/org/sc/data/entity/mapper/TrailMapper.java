@@ -26,6 +26,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     protected final CycloMapper cycloMapper;
     protected final FileDetailsMapper fileDetailsMapper;
     private final StaticTrailDetailsMapper staticTrailDetailsMapper;
+    private final MunicipalityDetailsMapper municipalityDetailsMapper;
 
 
     @Autowired
@@ -36,7 +37,8 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                        final LinkedMediaMapper linkedMediaMapper,
                        final CycloMapper cycloMapper,
                        final FileDetailsMapper fileDetailsMapper,
-                       final StaticTrailDetailsMapper staticTrailDetailsMapper) {
+                       final StaticTrailDetailsMapper staticTrailDetailsMapper,
+                       final MunicipalityDetailsMapper municipalityDetailsMapper) {
         this.placeMapper = placeMapper;
         this.trailCoordinatesMapper = trailCoordinatesMapper;
         this.geoLineMapper = geoLineMapper;
@@ -45,6 +47,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
         this.cycloMapper = cycloMapper;
         this.fileDetailsMapper = fileDetailsMapper;
         this.staticTrailDetailsMapper = staticTrailDetailsMapper;
+        this.municipalityDetailsMapper = municipalityDetailsMapper;
     }
 
     @Override
@@ -73,6 +76,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .fileDetails(fileDetailsMapper.mapToObject(doc.get(RECORD_DETAILS, Document.class)))
                 .staticTrailDetails(staticTrailDetailsMapper.mapToObject(doc.get(STATIC_TRAIL_DETAILS, Document.class)))
                 .status(getStatus(doc))
+                .municipalities(getMunicipalities(doc))
                 .build();
     }
 
@@ -110,6 +114,8 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .append(CYCLO, cycloMapper.mapToDocument(object.getCycloDetails()))
                 .append(RECORD_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
                 .append(STATIC_TRAIL_DETAILS, staticTrailDetailsMapper.mapToDocument(object.getStaticTrailDetails()))
+                .append(MUNICIPALITIES, object.getMunicipalities()
+                        .stream().map(municipalityDetailsMapper::mapToDocument))
                 .append(STATUS, object.getStatus().toString());
     }
 
@@ -140,6 +146,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .fileDetails(fileDetailsMapper.mapToObject(doc.get(RECORD_DETAILS, Document.class)))
                 .staticTrailDetails(staticTrailDetailsMapper.mapToObject(doc.get(STATIC_TRAIL_DETAILS, Document.class)))
                 .status(getStatus(doc))
+                .municipalities(getMunicipalities(doc))
                 .build();
     }
 
@@ -157,9 +164,16 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
     }
 
     protected List<LinkedMedia> getLinkedMediaMapper(Document doc) {
-        List<Document> list = doc.getList(Poi.MEDIA, Document.class);
+        List<Document> list = doc.getList(Trail.MEDIA, Document.class);
         return list.stream().map(linkedMediaMapper::mapToObject).collect(toList());
     }
+
+    protected List<MunicipalityDetails> getMunicipalities(Document doc) {
+        List<Document> list = doc.getList(MUNICIPALITIES, Document.class);
+        return list.stream().map(municipalityDetailsMapper::mapToObject).collect(toList());
+    }
+
+
 
     private List<TrailCoordinates> getCoordinatesWithAltitude(final Document doc,
                                                               final TrailSimplifierLevel level) {

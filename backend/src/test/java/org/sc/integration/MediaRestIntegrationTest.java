@@ -140,7 +140,7 @@ public class MediaRestIntegrationTest  {
                 EXPECTED_MICRO_TYPES,
                 EXPECTED_MEDIA_IDS, Collections.singletonList(trailId),
                 EXPECTED_COORDINATE,
-                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null));
+                EXPECTED_EXTERNAL_RESOURCES, EXPECTED_KEY_VALS, null, "", ""));
 
         List<KeyValueDto> expectedKeyVal = Collections.singletonList(savedKeyValue);
         adminPoiController.addMediaToPoi(EXPECTED_ID, new LinkedMediaDto(mediaID, aDescription, expectedKeyVal));

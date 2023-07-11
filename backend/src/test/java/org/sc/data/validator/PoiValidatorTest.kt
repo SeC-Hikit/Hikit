@@ -9,12 +9,10 @@ import org.sc.common.rest.KeyValueDto
 import org.sc.common.rest.PoiDto
 import org.sc.data.model.PoiMacroType
 import org.sc.data.validator.auth.AuthRealmValidator
-import java.lang.String.format
 import org.sc.data.validator.poi.PoiValidator
 import org.sc.data.validator.trail.TrailExistenceValidator
 import org.sc.manager.PoiManager
-import org.sc.manager.TrailManager
-import java.util.*
+import java.lang.String.format
 
 internal class PoiValidatorTest {
 
@@ -44,7 +42,7 @@ internal class PoiValidatorTest {
         val anyTrailRequestPosMock = mockkClass(CoordinatesDto::class)
         val poiDto = PoiDto(
                 null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-                anyTrailRequestPosMock, listOf(), emptyList(), null
+                anyTrailRequestPosMock, listOf(), emptyList(), null, "", ""
         )
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
         assertTrue(
@@ -63,7 +61,7 @@ internal class PoiValidatorTest {
         val anyTrailRequestPosMock = mockkClass(CoordinatesDto::class)
         val poiDto = PoiDto(
                 null, "", ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-                anyTrailRequestPosMock, listOf(), emptyList(), null
+                anyTrailRequestPosMock, listOf(), emptyList(), null, "", ""
         )
         every { trailCoordsValidatorMock.validate(anyTrailRequestPosMock) } returns setOf()
         assertTrue(
@@ -84,7 +82,7 @@ internal class PoiValidatorTest {
         val keyValValue = KeyValueDto("", "abc")
         val poiDto = PoiDto(
                 null, ANY, ANY, listOf(), PoiMacroType.BELVEDERE, listOf(), listOf(), listOf(),
-                anyTrailRequestPosMock, listOf(), listOf(keyValValue), null
+                anyTrailRequestPosMock, listOf(), listOf(keyValValue), null, "", ""
         )
         val expectedValue = format(
                 ValidatorUtils.emptyFieldError,

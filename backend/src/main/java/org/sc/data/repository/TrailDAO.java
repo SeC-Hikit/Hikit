@@ -1,8 +1,6 @@
 package org.sc.data.repository;
 
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -31,6 +29,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.*;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoUtils.*;
 
@@ -55,6 +54,7 @@ public class TrailDAO {
     private final StatusFilterHelper statusFilterHelper;
     private final SelectiveArgumentMapper<Trail> trailLevelMapper;
     private final Mapper<String> trailCodeMapper;
+    private final MunicipalityDetailsMapper municipalityDetailsMapper;
     private final Mapper<TrailPreview> trailPreviewMapper;
     private final Mapper<TrailMapping> trailMappingMapper;
     private final LinkedMediaMapper linkedMediaMapper;
@@ -72,7 +72,8 @@ public class TrailDAO {
                     final TrailPreviewMapper trailPreviewMapper,
                     final PlaceRefMapper placeRefMapper,
                     final CycloMapper cycloMapper,
-                    final TrailCodeMapper trailCodeMapper) {
+                    final TrailCodeMapper trailCodeMapper,
+                    final MunicipalityDetailsMapper municipalityDetailsMapper) {
         this.collection = dataSource.getDB().getCollection(Trail.COLLECTION_NAME);
 
         this.trailMapper = trailMapper;
@@ -84,6 +85,7 @@ public class TrailDAO {
         this.placeRefMapper = placeRefMapper;
         this.cycloMapper = cycloMapper;
         this.trailCodeMapper = trailCodeMapper;
+        this.municipalityDetailsMapper = municipalityDetailsMapper;
     }
 
     public List<Trail> getTrails(int skip, int limit,
@@ -96,6 +98,18 @@ public class TrailDAO {
                                         statusFilterHelper.getInFilterBson(isDraftTrailVisible)))
                         .skip(skip).limit(limit),
                 trailSimplifierLevel);
+    }
+
+    @NotNull
+    public List<TrailPreview> findByMunicipality(@NotNull String municipality, @NotNull String realm,
+                                                 boolean isDraftTrailVisible, int skip, int limit) {
+        final Document realmFilter = getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        return toTrailsPreviewList(collection.find(
+                realmFilter
+                        .append("municipalities.city", getCaseInsensitive(municipality))
+                        .append(Trail.STATUS,
+                                statusFilterHelper.getInFilterBson(isDraftTrailVisible))
+        ).skip(skip).limit(limit));
     }
 
     public List<TrailMapping> getTrailsMappings(int skip, int limit,
@@ -195,6 +209,10 @@ public class TrailDAO {
                         aLimit, aSkip)));
     }
 
+    public List<MunicipalityDetails> distinctMunicipality() {
+        return toMunicipalityList(collection.distinct("municipalities", Document.class));
+    }
+
     public List<TrailPreview> trailPreviewById(final String id) {
         final Bson project = getTrailPreviewProjection();
         final Bson equalId = match(eq(Trail.ID, id));
@@ -247,7 +265,7 @@ public class TrailDAO {
         final FindIterable<Document> foundTrails = foundTrailsWithinSquare(geoSquare, skip, limit,
                 resolvedTopLeftVertex, resolvedBottomRightVertex, true, Collections.emptyList())
                 .projection(new Document(Trail.ID, ONE).append(Trail.CODE, ONE).append(Trail.NAME, ONE));
-        return toTrailMappingList(foundTrails);
+        return toTrailsMappingList(foundTrails);
     }
 
     public List<Trail> findTrailPerfectlyContainedInGeoSquare(
@@ -350,9 +368,9 @@ public class TrailDAO {
                 .map(trailPreviewMapper::mapToObject).collect(toList());
     }
 
-    private List<TrailMapping> toTrailMappingList(FindIterable<Document> documents) {
+    private List<MunicipalityDetails> toMunicipalityList(final Iterable<Document> documents) {
         return StreamSupport.stream(documents.spliterator(), false)
-                .map(trailMappingMapper::mapToObject).collect(toList());
+                .map(municipalityDetailsMapper::mapToObject).collect(toList());
     }
 
     private List<TrailMapping> toTrailsMappingList(FindIterable<Document> documents) {
@@ -439,6 +457,9 @@ public class TrailDAO {
                                 .append(Trail.STATUS, trail.getStatus().toString())
                                 .append(Trail.CYCLO, cycloMapper.mapToDocument(trail.getCycloDetails()))
                                 .append(Trail.NAME, trail.getName())
+                                .append(Trail.MUNICIPALITIES,
+                                        trail.getMunicipalities().stream()
+                                                .map(municipalityDetailsMapper::mapToDocument).collect(toSet()))
                                 .append(Trail.TERRITORIAL_CARED_BY, trail.getTerritorialDivision())
                 ));
         return getTrailById(trail.getId(), TrailSimplifierLevel.LOW);
@@ -519,4 +540,23 @@ public class TrailDAO {
                         new Document(Trail.STATIC_TRAIL_DETAILS, mapToDocument)
                 ));
     }
+
+    public List<Trail> getTrailWoMunicipialities() {
+        return toTrailsList(
+                collection.find(
+                        new Document(Trail.MUNICIPALITIES,
+                                Collections.emptyList())),
+                TrailSimplifierLevel.LOW);
+    }
+
+    public long countByMunicipality(@NotNull String municipality, @NotNull String realm, boolean draftTrailVisible) {
+        final Document realmFilter = getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR);
+        final Bson statusFilter = getBsonAggregateStatusInFilter(draftTrailVisible);
+        return collection.countDocuments(
+                new Document($_AND, Arrays.asList(
+                        new Document("municipalities.city", getCaseInsensitive(municipality)),
+                        realmFilter, statusFilter
+                )));
+    }
+
 }

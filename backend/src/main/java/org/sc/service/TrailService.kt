@@ -4,7 +4,10 @@ import org.sc.common.rest.PlaceRefDto
 import org.sc.common.rest.TrailDto
 import org.sc.common.rest.geo.LocateDto
 import org.sc.data.mapper.TrailMapper
+import org.sc.data.model.Coordinates
+import org.sc.data.model.MunicipalityDetails
 import org.sc.data.model.TrailStatus
+import org.sc.job.import.MunicipalityForTrailsImporter
 import org.sc.manager.*
 import org.sc.processor.PlacesTrailSyncProcessor
 import org.sc.processor.TrailSimplifierLevel
@@ -13,13 +16,16 @@ import org.springframework.stereotype.Service
 import java.util.logging.Logger
 
 @Service
-class TrailService @Autowired constructor(private val trailManager: TrailManager,
-                                          private val maintenanceManager: MaintenanceManager,
-                                          private val accessibilityNotificationManager: AccessibilityNotificationManager,
-                                          private val placeManager: PlaceManager,
-                                          private val placesTrailSyncProcessor: PlacesTrailSyncProcessor,
-                                          private val poiManager: PoiManager,
-                                          private val trailMapper: TrailMapper) {
+class TrailService @Autowired constructor(
+    private val trailManager: TrailManager,
+    private val maintenanceManager: MaintenanceManager,
+    private val accessibilityNotificationManager: AccessibilityNotificationManager,
+    private val placeManager: PlaceManager,
+    private val placesTrailSyncProcessor: PlacesTrailSyncProcessor,
+    private val poiManager: PoiManager,
+    private val trailMapper: TrailMapper,
+    private val municipalityForTrailsImporter: MunicipalityForTrailsImporter
+) {
 
     private val logger = Logger.getLogger(TrailManager::class.java.name)
 
@@ -107,6 +113,9 @@ class TrailService @Autowired constructor(private val trailManager: TrailManager
             locateRequest.trailIdsNotToLoad,
             level, isDraftTrailVisible
         )
+
+    fun findMunicipalityForTrailCoordinates(coordinates: List<Coordinates>) : List<MunicipalityDetails> =
+        municipalityForTrailsImporter.findMunicipalities(coordinates)
 
 
 
