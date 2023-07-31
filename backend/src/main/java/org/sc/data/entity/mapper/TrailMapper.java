@@ -115,7 +115,7 @@ public class TrailMapper implements Mapper<Trail>, SelectiveArgumentMapper<Trail
                 .append(RECORD_DETAILS, fileDetailsMapper.mapToDocument(object.getFileDetails()))
                 .append(STATIC_TRAIL_DETAILS, staticTrailDetailsMapper.mapToDocument(object.getStaticTrailDetails()))
                 .append(MUNICIPALITIES, object.getMunicipalities()
-                        .stream().map(municipalityDetailsMapper::mapToDocument))
+                        .stream().map(municipalityDetailsMapper::mapToDocument).collect(toList()))
                 .append(STATUS, object.getStatus().toString());
     }
 
