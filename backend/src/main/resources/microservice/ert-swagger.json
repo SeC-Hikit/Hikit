@@ -174,6 +174,37 @@
           }
         }
       }
+    },
+    "/locality/{istatCode}": {
+      "get": {
+        "tags": [
+          "locality-controller"
+        ],
+        "summary": "Retrieve localities by ISTAT code",
+        "operationId": "getByIstat",
+        "parameters": [
+          {
+            "name": "istatCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalityResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

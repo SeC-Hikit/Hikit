@@ -19,6 +19,27 @@ class ErtLocalityMicroserviceAdapter @Autowired constructor(
     @Value("\${microservice.ert.localities:http://localhost:8991/api/v1/locality}")
     lateinit var endpointUrl: String
 
+    override fun getByIstat(
+        istat: String
+    ): ResponseEntity<LocalityResponse>? {
+        return try {
+            restTemplateBuilder.build()
+                .getForEntity(
+                    endpointUrl.plus(
+                        "/${istat}"
+                    ),
+                    org.openapitools.model.LocalityResponse::class.java
+                )
+        } catch (restClientException: RestClientException) {
+            logger.error(
+                "The remote ERT microservice endpoint locality responded with an error",
+                restClientException.cause
+            )
+            null
+        }
+    }
+
+
     override fun get(
         latitude: Double?,
         longitude: Double?,
