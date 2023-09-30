@@ -49,14 +49,13 @@ public class AccessibilityNotificationRestIntegrationTest {
     @Autowired
     private AdminTrailController trailController;
 
-    private TrailResponse trailResponse;
     private String id;
 
     @Before
     public void setUp() {
         IntegrationUtils.clearCollections(dataSource);
         TrailImportDto trailImportDto = TrailImportRestIntegrationTest.createThreePointsTrailImport(placeController);
-        trailResponse = trailController.importTrail(trailImportDto);
+        TrailResponse trailResponse = trailController.importTrail(trailImportDto);
         id = trailResponse.getContent().get(0).getId();
         Date reportDate = new Date();
         adminAccessibilityIssueController.create(
@@ -83,7 +82,9 @@ public class AccessibilityNotificationRestIntegrationTest {
 
         Date expectedResolutionDate = new Date();
         AccessibilityResponse resolvedResponse = adminAccessibilityIssueController.resolveNotification(
-                new AccessibilityNotificationResolutionDto(firstOccurence.getId(), ANY_SOLVED_DESC, expectedResolutionDate)
+                new AccessibilityNotificationResolutionDto(firstOccurence.getId(),
+                        ANY_SOLVED_DESC, expectedResolutionDate),
+                NO_FILTERING_TOKEN
         );
         assertThat(resolvedResponse.getContent().size()).isEqualTo(1);
         AccessibilityNotificationDto firstSolvedOccurence = resolvedResponse.getContent().get(0);

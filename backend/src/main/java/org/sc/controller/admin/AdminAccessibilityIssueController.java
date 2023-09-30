@@ -17,6 +17,8 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Collections.*;
+import static org.sc.controller.Constants.ONE;
+import static org.sc.controller.Constants.ZERO;
 import static org.sc.controller.admin.Constants.PREFIX_ACCESSIBILITY;
 import static org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN;
 
@@ -38,20 +40,22 @@ public class AdminAccessibilityIssueController {
 
     @Operation(summary = "Resolve accessibility notification")
     @PostMapping("/resolve")
+
     public AccessibilityResponse resolveNotification(
-            @RequestBody AccessibilityNotificationResolutionDto accessibilityRes) {
+            @RequestBody AccessibilityNotificationResolutionDto accessibilityRes,
+            @RequestParam(required = false, defaultValue = NO_FILTERING_TOKEN) String realm) {
         final List<AccessibilityNotificationDto> resolved =
                 accessibilityNotManager.resolve(accessibilityRes);
         if (resolved.isEmpty()) {
             accessibilityIssueResponseHelper.constructResponse(
                     singleton(format("No accessibility notification was found with id '%s'",
                             accessibilityRes.getId())), emptyList(),
-                    accessibilityNotManager.count(NO_FILTERING_TOKEN),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    accessibilityNotManager.count(realm),
+                    ZERO, ONE);
         }
         return accessibilityIssueResponseHelper.constructResponse(emptySet(), resolved,
-                accessibilityNotManager.countSolved(),
-                org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                accessibilityNotManager.countSolved(realm),
+                ZERO, ONE);
     }
 
     @Operation(summary = "Add accessibility notification")
@@ -63,13 +67,13 @@ public class AdminAccessibilityIssueController {
         if (!errors.isEmpty()) {
             return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(),
                     accessibilityNotManager.count(NO_FILTERING_TOKEN),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
         List<AccessibilityNotificationDto> created = accessibilityNotManager.create(accessibilityNotificationCreation);
         return accessibilityIssueResponseHelper
                 .constructResponse(errors, created,
                         accessibilityNotManager.count(NO_FILTERING_TOKEN),
-                        org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                        ZERO, ONE);
     }
 
     @Operation(summary = "Remove accessibility notification")
@@ -80,13 +84,13 @@ public class AdminAccessibilityIssueController {
         if(!errors.isEmpty()) {
             return accessibilityIssueResponseHelper.constructResponse(errors, emptyList(),
                     accessibilityNotManager.count(NO_FILTERING_TOKEN),
-                    org.sc.controller.Constants.ZERO, org.sc.controller.Constants.ONE);
+                    ZERO, ONE);
         }
         final List<AccessibilityNotificationDto> isDeleted =
                 accessibilityNotManager.delete(id);
         return accessibilityIssueResponseHelper
                 .constructResponse(emptySet(), isDeleted, accessibilityNotManager.count(NO_FILTERING_TOKEN),
-                        org.sc.controller.Constants.ZERO,
-                        org.sc.controller.Constants.ONE);
+                        ZERO,
+                        ONE);
     }
 }
