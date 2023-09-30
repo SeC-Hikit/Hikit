@@ -64,7 +64,8 @@ public class MongoUtils {
         );
     }
 
-    public static Document getConditionalEqFilter(final String realm, final String dbRealmStructureSelector) {
+    public static Document getConditionalEqFilter(final String realm,
+                                                  final String dbRealmStructureSelector) {
         return realm.equals(NO_FILTERING_TOKEN) ? getNoFilter(dbRealmStructureSelector) :
                 getRealmFilter(realm, dbRealmStructureSelector);
     }

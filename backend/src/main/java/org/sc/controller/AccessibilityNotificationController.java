@@ -64,7 +64,7 @@ public class AccessibilityNotificationController {
         controllerPagination.checkSkipLim(skip, limit);
         return accessibilityIssueResponseHelper.constructResponse(emptySet(),
                 accessibilityNotManager.getSolved(skip, limit, realm),
-                accessibilityNotManager.count(realm), skip, limit);
+                accessibilityNotManager.countSolved(realm), skip, limit);
     }
 
     @Operation(summary = "Retrieve solved notifications by trail ID")

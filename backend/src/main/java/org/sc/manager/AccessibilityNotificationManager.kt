@@ -63,7 +63,7 @@ class AccessibilityNotificationManager @Autowired constructor(
     }
 
     fun count(realm: String): Long = accessibilityDAO.countAccessibility(realm)
-    fun countSolved(): Long = accessibilityDAO.countSolved()
+    fun countSolved(realm: String): Long = accessibilityDAO.countSolved(realm)
     fun countNotSolved(realm: String): Long = accessibilityDAO.countNotSolved(realm)
     fun countSolvedForTrailId(trailId: String): Long = accessibilityDAO.countSolvedForTrailId(trailId)
     fun countNotSolvedForTrailId(trailId: String): Long = accessibilityDAO.countNotSolvedForTrailId(trailId)

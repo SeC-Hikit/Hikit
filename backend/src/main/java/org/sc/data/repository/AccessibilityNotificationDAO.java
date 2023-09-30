@@ -43,31 +43,34 @@ public class AccessibilityNotificationDAO {
     public List<AccessibilityNotification> getUnresolved(final int skip,
                                                          final int limit, String realm) {
         return toNotificationList(collection.find(
-                MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
-                        .append(AccessibilityNotification.RESOLUTION, ""))
+                        MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
+                                .append(AccessibilityNotification.RESOLUTION, ""))
+                .sort(new Document(AccessibilityNotification.REPORT_DATE,
+                        MongoUtils.ASCENDING_ORDER))
                 .skip(skip)
                 .limit(limit));
     }
 
     public List<AccessibilityNotification> getUnresolvedByTrailId(final String id, final int skip, final int limit) {
         return toNotificationList(collection.find(
-                new Document(AccessibilityNotification.TRAIL_ID, id)
-                        .append(AccessibilityNotification.RESOLUTION, ""))
+                        new Document(AccessibilityNotification.TRAIL_ID, id)
+                                .append(AccessibilityNotification.RESOLUTION, ""))
                 .skip(skip).limit(limit));
     }
 
     public List<AccessibilityNotification> getResolvedByTrailId(final String id, final int skip, final int limit, String realm) {
         return toNotificationList(collection.find(
-                new Document(AccessibilityNotification.TRAIL_ID, id)
-                        .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, null)))
+                        MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE).append(
+                                        AccessibilityNotification.TRAIL_ID, id)
+                                .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, "")))
                 .skip(skip).limit(limit));
     }
 
     public List<AccessibilityNotification> getSolved(final int skip,
                                                      final int limit, String realm) {
         return toNotificationList(collection.find(
-                MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
-                        .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, "")))
+                        MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
+                                .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, "")))
                 .skip(skip).limit(limit));
     }
 
@@ -127,20 +130,22 @@ public class AccessibilityNotificationDAO {
                 COLLECTION_REALM_STRUCTURE));
     }
 
-    public long countSolved() {
-        return collection.countDocuments(new Document(AccessibilityNotification.RESOLUTION,
-                new Document($_NOT_EQUAL, null)));
+    public long countSolved(String realm) {
+        return collection.countDocuments(
+                MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE).append(
+                        AccessibilityNotification.RESOLUTION,
+                        new Document($_NOT_EQUAL, "")));
     }
 
     public long countNotSolved(String realm) {
         return collection.countDocuments(
                 MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
-                .append(AccessibilityNotification.RESOLUTION, null));
+                        .append(AccessibilityNotification.RESOLUTION, ""));
     }
 
     public long countSolvedForTrailId(final String trailId) {
         return collection.countDocuments(new Document(AccessibilityNotification.TRAIL_ID, trailId)
-                .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, null)));
+                .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, "")));
     }
 
     public long countNotSolvedForTrailId(final String trailId) {
