@@ -46,7 +46,7 @@ public class AccessibilityNotificationDAO {
                         MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
                                 .append(AccessibilityNotification.RESOLUTION, ""))
                 .sort(new Document(AccessibilityNotification.REPORT_DATE,
-                        MongoUtils.ASCENDING_ORDER))
+                        DESCENDING_ORDER))
                 .skip(skip)
                 .limit(limit));
     }
