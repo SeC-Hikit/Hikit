@@ -15,6 +15,7 @@ public class Maintenance {
 
     public static final String OBJECT_ID = "_id";
     public static final String TRAIL_ID = "trailId";
+    public static final String TRAIL_CODE = "trailCode";
     public static final String DATE = "date";
     public static final String DESCRIPTION = "description";
     public static final String CONTACT = "contact";
@@ -24,6 +25,7 @@ public class Maintenance {
     private String id;
     private Date date;
     private String trailId;
+    private String trailCode;
     private String meetingPlace;
     private String description;
     private String contact;

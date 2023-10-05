@@ -26,6 +26,7 @@ public class MaintenanceMapper implements Mapper<Maintenance> {
                 document.getString(Maintenance.OBJECT_ID),
                 document.getDate(Maintenance.DATE),
                 document.getString(Maintenance.TRAIL_ID),
+                document.getString(Maintenance.TRAIL_CODE),
                 document.getString(Maintenance.MEETING_PLACE),
                 document.getString(Maintenance.DESCRIPTION),
                 document.getString(Maintenance.CONTACT),
@@ -39,6 +40,7 @@ public class MaintenanceMapper implements Mapper<Maintenance> {
         LOGGER.trace("mapToDocument Maintenance: {} ", object);
         return new Document(Maintenance.DATE, object.getDate())
                 .append(Maintenance.TRAIL_ID, object.getTrailId())
+                .append(Maintenance.TRAIL_CODE, object.getTrailCode())
                 .append(Maintenance.CONTACT, object.getContact())
                 .append(Maintenance.DESCRIPTION, object.getDescription())
                 .append(Maintenance.MEETING_PLACE, object.getMeetingPlace())

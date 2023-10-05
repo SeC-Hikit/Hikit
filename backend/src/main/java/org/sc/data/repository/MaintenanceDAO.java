@@ -114,6 +114,11 @@ public class MaintenanceDAO {
                 new Document(Maintenance.TRAIL_ID, trailId))));
     }
 
+    public List<Maintenance> getByTrailCode(final String trailCodeTemp) {
+        return new ArrayList<>(toMaintenanceList(collection.find(
+                new Document(Maintenance.TRAIL_CODE, trailCodeTemp))));
+    }
+
     public long countMaintenance(String realm) {
         return collection.countDocuments(
                 MongoUtils.getConditionalEqFilter(realm, DB_REALM_STRUCTURE_SELECTOR)
