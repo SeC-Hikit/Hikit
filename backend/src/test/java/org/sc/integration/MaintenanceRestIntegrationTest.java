@@ -34,6 +34,7 @@ public class MaintenanceRestIntegrationTest {
     private static final String EXPECTED_NAME = "ANY";
     private static final String EXPECTED_NAME_2 = "ANY_2";
     private static final String EXPECTED_DESCRIPTION = "ANY_DESCRIPTION";
+    private static final String EXPECTED_TRAIL_CODE = "A101";
 
     private static Date EXPECTED_DATE_IN_FUTURE() {
         Calendar c = Calendar.getInstance();
@@ -79,9 +80,7 @@ public class MaintenanceRestIntegrationTest {
         TrailResponse trailResponse = adminTrailController.importTrail(trailImportDto);
         importedTrailId = trailResponse.getContent().get(0).getId();
 
-        adminMaintenanceController.create(new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), importedTrailId,
-                EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto()));
-        maintenanceDAO.upsert(maintenanceMapper.map(new MaintenanceDto(null, EXPECTED_DATE_IN_PAST(), importedTrailId,
+        maintenanceDAO.upsert(maintenanceMapper.map(new MaintenanceDto(null, EXPECTED_DATE_IN_PAST(), importedTrailId, "",
                 EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto())));
     }
 
@@ -94,13 +93,28 @@ public class MaintenanceRestIntegrationTest {
 
     @Test
     public void getFuture_shouldFindOne() {
+        adminMaintenanceController.create(new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), importedTrailId, "",
+                EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto()));
+
         MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2, NO_FILTERING_TOKEN);
         assertThat(response.getContent().size()).isEqualTo(1);
         assertThat(response.getContent().get(0).getTrailId()).isEqualTo(importedTrailId);
     }
 
     @Test
+    public void whenMaintenanceIsCreatedWithTrailCodeAndNotTrailId_shouldCreateAndGet() {
+        adminMaintenanceController.create(new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), "", EXPECTED_TRAIL_CODE,
+                EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto()));
+        MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 1, NO_FILTERING_TOKEN);
+        assertThat(response.getContent().size()).isEqualTo(1);
+        assertThat(response.getContent().get(0).getTrailCode()).isEqualTo(EXPECTED_TRAIL_CODE);
+    }
+
+    @Test
     public void delete() {
+        adminMaintenanceController.create(new MaintenanceDto(null, EXPECTED_DATE_IN_FUTURE(), importedTrailId, "",
+                EXPECTED_NAME, EXPECTED_DESCRIPTION, EXPECTED_NAME_2, new RecordDetailsDto()));
+
         MaintenanceResponse response = maintenanceController.getFutureMaintenance(0, 2, NO_FILTERING_TOKEN);
         String id = response.getContent().get(0).getId();
 
@@ -118,7 +132,7 @@ public class MaintenanceRestIntegrationTest {
 
     @After
     public void setDown() {
-//        IntegrationUtils.emptyCollection(dataSource, Maintenance.COLLECTION_NAME);
+        IntegrationUtils.emptyCollection(dataSource, "core.Maintenance");
     }
 
 }
