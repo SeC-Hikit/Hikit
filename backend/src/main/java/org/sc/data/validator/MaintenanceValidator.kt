@@ -23,11 +23,12 @@ class MaintenanceValidator constructor(
 
     override fun validate(request: MaintenanceDto): Set<String> {
         val errors = mutableSetOf<String>()
+        val trailId = request.trailId
         if (isEmpty(request.contact)) {
             errors.add(String.format(emptyFieldError, "Contact"))
         }
-        if (isEmpty(request.trailId)) {
-            errors.add(String.format(emptyFieldError, "Code"))
+        if (isEmpty(trailId) && isEmpty(request.trailCode)) {
+            errors.add(String.format(emptyFieldError, "Id and Code"))
         }
         if (isEmpty(request.meetingPlace)) {
             errors.add(String.format(emptyFieldError, "Meeting Place"))
@@ -35,7 +36,8 @@ class MaintenanceValidator constructor(
         if (request.date == null) {
             errors.add(String.format(emptyFieldError, "date"))
         }
-        errors.addAll(trailExistenceValidator.validateExistenceAndRealm(request.trailId))
+        if (!isEmpty(trailId))
+            errors.addAll(trailExistenceValidator.validateExistenceAndRealm(trailId))
         if (request.date.before(Date())) {
             errors.add(dateInPast)
         }
