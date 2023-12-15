@@ -205,6 +205,37 @@
           }
         }
       }
+    },
+    "/event/{istatCode}": {
+      "get": {
+        "tags": [
+          "event-controller"
+        ],
+        "summary": "Retrieve events by ISTAT code",
+        "operationId": "getByIstat_1",
+        "parameters": [
+          {
+            "name": "istatCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -310,9 +341,6 @@
         "type": "object",
         "properties": {
           "url": {
-            "type": "string"
-          },
-          "thumb": {
             "type": "string"
           },
           "title": {
@@ -491,6 +519,214 @@
             "items": {
               "$ref": "#/components/schemas/LocalityDto"
             }
+          }
+        }
+      },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CityRef": {
+        "type": "object",
+        "properties": {
+          "istat": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "province_short": {
+            "type": "string"
+          },
+          "iat": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Iat"
+            }
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "EventDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventLocationDto"
+            }
+          },
+          "date_from": {
+            "type": "string"
+          },
+          "date_to": {
+            "type": "string"
+          },
+          "ticketing": {
+            "$ref": "#/components/schemas/TicketDto"
+          },
+          "category": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          },
+          "cityRef": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CityRef"
+            }
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageDto"
+            }
+          }
+        }
+      },
+      "EventLocationDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CoordinatesDto"
+          }
+        }
+      },
+      "EventResponse": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "ERROR"
+            ]
+          },
+          "messages": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventDto"
+            }
+          }
+        }
+      },
+      "Iat": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            }
+          }
+        }
+      },
+      "TicketDto": {
+        "type": "object",
+        "properties": {
+          "website": {
+            "type": "string"
+          },
+          "subscriptions": {
+            "type": "string"
+          },
+          "full_rate": {
+            "type": "string"
+          },
+          "gratuity": {
+            "type": "string"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "entrance": {
+            "type": "string"
           }
         }
       }
