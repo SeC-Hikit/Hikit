@@ -1,7 +1,6 @@
 package org.sc.controller.microservice
 
 import io.swagger.v3.oas.annotations.Operation
-import org.hikit.common.response.ControllerPagination
 import org.openapitools.model.EventResponse
 import org.sc.adapter.microservice.ErtEventMicroserviceAdapter
 import org.sc.data.validator.GeneralValidator
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 class ErtEventsController @Autowired constructor(
     private val ertEventMicroserviceAdapter: ErtEventMicroserviceAdapter,
     private val generalValidator: GeneralValidator,
-    private val controllerPagination: ControllerPagination
 ) {
     companion object {
         const val PREFIX = "/ert/events"
@@ -29,6 +27,20 @@ class ErtEventsController @Autowired constructor(
     operator fun get(
         @PathVariable(required = true) istat: String
     ): EventResponse? {
+        val validationErrors = generalValidator.validateIstat(istat)
+        if(validationErrors.isNotEmpty()) {
+            composeErrorResponse(validationErrors)
+        }
         return ertEventMicroserviceAdapter.getByIstat1(istat)!!.body
+    }
+
+    private fun composeErrorResponse(validationErrors: Set<String>) {
+        EventResponse()
+            .status(EventResponse.StatusEnum.ERROR)
+            .messages(validationErrors)
+            .totalCount(0)
+            .totalPages(0)
+            .content(listOf())
+            .currentPage(0)
     }
 }
