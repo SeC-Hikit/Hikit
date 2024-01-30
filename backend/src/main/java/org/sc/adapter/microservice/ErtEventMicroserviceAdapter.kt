@@ -20,13 +20,15 @@ class ErtEventMicroserviceAdapter @Autowired constructor(
     lateinit var endpointUrl: String
 
     override fun getByIstat1(
-        istat: String
+        istat: String,
+        skip: Int,
+        limit: Int,
     ): ResponseEntity<EventResponse>? {
         return try {
             restTemplateBuilder.build()
                 .getForEntity(
                     endpointUrl.plus(
-                        "/${istat}"
+                        "/${istat}?skip=${skip}&limit=${limit}"
                     ),
                     org.openapitools.model.EventResponse::class.java
                 )

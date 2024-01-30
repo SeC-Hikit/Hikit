@@ -221,6 +221,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 150
+            }
           }
         ],
         "responses": {
@@ -538,43 +558,6 @@
           }
         }
       },
-      "CityRef": {
-        "type": "object",
-        "properties": {
-          "istat": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          },
-          "province": {
-            "type": "string"
-          },
-          "province_short": {
-            "type": "string"
-          },
-          "iat": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Iat"
-            }
-          }
-        }
-      },
-      "Contact": {
-        "type": "object",
-        "properties": {
-          "label": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          }
-        }
-      },
       "EventDto": {
         "type": "object",
         "properties": {
@@ -609,10 +592,7 @@
             }
           },
           "cityRef": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CityRef"
-            }
+            "$ref": "#/components/schemas/CityRefDto"
           },
           "attachments": {
             "type": "array",
@@ -679,29 +659,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EventDto"
-            }
-          }
-        }
-      },
-      "Iat": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "address": {
-            "type": "string"
-          },
-          "number": {
-            "type": "string"
-          },
-          "coordinates": {
-            "$ref": "#/components/schemas/Coordinates"
-          },
-          "contacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Contact"
             }
           }
         }
