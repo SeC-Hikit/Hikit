@@ -35,7 +35,8 @@ class GeneralValidator @Autowired constructor(
     private val poiValidator: PoiValidator,
     private val rectangleValidator: RectangleValidator,
     private val geoLineValidator: GeoLineValidator,
-    private val accessibilityReportValidator: AccessibilityReportValidator
+    private val accessibilityReportValidator: AccessibilityReportValidator,
+    private val istatValidator: IstatValidator
 ) {
     fun validate(acd: AccessibilityReportDto): Set<String> = accessibilityReportValidator.validate(acd)
     fun validate(acd: AccessibilityNotificationDto): Set<String> = accessibilityValidator.validate(acd)
@@ -69,4 +70,5 @@ class GeneralValidator @Autowired constructor(
     fun validateMediaExistence(id: String): Set<String> = mediaExistenceValidator.validate(id)
     fun validatePoiExistence(id: String): Set<String> = poiExistenceValidator.validate(id)
     fun validate(rectangleDto: RectangleDto): Set<String> = rectangleValidator.validate(rectangleDto)
+    fun validateIstat(istat: String): Set<String> = istatValidator.validate(istat)
 }
