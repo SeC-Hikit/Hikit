@@ -1,6 +1,7 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.hikit.common.response.ControllerPagination;
 import org.sc.common.rest.Status;
 import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailIntersectionDto;
@@ -11,7 +12,6 @@ import org.sc.common.rest.geo.RectangleDto;
 import org.sc.common.rest.response.TrailIntersectionResponse;
 import org.sc.common.rest.response.TrailMappingResponse;
 import org.sc.common.rest.response.TrailResponse;
-import org.hikit.common.response.ControllerPagination;
 import org.sc.controller.response.TrailIntersectionHelper;
 import org.sc.controller.response.TrailPreviewResponseHelper;
 import org.sc.controller.response.TrailResponseHelper;
@@ -73,7 +73,8 @@ public class GeoTrailController {
         final Set<String> validate = generalValidator.validate(geoLineDto);
         controllerPagination.checkSkipLim(skip, limit);
 
-        if (!validate.isEmpty()) return trailIntersectionHelper.constructResponse(validate, emptyList(), 0, skip, limit);
+        if (!validate.isEmpty())
+            return trailIntersectionHelper.constructResponse(validate, emptyList(), 0, skip, limit);
 
         final List<TrailIntersectionDto> intersections =
                 trailIntersectionManager.findIntersection(geoLineDto, skip, limit);
@@ -101,15 +102,15 @@ public class GeoTrailController {
 
     @Operation(summary = "Find geo-located trails mapping IDs within a defined rectangle")
     @PostMapping("/locate-id")
-    public TrailMappingResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto){
+    public TrailMappingResponse geoLocateTrail(@RequestBody RectangleDto rectangleDto) {
 
         final Set<String> errors = generalValidator.validate(rectangleDto);
-        if(!errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             return new TrailMappingResponse(Status.ERROR, errors, emptyList(), 1L,
                     Constants.ONE, 0, 100);
         }
         final List<TrailMappingDto> dtos = trailManager.findTrailMappingsWithinRectangle(rectangleDto);
         return trailPreviewRespHelper.constructMappingResponse(errors, dtos, dtos.size(), 0, 100);
     }
-
 }
+
