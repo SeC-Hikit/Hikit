@@ -3,9 +3,13 @@ package org.sc.data.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+import org.sc.common.rest.TrailDto;
 import org.sc.common.rest.TrailPreviewDto;
+import org.sc.data.model.CycloClassification;
 import org.sc.data.model.TrailPreview;
 import org.sc.data.model.TrailRaw;
+
+import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface TrailPreviewMapper {
@@ -25,4 +29,20 @@ public interface TrailPreviewMapper {
     @Mapping(target = "finalPos.placeId", ignore = true)
     @Mapping(target = "statsTrailMetadata", ignore = true)
     TrailPreviewDto map(TrailRaw trail);
+
+    default TrailPreviewDto map(TrailDto trail) {
+        return new TrailPreviewDto(
+                trail.getId(),
+                trail.getCode(),
+                trail.getClassification(),
+                trail.getStartLocation(),
+                trail.getEndLocation(),
+                trail.getLocations(),
+                !List.of(CycloClassification.NO, CycloClassification.UNCLASSIFIED)
+                        .contains(trail.getCycloDetails().getCycloClassification()),
+                trail.getStatus(),
+                trail.getStatsTrailMetadata(),
+                trail.getFileDetails()
+        );
+    }
 }

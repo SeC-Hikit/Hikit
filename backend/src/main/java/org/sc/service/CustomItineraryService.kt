@@ -1,27 +1,62 @@
 package org.sc.service
 
+import org.sc.adapter.AltitudeServiceAdapter
 import org.sc.common.rest.CustomItineraryRequestDto
 import org.sc.common.rest.CustomItineraryResultDto
-import org.sc.data.mapper.TrailMapper
+import org.sc.common.rest.StatsTrailMetadataDto
+import org.sc.common.rest.TrailPreviewDto
+import org.sc.data.mapper.TrailPreviewMapper
+import org.sc.data.model.Coordinates2D
+import org.sc.data.model.TrailCoordinates
 import org.sc.manager.AccessibilityNotificationManager
-import org.sc.manager.TrailManager
+import org.sc.manager.TrailIntersectionManager
+import org.sc.processor.TrailsStatsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.logging.Logger
 
 @Service
 class CustomItineraryService @Autowired constructor(
-    private val trailManager: TrailManager,
-    private val trailMapper: TrailMapper,
+    private val trailPreviewMapper: TrailPreviewMapper,
     private val accessibilityNotificationManager: AccessibilityNotificationManager,
+    private val altitudeService: AltitudeServiceAdapter,
+    private val trailsStatsCalculator: TrailsStatsCalculator,
+    private val trailIntersectionManager: TrailIntersectionManager
 ) {
-    private val logger = Logger.getLogger(CustomItineraryService::class.java.name)
+
     fun calculateItinerary(customItinerary: CustomItineraryRequestDto): CustomItineraryResultDto {
-        TODO("Not yet implemented")
+        val coordinatesWithAltitudes =
+            altitudeService.getElevationsByLongLat(customItinerary.geoLineDto.coordinates)
+        val coordinates = coordinatesWithAltitudes.map {
+            TrailCoordinates(
+                it.latitude, it.longitude, it.altitude,
+                trailsStatsCalculator.calculateLengthFromTo(coordinatesWithAltitudes, it)
+            )
+        }
+        val statsTrailMetadata = StatsTrailMetadataDto(
+            trailsStatsCalculator.calculateTotRise(coordinates),
+            trailsStatsCalculator.calculateTotFall(coordinates),
+            trailsStatsCalculator.calculateEta(coordinates),
+            trailsStatsCalculator.calculateTrailLength(coordinates),
+            trailsStatsCalculator.calculateHighestPlace(coordinates),
+            trailsStatsCalculator.calculateLowestPlace(coordinates)
+        )
+        val trailIntersections =
+            trailIntersectionManager
+                .findIntersection(customItinerary.geoLineDto, 0, Integer.MAX_VALUE)
+        val intersectionTrails: Set<TrailPreviewDto> =
+            trailIntersections.map { trailPreviewMapper.map(it.trail) }.toSet()
+        val encounteredIssues =
+            coordinatesWithAltitudes.map {
+                Coordinates2D(it.longitude, it.latitude)
+            }.flatMap {
+                accessibilityNotificationManager.findNearbyUnsolved(it)
+            }
+
+        return CustomItineraryResultDto(
+            coordinates, intersectionTrails,
+            encounteredIssues, statsTrailMetadata
+        )
     }
-
-
-
 
 
 }

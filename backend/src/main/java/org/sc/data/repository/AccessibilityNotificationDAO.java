@@ -11,6 +11,7 @@ import org.hikit.common.datasource.Datasource;
 import org.sc.common.rest.AccessibilityNotificationResolutionDto;
 import org.sc.data.entity.mapper.AccessibilityNotificationMapper;
 import org.sc.data.model.AccessibilityNotification;
+import org.sc.data.model.Coordinates2D;
 import org.sc.data.model.FileDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -72,6 +73,18 @@ public class AccessibilityNotificationDAO {
                         MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
                                 .append(AccessibilityNotification.RESOLUTION, new Document($_NOT_EQUAL, "")))
                 .skip(skip).limit(limit));
+    }
+
+    public List<AccessibilityNotification> getNearbyUnsolved(Coordinates2D coordinates,
+                                                             double distance) {
+        final var foundDocuments = collection.find(
+                new Document(AccessibilityNotification.COORDINATES,
+                        getPointNearSearchQuery(
+                                coordinates.getLongitude(),
+                                coordinates.getLatitude(),
+                                distance
+                        )));
+        return toNotificationList(foundDocuments);
     }
 
     public List<AccessibilityNotification> getByTrailId(final String trailId) {

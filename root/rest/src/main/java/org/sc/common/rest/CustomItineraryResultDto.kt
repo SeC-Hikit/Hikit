@@ -1,11 +1,10 @@
 package org.sc.common.rest
 
-import org.sc.data.model.CoordinatesWithDistanceDto
-import org.sc.data.model.TrailPreview
+import org.sc.data.model.TrailCoordinates
 
 data class CustomItineraryResultDto(
-    val coordinates: List<CoordinatesWithDistanceDto>,
-    val trailPreviews: List<TrailPreview>,
+    val coordinates: List<TrailCoordinates>,
+    val trailPreviews: Set<TrailPreviewDto>,
     val notifications: List<AccessibilityNotificationDto>,
     val stats: StatsTrailMetadataDto
     )
