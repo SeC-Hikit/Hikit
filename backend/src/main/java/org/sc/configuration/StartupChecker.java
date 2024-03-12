@@ -5,6 +5,7 @@ import com.mongodb.client.model.Indexes;
 import org.apache.logging.log4j.Logger;
 import org.hikit.common.datasource.Datasource;
 import org.sc.configuration.tenant.InstanceRegister;
+import org.sc.data.model.AccessibilityNotification;
 import org.sc.data.model.Place;
 import org.sc.data.model.Trail;
 import org.sc.data.repository.TrailDatasetVersionDao;
@@ -16,6 +17,7 @@ import javax.annotation.PostConstruct;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.logging.log4j.LogManager.getLogger;
 
@@ -72,9 +74,14 @@ public class StartupChecker {
         final String trailGeoIndex = db.getCollection(Trail.COLLECTION_NAME)
                 .createIndex(Indexes.geo2dsphere(Trail.GEO_LINE));
 
+        final String notificationGeoIndex = db.getCollection(AccessibilityNotification.COLLECTION_NAME)
+                .createIndex(Indexes.geo2dsphere(AccessibilityNotification.COORDINATES));
+
+
         Arrays.asList(
-                Arrays.asList(pointGeoIndex, Place.POINTS),
-                Arrays.asList(trailGeoIndex, Trail.GEO_LINE))
+                List.of(pointGeoIndex, Place.COLLECTION_NAME),
+                List.of(trailGeoIndex, Trail.COLLECTION_NAME),
+                List.of(notificationGeoIndex, Trail.COLLECTION_NAME))
                 .forEach(
                         (indexArr) -> LOGGER.info("Ensured pointGeoIndex name " + indexArr.get(0) +
                                 " for collection: `" + indexArr.get(1) + "`")

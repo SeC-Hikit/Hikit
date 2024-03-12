@@ -65,7 +65,7 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
         return result
     }
 
-    fun getElevationsByLongLat(coordinates: List<Coordinates2D>): List<Coordinates> =
+    fun mapCoordsWithElevations(coordinates: List<Coordinates2D>): List<Coordinates> =
         getElevationsByLongLat(coordinates.map { Pair(it.latitude, it.longitude) })
             .mapIndexed{ index, altitude ->
                 CoordinatesDto(coordinates[index].latitude,

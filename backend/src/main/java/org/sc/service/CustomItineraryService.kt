@@ -25,7 +25,7 @@ class CustomItineraryService @Autowired constructor(
 
     fun calculateItinerary(customItinerary: CustomItineraryRequestDto): CustomItineraryResultDto {
         val coordinatesWithAltitudes =
-            altitudeService.getElevationsByLongLat(customItinerary.geoLineDto.coordinates)
+            altitudeService.mapCoordsWithElevations(customItinerary.geoLineDto.coordinates)
         val coordinates = coordinatesWithAltitudes.map {
             TrailCoordinates(
                 it.latitude, it.longitude, it.altitude,
