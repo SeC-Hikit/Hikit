@@ -26,8 +26,8 @@ class AccessibilityNotificationManager @Autowired constructor(
         return solved.map { accessibilityMapper.map(it) }
     }
 
-    fun findNearbyUnsolved(coordinates: Coordinates2D): List<AccessibilityNotificationDto> {
-        val nearbyCoords = accessibilityDAO.getNearbyUnsolved(coordinates, 50.0);
+    fun findNearbyUnsolved(coordinates: Coordinates2D, distanceInMeters: Double): List<AccessibilityNotificationDto> {
+        val nearbyCoords = accessibilityDAO.getNearbyUnsolved(coordinates, distanceInMeters);
         return nearbyCoords.map { accessibilityMapper.map(it) }
     }
 

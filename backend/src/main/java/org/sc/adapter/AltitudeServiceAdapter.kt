@@ -58,7 +58,7 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
                 result.addAll(coordinateAltitudeList)
             } else {
                 //in case of error the result contains the same number of elements of the input
-                logger.info("chunk.size ${chunk.size} different than coordinateAltitudeList.size ${coordinateAltitudeList.size}");
+                logger.info("chunk.size ${chunk.size} different than coordinateAltitudeList.size ${coordinateAltitudeList.size}")
                 result.addAll(MutableList(coordinates.size) { 0.0 })
             }
         }
@@ -97,12 +97,12 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
                 } else {
                     retryCounter++
-                    logger.warning("retrying... $retryCounter time(s)");
+                    logger.warning("retrying... $retryCounter time(s)")
                     TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
                 }
             } catch (exception: Exception) {
                 retryCounter++
-                logger.severe("exception retrying... $retryCounter time(s)");
+                logger.severe("exception retrying... $retryCounter time(s)")
                 TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
             }
         }

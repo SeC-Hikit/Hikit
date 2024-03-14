@@ -83,7 +83,8 @@ public class AccessibilityNotificationDAO {
                                 coordinates.getLongitude(),
                                 coordinates.getLatitude(),
                                 distance
-                        )));
+                        ))
+                        .append(AccessibilityNotification.RESOLUTION, ""));
         return toNotificationList(foundDocuments);
     }
 

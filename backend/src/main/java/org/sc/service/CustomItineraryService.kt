@@ -45,12 +45,15 @@ class CustomItineraryService @Autowired constructor(
                 .findIntersection(customItinerary.geoLineDto, 0, Integer.MAX_VALUE)
         val intersectionTrails: Set<TrailPreviewDto> =
             trailIntersections.map { trailPreviewMapper.map(it.trail) }.toSet()
+        val intersectionTrailsIds = intersectionTrails.map { it.id }
         val encounteredIssues =
             coordinatesWithAltitudes.map {
                 Coordinates2D(it.longitude, it.latitude)
             }.flatMap {
-                accessibilityNotificationManager.findNearbyUnsolved(it)
-            }
+                accessibilityNotificationManager.findNearbyUnsolved(it, 250.0)
+            }.filter {
+                intersectionTrailsIds.contains(it.trailId)
+            }.toSet()
 
         return CustomItineraryResultDto(
             coordinates, intersectionTrails,

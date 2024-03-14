@@ -5,6 +5,6 @@ import org.sc.data.model.TrailCoordinates
 data class CustomItineraryResultDto(
     val coordinates: List<TrailCoordinates>,
     val trailPreviews: Set<TrailPreviewDto>,
-    val notifications: List<AccessibilityNotificationDto>,
+    val notifications: Set<AccessibilityNotificationDto>,
     val stats: StatsTrailMetadataDto
     )
