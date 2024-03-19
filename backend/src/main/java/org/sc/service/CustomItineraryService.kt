@@ -53,7 +53,7 @@ class CustomItineraryService @Autowired constructor(
                 accessibilityNotificationManager.findNearbyUnsolved(it, 250.0)
             }.filter {
                 intersectionTrailsIds.contains(it.trailId)
-            }.toSet()
+            }.distinctBy { it.id }.toSet()
 
         return CustomItineraryResultDto(
             coordinates, intersectionTrails,
