@@ -9,6 +9,7 @@ import org.sc.data.mapper.TrailPreviewMapper
 import org.sc.data.model.Coordinates2D
 import org.sc.data.model.TrailCoordinates
 import org.sc.manager.AccessibilityNotificationManager
+import org.sc.manager.TrailFileManager
 import org.sc.manager.TrailIntersectionManager
 import org.sc.processor.TrailsStatsCalculator
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +21,8 @@ class CustomItineraryService @Autowired constructor(
     private val accessibilityNotificationManager: AccessibilityNotificationManager,
     private val altitudeService: AltitudeServiceAdapter,
     private val trailsStatsCalculator: TrailsStatsCalculator,
-    private val trailIntersectionManager: TrailIntersectionManager
+    private val trailIntersectionManager: TrailIntersectionManager,
+    private val trailFileManager: TrailFileManager
 ) {
 
     fun calculateItinerary(customItinerary: CustomItineraryRequestDto): CustomItineraryResultDto {
@@ -43,11 +45,14 @@ class CustomItineraryService @Autowired constructor(
         val trailIntersections =
             trailIntersectionManager
                 .findIntersection(customItinerary.geoLineDto, 0, Integer.MAX_VALUE)
+
+        val trailIntersectionPoints = trailIntersections.flatMap { it.points }
+
         val intersectionTrails: Set<TrailPreviewDto> =
             trailIntersections.map { trailPreviewMapper.map(it.trail) }.toSet()
         val intersectionTrailsIds = intersectionTrails.map { it.id }
         val encounteredIssues =
-            coordinatesWithAltitudes.map {
+            coordinatesWithAltitudes.plus(trailIntersectionPoints).map {
                 Coordinates2D(it.longitude, it.latitude)
             }.flatMap {
                 accessibilityNotificationManager.findNearbyUnsolved(it, 250.0)
@@ -61,5 +66,7 @@ class CustomItineraryService @Autowired constructor(
         )
     }
 
-
+    fun exportGpx(customItinerary: CustomItineraryResultDto): ByteArray =
+        trailFileManager
+            .buildCustomGpx(customItinerary.coordinates)
 }

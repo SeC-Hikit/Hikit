@@ -34,4 +34,11 @@ class CustomItineraryController constructor(
         }
         return customItineraryService.calculateItinerary(customItinerary)
     }
+
+    @Operation(summary = "Download a gpx itinerary based on the calculated result")
+    @PostMapping("/itinerary-download")
+    fun downloadGpx(@RequestBody customItinerary: CustomItineraryResultDto): ByteArray {
+        return customItineraryService.exportGpx(customItinerary)
+    }
+
 }

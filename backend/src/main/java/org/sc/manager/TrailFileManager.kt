@@ -27,20 +27,21 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.time.Instant.now
 import java.util.*
 import java.util.function.Consumer
 import java.util.logging.Logger
 
 @Component
 class TrailFileManager @Autowired constructor(
-        private val gpxFileHandlerHelper: GpxFileHandlerHelper,
-        private val pdfFileHandlerHelper: PdfFileHelper,
-        private val trailsStatsCalculator: TrailsStatsCalculator,
-        private val altitudeService: AltitudeServiceAdapter,
-        private val trailCoordinatesMapper: TrailCoordinatesMapper,
-        private val fileManagementUtil: FileManagementUtil,
-        private val fileNameValidator: FileNameValidator,
-        appProps: AppProperties
+    private val gpxFileHandlerHelper: GpxFileHandlerHelper,
+    private val pdfFileHandlerHelper: PdfFileHelper,
+    private val trailsStatsCalculator: TrailsStatsCalculator,
+    private val altitudeService: AltitudeServiceAdapter,
+    private val trailCoordinatesMapper: TrailCoordinatesMapper,
+    private val fileManagementUtil: FileManagementUtil,
+    private val fileNameValidator: FileNameValidator,
+    appProps: AppProperties
 ) {
 
     companion object {
@@ -54,6 +55,7 @@ class TrailFileManager @Autowired constructor(
 
     private val logger = Logger.getLogger(TrailFileManager::class.java.name)
 
+    private val customItineraryStoredFiles = File(fileManagementUtil.getCustomItineraryPath()).toPath()
     private val pathToGpxStoredFiles = File(fileManagementUtil.getTrailGpxStoragePath()).toPath()
     private val pathToKmlStoredFiles = File(fileManagementUtil.getTrailKmlStoragePath()).toPath()
     private val pathToPdfStoredFiles = File(fileManagementUtil.getTrailPdfStoragePath()).toPath()
@@ -71,62 +73,99 @@ class TrailFileManager @Autowired constructor(
         throw IllegalStateException()
     }
 
-    fun getTrailRawModel(uniqueFileName: String, originalFilename: String, tempFile: Path, authData: AuthData): TrailRawDto {
+    fun getTrailRawModel(
+        uniqueFileName: String,
+        originalFilename: String,
+        tempFile: Path,
+        authData: AuthData
+    ): TrailRawDto {
         val gpx = gpxFileHandlerHelper.readFromFile(tempFile)
         val track = gpx.tracks.first()
         val segment = track.segments.first()
 
-        val altitudeResultOrderedList = altitudeService.getElevationsByLongLat(segment.points.map { coord -> Pair(coord.latitude.toDegrees(), coord.longitude.toDegrees()) })
+        val altitudeResultOrderedList = altitudeService.getElevationsByLongLat(segment.points.map { coord ->
+            Pair(
+                coord.latitude.toDegrees(),
+                coord.longitude.toDegrees()
+            )
+        })
 
         val coordinatesWithAltitude = mutableListOf<Coordinates>()
 
         segment.points.forEachIndexed { index, coord ->
             coordinatesWithAltitude.add(
-                    CoordinatesDto(coord.longitude.toDegrees(), coord.latitude.toDegrees(),
-                            altitudeResultOrderedList[index]
-                    ))
+                CoordinatesDto(
+                    coord.longitude.toDegrees(), coord.latitude.toDegrees(),
+                    altitudeResultOrderedList[index]
+                )
+            )
         }
 
         val trailCoordinates = coordinatesWithAltitude.map {
             TrailCoordinates(
-                    it.longitude, it.latitude, it.altitude,
-                    trailsStatsCalculator.calculateLengthFromTo(coordinatesWithAltitude, it)
+                it.longitude, it.latitude, it.altitude,
+                trailsStatsCalculator.calculateLengthFromTo(coordinatesWithAltitude, it)
             )
         }
 
         return TrailRawDto(
-                "",
-                track.name.orElse(emptyDefaultString),
-                track.description.orElse(emptyDefaultString),
-                trailCoordinatesMapper.map(trailCoordinates.first()),
-                trailCoordinatesMapper.map(trailCoordinates.last()),
-                trailCoordinates.map { trailCoordinatesMapper.map(it) },
-                FileDetailsDto(Date(), authData.username, authData.instance,
-                        authData.realm, uniqueFileName, originalFilename, authData.username)
+            "",
+            track.name.orElse(emptyDefaultString),
+            track.description.orElse(emptyDefaultString),
+            trailCoordinatesMapper.map(trailCoordinates.first()),
+            trailCoordinatesMapper.map(trailCoordinates.last()),
+            trailCoordinates.map { trailCoordinatesMapper.map(it) },
+            FileDetailsDto(
+                Date(), authData.username, authData.instance,
+                authData.realm, uniqueFileName, originalFilename, authData.username
+            )
         )
     }
 
-    fun writeTrailToOfficialGpx(trail: TrailDto, fileName: String) : String {
+    fun writeTrailToOfficialGpx(trail: TrailDto, fileName: String): String {
         logger.info("Writing GPX trail for trail with id '${trail.id}'")
         val creator = "S&C_$DISPLAYED_VERSION"
-        val gpx = GPX.builder(creator)
-                .addTrack { track ->
-                    track.addSegment { segment ->
-                        trail.coordinates.forEach {
-                            segment.addPoint { p ->
-                                p.lat(it.latitude).lon(it.longitude).ele(it.altitude)
-                            }
-                        }
-                    }
-                }.metadata(
-                        Metadata.builder()
-                                .author("S&C - $creator")
-                                .name(trail.code).time(trail.lastUpdate.toInstant()).build()
-                ).build()
+        val gpx = buildTrailGpx(creator, trail)
         val generatedFilename = "$fileName.gpx"
         gpxFileHandlerHelper.writeToFile(gpx, pathToGpxStoredFiles.resolve(generatedFilename))
         return generatedFilename
     }
+
+    fun buildCustomGpx(coordinates: List<Coordinates>): ByteArray {
+        val gpx = buildSegments("Custom user", coordinates)
+            .metadata(
+                Metadata.builder()
+                    .author("S&C - public user")
+                    .name("Custom Path")
+                    .time(now()).build()
+            ).build()
+        val date = now()
+        val generatedFilename = "custom-itineary-${date.toEpochMilli()}.gpx"
+        gpxFileHandlerHelper.writeToFile(gpx, customItineraryStoredFiles)
+        return Files.readAllBytes(customItineraryStoredFiles
+            .resolve(File.separator + generatedFilename))
+    }
+
+    private fun buildTrailGpx(creator: String, trail: TrailDto): GPX {
+        return buildSegments(creator, trail.coordinates).metadata(
+            Metadata.builder()
+                .author("S&C - $creator")
+                .name(trail.code)
+                .time(trail.lastUpdate.toInstant()).build()
+        ).build()
+    }
+
+    private fun buildSegments(creator: String, coordinates: List<Coordinates>): GPX.Builder =
+        GPX.builder(creator)
+            .addTrack { track ->
+                track.addSegment { segment ->
+                    coordinates.forEach {
+                        segment.addPoint { p ->
+                            p.lat(it.latitude).lon(it.longitude).ele(it.altitude)
+                        }
+                    }
+                }
+            }
 
     fun writeTrailToKml(trail: TrailDto, fileName: String): String {
         logger.info("Writing KML for trail with id '${trail.id}'")
@@ -158,21 +197,21 @@ class TrailFileManager @Autowired constructor(
 
 
         val skippedWrongNameFormats = uploadedFiles
-                .filter { fileNameValidator.validate(it.originalFilename).isEmpty() }
+            .filter { fileNameValidator.validate(it.originalFilename).isEmpty() }
 
         val result: MutableMap<String, Optional<Path>> = HashMap()
 
         skippedWrongNameFormats.forEach(Consumer { gpxFile: MultipartFile ->
             try {
                 val tempFile = Files
-                        .createTempFile(uploadDir.toPath(), "", "")
+                    .createTempFile(uploadDir.toPath(), "", "")
                 gpxFile
-                        .inputStream
-                        .use { input ->
-                            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING)
-                            // TODO: no two files with same name shall exists!
-                            result.put(gpxFile.originalFilename!!, Optional.of(tempFile))
-                        }
+                    .inputStream
+                    .use { input ->
+                        Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING)
+                        // TODO: no two files with same name shall exists!
+                        result.put(gpxFile.originalFilename!!, Optional.of(tempFile))
+                    }
             } catch (e: IOException) {
                 logger.severe("Exception caught in getGPXFilesTempPathList for uploadedFiles $uploadedFiles! $e")
                 result[gpxFile.originalFilename!!] = Optional.empty()
@@ -191,16 +230,16 @@ class TrailFileManager @Autowired constructor(
             : List<MultipartFile> = uploadedFiles.filter { it.originalFilename == null }
 
     fun makeUniqueFileName(originalFilename: String) =
-            originalFilename.split(".")[0].replace("[^a-zA-Z0-9._]+".toRegex(), "_") +
-                    "_" + Date().time.toString() + "." + IMPORT_FILE_EXTENSION
+        originalFilename.split(".")[0].replace("[^a-zA-Z0-9._]+".toRegex(), "_") +
+                "_" + Date().time.toString() + "." + IMPORT_FILE_EXTENSION
 
     private fun hasFileBeenSaved(saveFile: Long) = saveFile != 0L
 
     private fun saveFile(tempFile: Path, fileName: String) =
-            Files.copy(tempFile, FileOutputStream(makePathToSavedFile(fileName)))
+        Files.copy(tempFile, FileOutputStream(makePathToSavedFile(fileName)))
 
     private fun makePathToSavedFile(fileName: String) =
-            fileManagementUtil.getRawTrailStoragePath() + fileName
+        fileManagementUtil.getRawTrailStoragePath() + fileName
 
 
 }
