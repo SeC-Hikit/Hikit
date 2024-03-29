@@ -141,9 +141,10 @@ class TrailFileManager @Autowired constructor(
             ).build()
         val date = now()
         val generatedFilename = "custom-itineary-${date.toEpochMilli()}.gpx"
-        gpxFileHandlerHelper.writeToFile(gpx, customItineraryStoredFiles)
-        return Files.readAllBytes(customItineraryStoredFiles
-            .resolve(File.separator + generatedFilename))
+        val resolvedSavePath = customItineraryStoredFiles
+            .resolve(generatedFilename)
+        gpxFileHandlerHelper.writeToFile(gpx, resolvedSavePath)
+        return Files.readAllBytes(resolvedSavePath)
     }
 
     private fun buildTrailGpx(creator: String, trail: TrailDto): GPX {

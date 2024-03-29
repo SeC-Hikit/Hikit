@@ -4,7 +4,6 @@ import org.sc.configuration.AppProperties;
 import org.sc.configuration.StartupChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,8 +20,11 @@ public class Main {
             AppProperties.APP_NAME + " v" + AppProperties.DISPLAYED_VERSION + "\n" +
             "-------------------------";
 
-    @Autowired
-    StartupChecker startupChecker;
+    final StartupChecker startupChecker;
+
+    public Main(StartupChecker startupChecker) {
+        this.startupChecker = startupChecker;
+    }
 
     public static void main(String[] args) {
         SpringApplication backend = new SpringApplication(Main.class);
