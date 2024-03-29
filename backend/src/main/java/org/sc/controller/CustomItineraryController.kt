@@ -6,6 +6,7 @@ import org.sc.common.rest.CustomItineraryResultDto
 import org.sc.data.validator.GeneralValidator
 import org.sc.service.CustomItineraryService
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -37,8 +38,8 @@ class CustomItineraryController constructor(
 
     @Operation(summary = "Download a gpx itinerary based on the calculated result")
     @PostMapping("/itinerary-download")
-    fun downloadGpx(@RequestBody customItinerary: CustomItineraryResultDto): ByteArray {
-        return customItineraryService.exportGpx(customItinerary)
+    fun downloadGpx(@RequestBody customItinerary: CustomItineraryResultDto): ResponseEntity<ByteArray> {
+        return ResponseEntity.ok(customItineraryService.exportGpx(customItinerary))
     }
 
 }
