@@ -55,12 +55,12 @@ public class MongoUtils {
     @NotNull
     public static Document getPointNearSearchQuery(final double longitude,
                                                    final double latitude,
-                                                   final double distance) {
+                                                   final double maxDistanceInMeters) {
         return new Document($_NEAR_OPERATOR,
                 new Document($_GEOMETRY,
                         new Document(GEO_TYPE, GEO_POINT).append(
                                 GEO_COORDINATES, Arrays.asList(longitude, latitude)
-                        )).append($_MAX_M_DISTANCE_FILTER, distance)
+                        )).append($_MAX_M_DISTANCE_FILTER, maxDistanceInMeters)
         );
     }
 

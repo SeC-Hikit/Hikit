@@ -27,7 +27,7 @@ class TrailService @Autowired constructor(
     private val municipalityForTrailsImporter: MunicipalityForTrailsImporter
 ) {
 
-    private val logger = Logger.getLogger(TrailManager::class.java.name)
+    private val logger = Logger.getLogger(TrailService::class.java.name)
 
     fun deleteById(trailId: String): List<TrailDto> {
         val deletedTrails = trailManager.deleteById(trailId)

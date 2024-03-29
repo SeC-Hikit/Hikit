@@ -4,6 +4,7 @@ import org.sc.common.rest.AccessibilityNotificationDto
 import org.sc.common.rest.AccessibilityNotificationResolutionDto
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.AccessibilityNotificationMapper
+import org.sc.data.model.Coordinates2D
 import org.sc.data.model.RecordDetails
 import org.sc.data.repository.AccessibilityNotificationDAO
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,6 +24,11 @@ class AccessibilityNotificationManager @Autowired constructor(
     fun getSolved(skip: Int, limit: Int, realm: String): List<AccessibilityNotificationDto> {
         val solved = accessibilityDAO.getSolved(skip, limit, realm)
         return solved.map { accessibilityMapper.map(it) }
+    }
+
+    fun findNearbyUnsolved(coordinates: Coordinates2D, distanceInMeters: Double): List<AccessibilityNotificationDto> {
+        val nearbyCoords = accessibilityDAO.getNearbyUnsolved(coordinates, distanceInMeters);
+        return nearbyCoords.map { accessibilityMapper.map(it) }
     }
 
     fun getResolvedByTrailId(trailId: String, skip: Int, limit: Int, realm: String): List<AccessibilityNotificationDto> {
@@ -67,6 +73,7 @@ class AccessibilityNotificationManager @Autowired constructor(
     fun countNotSolved(realm: String): Long = accessibilityDAO.countNotSolved(realm)
     fun countSolvedForTrailId(trailId: String): Long = accessibilityDAO.countSolvedForTrailId(trailId)
     fun countNotSolvedForTrailId(trailId: String): Long = accessibilityDAO.countNotSolvedForTrailId(trailId)
+
 
 
 }

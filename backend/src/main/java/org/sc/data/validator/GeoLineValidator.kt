@@ -13,8 +13,7 @@ class GeoLineValidator constructor(private val coordinatesValidator: Coordinates
     override fun validate(request: GeoLineDto): Set<String> {
         val errors = mutableSetOf<String>()
 
-        if(request.coordinates.size < 2)
-        {
+        if (request.coordinates.size < 2) {
             errors.add(tooLittleCoordinates)
             return errors
         }

@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.sc.adapter.response.AltitudeApiRequestPoint
 import org.sc.adapter.response.AltitudeApiResponse
 import org.sc.adapter.response.AltitudeServiceRequest
+import org.sc.common.rest.CoordinatesDto
 import org.sc.configuration.AppProperties
+import org.sc.data.model.Coordinates
+import org.sc.data.model.Coordinates2D
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
@@ -55,13 +58,19 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
                 result.addAll(coordinateAltitudeList)
             } else {
                 //in case of error the result contains the same number of elements of the input
-                logger.info("chunk.size ${chunk.size} different than coordinateAltitudeList.size ${coordinateAltitudeList.size}");
+                logger.info("chunk.size ${chunk.size} different than coordinateAltitudeList.size ${coordinateAltitudeList.size}")
                 result.addAll(MutableList(coordinates.size) { 0.0 })
             }
         }
-
         return result
     }
+
+    fun mapCoordsWithElevations(coordinates: List<Coordinates2D>): List<Coordinates> =
+        getElevationsByLongLat(coordinates.map { Pair(it.latitude, it.longitude) })
+            .mapIndexed{ index, altitude ->
+                CoordinatesDto(coordinates[index].latitude,
+                    coordinates[index].longitude, altitude) }
+
 
     private fun callAltitudeWithExponentialBackoff(coordinates: List<Pair<Double, Double>>) : List<Double> {
 
@@ -88,12 +97,12 @@ class AltitudeServiceAdapter @Autowired constructor(appProperties: AppProperties
 
                 } else {
                     retryCounter++
-                    logger.warning("retrying... $retryCounter time(s)");
+                    logger.warning("retrying... $retryCounter time(s)")
                     TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
                 }
             } catch (exception: Exception) {
                 retryCounter++
-                logger.severe("exception retrying... $retryCounter time(s)");
+                logger.severe("exception retrying... $retryCounter time(s)")
                 TimeUnit.SECONDS.sleep((retryCounter * retryCounter * 1L))
             }
         }
