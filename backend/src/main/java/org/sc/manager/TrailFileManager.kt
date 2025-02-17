@@ -5,6 +5,7 @@ import de.micromata.opengis.kml.v_2_2_0.Kml
 import de.micromata.opengis.kml.v_2_2_0.LineString
 import io.jenetics.jpx.GPX
 import io.jenetics.jpx.Metadata
+import org.sc.adapter.AltitudeServiceWrapper
 import org.sc.common.rest.*
 import org.sc.configuration.AppProperties
 import org.sc.configuration.AppProperties.DISPLAYED_VERSION
@@ -15,7 +16,6 @@ import org.sc.data.validator.FileNameValidator
 import org.sc.processor.GpxFileHandlerHelper
 import org.sc.processor.TrailsStatsCalculator
 import org.sc.processor.pdf.PdfFileHelper
-import org.sc.adapter.AltitudeServiceAdapter
 import org.sc.configuration.auth.AuthData
 import org.sc.util.FileManagementUtil
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,7 +37,7 @@ class TrailFileManager @Autowired constructor(
     private val gpxFileHandlerHelper: GpxFileHandlerHelper,
     private val pdfFileHandlerHelper: PdfFileHelper,
     private val trailsStatsCalculator: TrailsStatsCalculator,
-    private val altitudeService: AltitudeServiceAdapter,
+    private val altitudeService: AltitudeServiceWrapper,
     private val trailCoordinatesMapper: TrailCoordinatesMapper,
     private val fileManagementUtil: FileManagementUtil,
     private val fileNameValidator: FileNameValidator,

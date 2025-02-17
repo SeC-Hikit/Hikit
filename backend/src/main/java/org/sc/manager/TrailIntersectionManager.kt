@@ -1,6 +1,6 @@
 package org.sc.manager
 
-import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceWrapper
 import org.sc.common.rest.TrailIntersectionDto
 import org.sc.common.rest.geo.GeoLineDto
 import org.sc.data.mapper.TrailIntersectionMapper
@@ -17,7 +17,7 @@ class TrailIntersectionManager @Autowired constructor(
     private val trailDAO: TrailDAO,
     private val trailIntersectionProcessor: TrailIntersectionProcessor,
     private val trailIntersectionMapper: TrailIntersectionMapper,
-    private val altitudeServiceAdapter: AltitudeServiceAdapter
+    private val altitudeServiceAdapter: AltitudeServiceWrapper
 ) {
 
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {

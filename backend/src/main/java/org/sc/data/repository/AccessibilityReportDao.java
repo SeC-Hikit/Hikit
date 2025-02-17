@@ -118,7 +118,7 @@ public class AccessibilityReportDao {
                         new Document(AccessibilityReport.RECORD_DETAILS + "." + RecordDetails.REALM, realm)
                                 .append(AccessibilityReport.ISSUE_ID, "")
                                 .append(AccessibilityReport.IS_VALID, true))
-                .sort(new Document(AccessibilityReport.REPORT_DATE, MongoUtils.ASCENDING_ORDER))
+                .sort(new Document(AccessibilityReport.REPORT_DATE, MongoUtils.DESCENDING_ORDER))
                 .skip(skip)
                 .limit(limit)
         );

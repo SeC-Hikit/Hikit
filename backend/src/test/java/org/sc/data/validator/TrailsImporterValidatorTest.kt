@@ -3,15 +3,12 @@ package org.sc.data.validator
 import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import io.mockk.every
 import io.mockk.mockkClass
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.sc.common.rest.PlaceDto
 import org.sc.common.rest.PlaceRefDto
-import org.sc.data.model.TrailClassification
 import org.sc.common.rest.TrailCoordinatesDto
 import org.sc.common.rest.TrailImportDto
-import org.sc.data.model.PlaceRef
+import org.sc.data.model.TrailClassification
 import org.sc.data.validator.TrailImportValidator.Companion.dateInFutureError
 import java.util.*
 

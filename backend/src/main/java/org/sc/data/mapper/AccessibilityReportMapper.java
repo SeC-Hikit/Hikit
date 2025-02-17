@@ -8,6 +8,7 @@ import org.sc.data.model.AccessibilityReport;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AccessibilityReportMapper {
+    @Mapping(target = "sortKeys", ignore = true)
     AccessibilityReportDto map(AccessibilityReport ar);
 
     @Mapping(target = "validationId", ignore = true)

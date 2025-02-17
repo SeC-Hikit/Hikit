@@ -1,13 +1,13 @@
 package org.sc.manager
 
-import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceWrapper
 import org.sc.common.rest.CoordinatesDto
 import org.sc.processor.TrailsStatsCalculator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class GeoToolManager @Autowired constructor(private val altitudeService : AltitudeServiceAdapter,
+class GeoToolManager @Autowired constructor(private val altitudeService : AltitudeServiceWrapper,
                                             private val trailsStatsCalculator: TrailsStatsCalculator) {
 
     fun getAltitudeByLongLat(latitude: Double, longitude: Double) =

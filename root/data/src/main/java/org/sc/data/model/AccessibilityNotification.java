@@ -29,6 +29,6 @@ public class AccessibilityNotification {
     private Date resolutionDate;
     private boolean minor;
     private CoordinatesWithAltitude coordinates;
-    private String resolution;
+    private String notificationId;
     private RecordDetails recordDetails;
 }

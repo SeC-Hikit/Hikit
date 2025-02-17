@@ -26,8 +26,8 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.sc.data.repository.MongoUtils.*;
 
 @Repository
-public class AccessibilityNotificationDAO {
-    private static final Logger LOGGER = getLogger(AccessibilityNotificationDAO.class);
+public class AccessibilityNotificationDao {
+    private static final Logger LOGGER = getLogger(AccessibilityNotificationDao.class);
     public static final String COLLECTION_REALM_STRUCTURE = AccessibilityNotification.RECORD_DETAILS + DOT + FileDetails.REALM;
 
     private final MongoCollection<Document> collection;
@@ -35,14 +35,15 @@ public class AccessibilityNotificationDAO {
     private final AccessibilityNotificationMapper mapper;
 
     @Autowired
-    public AccessibilityNotificationDAO(final Datasource dataSource,
+    public AccessibilityNotificationDao(final Datasource dataSource,
                                         final AccessibilityNotificationMapper mapper) {
         this.collection = dataSource.getDB().getCollection(AccessibilityNotification.COLLECTION_NAME);
         this.mapper = mapper;
     }
 
     public List<AccessibilityNotification> getUnresolved(final int skip,
-                                                         final int limit, String realm) {
+                                                         final int limit,
+                                                         String realm) {
         return toNotificationList(collection.find(
                         MongoUtils.getConditionalEqFilter(realm, COLLECTION_REALM_STRUCTURE)
                                 .append(AccessibilityNotification.RESOLUTION, ""))
