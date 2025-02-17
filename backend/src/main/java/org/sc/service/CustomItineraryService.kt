@@ -1,6 +1,6 @@
 package org.sc.service
 
-import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceWrapper
 import org.sc.common.rest.CustomItineraryRequestDto
 import org.sc.common.rest.CustomItineraryResultDto
 import org.sc.common.rest.StatsTrailMetadataDto
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service
 class CustomItineraryService @Autowired constructor(
     private val trailPreviewMapper: TrailPreviewMapper,
     private val accessibilityNotificationManager: AccessibilityNotificationManager,
-    private val altitudeService: AltitudeServiceAdapter,
+    private val altitudeService: AltitudeServiceWrapper,
     private val trailsStatsCalculator: TrailsStatsCalculator,
     private val trailIntersectionManager: TrailIntersectionManager,
     private val trailFileManager: TrailFileManager

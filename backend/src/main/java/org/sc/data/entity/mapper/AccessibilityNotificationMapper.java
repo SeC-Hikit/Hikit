@@ -55,7 +55,7 @@ public class AccessibilityNotificationMapper implements Mapper<AccessibilityNoti
                 .append(AccessibilityNotification.IS_MINOR, accessibilityNotification.isMinor())
                 .append(AccessibilityNotification.COORDINATES,
                         coordinatesMapper.mapToDocument(accessibilityNotification.getCoordinates()))
-                .append(AccessibilityNotification.RESOLUTION, accessibilityNotification.getResolution())
+                .append(AccessibilityNotification.RESOLUTION, accessibilityNotification.getNotificationId())
                 .append(AccessibilityNotification.RECORD_DETAILS,
                         recordDetailsMapper.mapToDocument(accessibilityNotification.getRecordDetails()));
     }

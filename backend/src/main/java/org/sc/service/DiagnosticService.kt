@@ -1,6 +1,6 @@
 package org.sc.service
 
-import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceWrapper
 import org.sc.common.rest.response.DiagnoseResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -10,7 +10,7 @@ import java.util.concurrent.CompletionStage
 
 @Service
 class DiagnosticService @Autowired constructor(
-        private val altitudeServiceAdapter: AltitudeServiceAdapter) {
+        private val altitudeServiceAdapter: AltitudeServiceWrapper) {
 
     companion object {
         const val altitudeServiceName = "Altitude Service"

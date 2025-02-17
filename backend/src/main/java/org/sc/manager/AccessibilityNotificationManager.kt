@@ -6,14 +6,14 @@ import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.AccessibilityNotificationMapper
 import org.sc.data.model.Coordinates2D
 import org.sc.data.model.RecordDetails
-import org.sc.data.repository.AccessibilityNotificationDAO
+import org.sc.data.repository.AccessibilityNotificationDao
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
 class AccessibilityNotificationManager @Autowired constructor(
-    private val accessibilityDAO: AccessibilityNotificationDAO,
+    private val accessibilityDAO: AccessibilityNotificationDao,
     private val accessibilityMapper: AccessibilityNotificationMapper,
     private val authFacade: AuthFacade
 ) {

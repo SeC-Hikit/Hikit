@@ -1,6 +1,6 @@
 package org.sc.manager
 
-import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.adapter.AltitudeServiceWrapper
 import org.sc.common.rest.*
 import org.sc.configuration.auth.AuthFacade
 import org.sc.data.mapper.LinkedMediaMapper
@@ -19,7 +19,7 @@ class PlaceManager @Autowired constructor(
         private val placeMapper: PlaceMapper,
         private val trailManager: TrailManager,
         private val linkedMediaMapper: LinkedMediaMapper,
-        private val altitudeServiceAdapter: AltitudeServiceAdapter,
+        private val altitudeServiceAdapter: AltitudeServiceWrapper,
         private val resourceManager: ResourceManager,
         private val authFacade: AuthFacade
 ) {

@@ -19,7 +19,7 @@ public class AccessibilityNotificationDto {
     private Date reportDate;
     private Date resolutionDate;
     private boolean minor;
-    private String resolution;
+    private String notificationId;
     private CoordinatesDto coordinates;
     private RecordDetailsDto recordDetails;
 }
