@@ -4,7 +4,6 @@ import org.sc.common.rest.PlaceRefDto
 import org.sc.common.rest.TrailCoordinatesDto
 import org.sc.data.mapper.PlaceRefMapper
 import org.sc.data.mapper.TrailCoordinatesMapper
-import org.sc.data.model.CoordinatesWithAltitude
 import org.sc.data.model.PlaceRef
 import org.sc.data.model.TrailCoordinates
 import org.sc.processor.DistanceProcessor

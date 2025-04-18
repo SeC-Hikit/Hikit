@@ -1,12 +1,10 @@
 package org.sc.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.sc.adapter.AltitudeServiceAdapter;
 import org.sc.common.rest.Coordinates2DDto;
 import org.sc.common.rest.CoordinatesDto;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.manager.GeoToolManager;
-import org.sc.processor.DistanceProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

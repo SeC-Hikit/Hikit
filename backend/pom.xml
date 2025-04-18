@@ -25,6 +25,7 @@
         <itextpdf.version>5.5.13.3</itextpdf.version>
         <jackson-databind-nullable.version>0.2.1</jackson-databind-nullable.version>
         <kotlinx-coroutines-core.version>1.6.0</kotlinx-coroutines-core.version>
+        <openapi-generator-maven-plugin.version>5.1.0</openapi-generator-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -338,6 +339,7 @@
                         <version>5.1.0</version>
                         <executions>
                             <execution>
+                                <id>api-ert</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
@@ -346,6 +348,22 @@
                                     <generatorName>spring</generatorName>
                                     <configOptions>
                                         <apiPackage>org.ert.api</apiPackage>
+                                        <interfaceOnly>true</interfaceOnly>
+                                        <generate>true</generate>
+                                        <generateBuilders>true</generateBuilders>,
+                                    </configOptions>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>api-cai2hikit</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>${project.basedir}/src/main/resources/microservice/cai2hikit-swagger.json</inputSpec>
+                                    <generatorName>spring</generatorName>
+                                    <configOptions>
+                                        <apiPackage>org.ert.api.cai2hikit</apiPackage>
                                         <interfaceOnly>true</interfaceOnly>
                                         <generate>true</generate>
                                         <generateBuilders>true</generateBuilders>,

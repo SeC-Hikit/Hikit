@@ -26,16 +26,19 @@ public class StartupChecker {
 
     private static final Logger LOGGER = getLogger(StartupChecker.class);
 
-    @Autowired
-    Datasource dataSource;
-    @Autowired
-    TrailDatasetVersionDao trailDatasetVersionDao;
-    @Autowired
-    AppProperties appProperties;
-    @Autowired
-    FileManagementUtil fileManagementUtil;
-    @Autowired
-    InstanceRegister instanceRegister;
+    final Datasource dataSource;
+    final TrailDatasetVersionDao trailDatasetVersionDao;
+    final AppProperties appProperties;
+    final FileManagementUtil fileManagementUtil;
+    final InstanceRegister instanceRegister;
+
+    public StartupChecker(Datasource dataSource, TrailDatasetVersionDao trailDatasetVersionDao, AppProperties appProperties, FileManagementUtil fileManagementUtil, InstanceRegister instanceRegister) {
+        this.dataSource = dataSource;
+        this.trailDatasetVersionDao = trailDatasetVersionDao;
+        this.appProperties = appProperties;
+        this.fileManagementUtil = fileManagementUtil;
+        this.instanceRegister = instanceRegister;
+    }
 
     @PostConstruct
     public void init() {

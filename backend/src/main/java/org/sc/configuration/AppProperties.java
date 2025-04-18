@@ -17,7 +17,7 @@ public class AppProperties {
     private final String trailStorage;
     private final String tempStorage;
     private final String altitudeServiceHost;
-    private final Integer altitudeServicePort;
+    private final int altitudeServicePort;
     private final String mongoDbUri;
     private final String dbName;
     private final String mailFrom;
@@ -35,8 +35,8 @@ public class AppProperties {
     public AppProperties(final @Value("${server.port}") String port,
                          final @Value("${storage.path}") String storage,
                          final @Value("${temp.storage.path}") String tempStorage,
-                         final @Value("${service.altitude.host:127.0.0.1}") String altitudeServiceHost,
-                         final @Value("${service.altitude.port}") Integer altitudeServicePort,
+                         final @Value("${microservice.oa.host}") String altitudeServiceHost,
+                         final @Value("${microservice.oa.port:8090}") int altitudeServicePort,
                          final @Value("${db.uri}") String mongoDbUri,
                          final @Value("${db.name}") String dbName,
                          final @Value("${spring.mail.from}") String mailFrom,
