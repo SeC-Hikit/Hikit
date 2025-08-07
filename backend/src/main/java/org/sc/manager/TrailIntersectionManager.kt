@@ -1,6 +1,8 @@
 package org.sc.manager
 
+import org.openapitools.model.MunicipalityDto
 import org.sc.adapter.AltitudeServiceAdapter
+import org.sc.adapter.microservice.ErtMunicipalityMicroserviceAdapter
 import org.sc.common.rest.TrailIntersectionDto
 import org.sc.common.rest.geo.GeoLineDto
 import org.sc.data.mapper.TrailIntersectionMapper
@@ -17,7 +19,9 @@ class TrailIntersectionManager @Autowired constructor(
     private val trailDAO: TrailDAO,
     private val trailIntersectionProcessor: TrailIntersectionProcessor,
     private val trailIntersectionMapper: TrailIntersectionMapper,
-    private val altitudeServiceAdapter: AltitudeServiceAdapter
+    private val altitudeServiceAdapter: AltitudeServiceAdapter,
+    private val municipalityMicroserviceAdapter: ErtMunicipalityMicroserviceAdapter,
+
 ) {
 
     fun findIntersection(geoLineDto: GeoLineDto, skip: Int, limit: Int): List<TrailIntersectionDto> {
@@ -38,10 +42,54 @@ class TrailIntersectionManager @Autowired constructor(
         }
     }
 
+    fun findIntersectionWithMunicipalities(trail: Trail) : List<Pair<MunicipalityDto, List<Coordinates2D>>> =
+        trail.municipalities.map {
+            val municipality = municipalityMicroserviceAdapter.getByName(it.city)
+            val municipalityFull = municipality!!.body!!.content.first()
+
+            val intersectingPoints = trailIntersectionProcessor.getIntersectionPointsBetweenSegments(
+                trail,
+                municipalityFull.geometry.map { coords ->
+                    Coordinates2D(coords.longitude, coords.latitude)
+                })
+
+            val reducedPoints = excludeClosePoints(intersectingPoints)
+
+            Pair(municipalityFull, reducedPoints.second)
+        }
+
+    private fun excludeClosePoints(full: Pair<Trail, List<Coordinates2D>>): Pair<Trail, List<Coordinates2D>> {
+        val listCoords = full.second
+        val toBeRemoved = hashSetOf<Coordinates2D>()
+        for (i in listCoords.indices) {
+            for (z in listCoords.indices) {
+                if (i != z && !toBeRemoved.contains(listCoords[z])) {
+                    val radialDistance = org.sc.processor.DistanceProcessor.getRadialDistance(
+                        listCoords[i].latitude,
+                        listCoords[i].longitude,
+                        listCoords[z].latitude,
+                        listCoords[z].longitude
+                    )
+                    if (radialDistance > 0 && radialDistance <= 100) {
+                        toBeRemoved.add(listCoords[z])
+                    }
+                }
+            }
+        }
+
+        return Pair(full.first, listCoords.minus(toBeRemoved.toSet()))
+    }
+
+
     private fun toTrailIntersectionWithElevationData(trailToIntersectionPoints: Pair<Trail, List<Coordinates2D>>): TrailIntersectionDto {
         val altitudeResultOrderedList =
             altitudeServiceAdapter
-                .getElevationsByLongLat(trailToIntersectionPoints.second.map { coord -> Pair(coord.latitude, coord.longitude) })
+                .getElevationsByLongLat(trailToIntersectionPoints.second.map { coord ->
+                    Pair(
+                        coord.latitude,
+                        coord.longitude
+                    )
+                })
         val coordinatesForTrail = mutableListOf<Coordinates>()
         trailToIntersectionPoints.second.forEachIndexed { index, coord ->
             coordinatesForTrail.add(

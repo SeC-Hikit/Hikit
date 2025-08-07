@@ -23,6 +23,18 @@ class TrailIntersectionProcessor {
         return Pair(trail, selectedCoordinates)
     }
 
+    fun getIntersectionPointsBetweenSegments(trail: Trail, municipalityCoords: List<Coordinates2D>): Pair<Trail, List<Coordinates2D>> {
+        val intersectingPoints = GeoCalculator.getIntersectionPointsBetweenSegments(
+            trail.coordinates.map { Coordinates2D(it.longitude, it.latitude) }, municipalityCoords
+        )
+
+//        val selectedCoordinates = intersectingPoints.filter {
+//            isIntersectionElectableCrossway(it, intersectingPoints)
+//        }
+
+        return Pair(trail, intersectingPoints)
+    }
+
     private fun isIntersectionElectableCrossway(
         it: Coordinates2D,
         intersectingPoints: List<Coordinates2D>
@@ -64,11 +76,7 @@ class TrailIntersectionProcessor {
 
         val isPreviousCrossingSpanningSetDistance = previousElementOrNull != null &&
                 getRadialDistance(it, previousElementOrNull) >= DISTANCE_THRESHOLD_BETWEEN_SAME_TRAIL_CROSSWAYS
-        if (isPreviousCrossingSpanningSetDistance) {
-            return true
-        }
-
-        return false
+        return isPreviousCrossingSpanningSetDistance
     }
 
     private fun getRadialDistance(it: Coordinates2D, nextElementOrNull: Coordinates2D) =
