@@ -20,27 +20,6 @@ class ErtMunicipalityMicroserviceAdapter @Autowired constructor(
     @Value("\${microservice.ert.municipality:http://localhost:8991/api/v1/municipality}")
     lateinit var endpointUrl: String
 
-    override fun getByName(
-        name: String
-    ): ResponseEntity<MunicipalityResponse>? {
-        return try {
-            restTemplateBuilder.build()
-                .getForEntity(
-                    endpointUrl.plus(
-                        "/name/${name}"
-                    ),
-                    org.openapitools.model.MunicipalityResponse::class.java
-                )
-        } catch (restClientException: RestClientException) {
-            logger.error(
-                "The remote ERT microservice endpoint municipality responded " +
-                        "with an error, for GET /name",
-                restClientException.cause
-            )
-            null
-        }
-    }
-
     override fun findMunicipalitiesForLine(line: LineRequest): ResponseEntity<MunicipalityResponse>? {
         return try {
             restTemplateBuilder.build()
@@ -56,6 +35,24 @@ class ErtMunicipalityMicroserviceAdapter @Autowired constructor(
             )
             null
         }
+    }
+
+    override fun getByName(name: String?): ResponseEntity<MunicipalityResponse>? {
+        return try {
+            restTemplateBuilder.build()
+                .getForEntity(
+                    "$endpointUrl/name/$name",
+                    org.openapitools.model.MunicipalityResponse::class.java
+                )
+        } catch (restClientException: RestClientException) {
+            logger.error(
+                "The remote ERT microservice endpoint municipality responded with an error, " +
+                        "for getting municipality by id GET request",
+                restClientException.cause
+            )
+            null
+        }
+
     }
 
 }

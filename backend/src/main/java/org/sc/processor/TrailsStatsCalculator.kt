@@ -1,6 +1,7 @@
 package org.sc.processor
 
 import org.sc.data.model.Coordinates
+import org.sc.data.model.Coordinates2D
 import org.springframework.stereotype.Component
 import kotlin.math.abs
 import kotlin.math.exp
@@ -53,14 +54,67 @@ class TrailsStatsCalculator {
         return totalTrailDistance
     }
 
+    fun calculateTrailLengthFromToPoint(coordinates: List<Coordinates>,
+                                        fromTo: List<Coordinates2D>): Double {
+
+        fun isStartOrEnd(targetCoord: Coordinates, fromTo : List<Coordinates2D>) =
+            fromTo.any {
+                targetCoord.latitude == it.latitude && targetCoord.longitude == it.longitude
+            }
+
+        var totalTrailDistance = 0.0
+        var indexStart : Int = -1
+        for (i in coordinates.indices) {
+            if (i < coordinates.size - 1) { // Found start
+                if (indexStart > -1) {
+                    val currentPoint = coordinates[i]
+                    val nextPoint = coordinates[i + 1]
+                    totalTrailDistance += DistanceProcessor.distanceBetweenPoints(currentPoint, nextPoint)
+
+                    if (isStartOrEnd(nextPoint, fromTo)) {
+                        break
+                    }
+
+                } else {    // Not started calculating yet
+                    // start from
+                    if (isStartOrEnd(coordinates[i], fromTo)){
+                        indexStart = i
+                    }
+                }
+            }
+        }
+        return totalTrailDistance
+    }
+
+    /**
+     * Used for determining where to place a point (use case > intersecting municipality territories) on an existing trail
+     * Returns a pair of > distance -> index
+     */
+    fun getLowestCumulativeDistanceAndIndexForCoordinate(coordinates: List<Coordinates>, targetCoordinate : Coordinates): Pair<Double, Int>? {
+        val results = ArrayList<Pair<Double, Int>>()
+
+        for (i in coordinates.indices) {
+            if (i < coordinates.size - 1) {
+                val currentPoint = coordinates[i]
+                val nextPoint = coordinates[i + 1]
+                val cumulativeDistance = DistanceProcessor.distanceBetweenPoints(currentPoint, targetCoordinate) +
+                        DistanceProcessor.distanceBetweenPoints(nextPoint, targetCoordinate)
+
+                val nextIndex = i + 1
+                results.add(Pair(cumulativeDistance, nextIndex))
+            }
+        }
+
+        return results.minByOrNull { it.first }
+    }
+
     fun calculateHighestPlace(coordinates: List<Coordinates>): Double = coordinates.maxOf { it.altitude }
     fun calculateLowestPlace(coordinates: List<Coordinates>): Double = coordinates.minOf { it.altitude }
 
     fun calculateLengthFromTo(coordinates: List<Coordinates>, coordinate: Coordinates): Int {
         return coordinates.filterIndexed { index, _ -> index < coordinates.indexOf(coordinate) }
-                .mapIndexed { index: Int, coord: Coordinates -> toEntry(index, coord, coordinates) }
-                .map { DistanceProcessor.distanceBetweenPoints(it.first, it.second).roundToInt() }
-                .sum()
+            .mapIndexed { index: Int, coord: Coordinates -> toEntry(index, coord, coordinates) }
+            .sumOf { DistanceProcessor.distanceBetweenPoints(it.first, it.second).roundToInt() }
     }
 
     fun calculateEta(coordinates: List<Coordinates>): Double {
