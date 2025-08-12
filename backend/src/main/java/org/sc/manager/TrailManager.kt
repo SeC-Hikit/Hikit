@@ -186,7 +186,7 @@ class TrailManager @Autowired constructor(
         return trailDAO.trailWoMunicipialities
     }
 
-    fun getMunicipality() : List<MunicipalityDetails> {
+    fun getMunicipalities() : List<MunicipalityDetails> {
         return trailDAO.distinctMunicipality()
     }
 

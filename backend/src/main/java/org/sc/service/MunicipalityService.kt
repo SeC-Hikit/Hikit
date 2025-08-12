@@ -12,6 +12,6 @@ class MunicipalityService @Autowired constructor(
     private val municipalityMapper: MunicipalityMapper
 ) {
     fun getDistinctMunicipality(): List<MunicipalityDetailsDto> {
-        return trailManager.getMunicipality().map {  municipalityMapper.map(it) }
+        return trailManager.getMunicipalities().map {  municipalityMapper.map(it) }
     }
 }

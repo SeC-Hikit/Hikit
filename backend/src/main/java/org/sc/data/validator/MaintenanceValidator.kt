@@ -6,6 +6,7 @@ import org.sc.data.validator.ValidatorUtils.Companion.emptyFieldError
 import org.sc.data.validator.auth.AuthRealmValidator
 import org.sc.data.validator.trail.TrailExistenceValidator
 import org.sc.manager.MaintenanceManager
+import org.sc.manager.MunicipalityManager
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -14,7 +15,8 @@ import java.util.*
 class MaintenanceValidator constructor(
     private val maintenanceManager: MaintenanceManager,
     private val trailExistenceValidator: TrailExistenceValidator,
-    private val realmValidator: AuthRealmValidator
+    private val realmValidator: AuthRealmValidator,
+    private val municipalityManager: MunicipalityManager
 ) : Validator<MaintenanceDto> {
 
     companion object {
@@ -56,6 +58,13 @@ class MaintenanceValidator constructor(
             errors.add(AuthRealmValidator.NOT_ALLOWED_MSG)
         }
         return errors
+    }
+
+    fun validateExistence(municipalityName: String): Set<String> {
+        if(!municipalityManager.getAvailable().map { it.city.lowercase() }.contains(municipalityName.lowercase())){
+            return setOf(ValidatorUtils.notExistingItem, "municipality", municipalityName)
+        }
+        return emptySet()
     }
 
 }

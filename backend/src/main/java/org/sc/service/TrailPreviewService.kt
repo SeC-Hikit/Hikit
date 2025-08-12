@@ -2,7 +2,6 @@ package org.sc.service
 
 import org.sc.common.rest.TrailPreviewDto
 import org.sc.data.mapper.TrailPreviewMapper
-import org.sc.manager.TrailManager
 import org.sc.manager.TrailPreviewManager
 import org.sc.processor.TrailExporter
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service
 @Service
 class TrailPreviewService @Autowired constructor(
     private val trailPreviewManager: TrailPreviewManager,
-    private val trailManager: TrailManager,
     private val trailPreviewMapper: TrailPreviewMapper,
     private val trailExporter: TrailExporter
 ) {

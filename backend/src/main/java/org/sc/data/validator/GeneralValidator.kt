@@ -66,6 +66,7 @@ class GeneralValidator @Autowired constructor(
     fun validateUpdatePoi(id: String): Set<String> = poiValidator.validateExistenceAndAuth(id)
     fun validateUpdateTrail(id: String): Set<String> = trailExistenceValidator.validateExistenceAndRealm(id)
     fun validateUpdateMaintenance(id: String): Set<String> = maintenanceValidator.validateExistenceAndRealm(id)
+    fun validateMunicipality(municipalityName: String): Set<String> = maintenanceValidator.validateExistence(municipalityName)
 
     fun validateMediaExistence(id: String): Set<String> = mediaExistenceValidator.validate(id)
     fun validatePoiExistence(id: String): Set<String> = poiExistenceValidator.validate(id)

@@ -3,14 +3,15 @@ package org.sc.service
 import org.openapitools.model.CityRefDto
 import org.openapitools.model.MunicipalityDto
 import org.sc.adapter.AltitudeServiceAdapter
-import org.sc.adapter.microservice.ErtMunicipalityMicroserviceAdapter
 import org.sc.common.rest.*
 import org.sc.common.rest.geo.LocateDto
+import org.sc.data.TrailMunicipalityExportEntry
 import org.sc.data.mapper.TrailMapper
 import org.sc.data.model.Coordinates
 import org.sc.data.model.Coordinates2D
 import org.sc.data.model.MunicipalityDetails
 import org.sc.data.model.TrailStatus
+import org.sc.data.repository.MongoUtils.NO_FILTERING_TOKEN
 import org.sc.job.import.MunicipalityForTrailsImporter
 import org.sc.manager.*
 import org.sc.processor.*
@@ -32,9 +33,9 @@ class TrailService @Autowired constructor(
     private val trailMapper: TrailMapper,
     private val municipalityForTrailsImporter: MunicipalityForTrailsImporter,
     private val trailIntersector: TrailIntersectionManager,
-    private val trailsStatsCalculator: TrailsStatsCalculator,
     private val altitudeServiceAdapter: AltitudeServiceAdapter,
-    private val municipalityMicroserviceAdapter: ErtMunicipalityMicroserviceAdapter,
+    private val trailPreviewManager: TrailPreviewManager,
+    private val trailExporter: TrailExporter
 ) {
 
     private val logger = Logger.getLogger(TrailService::class.java.name)
@@ -134,8 +135,6 @@ class TrailService @Autowired constructor(
         val municipalityToIntersectingPoints =
             trailIntersector.findIntersectionWithMunicipalities(trailMapper.map(trail))
 
-        // Place points on trail and calculate distance
-        // find indexes for inserting
         return calculateDistances(municipalityToIntersectingPoints, trail)
     }
 
@@ -223,42 +222,34 @@ class TrailService @Autowired constructor(
         return Pair(first, emptyList())
     }
 
+    fun exportListByMunicipality(municipality: String): ByteArray {
+        val trailsByMunicipality = trailPreviewManager.findPreviewsByMunicipality(
+            municipality, 0, Int.MAX_VALUE,
+            NO_FILTERING_TOKEN, false
+        )
 
-//        municipalityToIntersectingPoints.map {
-//
-//
-//        // Got indexes to place points
-//        val calculatedIndexesDistances = it.second.map { targetCoord ->
-//            Pair(
-//                targetCoord, trailsStatsCalculator.getLowestCumulativeDistanceAndIndexForCoordinate(
-//                    trail.coordinates,
-//                    CoordinatesDto(targetCoord.latitude, targetCoord.longitude)
-//                )
-//            )
-//        }.requireNoNulls()
-//
-//
-//        // Add points to construct a line including them
-//        val coordinates = trail.coordinates
-//        calculatedIndexesDistances.forEach { coordsToIndex ->
-//            val index = coordsToIndex.second!!.second
-//            val lat = coordsToIndex.first.latitude
-//            val long = coordsToIndex.first.longitude
-//            coordinates.add(
-//                index, TrailCoordinatesDto(
-//                    lat, long,
-//                    altitudeServiceAdapter.getElevationsByLongLat(lat, long).first(), 0
-//                )
-//            )
-//        }
-//
-//        val fromTo = calculatedIndexesDistances.map { coordsToDistanceAndIndex -> coordsToDistanceAndIndex.first }
-//        val distance =
-//            trailsStatsCalculator.calculateTrailLengthFromToPoint(coordinates, fromTo)
-//        val intersectionPointsWithElevation = calculatedIndexesDistances.map { cx ->
-//            coordinates[cx.second!!.second]
-//        }
-//
-//
+        val intersectionTrails: List<TrailMunicipalityExportEntry> = trailsByMunicipality.map {
+            val fullTrail = trailManager.getById(it.id, TrailSimplifierLevel.LOW).first()
+            val intersectMunicipalitiesCalculatingDistances = intersectMunicipalitiesCalculatingDistances(it.id)
+
+            val targetIntersectionData =
+                intersectMunicipalitiesCalculatingDistances.filter { ip -> ip.details.city.lowercase() == municipality.lowercase() }
+
+            TrailMunicipalityExportEntry(it.code,
+                fullTrail.municipalities.filter { m -> m.city.lowercase() != municipality.lowercase() }.map { m -> m.city },
+                targetIntersectionData.first().distance,
+                fullTrail.startLocation,
+                fullTrail.endLocation,
+                fullTrail.locations,
+                fullTrail.statsTrailMetadata.length,
+                fullTrail.lastUpdate
+            )
+        }.distinctBy { it.trailCode }
+
+        return trailExporter.exportMunicipalityTrailsToCsv(municipality, intersectionTrails)
+
+    }
+
+
 
 }

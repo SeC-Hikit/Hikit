@@ -6,6 +6,9 @@ import org.sc.common.rest.response.MunicipalityIntersectionResponse;
 import org.sc.data.validator.GeneralValidator;
 import org.sc.service.TrailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +42,19 @@ public class AdminMunicipalityController {
         final List<MunicipalityToTrailDto> intersections =
                 trailService.intersectMunicipalitiesCalculatingDistances(trailId);
         return new MunicipalityIntersectionResponse(intersections);
+    }
+
+    @Operation(summary = "Find all existing trails intersections stats for a given municipality")
+    @PostMapping(value = "/intersect/{municipality}/export", produces = {MediaType.TEXT_PLAIN_VALUE})
+    public ResponseEntity<byte[]>
+    getTrailIntersectionMunicipalityExport(@PathVariable String municipality) {
+        final Set<String> validate = generalValidator.validateMunicipality(municipality);
+        if (!validate.isEmpty()) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate.stream().findFirst());
+        }
+        return ResponseEntity
+                .ok(trailService.exportListByMunicipality(municipality));
+
     }
 
 }
