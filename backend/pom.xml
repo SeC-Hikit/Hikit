@@ -18,7 +18,7 @@
         <java.version>1.8</java.version>
         <jackson-module-kotlin.version>2.11.2</jackson-module-kotlin.version>
         <mongo-java-driver.version>3.12.8</mongo-java-driver.version>
-        <tika-core.version>1.25</tika-core.version>
+        <tika-core.version>1.28.3</tika-core.version>
         <springdoc-openapi-ui.version>1.5.2</springdoc-openapi-ui.version>
         <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
         <mockk.version>1.12.3</mockk.version>
