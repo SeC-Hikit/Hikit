@@ -152,7 +152,7 @@ public class PlaceDAO {
         return byId;
     }
 
-    public List<Place> updateNameAndTags(final Place place) {
+    public List<Place> updateNameAndTagsAndMedias(final Place place) {
         if (place.getId() == null) {
             LOGGER.error("update null id for Place: {}", place);
             throw new IllegalStateException();
@@ -164,6 +164,7 @@ public class PlaceDAO {
                         new Document(DESCRIPTION, place.getDescription())
                                 .append(TAGS, place.getTags())
                                 .append(NAME, place.getName())
+                                .append(MEDIA_IDS, place.getMediaIds())
                 )
         );
         return getById(place.getId());

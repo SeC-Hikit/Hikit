@@ -268,6 +268,7 @@ class TrailImporterService @Autowired constructor(
         trailToUpdate.maintainingSection = trailDto.maintainingSection
         trailToUpdate.territorialDivision = trailDto.territorialDivision
         trailToUpdate.cycloDetails = trailDto.cycloDetails
+        trailToUpdate.mediaList = trailDto.mediaList
 
         val update = trailsManager.update(trailMapper.map(trailToUpdate))
 
