@@ -4,6 +4,7 @@ import org.bson.Document;
 import org.sc.data.model.KeyVal;
 import org.sc.data.model.LinkedMedia;
 import org.sc.data.model.Poi;
+import org.sc.data.model.Trail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +42,7 @@ public class LinkedMediaMapper implements Mapper<LinkedMedia> {
     }
 
     private List<KeyVal> getKeyVals(Document document) {
-        List<Document> list = document.getList(Poi.KEY_VAL, Document.class);
+        List<Document> list = document.getList(Trail.KEY_VAL, Document.class);
         return list.stream().map(keyValMapper::mapToObject).collect(toList());
     }
 }

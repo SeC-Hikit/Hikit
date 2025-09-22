@@ -2,11 +2,7 @@ package org.sc.data.entity.mapper;
 
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.sc.data.model.CoordinatesWithAltitude;
-import org.sc.data.model.KeyVal;
-import org.sc.data.model.Poi;
-import org.sc.data.model.PoiMacroType;
-import org.sc.data.model.LinkedMedia;
+import org.sc.data.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -15,7 +15,7 @@ public class TrailProvider {
     public static final String PARENT_ID = "parentId";
     public static final String DESCRIPTION = "description";
     public static final String PUBLIC_PRIVATE = "isPublic";
-    public static final String KEY_VAL = "kvps";
+    public static final String KEY_VAL = "keyVal";
 
     private String id;
     private String name;

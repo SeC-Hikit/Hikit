@@ -74,12 +74,13 @@ class PlaceManager @Autowired constructor(
     }
 
     fun update(place: PlaceDto): List<PlaceDto> {
-        val update = placeDao.updateNameAndTags(placeMapper.map(place)).first()
+        val update = placeDao.updateNameAndTagsAndMedias(placeMapper.map(place)).first()
         update.crossingTrailIds.forEach {
             resourceManager.addEntry(it, RegenerationEntryType.PLACE,
                     update.id, authFacade.authHelper.username,
                     RegenerationActionType.UPDATE)
         }
+
         return listOf(placeMapper.map(update))
     }
 

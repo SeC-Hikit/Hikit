@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 class PlaceValidator @Autowired constructor(
         private val trailCoordinatesCreationValidator: CoordinatesValidator,
         private val mediaExistenceValidator: MediaExistenceValidator,
-        private val trailExistenceValidator: TrailExistenceValidator) : Validator<PlaceDto> {
+       private val trailExistenceValidator: TrailExistenceValidator) : Validator<PlaceDto> {
 
     companion object {
         const val noNameError = "No name specified in position"

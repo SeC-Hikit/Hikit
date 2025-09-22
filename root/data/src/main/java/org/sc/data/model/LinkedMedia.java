@@ -4,9 +4,9 @@ import java.util.List;
 
 public class LinkedMedia {
 
-    public static String ID = "id";
+    public static String ID = "_id";
     public static String DESCRIPTION = "description";
-    public static final String KEY_VAL = "kvps";
+    public static final String KEY_VAL = "keyVal";
 
     private String id;
     private String description;

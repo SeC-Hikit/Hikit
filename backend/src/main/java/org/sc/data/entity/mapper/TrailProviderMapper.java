@@ -3,6 +3,7 @@ package org.sc.data.entity.mapper;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.sc.data.model.Poi;
+import org.sc.data.model.Trail;
 import org.sc.data.model.TrailProvider;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,7 @@ public class TrailProviderMapper implements Mapper<TrailProvider> {
                 document.getString(TrailProvider.PARENT_ID),
                 document.getString(TrailProvider.DESCRIPTION),
                 document.getBoolean(TrailProvider.PUBLIC_PRIVATE),
-                document.getList(Poi.KEY_VAL, Document.class).stream().map(keyValMapper::mapToObject).collect(toList()));
+                document.getList(Trail.KEY_VAL, Document.class).stream().map(keyValMapper::mapToObject).collect(toList()));
     }
 
     @Override

@@ -33,6 +33,7 @@ public class Trail {
     public static final String TERRITORIAL_CARED_BY = "territorialDivision";
     public static final String LOCATIONS = "locations";
     public static final String GEO_LINE = "geoLine";
+    public static final String KEY_VAL = "keyVal";
 
     public static final String MEDIA = "media";
     public static final String STATUS = "status";

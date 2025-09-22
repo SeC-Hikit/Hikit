@@ -98,7 +98,7 @@ public class MediaDAO {
 
     public List<Media> getMedia(final int skip, final int limit, final String realm) {
         final Document filter = MongoUtils.getConditionalEqFilter(realm, REALM_STRUCT);
-        final Bson aLimit = Aggregates.limit(limit);
+        final Bson aLimit = Aggregates.limit(skip + limit);
         final Bson aSkip = Aggregates.skip(skip);
         return toMediaList(collection.aggregate(Arrays.asList(match(filter), aLimit, aSkip)));
     }
